@@ -7,12 +7,46 @@ import { fileURLToPath } from 'node:url';
 
 const schema = JSON.parse(readFileSync(new URL('./schema.json', import.meta.url)));
 const validate = new Ajv({ allErrors: true }).compile(schema);
+const catalogSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['id', 'title', 'platform', 'repo', 'tier'],
+    properties: {
+      id: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' },
+      title: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
+      platform: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
+      repo: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
+      tier: { type: 'integer', enum: [1, 2] },
+    },
+  },
+};
+const validateCatalogRows = new Ajv({ allErrors: true }).compile(catalogSchema);
 function unique(ids) {
   if (new Set(ids).size !== ids.length) throw new Error('duplicate ids');
 }
 function sourcePath(value) {
   if (path.isAbsolute(value) || value.split(/[\\/]/u).includes('..') || !/^[a-zA-Z0-9_./-]+$/u.test(value))
     throw new Error(`unsafe source path: ${value}`);
+}
+export function validateCatalog(catalog, games, stubs = []) {
+  if (!validateCatalogRows(catalog)) throw new Error(JSON.stringify(validateCatalogRows.errors));
+  unique(catalog.map(row => row.id));
+  const rows = new Map(catalog.map(row => [row.id, row]));
+  const gameIdList = games.map(game => game.id);
+  unique(gameIdList);
+  const gameIds = new Set(gameIdList);
+  for (const id of gameIds) {
+    const row = rows.get(id);
+    if (!row) throw new Error(`game ${id} absent from catalog`);
+    if (row.tier !== 1) throw new Error(`game ${id} needs a tier 1 catalog row`);
+  }
+  for (const row of catalog)
+    if (row.tier === 1 && !gameIds.has(row.id)) throw new Error(`tier 1 ${row.id} has no game file`);
+  for (const stub of stubs)
+    if (!rows.has(stub.game)) throw new Error(`stub ${stub.id} references missing game ${stub.game}`);
+  return catalog;
 }
 export function validateGame(game) {
   if (!validate(game)) throw new Error(JSON.stringify(validate.errors));
@@ -97,6 +131,7 @@ export function run(args = process.argv.slice(2)) {
       ...game.nodes.map(node => ({ id: node.id, game: game.id, kind: 'node', name: node.name, summary: node.purpose, tags: [], capabilities: [] })),
       ...game.cards.map(card => ({ id: card.id, game: game.id, kind: 'card', name: card.name, summary: card.summary, tags: card.tags, capabilities: card.capabilities })),
     ]);
+    validateCatalog(catalog, games, stubs);
     mkdirSync('.release', { recursive: true });
     writeFileSync('.release/index.json.gz', gzipSync(JSON.stringify({ version: 1, games: catalog, stubs })));
     for (const game of games) writeFileSync(`.release/game-${game.id}.json`, JSON.stringify(game));
