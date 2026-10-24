@@ -1,0 +1,42 @@
+name: Validate and release references
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node --test validate.spec.mjs
+      - run: npm run release:assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reference-assets
+          path: .release/*
+          include-hidden-files: true
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: reference-assets
+          path: release
+      - run: gh release create "$TAG" release/* --repo "$REPO" --title "$TAG" --notes 'Pinned mechanic reference cards and repository maps. CC-BY 4.0; see source attribution in each game file.'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}

@@ -1,0 +1,259 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+    },
+    "repo": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+          },
+          "parent": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+            }
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                },
+                "lines": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "name",
+                "path",
+                "lines"
+              ]
+            }
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "purpose",
+          "paths",
+          "functions",
+          "dependsOn"
+        ]
+      },
+      "minItems": 1
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "node": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+          },
+          "behavior": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+          },
+          "constants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                    }
+                  ]
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                }
+              },
+              "required": [
+                "name",
+                "value",
+                "unit",
+                "source"
+              ]
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "path",
+                "line"
+              ]
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "node",
+          "name",
+          "summary",
+          "behavior",
+          "constants",
+          "sources",
+          "capabilities",
+          "tags"
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "version",
+    "id",
+    "title",
+    "repo",
+    "sha",
+    "nodes",
+    "cards"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jonit-dev/threenative-game-refs/schema.json"
+}

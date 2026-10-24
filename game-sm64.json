@@ -1,0 +1,2690 @@
+{
+  "version": 1,
+  "id": "sm64",
+  "title": "Super Mario 64",
+  "repo": "https://github.com/n64decomp/sm64",
+  "sha": "9921382a68bb0c865e5e45eb594d9c64db59b1af",
+  "nodes": [
+    {
+      "id": "player",
+      "name": "Player state",
+      "purpose": "Mario action state machine and the shared launch defaults that enter each action",
+      "paths": [
+        "src/game/mario.c"
+      ],
+      "functions": [
+        {
+          "name": "set_mario_y_vel_based_on_fspeed",
+          "path": "src/game/mario.c",
+          "lines": [
+            763,
+            771
+          ]
+        },
+        {
+          "name": "set_mario_action",
+          "path": "src/game/mario.c",
+          "lines": [
+            979,
+            1013
+          ]
+        },
+        {
+          "name": "set_jump_from_landing",
+          "path": "src/game/mario.c",
+          "lines": [
+            1018,
+            1068
+          ]
+        },
+        {
+          "name": "set_jumping_action",
+          "path": "src/game/mario.c",
+          "lines": [
+            1074,
+            1093
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-physics",
+      "parent": "player",
+      "name": "Player physics",
+      "purpose": "Collision stepping and velocity integration for ground and air movement",
+      "paths": [
+        "src/game/mario_step.c"
+      ],
+      "functions": [
+        {
+          "name": "perform_ground_step",
+          "path": "src/game/mario_step.c",
+          "lines": [
+            322,
+            346
+          ]
+        },
+        {
+          "name": "perform_air_step",
+          "path": "src/game/mario_step.c",
+          "lines": [
+            610,
+            655
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player"
+      ]
+    },
+    {
+      "id": "player-airborne",
+      "parent": "player",
+      "name": "Airborne actions",
+      "purpose": "Airborne handlers for jumps, flips, dives, ground pound, and wall kicks",
+      "paths": [
+        "src/game/mario_actions_airborne.c"
+      ],
+      "functions": [
+        {
+          "name": "act_jump",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            446,
+            459
+          ]
+        },
+        {
+          "name": "act_double_jump",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            461,
+            478
+          ]
+        },
+        {
+          "name": "act_triple_jump",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            480,
+            507
+          ]
+        },
+        {
+          "name": "act_backflip",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            509,
+            523
+          ]
+        },
+        {
+          "name": "act_side_flip",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            595,
+            616
+          ]
+        },
+        {
+          "name": "act_wall_kick_air",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            618,
+            630
+          ]
+        },
+        {
+          "name": "act_long_jump",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            632,
+            654
+          ]
+        },
+        {
+          "name": "act_dive",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            725,
+            794
+          ]
+        },
+        {
+          "name": "act_ground_pound",
+          "path": "src/game/mario_actions_airborne.c",
+          "lines": [
+            918,
+            984
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-moving",
+      "parent": "player",
+      "name": "Ground movement",
+      "purpose": "Ground locomotion actions including crouch slides that start long jumps",
+      "paths": [
+        "src/game/mario_actions_moving.c"
+      ],
+      "functions": [
+        {
+          "name": "act_crouch_slide",
+          "path": "src/game/mario_actions_moving.c",
+          "lines": [
+            1452,
+            1487
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-stationary",
+      "parent": "player",
+      "name": "Stationary actions",
+      "purpose": "Stationary and crouching actions that chain into jumps and flips",
+      "paths": [
+        "src/game/mario_actions_stationary.c"
+      ],
+      "functions": [
+        {
+          "name": "act_crouching",
+          "path": "src/game/mario_actions_stationary.c",
+          "lines": [
+            528,
+            564
+          ]
+        },
+        {
+          "name": "act_start_crouching",
+          "path": "src/game/mario_actions_stationary.c",
+          "lines": [
+            693,
+            716
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player"
+      ]
+    },
+    {
+      "id": "player-submerged",
+      "parent": "player",
+      "name": "Swimming actions",
+      "purpose": "Underwater movement and the water jump entry",
+      "paths": [
+        "src/game/mario_actions_submerged.c"
+      ],
+      "functions": [
+        {
+          "name": "check_water_jump",
+          "path": "src/game/mario_actions_submerged.c",
+          "lines": [
+            492,
+            510
+          ]
+        },
+        {
+          "name": "act_breaststroke",
+          "path": "src/game/mario_actions_submerged.c",
+          "lines": [
+            512,
+            570
+          ]
+        },
+        {
+          "name": "act_flutter_kick",
+          "path": "src/game/mario_actions_submerged.c",
+          "lines": [
+            609,
+            636
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-object",
+      "parent": "player",
+      "name": "Object actions",
+      "purpose": "Object interaction actions such as pickup, hold, and throw",
+      "paths": [
+        "src/game/mario_actions_object.c"
+      ],
+      "functions": [
+        {
+          "name": "act_picking_up",
+          "path": "src/game/mario_actions_object.c",
+          "lines": [
+            175,
+            211
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Camera system",
+      "purpose": "Camera update loop, mode selection, transitions, and HUD state",
+      "paths": [
+        "src/game/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "set_camera_mode",
+          "path": "src/game/camera.c",
+          "lines": [
+            2854,
+            2901
+          ]
+        },
+        {
+          "name": "update_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            3011,
+            3202
+          ]
+        },
+        {
+          "name": "update_camera_hud_status",
+          "path": "src/game/camera.c",
+          "lines": [
+            3897,
+            3916
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "parent": "camera",
+      "name": "Camera follow",
+      "purpose": "Lakitu follow smoothing and default behind-Mario framing",
+      "paths": [
+        "src/game/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "update_behind_mario_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            1751,
+            1892
+          ]
+        },
+        {
+          "name": "update_mario_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            2046,
+            2051
+          ]
+        },
+        {
+          "name": "update_lakitu",
+          "path": "src/game/camera.c",
+          "lines": [
+            2906,
+            3004
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    },
+    {
+      "id": "camera-modes",
+      "parent": "camera",
+      "name": "Camera modes",
+      "purpose": "Per-mode camera entry points for default, behind Mario, and Mario modes",
+      "paths": [
+        "src/game/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "mode_behind_mario_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            2026,
+            2028
+          ]
+        },
+        {
+          "name": "mode_default_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            2385,
+            2389
+          ]
+        },
+        {
+          "name": "mode_mario_camera",
+          "path": "src/game/camera.c",
+          "lines": [
+            2402,
+            2405
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    },
+    {
+      "id": "camera-transition",
+      "parent": "camera",
+      "name": "Camera transitions",
+      "purpose": "Camera mode transitions and interpolation between stored states",
+      "paths": [
+        "src/game/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "transition_next_state",
+          "path": "src/game/camera.c",
+          "lines": [
+            2809,
+            2814
+          ]
+        },
+        {
+          "name": "transition_to_camera_mode",
+          "path": "src/game/camera.c",
+          "lines": [
+            2822,
+            2841
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    },
+    {
+      "id": "game-runtime",
+      "name": "Game runtime",
+      "purpose": "Boot, threading, memory pools, crash reporting, profiler bars, debug helpers, rumble scheduling, and build symbol placeholders",
+      "paths": [
+        "src/game/cn_common_syms_1.c",
+        "src/game/cn_common_syms_2.c",
+        "src/game/crash_screen.c",
+        "src/game/debug.c",
+        "src/game/debug_course.c",
+        "src/game/main.c",
+        "src/game/memory.c",
+        "src/game/profiler.c",
+        "src/game/rumble_init.c"
+      ],
+      "functions": [
+        {
+          "name": "create_thread",
+          "path": "src/game/main.c",
+          "lines": [
+            139,
+            143
+          ]
+        },
+        {
+          "name": "main_pool_alloc",
+          "path": "src/game/memory.c",
+          "lines": [
+            138,
+            162
+          ]
+        },
+        {
+          "name": "draw_crash_screen",
+          "path": "src/game/crash_screen.c",
+          "lines": [
+            180,
+            248
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine"
+      ]
+    },
+    {
+      "id": "input",
+      "name": "Input pipeline",
+      "purpose": "Controller polling, analog stick shaping, demo playback, and controller setup inside the game loop",
+      "paths": [
+        "src/game/game_init.c"
+      ],
+      "functions": [
+        {
+          "name": "read_controller_inputs",
+          "path": "src/game/game_init.c",
+          "lines": [
+            522,
+            568
+          ]
+        },
+        {
+          "name": "init_controllers",
+          "path": "src/game/game_init.c",
+          "lines": [
+            573,
+            605
+          ]
+        },
+        {
+          "name": "adjust_analog_stick",
+          "path": "src/game/game_init.c",
+          "lines": [
+            425,
+            460
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-runtime"
+      ]
+    },
+    {
+      "id": "save",
+      "name": "Save data",
+      "purpose": "EEPROM-backed save slots, checksums, coin score ages, and the star and key collection record",
+      "paths": [
+        "src/game/save_file.c"
+      ],
+      "functions": [
+        {
+          "name": "save_file_load_all",
+          "path": "src/game/save_file.c",
+          "lines": [
+            291,
+            334
+          ]
+        },
+        {
+          "name": "save_file_do_save",
+          "path": "src/game/save_file.c",
+          "lines": [
+            252,
+            269
+          ]
+        },
+        {
+          "name": "save_file_collect_star_or_key",
+          "path": "src/game/save_file.c",
+          "lines": [
+            357,
+            409
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-runtime"
+      ]
+    },
+    {
+      "id": "menu",
+      "name": "Menus and intro",
+      "purpose": "Title, file select, act selector, and intro logo screens with their menu button behavior",
+      "paths": [
+        "src/menu/file_select.c",
+        "src/menu/intro_geo.c",
+        "src/menu/star_select.c",
+        "src/menu/title_screen.c"
+      ],
+      "functions": [
+        {
+          "name": "intro_regular",
+          "path": "src/menu/title_screen.c",
+          "lines": [
+            152,
+            186
+          ]
+        },
+        {
+          "name": "bhv_menu_button_loop",
+          "path": "src/menu/file_select.c",
+          "lines": [
+            516,
+            557
+          ]
+        },
+        {
+          "name": "lvl_init_act_selector_values_and_stars",
+          "path": "src/menu/star_select.c",
+          "lines": [
+            402,
+            421
+          ]
+        },
+        {
+          "name": "geo_intro_super_mario_64_logo",
+          "path": "src/menu/intro_geo.c",
+          "lines": [
+            41,
+            92
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-runtime",
+        "save",
+        "goddard",
+        "rendering"
+      ]
+    },
+    {
+      "id": "level-lifecycle",
+      "name": "Level lifecycle",
+      "purpose": "Area loading and unloading, warps, play modes, and special object expansion for each course",
+      "paths": [
+        "src/game/area.c",
+        "src/game/level_geo.c",
+        "src/game/level_update.c",
+        "src/game/macro_special_objects.c"
+      ],
+      "functions": [
+        {
+          "name": "load_area",
+          "path": "src/game/area.c",
+          "lines": [
+            231,
+            248
+          ]
+        },
+        {
+          "name": "init_mario_after_warp",
+          "path": "src/game/level_update.c",
+          "lines": [
+            367,
+            460
+          ]
+        },
+        {
+          "name": "level_trigger_warp",
+          "path": "src/game/level_update.c",
+          "lines": [
+            699,
+            814
+          ]
+        },
+        {
+          "name": "spawn_special_objects",
+          "path": "src/game/macro_special_objects.c",
+          "lines": [
+            236,
+            321
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "game-runtime"
+      ]
+    },
+    {
+      "id": "objects",
+      "name": "Object system",
+      "purpose": "Object allocation, list updates, helpers, collision queries, interaction handlers, and spawning services",
+      "paths": [
+        "src/game/behavior_actions.c",
+        "src/game/interaction.c",
+        "src/game/obj_behaviors.c",
+        "src/game/obj_behaviors_2.c",
+        "src/game/object_collision.c",
+        "src/game/object_helpers.c",
+        "src/game/object_list_processor.c",
+        "src/game/platform_displacement.c",
+        "src/game/spawn_object.c",
+        "src/game/spawn_sound.c"
+      ],
+      "functions": [
+        {
+          "name": "create_object",
+          "path": "src/game/spawn_object.c",
+          "lines": [
+            313,
+            353
+          ]
+        },
+        {
+          "name": "update_objects",
+          "path": "src/game/object_list_processor.c",
+          "lines": [
+            626,
+            686
+          ]
+        },
+        {
+          "name": "spawn_object",
+          "path": "src/game/object_helpers.c",
+          "lines": [
+            543,
+            549
+          ]
+        },
+        {
+          "name": "interact_star_or_key",
+          "path": "src/game/interaction.c",
+          "lines": [
+            769,
+            835
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "level-lifecycle",
+        "player"
+      ]
+    },
+    {
+      "id": "behaviors",
+      "name": "Object behaviors",
+      "purpose": "Behavior scripts and update loops that drive enemies, platforms, items, scenery, and scripted events",
+      "paths": [],
+      "functions": [],
+      "dependsOn": [
+        "objects"
+      ]
+    },
+    {
+      "id": "behaviors-enemies",
+      "name": "Enemy behaviors",
+      "purpose": "Movement, attacks, and defeat rules for the common enemies and ambient creatures",
+      "paths": [
+        "src/game/behaviors/amp.inc.c",
+        "src/game/behaviors/bird.inc.c",
+        "src/game/behaviors/blue_fish.inc.c",
+        "src/game/behaviors/bobomb.inc.c",
+        "src/game/behaviors/bomp.inc.c",
+        "src/game/behaviors/boo.inc.c",
+        "src/game/behaviors/boo_cage.inc.c",
+        "src/game/behaviors/boulder.inc.c",
+        "src/game/behaviors/bouncing_fireball.inc.c",
+        "src/game/behaviors/bowling_ball.inc.c",
+        "src/game/behaviors/bub.inc.c",
+        "src/game/behaviors/bubba.inc.c",
+        "src/game/behaviors/bullet_bill.inc.c",
+        "src/game/behaviors/bully.inc.c",
+        "src/game/behaviors/butterfly.inc.c",
+        "src/game/behaviors/chain_chomp.inc.c",
+        "src/game/behaviors/chuckya.inc.c",
+        "src/game/behaviors/clam.inc.c",
+        "src/game/behaviors/dorrie.inc.c",
+        "src/game/behaviors/enemy_lakitu.inc.c",
+        "src/game/behaviors/eyerok.inc.c",
+        "src/game/behaviors/fire_piranha_plant.inc.c",
+        "src/game/behaviors/fire_spitter.inc.c",
+        "src/game/behaviors/fish.inc.c",
+        "src/game/behaviors/fishing_boo.inc.c",
+        "src/game/behaviors/fly_guy.inc.c",
+        "src/game/behaviors/goomba.inc.c",
+        "src/game/behaviors/heave_ho.inc.c",
+        "src/game/behaviors/hoot.inc.c",
+        "src/game/behaviors/horizontal_grindel.inc.c",
+        "src/game/behaviors/klepto.inc.c",
+        "src/game/behaviors/koopa.inc.c",
+        "src/game/behaviors/koopa_shell.inc.c",
+        "src/game/behaviors/koopa_shell_underwater.inc.c",
+        "src/game/behaviors/mad_piano.inc.c",
+        "src/game/behaviors/manta_ray.inc.c",
+        "src/game/behaviors/mips.inc.c",
+        "src/game/behaviors/moneybag.inc.c",
+        "src/game/behaviors/monty_mole.inc.c",
+        "src/game/behaviors/mr_blizzard.inc.c",
+        "src/game/behaviors/mr_i.inc.c",
+        "src/game/behaviors/piranha_bubbles.inc.c",
+        "src/game/behaviors/piranha_plant.inc.c",
+        "src/game/behaviors/pokey.inc.c",
+        "src/game/behaviors/racing_penguin.inc.c",
+        "src/game/behaviors/scuttlebug.inc.c",
+        "src/game/behaviors/skeeter.inc.c",
+        "src/game/behaviors/snufit.inc.c",
+        "src/game/behaviors/spindel.inc.c",
+        "src/game/behaviors/spindrift.inc.c",
+        "src/game/behaviors/spiny.inc.c",
+        "src/game/behaviors/sushi.inc.c",
+        "src/game/behaviors/swoop.inc.c",
+        "src/game/behaviors/thi_top.inc.c",
+        "src/game/behaviors/thwomp.inc.c",
+        "src/game/behaviors/tox_box.inc.c",
+        "src/game/behaviors/treasure_chest.inc.c",
+        "src/game/behaviors/triplet_butterfly.inc.c",
+        "src/game/behaviors/tuxie.inc.c",
+        "src/game/behaviors/tweester.inc.c",
+        "src/game/behaviors/ukiki.inc.c",
+        "src/game/behaviors/ukiki_cage.inc.c",
+        "src/game/behaviors/unagi.inc.c",
+        "src/game/behaviors/whomp.inc.c",
+        "src/game/behaviors/wiggler.inc.c",
+        "src/game/behaviors/yoshi.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_goomba_update",
+          "path": "src/game/behaviors/goomba.inc.c",
+          "lines": [
+            265,
+            315
+          ]
+        },
+        {
+          "name": "bhv_koopa_update",
+          "path": "src/game/behaviors/koopa.inc.c",
+          "lines": [
+            791,
+            820
+          ]
+        },
+        {
+          "name": "bhv_piranha_plant_loop",
+          "path": "src/game/behaviors/piranha_plant.inc.c",
+          "lines": [
+            335,
+            348
+          ]
+        },
+        {
+          "name": "bhv_boo_loop",
+          "path": "src/game/behaviors/boo.inc.c",
+          "lines": [
+            476,
+            490
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-bosses",
+      "name": "Boss behaviors",
+      "purpose": "Multi-phase boss fights for Bowser, King Bob-omb, and the beta boss anchors",
+      "paths": [
+        "src/game/behaviors/beta_boo_key.inc.c",
+        "src/game/behaviors/beta_bowser_anchor.inc.c",
+        "src/game/behaviors/bowser.inc.c",
+        "src/game/behaviors/bowser_bomb.inc.c",
+        "src/game/behaviors/bowser_falling_platform.inc.c",
+        "src/game/behaviors/bowser_flame.inc.c",
+        "src/game/behaviors/bowser_key.inc.c",
+        "src/game/behaviors/bowser_key_cutscene.inc.c",
+        "src/game/behaviors/bowser_puzzle_piece.inc.c",
+        "src/game/behaviors/king_bobomb.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_king_bobomb_loop",
+          "path": "src/game/behaviors/king_bobomb.inc.c",
+          "lines": [
+            376,
+            399
+          ]
+        },
+        {
+          "name": "bhv_bowser_loop",
+          "path": "src/game/behaviors/bowser.inc.c",
+          "lines": [
+            1689,
+            1754
+          ]
+        },
+        {
+          "name": "bhv_bowser_init",
+          "path": "src/game/behaviors/bowser.inc.c",
+          "lines": [
+            1759,
+            1786
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-platforms",
+      "name": "Platform behaviors",
+      "purpose": "Moving, rotating, tilting, and track-bound platforms that carry Mario and change level geometry",
+      "paths": [
+        "src/game/behaviors/activated_bf_plat.inc.c",
+        "src/game/behaviors/arrow_lift.inc.c",
+        "src/game/behaviors/bbh_merry_go_round.inc.c",
+        "src/game/behaviors/checkerboard_platform.inc.c",
+        "src/game/behaviors/controllable_platform.inc.c",
+        "src/game/behaviors/decorative_pendulum.inc.c",
+        "src/game/behaviors/donut_platform.inc.c",
+        "src/game/behaviors/elevator.inc.c",
+        "src/game/behaviors/express_elevator.inc.c",
+        "src/game/behaviors/falling_pillar.inc.c",
+        "src/game/behaviors/falling_rising_platform.inc.c",
+        "src/game/behaviors/ferris_wheel.inc.c",
+        "src/game/behaviors/floating_box.inc.c",
+        "src/game/behaviors/floating_platform.inc.c",
+        "src/game/behaviors/jumping_box.inc.c",
+        "src/game/behaviors/kickable_board.inc.c",
+        "src/game/behaviors/lll_floating_wood_piece.inc.c",
+        "src/game/behaviors/lll_hexagonal_ring.inc.c",
+        "src/game/behaviors/lll_octagonal_rotating_mesh.inc.c",
+        "src/game/behaviors/lll_sinking_rectangle.inc.c",
+        "src/game/behaviors/lll_sinking_rock_block.inc.c",
+        "src/game/behaviors/platform_on_track.inc.c",
+        "src/game/behaviors/pyramid_elevator.inc.c",
+        "src/game/behaviors/rolling_log.inc.c",
+        "src/game/behaviors/rotating_octagonal_plat.inc.c",
+        "src/game/behaviors/rotating_platform.inc.c",
+        "src/game/behaviors/seesaw_platform.inc.c",
+        "src/game/behaviors/sliding_platform.inc.c",
+        "src/game/behaviors/sliding_platform_2.inc.c",
+        "src/game/behaviors/square_platform_cycle.inc.c",
+        "src/game/behaviors/static_checkered_platform.inc.c",
+        "src/game/behaviors/swing_platform.inc.c",
+        "src/game/behaviors/tilting_inverted_pyramid.inc.c",
+        "src/game/behaviors/tower_platform.inc.c",
+        "src/game/behaviors/ttc_2d_rotator.inc.c",
+        "src/game/behaviors/ttc_cog.inc.c",
+        "src/game/behaviors/ttc_elevator.inc.c",
+        "src/game/behaviors/ttc_moving_bar.inc.c",
+        "src/game/behaviors/ttc_pendulum.inc.c",
+        "src/game/behaviors/ttc_pit_block.inc.c",
+        "src/game/behaviors/ttc_rotating_solid.inc.c",
+        "src/game/behaviors/ttc_spinner.inc.c",
+        "src/game/behaviors/ttc_treadmill.inc.c",
+        "src/game/behaviors/tumbling_bridge.inc.c",
+        "src/game/behaviors/unused_poundable_platform.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_platform_on_track_update",
+          "path": "src/game/behaviors/platform_on_track.inc.c",
+          "lines": [
+            275,
+            305
+          ]
+        },
+        {
+          "name": "bhv_ttc_cog_update",
+          "path": "src/game/behaviors/ttc_cog.inc.c",
+          "lines": [
+            37,
+            55
+          ]
+        },
+        {
+          "name": "bhv_rotating_platform_loop",
+          "path": "src/game/behaviors/rotating_platform.inc.c",
+          "lines": [
+            34,
+            43
+          ]
+        },
+        {
+          "name": "bhv_jumping_box_loop",
+          "path": "src/game/behaviors/jumping_box.inc.c",
+          "lines": [
+            52,
+            80
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-items",
+      "name": "Item and collectible behaviors",
+      "purpose": "Coins, caps, switches, boxes, stars, and other holdable or collectible objects",
+      "paths": [
+        "src/game/behaviors/animated_floor_switch.inc.c",
+        "src/game/behaviors/beta_chest.inc.c",
+        "src/game/behaviors/beta_holdable_object.inc.c",
+        "src/game/behaviors/beta_trampoline.inc.c",
+        "src/game/behaviors/blue_coin.inc.c",
+        "src/game/behaviors/breakable_box.inc.c",
+        "src/game/behaviors/breakable_box_small.inc.c",
+        "src/game/behaviors/breakable_wall.inc.c",
+        "src/game/behaviors/cap.inc.c",
+        "src/game/behaviors/capswitch.inc.c",
+        "src/game/behaviors/coin.inc.c",
+        "src/game/behaviors/corkbox.inc.c",
+        "src/game/behaviors/exclamation_box.inc.c",
+        "src/game/behaviors/flying_bookend_switch.inc.c",
+        "src/game/behaviors/grand_star.inc.c",
+        "src/game/behaviors/hidden_star.inc.c",
+        "src/game/behaviors/metal_box.inc.c",
+        "src/game/behaviors/moving_coin.inc.c",
+        "src/game/behaviors/mushroom_1up.inc.c",
+        "src/game/behaviors/orange_number.inc.c",
+        "src/game/behaviors/purple_switch.inc.c",
+        "src/game/behaviors/recovery_heart.inc.c",
+        "src/game/behaviors/red_coin.inc.c",
+        "src/game/behaviors/reds_star_marker.inc.c",
+        "src/game/behaviors/spawn_star.inc.c",
+        "src/game/behaviors/spawn_star_exit.inc.c",
+        "src/game/behaviors/switch_hidden_objects.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_yellow_coin_loop",
+          "path": "src/game/behaviors/coin.inc.c",
+          "lines": [
+            43,
+            46
+          ]
+        },
+        {
+          "name": "bhv_collect_star_loop",
+          "path": "src/game/behaviors/spawn_star.inc.c",
+          "lines": [
+            28,
+            35
+          ]
+        },
+        {
+          "name": "bhv_exclamation_box_loop",
+          "path": "src/game/behaviors/exclamation_box.inc.c",
+          "lines": [
+            175,
+            178
+          ]
+        },
+        {
+          "name": "bhv_wing_cap_init",
+          "path": "src/game/behaviors/cap.inc.c",
+          "lines": [
+            106,
+            111
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-world",
+      "name": "Doors, warps, and water",
+      "purpose": "Doors, castle mechanisms, warp points, poles, and the shared water object behaviors",
+      "paths": [
+        "src/game/behaviors/cannon.inc.c",
+        "src/game/behaviors/cannon_door.inc.c",
+        "src/game/behaviors/castle_cannon_grate.inc.c",
+        "src/game/behaviors/castle_flag.inc.c",
+        "src/game/behaviors/castle_floor_trap.inc.c",
+        "src/game/behaviors/coffin.inc.c",
+        "src/game/behaviors/cruiser.inc.c",
+        "src/game/behaviors/ddd_pole.inc.c",
+        "src/game/behaviors/ddd_sub.inc.c",
+        "src/game/behaviors/ddd_warp.inc.c",
+        "src/game/behaviors/door.inc.c",
+        "src/game/behaviors/drawbridge.inc.c",
+        "src/game/behaviors/grill_door.inc.c",
+        "src/game/behaviors/moat_drainer.inc.c",
+        "src/game/behaviors/moat_grill.inc.c",
+        "src/game/behaviors/music_touch.inc.c",
+        "src/game/behaviors/pole.inc.c",
+        "src/game/behaviors/pole_base.inc.c",
+        "src/game/behaviors/star_door.inc.c",
+        "src/game/behaviors/tower_door.inc.c",
+        "src/game/behaviors/warp.inc.c",
+        "src/game/behaviors/water_bomb.inc.c",
+        "src/game/behaviors/water_bomb_cannon.inc.c",
+        "src/game/behaviors/water_objs.inc.c",
+        "src/game/behaviors/water_pillar.inc.c",
+        "src/game/behaviors/water_ring.inc.c",
+        "src/game/behaviors/water_splashes_and_waves.inc.c",
+        "src/game/behaviors/water_wave.inc.c",
+        "src/game/behaviors/wdw_water_level.inc.c",
+        "src/game/behaviors/whirlpool.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_door_loop",
+          "path": "src/game/behaviors/door.inc.c",
+          "lines": [
+            48,
+            86
+          ]
+        },
+        {
+          "name": "bhv_warp_loop",
+          "path": "src/game/behaviors/warp.inc.c",
+          "lines": [
+            3,
+            18
+          ]
+        },
+        {
+          "name": "bhv_whirlpool_loop",
+          "path": "src/game/behaviors/whirlpool.inc.c",
+          "lines": [
+            37,
+            63
+          ]
+        },
+        {
+          "name": "bhv_castle_flag_init",
+          "path": "src/game/behaviors/castle_flag.inc.c",
+          "lines": [
+            3,
+            5
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-effects",
+      "name": "Effects and ambience",
+      "purpose": "Particle bursts, flames, mist, sound emitters, and other short-lived visual and audio effects",
+      "paths": [
+        "src/game/behaviors/beta_fish_splash_spawner.inc.c",
+        "src/game/behaviors/break_particles.inc.c",
+        "src/game/behaviors/bubble.inc.c",
+        "src/game/behaviors/collide_particles.inc.c",
+        "src/game/behaviors/explosion.inc.c",
+        "src/game/behaviors/flame.inc.c",
+        "src/game/behaviors/flame_mario.inc.c",
+        "src/game/behaviors/flamethrower.inc.c",
+        "src/game/behaviors/ground_particles.inc.c",
+        "src/game/behaviors/shock_wave.inc.c",
+        "src/game/behaviors/sound_ambient.inc.c",
+        "src/game/behaviors/sound_birds.inc.c",
+        "src/game/behaviors/sound_sand.inc.c",
+        "src/game/behaviors/sound_spawner.inc.c",
+        "src/game/behaviors/sound_volcano.inc.c",
+        "src/game/behaviors/sound_waterfall.inc.c",
+        "src/game/behaviors/sparkle_spawn.inc.c",
+        "src/game/behaviors/sparkle_spawn_star.inc.c",
+        "src/game/behaviors/strong_wind_particle.inc.c",
+        "src/game/behaviors/tree_particles.inc.c",
+        "src/game/behaviors/unused_particle_spawn.inc.c",
+        "src/game/behaviors/water_mist.inc.c",
+        "src/game/behaviors/water_mist_particle.inc.c",
+        "src/game/behaviors/white_puff.inc.c",
+        "src/game/behaviors/white_puff_explode.inc.c",
+        "src/game/behaviors/wind.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_explosion_loop",
+          "path": "src/game/behaviors/explosion.inc.c",
+          "lines": [
+            10,
+            28
+          ]
+        },
+        {
+          "name": "bhv_water_mist_2_loop",
+          "path": "src/game/behaviors/water_mist.inc.c",
+          "lines": [
+            4,
+            9
+          ]
+        },
+        {
+          "name": "bhv_white_puff_1_loop",
+          "path": "src/game/behaviors/white_puff.inc.c",
+          "lines": [
+            3,
+            19
+          ]
+        },
+        {
+          "name": "bhv_ambient_sounds_init",
+          "path": "src/game/behaviors/sound_ambient.inc.c",
+          "lines": [
+            3,
+            9
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-course",
+      "name": "Course-specific objects",
+      "purpose": "Props tied to one course, such as the ship, snowman, volcano flames, bookshelf, and clock parts",
+      "paths": [
+        "src/game/behaviors/bbh_haunted_bookshelf.inc.c",
+        "src/game/behaviors/bbh_tilting_trap.inc.c",
+        "src/game/behaviors/clock_arm.inc.c",
+        "src/game/behaviors/cloud.inc.c",
+        "src/game/behaviors/haunted_chair.inc.c",
+        "src/game/behaviors/jrb_ship.inc.c",
+        "src/game/behaviors/lll_rotating_hex_flame.inc.c",
+        "src/game/behaviors/lll_volcano_flames.inc.c",
+        "src/game/behaviors/pyramid_top.inc.c",
+        "src/game/behaviors/pyramid_wall.inc.c",
+        "src/game/behaviors/seaweed.inc.c",
+        "src/game/behaviors/sl_snowman_wind.inc.c",
+        "src/game/behaviors/sl_walking_penguin.inc.c",
+        "src/game/behaviors/snow_mound.inc.c",
+        "src/game/behaviors/snowman.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_haunted_bookshelf_loop",
+          "path": "src/game/behaviors/bbh_haunted_bookshelf.inc.c",
+          "lines": [
+            11,
+            49
+          ]
+        },
+        {
+          "name": "bhv_snowmans_bottom_loop",
+          "path": "src/game/behaviors/snowman.inc.c",
+          "lines": [
+            126,
+            165
+          ]
+        },
+        {
+          "name": "bhv_volcano_flames_loop",
+          "path": "src/game/behaviors/lll_volcano_flames.inc.c",
+          "lines": [
+            3,
+            16
+          ]
+        },
+        {
+          "name": "bhv_jrb_sliding_box_loop",
+          "path": "src/game/behaviors/jrb_ship.inc.c",
+          "lines": [
+            43,
+            117
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "behaviors-cutscene",
+      "name": "Cutscene objects",
+      "purpose": "Intro scenes, ending birds, Lakitu camera object, and the celebration star sequence",
+      "paths": [
+        "src/game/behaviors/camera_lakitu.inc.c",
+        "src/game/behaviors/celebration_star.inc.c",
+        "src/game/behaviors/end_birds_1.inc.c",
+        "src/game/behaviors/end_birds_2.inc.c",
+        "src/game/behaviors/intro_lakitu.inc.c",
+        "src/game/behaviors/intro_peach.inc.c",
+        "src/game/behaviors/intro_scene.inc.c"
+      ],
+      "functions": [
+        {
+          "name": "bhv_intro_scene_loop",
+          "path": "src/game/behaviors/intro_scene.inc.c",
+          "lines": [
+            27,
+            87
+          ]
+        },
+        {
+          "name": "bhv_camera_lakitu_update",
+          "path": "src/game/behaviors/camera_lakitu.inc.c",
+          "lines": [
+            139,
+            178
+          ]
+        },
+        {
+          "name": "bhv_celebration_star_loop",
+          "path": "src/game/behaviors/celebration_star.inc.c",
+          "lines": [
+            71,
+            81
+          ]
+        },
+        {
+          "name": "bhv_end_birds_1_loop",
+          "path": "src/game/behaviors/end_birds_1.inc.c",
+          "lines": [
+            3,
+            33
+          ]
+        }
+      ],
+      "dependsOn": [
+        "behaviors"
+      ],
+      "parent": "behaviors"
+    },
+    {
+      "id": "audio",
+      "name": "Audio",
+      "purpose": "Sound system layers from sequence playback and synthesis through platform ports",
+      "paths": [],
+      "functions": [],
+      "dependsOn": [
+        "engine"
+      ]
+    },
+    {
+      "id": "audio-core",
+      "name": "Audio core",
+      "purpose": "Sequence players, synthesis, note playback, effects processing, heaps, and bank loading",
+      "paths": [
+        "src/audio/data.c",
+        "src/audio/effects.c",
+        "src/audio/external.c",
+        "src/audio/globals_start.c",
+        "src/audio/heap.c",
+        "src/audio/load.c",
+        "src/audio/playback.c",
+        "src/audio/seqplayer.c",
+        "src/audio/shindou_debug_prints.c",
+        "src/audio/synthesis.c"
+      ],
+      "functions": [
+        {
+          "name": "sequence_channel_init",
+          "path": "src/audio/seqplayer.c",
+          "lines": [
+            30,
+            95
+          ]
+        },
+        {
+          "name": "process_notes",
+          "path": "src/audio/playback.c",
+          "lines": [
+            344,
+            632
+          ]
+        },
+        {
+          "name": "sound_alloc_pool_init",
+          "path": "src/audio/heap.c",
+          "lines": [
+            303,
+            311
+          ]
+        },
+        {
+          "name": "bank_load_immediate",
+          "path": "src/audio/load.c",
+          "lines": [
+            582,
+            612
+          ]
+        },
+        {
+          "name": "sequence_channel_process_sound",
+          "path": "src/audio/effects.c",
+          "lines": [
+            15,
+            57
+          ]
+        },
+        {
+          "name": "synthesis_execute",
+          "path": "src/audio/synthesis.c",
+          "lines": [
+            267,
+            320
+          ]
+        }
+      ],
+      "dependsOn": [
+        "audio",
+        "engine-math"
+      ],
+      "parent": "audio"
+    },
+    {
+      "id": "audio-port",
+      "name": "Audio platform ports",
+      "purpose": "Region-specific audio task setup, DMA loading, session presets, and synthesis variants",
+      "paths": [
+        "src/audio/audio_session_presets_sh.c",
+        "src/audio/copt/seq_channel_layer_process_script_copt.inc.c",
+        "src/audio/load_sh.c",
+        "src/audio/port_eu.c",
+        "src/audio/port_sh.c",
+        "src/audio/synthesis_sh.c"
+      ],
+      "functions": [
+        {
+          "name": "create_next_audio_frame_task",
+          "path": "src/audio/port_eu.c",
+          "lines": [
+            36,
+            131
+          ]
+        },
+        {
+          "name": "port_eu_init_queues",
+          "path": "src/audio/port_eu.c",
+          "lines": [
+            208,
+            215
+          ]
+        },
+        {
+          "name": "dma_sample_data",
+          "path": "src/audio/load_sh.c",
+          "lines": [
+            167,
+            248
+          ]
+        },
+        {
+          "name": "prepare_reverb_ring_buffer",
+          "path": "src/audio/synthesis_sh.c",
+          "lines": [
+            64,
+            114
+          ]
+        },
+        {
+          "name": "seq_channel_layer_process_script",
+          "path": "src/audio/copt/seq_channel_layer_process_script_copt.inc.c",
+          "lines": [
+            117,
+            500
+          ]
+        }
+      ],
+      "dependsOn": [
+        "audio-core"
+      ],
+      "parent": "audio"
+    },
+    {
+      "id": "audio-game",
+      "name": "Game sound controls",
+      "purpose": "Music and sound effect selection for menus, levels, caps, shells, and cutscenes plus the sound thread",
+      "paths": [
+        "src/game/sound_init.c"
+      ],
+      "functions": [
+        {
+          "name": "set_background_music",
+          "path": "src/game/sound_init.c",
+          "lines": [
+            227,
+            240
+          ]
+        },
+        {
+          "name": "thread4_sound",
+          "path": "src/game/sound_init.c",
+          "lines": [
+            335,
+            359
+          ]
+        }
+      ],
+      "dependsOn": [
+        "audio-core",
+        "audio-port",
+        "game-runtime"
+      ],
+      "parent": "audio"
+    },
+    {
+      "id": "engine",
+      "name": "Engine",
+      "purpose": "Shared math, collision, scripting, geometry, and build stubs used by every subsystem",
+      "paths": [
+        "src/engine/stub.c"
+      ],
+      "functions": [],
+      "dependsOn": []
+    },
+    {
+      "id": "engine-math",
+      "name": "Engine math",
+      "purpose": "Vectors, matrices, angles, interpolation helpers, and animation splines",
+      "paths": [
+        "src/engine/math_util.c"
+      ],
+      "functions": [
+        {
+          "name": "mtxf_lookat",
+          "path": "src/engine/math_util.c",
+          "lines": [
+            194,
+            266
+          ]
+        },
+        {
+          "name": "atan2s",
+          "path": "src/engine/math_util.c",
+          "lines": [
+            713,
+            749
+          ]
+        },
+        {
+          "name": "anim_spline_poll",
+          "path": "src/engine/math_util.c",
+          "lines": [
+            848,
+            880
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "engine-collision",
+      "name": "Engine collision",
+      "purpose": "Floor, ceiling, wall, water, and poison gas queries against loaded surface lists",
+      "paths": [
+        "src/engine/surface_collision.c"
+      ],
+      "functions": [
+        {
+          "name": "find_wall_collisions",
+          "path": "src/engine/surface_collision.c",
+          "lines": [
+            184,
+            217
+          ]
+        },
+        {
+          "name": "find_floor",
+          "path": "src/engine/surface_collision.c",
+          "lines": [
+            513,
+            582
+          ]
+        },
+        {
+          "name": "find_ceil",
+          "path": "src/engine/surface_collision.c",
+          "lines": [
+            306,
+            354
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "engine-math"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "engine-surfaces",
+      "name": "Surface loading",
+      "purpose": "Static and dynamic surface pools, terrain streaming, and object collision model loading",
+      "paths": [
+        "src/engine/surface_load.c"
+      ],
+      "functions": [
+        {
+          "name": "load_area_terrain",
+          "path": "src/engine/surface_load.c",
+          "lines": [
+            585,
+            638
+          ]
+        },
+        {
+          "name": "load_object_collision_model",
+          "path": "src/engine/surface_load.c",
+          "lines": [
+            754,
+            791
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "engine-collision"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "engine-geometry",
+      "name": "Geometry graph",
+      "purpose": "Scene graph node construction, registration, and geometry script command handling",
+      "paths": [
+        "src/engine/geo_layout.c",
+        "src/engine/graph_node.c",
+        "src/engine/graph_node_manager.c"
+      ],
+      "functions": [
+        {
+          "name": "init_graph_node_root",
+          "path": "src/engine/graph_node.c",
+          "lines": [
+            37,
+            57
+          ]
+        },
+        {
+          "name": "register_scene_graph_node",
+          "path": "src/engine/graph_node_manager.c",
+          "lines": [
+            63,
+            80
+          ]
+        },
+        {
+          "name": "geo_layout_cmd_node_root",
+          "path": "src/engine/geo_layout.c",
+          "lines": [
+            202,
+            231
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "engine-math"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "engine-behavior",
+      "name": "Behavior scripts",
+      "purpose": "Behavior script stack, command execution helpers, and shared random and object transform utilities",
+      "paths": [
+        "src/engine/behavior_script.c"
+      ],
+      "functions": [
+        {
+          "name": "random_u16",
+          "path": "src/engine/behavior_script.c",
+          "lines": [
+            40,
+            66
+          ]
+        },
+        {
+          "name": "obj_update_gfx_pos_and_angle",
+          "path": "src/engine/behavior_script.c",
+          "lines": [
+            84,
+            92
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "engine-geometry"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "engine-level-script",
+      "name": "Level scripts",
+      "purpose": "Interpreter commands for level loading, sleeps, loops, jumps, and linked script execution",
+      "paths": [
+        "src/engine/level_script.c"
+      ],
+      "functions": [
+        {
+          "name": "level_cmd_load_and_execute",
+          "path": "src/engine/level_script.c",
+          "lines": [
+            91,
+            100
+          ]
+        },
+        {
+          "name": "level_cmd_sleep",
+          "path": "src/engine/level_script.c",
+          "lines": [
+            123,
+            132
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine",
+        "engine-geometry"
+      ],
+      "parent": "engine"
+    },
+    {
+      "id": "rendering",
+      "name": "Rendering",
+      "purpose": "Display list generation, world effects, HUD, transitions, framebuffers, and the Goddard face renderer",
+      "paths": [],
+      "functions": [],
+      "dependsOn": [
+        "engine"
+      ]
+    },
+    {
+      "id": "render-graph",
+      "name": "Scene graph rendering",
+      "purpose": "Traversal of the scene graph into display lists, including objects, shadows, backgrounds, and held objects",
+      "paths": [
+        "src/game/rendering_graph_node.c"
+      ],
+      "functions": [
+        {
+          "name": "geo_process_root",
+          "path": "src/game/rendering_graph_node.c",
+          "lines": [
+            1046,
+            1088
+          ]
+        },
+        {
+          "name": "geo_process_object",
+          "path": "src/game/rendering_graph_node.c",
+          "lines": [
+            808,
+            856
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rendering",
+        "engine-geometry"
+      ],
+      "parent": "rendering"
+    },
+    {
+      "id": "render-world",
+      "name": "World effects",
+      "purpose": "Skybox, shadows, paintings, moving textures, and environmental particle systems",
+      "paths": [
+        "src/game/envfx_bubbles.c",
+        "src/game/envfx_snow.c",
+        "src/game/geo_misc.c",
+        "src/game/moving_texture.c",
+        "src/game/paintings.c",
+        "src/game/shadow.c",
+        "src/game/skybox.c"
+      ],
+      "functions": [
+        {
+          "name": "geo_exec_inside_castle_light",
+          "path": "src/game/geo_misc.c",
+          "lines": [
+            82,
+            108
+          ]
+        },
+        {
+          "name": "calculate_skybox_scaled_x",
+          "path": "src/game/skybox.c",
+          "lines": [
+            138,
+            150
+          ]
+        },
+        {
+          "name": "init_shadow",
+          "path": "src/game/shadow.c",
+          "lines": [
+            203,
+            256
+          ]
+        },
+        {
+          "name": "movtex_gen_from_quad",
+          "path": "src/game/moving_texture.c",
+          "lines": [
+            400,
+            461
+          ]
+        },
+        {
+          "name": "painting_state",
+          "path": "src/game/paintings.c",
+          "lines": [
+            332,
+            363
+          ]
+        },
+        {
+          "name": "envfx_update_snow_normal",
+          "path": "src/game/envfx_snow.c",
+          "lines": [
+            207,
+            233
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rendering",
+        "engine-math"
+      ],
+      "parent": "rendering"
+    },
+    {
+      "id": "render-hud",
+      "name": "HUD and text",
+      "purpose": "Power meter, lives, coins, stars, timer, dialog boxes, and text glyph rendering",
+      "paths": [
+        "src/game/hud.c",
+        "src/game/ingame_menu.c",
+        "src/game/print.c"
+      ],
+      "functions": [
+        {
+          "name": "render_hud",
+          "path": "src/game/hud.c",
+          "lines": [
+            411,
+            465
+          ]
+        },
+        {
+          "name": "print_menu_generic_string",
+          "path": "src/game/ingame_menu.c",
+          "lines": [
+            742,
+            801
+          ]
+        },
+        {
+          "name": "print_text",
+          "path": "src/game/print.c",
+          "lines": [
+            222,
+            248
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rendering"
+      ],
+      "parent": "rendering"
+    },
+    {
+      "id": "render-screen",
+      "name": "Screen transitions",
+      "purpose": "Fade and texture wipe transitions between areas, levels, and menus",
+      "paths": [
+        "src/game/screen_transition.c"
+      ],
+      "functions": [
+        {
+          "name": "set_and_reset_transition_fade_timer",
+          "path": "src/game/screen_transition.c",
+          "lines": [
+            19,
+            30
+          ]
+        },
+        {
+          "name": "render_fade_transition_into_color",
+          "path": "src/game/screen_transition.c",
+          "lines": [
+            82,
+            86
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rendering"
+      ],
+      "parent": "rendering"
+    },
+    {
+      "id": "buffers",
+      "name": "Frame buffers",
+      "purpose": "Framebuffer, Z-buffer, audio heap, decompression heap, and graphics task output storage",
+      "paths": [
+        "src/buffers/buffers.c",
+        "src/buffers/framebuffers.c",
+        "src/buffers/gfx_output_buffer.c",
+        "src/buffers/zbuffer.c"
+      ],
+      "functions": [],
+      "dependsOn": [
+        "rendering"
+      ],
+      "parent": "rendering"
+    },
+    {
+      "id": "goddard",
+      "name": "Goddard renderer",
+      "purpose": "In-house face and object renderer used by menus and intro scenes",
+      "paths": [],
+      "functions": [],
+      "dependsOn": [
+        "rendering"
+      ]
+    },
+    {
+      "id": "goddard-runtime",
+      "name": "Goddard runtime",
+      "purpose": "Renderer state, math, allocation, dynamic list processing, old menus, debug tracking, and sound effects",
+      "paths": [
+        "src/goddard/debug_utils.c",
+        "src/goddard/dynlist_proc.c",
+        "src/goddard/gd_main.c",
+        "src/goddard/gd_math.c",
+        "src/goddard/gd_memory.c",
+        "src/goddard/old_menu.c",
+        "src/goddard/sfx.c"
+      ],
+      "functions": [
+        {
+          "name": "proc_dynlist",
+          "path": "src/goddard/dynlist_proc.c",
+          "lines": [
+            161,
+            337
+          ]
+        },
+        {
+          "name": "gd_mat4f_lookat",
+          "path": "src/goddard/gd_math.c",
+          "lines": [
+            25,
+            102
+          ]
+        },
+        {
+          "name": "make_mem_block",
+          "path": "src/goddard/gd_memory.c",
+          "lines": [
+            101,
+            143
+          ]
+        },
+        {
+          "name": "gd_play_sfx",
+          "path": "src/goddard/sfx.c",
+          "lines": [
+            36,
+            38
+          ]
+        }
+      ],
+      "dependsOn": [
+        "goddard",
+        "engine-math"
+      ],
+      "parent": "goddard"
+    },
+    {
+      "id": "goddard-render",
+      "name": "Goddard drawing",
+      "purpose": "Shape drawing, object and joint construction, skinning, and particle geometry",
+      "paths": [
+        "src/goddard/draw_objects.c",
+        "src/goddard/joints.c",
+        "src/goddard/objects.c",
+        "src/goddard/particles.c",
+        "src/goddard/renderer.c",
+        "src/goddard/shape_helper.c",
+        "src/goddard/skin.c",
+        "src/goddard/skin_movement.c"
+      ],
+      "functions": [
+        {
+          "name": "draw_shape",
+          "path": "src/goddard/draw_objects.c",
+          "lines": [
+            170,
+            247
+          ]
+        },
+        {
+          "name": "make_object",
+          "path": "src/goddard/objects.c",
+          "lines": [
+            201,
+            334
+          ]
+        },
+        {
+          "name": "make_joint",
+          "path": "src/goddard/joints.c",
+          "lines": [
+            227,
+            269
+          ]
+        },
+        {
+          "name": "make_net",
+          "path": "src/goddard/skin.c",
+          "lines": [
+            111,
+            133
+          ]
+        },
+        {
+          "name": "move_skin",
+          "path": "src/goddard/skin_movement.c",
+          "lines": [
+            72,
+            78
+          ]
+        },
+        {
+          "name": "make_shape",
+          "path": "src/goddard/shape_helper.c",
+          "lines": [
+            260,
+            302
+          ]
+        }
+      ],
+      "dependsOn": [
+        "goddard-runtime",
+        "rendering"
+      ],
+      "parent": "goddard"
+    },
+    {
+      "id": "goddard-dynlists",
+      "name": "Goddard dynamic lists",
+      "purpose": "Vertex, face, and animation tables for the Mario face and the test cube",
+      "paths": [
+        "src/goddard/dynlists/anim_group_1.c",
+        "src/goddard/dynlists/anim_group_2.c",
+        "src/goddard/dynlists/anim_mario_eyebrows_1.c",
+        "src/goddard/dynlists/anim_mario_lips_1.c",
+        "src/goddard/dynlists/anim_mario_lips_2.c",
+        "src/goddard/dynlists/anim_mario_mustache_left.c",
+        "src/goddard/dynlists/anim_mario_mustache_right.c",
+        "src/goddard/dynlists/dynlist_mario_face.c",
+        "src/goddard/dynlists/dynlist_mario_master.c",
+        "src/goddard/dynlists/dynlist_test_cube.c",
+        "src/goddard/dynlists/dynlist_unused.c",
+        "src/goddard/dynlists/dynlists_mario_eyebrows_mustache.c",
+        "src/goddard/dynlists/dynlists_mario_eyes.c"
+      ],
+      "functions": [],
+      "dependsOn": [
+        "goddard-render"
+      ],
+      "parent": "goddard"
+    },
+    {
+      "id": "player-automatic",
+      "name": "Automatic actions",
+      "purpose": "Pole grabs, hanging, ledge grabs, and other actions driven by contact rather than direct input",
+      "paths": [
+        "src/game/mario_actions_automatic.c"
+      ],
+      "functions": [
+        {
+          "name": "act_holding_pole",
+          "path": "src/game/mario_actions_automatic.c",
+          "lines": [
+            113,
+            186
+          ]
+        },
+        {
+          "name": "act_hanging",
+          "path": "src/game/mario_actions_automatic.c",
+          "lines": [
+            422,
+            448
+          ]
+        },
+        {
+          "name": "act_ledge_grab",
+          "path": "src/game/mario_actions_automatic.c",
+          "lines": [
+            543,
+            598
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player",
+        "player-physics"
+      ],
+      "parent": "player"
+    },
+    {
+      "id": "player-cutscene",
+      "name": "Scripted actions",
+      "purpose": "Dialog, star dances, death and warp animations, and other actions that hand control to the scene",
+      "paths": [
+        "src/game/mario_actions_cutscene.c",
+        "src/game/mario_misc.c"
+      ],
+      "functions": [
+        {
+          "name": "spawn_obj_at_mario_rel_yaw",
+          "path": "src/game/mario_actions_cutscene.c",
+          "lines": [
+            283,
+            292
+          ]
+        },
+        {
+          "name": "act_reading_npc_dialog",
+          "path": "src/game/mario_actions_cutscene.c",
+          "lines": [
+            378,
+            418
+          ]
+        },
+        {
+          "name": "act_star_dance",
+          "path": "src/game/mario_actions_cutscene.c",
+          "lines": [
+            640,
+            650
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player",
+        "player-object"
+      ],
+      "parent": "player"
+    }
+  ],
+  "cards": [
+    {
+      "id": "jump",
+      "node": "player-airborne",
+      "name": "Jump",
+      "summary": "Single jump with a speed-scaled launch and reduced forward speed",
+      "behavior": "Pressing jump on the ground starts a single jump. The launch sets vertical speed to 42 units per frame plus 0.25 times the current forward speed. Forward speed keeps 80 percent of its value. A dive or ground pound press cancels the jump in the air.",
+      "constants": [
+        {
+          "name": "groundImpulse",
+          "value": 42,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:824"
+        },
+        {
+          "name": "forwardSpeedBonus",
+          "value": 0.25,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:824"
+        },
+        {
+          "name": "forwardSpeedRetain",
+          "value": 0.8,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:825"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 446
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 824
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "jump",
+        "single jump",
+        "movement",
+        "launch"
+      ]
+    },
+    {
+      "id": "double-jump",
+      "node": "player-airborne",
+      "name": "Double jump",
+      "summary": "Second jump in a timed chain, with a higher launch and speed bonus",
+      "behavior": "Landing from a jump or freefall opens a short window for the second jump. The launch sets vertical speed to 52 units per frame plus 0.25 times the current forward speed. Forward speed keeps 80 percent of its value. A dive or ground pound press cancels the jump in the air.",
+      "constants": [
+        {
+          "name": "launchImpulse",
+          "value": 52,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:786"
+        },
+        {
+          "name": "forwardSpeedBonus",
+          "value": 0.25,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:786"
+        },
+        {
+          "name": "forwardSpeedRetain",
+          "value": 0.8,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:787"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 461
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 786
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 1767
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "jump",
+        "double jump",
+        "chain",
+        "airborne"
+      ]
+    },
+    {
+      "id": "triple-jump",
+      "node": "player-airborne",
+      "name": "Triple jump",
+      "summary": "Third jump in the chain, available above a forward speed gate",
+      "behavior": "The third jump needs the previous double jump landing and forward speed above 20 units per frame. A wing cap replaces it with the flying triple jump. The launch sets vertical speed to 69 units per frame and keeps 80 percent of forward speed. A dive or ground pound press cancels the jump in the air.",
+      "constants": [
+        {
+          "name": "launchImpulse",
+          "value": 69,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:797"
+        },
+        {
+          "name": "forwardSpeedRetain",
+          "value": 0.8,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:798"
+        },
+        {
+          "name": "minForwardSpeed",
+          "value": 20,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:1051"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 480
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 797
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1051
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "jump",
+        "triple jump",
+        "chain",
+        "airborne"
+      ]
+    },
+    {
+      "id": "long-jump",
+      "node": "player-airborne",
+      "name": "Long jump",
+      "summary": "Low fast jump from a crouch slide with a strong forward boost",
+      "behavior": "Pressing jump during the first 30 frames of a crouch slide with forward speed above 10 units per frame starts a long jump. The launch sets vertical speed to 30 units per frame. Forward speed multiplies by 1.5 and clamps to 48 units per frame. The slow animation variant applies at or below 16 units per frame.",
+      "constants": [
+        {
+          "name": "launchImpulse",
+          "value": 30,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:865"
+        },
+        {
+          "name": "speedMultiplier",
+          "value": 1.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:870"
+        },
+        {
+          "name": "maxForwardSpeed",
+          "value": 48,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:870"
+        },
+        {
+          "name": "slideWindow",
+          "value": 30,
+          "unit": "frames",
+          "source": "src/game/mario_actions_moving.c:1459"
+        },
+        {
+          "name": "minSlideSpeed",
+          "value": 10,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_moving.c:1462"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 632
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 865
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 1452
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "jump",
+        "long jump",
+        "crouch slide",
+        "speed"
+      ]
+    },
+    {
+      "id": "backflip",
+      "node": "player-airborne",
+      "name": "Backflip",
+      "summary": "Reverse somersault from a crouch with a backward launch",
+      "behavior": "Pressing jump while crouched starts a backflip. The launch sets vertical speed to 62 units per frame and sets forward speed to -16 units per frame, so Mario moves backward while he flips. The flip sound plays during the rise.",
+      "constants": [
+        {
+          "name": "launchImpulse",
+          "value": 62,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:793"
+        },
+        {
+          "name": "backwardSpeed",
+          "value": -16,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:792"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 509
+        },
+        {
+          "path": "src/game/mario_actions_stationary.c",
+          "line": 528
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 792
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "flip",
+        "backflip",
+        "crouch",
+        "backward"
+      ]
+    },
+    {
+      "id": "side-flip",
+      "node": "player-airborne",
+      "name": "Side flip",
+      "summary": "Quick flip from a turn with a fixed forward drift",
+      "behavior": "Pressing jump while turning around starts a side flip. The launch sets vertical speed to 62 units per frame and sets forward speed to 8 units per frame. Mario faces the intended direction and the flip sound plays during the rise.",
+      "constants": [
+        {
+          "name": "launchImpulse",
+          "value": 62,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:838"
+        },
+        {
+          "name": "forwardSpeed",
+          "value": 8,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:839"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 595
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 968
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 838
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "flip",
+        "side flip",
+        "turn",
+        "airborne"
+      ]
+    },
+    {
+      "id": "wall-kick",
+      "node": "player-airborne",
+      "name": "Wall kick",
+      "summary": "Kick off a wall after an air hit within a short input window",
+      "behavior": "After an air hit on a wall, pressing jump within 2 frames starts a wall kick. A later hit leaves a 5 frame window for the same input. The kick reverses facing and launches with 62 units per frame. Forward speed rises to at least 24 units per frame.",
+      "constants": [
+        {
+          "name": "earlyWindow",
+          "value": 2,
+          "unit": "frames",
+          "source": "src/game/mario_actions_airborne.c:1314"
+        },
+        {
+          "name": "kickTimer",
+          "value": 5,
+          "unit": "frames",
+          "source": "src/game/mario_actions_airborne.c:1321"
+        },
+        {
+          "name": "launchImpulse",
+          "value": 62,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:830"
+        },
+        {
+          "name": "minForwardSpeed",
+          "value": 24,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:832"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1147
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1309
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 828
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "wall kick",
+        "wall",
+        "jump",
+        "airborne"
+      ]
+    },
+    {
+      "id": "ground-pound",
+      "node": "player-airborne",
+      "name": "Ground pound",
+      "summary": "Midair stall then a fast downward slam with a landing shake",
+      "behavior": "Pressing ground pound in the air starts a 10 frame windup. During the windup Mario rises by a shrinking offset that starts at 20 units and drops by 2 units per frame, only when 160 units of headroom exist. Then vertical speed sets to -50 units per frame and forward speed sets to zero. Landing triggers a camera shake.",
+      "constants": [
+        {
+          "name": "windupFrames",
+          "value": 10,
+          "unit": "frames",
+          "source": "src/game/mario_actions_airborne.c:925"
+        },
+        {
+          "name": "riseStart",
+          "value": 20,
+          "unit": "units",
+          "source": "src/game/mario_actions_airborne.c:926"
+        },
+        {
+          "name": "riseDecay",
+          "value": 2,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_airborne.c:926"
+        },
+        {
+          "name": "headroom",
+          "value": 160,
+          "unit": "units",
+          "source": "src/game/mario_actions_airborne.c:927"
+        },
+        {
+          "name": "slamSpeed",
+          "value": -50,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_airborne.c:934"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 918
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 925
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 971
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "ground pound",
+        "slam",
+        "airborne",
+        "impact"
+      ]
+    },
+    {
+      "id": "dive",
+      "node": "player-airborne",
+      "name": "Dive",
+      "summary": "Forward dive that adds speed and caps the total",
+      "behavior": "Pressing dive in the air adds 15 units per frame to forward speed and caps the result at 48 units per frame. The dive turns a landing into a slide. A dive near an object can grab it. Wall contact after a dive causes a backward air knockback.",
+      "constants": [
+        {
+          "name": "speedBoost",
+          "value": 15,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:857"
+        },
+        {
+          "name": "maxForwardSpeed",
+          "value": 48,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:857"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 725
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 856
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "dive",
+        "slide",
+        "speed",
+        "airborne"
+      ]
+    },
+    {
+      "id": "flutter-kick",
+      "node": "player-submerged",
+      "name": "Flutter kick",
+      "summary": "Hold jump underwater to kick toward a target swim speed",
+      "behavior": "A water jump sets vertical speed to 62 units per frame. Underwater, holding jump uses the flutter kick and moves forward speed toward 12 units per frame with 0.1 acceleration and 0.15 deceleration. The kick animation plays below 14 units per frame. Base swim strength is 160.",
+      "constants": [
+        {
+          "name": "waterJumpSpeed",
+          "value": 62,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_submerged.c:499"
+        },
+        {
+          "name": "kickTargetSpeed",
+          "value": 12,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_submerged.c:625"
+        },
+        {
+          "name": "kickAccel",
+          "value": 0.1,
+          "unit": "units/frame\u00b2",
+          "source": "src/game/mario_actions_submerged.c:625"
+        },
+        {
+          "name": "kickDecel",
+          "value": 0.15,
+          "unit": "units/frame\u00b2",
+          "source": "src/game/mario_actions_submerged.c:625"
+        },
+        {
+          "name": "animSpeedThreshold",
+          "value": 14,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_submerged.c:629"
+        },
+        {
+          "name": "baseSwimStrength",
+          "value": 160,
+          "unit": "strength",
+          "source": "src/game/mario_actions_submerged.c:20"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 492
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 609
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 625
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "swimming",
+        "flutter kick",
+        "water",
+        "speed"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera-follow",
+      "name": "Camera follow",
+      "summary": "Lakitu trails Mario with smoothed position and focus behind him",
+      "behavior": "The behind camera keeps a maximum distance of 800 units and a vertical focus offset of 125 units, with a 300 unit minimum distance. Lakitu approaches the goal state asymptotically. Horizontal focus speed targets 0.8 as a dimensionless interpolation factor, vertical focus speed and both position speeds target 0.3 as a dimensionless interpolation factor, and each target approaches at 0.05 per frame. The default Mario camera frames at the current zoom distance.",
+      "constants": [
+        {
+          "name": "maxDistance",
+          "value": 800,
+          "unit": "units",
+          "source": "src/game/camera.c:1764"
+        },
+        {
+          "name": "focusHeight",
+          "value": 125,
+          "unit": "units",
+          "source": "src/game/camera.c:1765"
+        },
+        {
+          "name": "minDistance",
+          "value": 300,
+          "unit": "units",
+          "source": "src/game/camera.c:1877"
+        },
+        {
+          "name": "focusHorizontalSpeed",
+          "value": 0.8,
+          "unit": "dimensionless interpolation factor",
+          "source": "src/game/camera.c:2947"
+        },
+        {
+          "name": "focusVerticalSpeed",
+          "value": 0.3,
+          "unit": "dimensionless interpolation factor",
+          "source": "src/game/camera.c:2948"
+        },
+        {
+          "name": "positionSpeed",
+          "value": 0.3,
+          "unit": "dimensionless interpolation factor",
+          "source": "src/game/camera.c:2949"
+        },
+        {
+          "name": "approachRate",
+          "value": 0.05,
+          "unit": "dimensionless interpolation factor",
+          "source": "src/game/camera.c:2947"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/camera.c",
+          "line": 1751
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2906
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 3011
+        }
+      ],
+      "capabilities": [],
+      "tags": [
+        "camera",
+        "follow",
+        "lakitu",
+        "smoothing",
+        "framing"
+      ]
+    }
+  ]
+}
