@@ -8,7 +8,11 @@ and copy no source code, comments, levels, character names or art into cards or 
 `catalog.json` lists Tier-1 mapped games and Tier-2 repositories to explore on demand.
 `game-<id>.json` holds a map and mechanic cards at one full Git commit SHA. The strict
 `schema.json` rejects unknown fields and fenced code in every string. `validate.mjs`
-checks links, paths, function ranges and numeric constants against that exact source revision.
+checks links, paths, function ranges and numeric literals against that exact source revision.
+Those checks cannot establish effective values after later assignments or action transitions;
+every card needs semantic source review before a release. Raw units and action-update frames
+need explicit conversion when adapting the mechanic to another game; no common real-time frame
+rate is assumed across source regions.
 
 ```sh
 npm ci

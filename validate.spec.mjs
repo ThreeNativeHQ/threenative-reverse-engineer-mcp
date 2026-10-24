@@ -14,3 +14,10 @@ test('strict data schema refuses code fields, fences, broken links and source tr
     {...game, nodes: game.nodes.map((node, index) => index === 0 ? {...node, paths: ['../secret']} : node)},
   ]) assert.throws(() => validateGame(mutated));
 });
+
+test('the seed records effective water-jump velocity after action entry', () => {
+  const seed = JSON.parse(readFileSync(new URL('./game-sm64.json', import.meta.url)));
+  const launch = seed.cards.find(card => card.id === 'flutter-kick').constants.find(value => value.name === 'waterJumpSpeed');
+  assert.equal(launch.value, 42);
+  assert.equal(launch.source, 'src/game/mario.c:808');
+});

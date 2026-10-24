@@ -2116,7 +2116,7 @@
       "node": "player-airborne",
       "name": "Jump",
       "summary": "Single jump with a speed-scaled launch and reduced forward speed",
-      "behavior": "Pressing jump on the ground starts a single jump. The launch sets vertical speed to 42 units per frame plus 0.25 times the current forward speed. Forward speed keeps 80 percent of its value. A dive or ground pound press cancels the jump in the air.",
+      "behavior": "A normal grounded jump sets vertical speed to 42 plus 0.25 times current forward speed, then retains 80 percent of forward speed. In the air, the attack press selects a dive only above forward speed 28; otherwise it selects a jump kick. A ground-pound press can cancel into the pound action. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "groundImpulse",
@@ -2135,6 +2135,18 @@
           "value": 0.8,
           "unit": "multiplier",
           "source": "src/game/mario.c:825"
+        },
+        {
+          "name": "diveSpeedThreshold",
+          "value": 28,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_airborne.c:110"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2145,6 +2157,18 @@
         {
           "path": "src/game/mario.c",
           "line": 824
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 110
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2160,7 +2184,7 @@
       "node": "player-airborne",
       "name": "Double jump",
       "summary": "Second jump in a timed chain, with a higher launch and speed bonus",
-      "behavior": "Landing from a jump or freefall opens a short window for the second jump. The launch sets vertical speed to 52 units per frame plus 0.25 times the current forward speed. Forward speed keeps 80 percent of its value. A dive or ground pound press cancels the jump in the air.",
+      "behavior": "A landing-chain jump can follow a normal-jump, freefall, or stopped side-flip landing while the double-jump timer is live. Landing actions use four landing frames and refresh a five-frame chain timer; the timer decreases once per subsequent update. The ordinary second-jump initializer sets vertical speed to 52 plus 0.25 times forward speed and retains 80 percent of forward speed. A nonzero squish timer or quicksand depth at least 1 redirects the double-jump action to a plain jump instead. In the air, attack chooses a dive only above speed 28 and otherwise chooses a jump kick; ground pound is another cancellation.",
       "constants": [
         {
           "name": "launchImpulse",
@@ -2179,6 +2203,18 @@
           "value": 0.8,
           "unit": "multiplier",
           "source": "src/game/mario.c:787"
+        },
+        {
+          "name": "landingFrames",
+          "value": 4,
+          "unit": "frames",
+          "source": "src/game/mario_actions_moving.c:27"
+        },
+        {
+          "name": "chainTimer",
+          "value": 5,
+          "unit": "frames",
+          "source": "src/game/mario_actions_moving.c:27"
         }
       ],
       "sources": [
@@ -2193,6 +2229,22 @@
         {
           "path": "src/game/mario_actions_moving.c",
           "line": 1767
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 27
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1411
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 779
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1042
         }
       ],
       "capabilities": [],
@@ -2208,7 +2260,7 @@
       "node": "player-airborne",
       "name": "Triple jump",
       "summary": "Third jump in the chain, available above a forward speed gate",
-      "behavior": "The third jump needs the previous double jump landing and forward speed above 20 units per frame. A wing cap replaces it with the flying triple jump. The launch sets vertical speed to 69 units per frame and keeps 80 percent of forward speed. A dive or ground pound press cancels the jump in the air.",
+      "behavior": "The ordinary landing chain selects the third jump from a double-jump landing above forward speed 20; a flight power-up selects the flying variant instead. The moving landing helper also has a triple-jump selection path. Ordinary triple-jump action entry sets vertical speed to 69 and retains 80 percent of forward speed. Its attack cancellation selects a dive without the ordinary jump speed gate; ground pound is another cancellation. The standard landing-chain selector falls back to a plain jump when squished or when its chain timer has expired. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "launchImpulse",
@@ -2227,6 +2279,12 @@
           "value": 20,
           "unit": "units/frame",
           "source": "src/game/mario.c:1051"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2241,6 +2299,30 @@
         {
           "path": "src/game/mario.c",
           "line": 1051
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 147
+        },
+        {
+          "path": "src/game/mario_actions_moving.c",
+          "line": 157
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1030
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 485
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2256,7 +2338,7 @@
       "node": "player-airborne",
       "name": "Long jump",
       "summary": "Low fast jump from a crouch slide with a strong forward boost",
-      "behavior": "Pressing jump during the first 30 frames of a crouch slide with forward speed above 10 units per frame starts a long jump. The launch sets vertical speed to 30 units per frame. Forward speed multiplies by 1.5 and clamps to 48 units per frame. The slow animation variant applies at or below 16 units per frame.",
+      "behavior": "Starting from crouch slide, a jump press within its first thirty frames and forward speed above 10 selects long jump. Normal action entry sets vertical speed to 30. It chooses the slow animation from pre-multiplication forward speed at or below 16, then multiplies forward speed by 1.5. Only the upper side is clamped to 48: negative speeds remain unclamped, rather than being symmetrically bounded. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "launchImpulse",
@@ -2287,6 +2369,12 @@
           "value": 10,
           "unit": "units/frame",
           "source": "src/game/mario_actions_moving.c:1462"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2301,6 +2389,26 @@
         {
           "path": "src/game/mario_actions_moving.c",
           "line": 1452
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 866
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 870
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 872
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2316,7 +2424,7 @@
       "node": "player-airborne",
       "name": "Backflip",
       "summary": "Reverse somersault from a crouch with a backward launch",
-      "behavior": "Pressing jump while crouched starts a backflip. The launch sets vertical speed to 62 units per frame and sets forward speed to -16 units per frame, so Mario moves backward while he flips. The flip sound plays during the rise.",
+      "behavior": "A jump press while crouching selects backflip. Normal action entry sets forward speed to -16 and vertical speed to 62, producing backward travel. Spin sound cues are keyed to animation frames 2, 3 and 17 rather than to rising vertical velocity. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "launchImpulse",
@@ -2329,6 +2437,12 @@
           "value": -16,
           "unit": "units/frame",
           "source": "src/game/mario.c:792"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2343,6 +2457,22 @@
         {
           "path": "src/game/mario.c",
           "line": 792
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 17
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 521
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2358,7 +2488,7 @@
       "node": "player-airborne",
       "name": "Side flip",
       "summary": "Quick flip from a turn with a fixed forward drift",
-      "behavior": "Pressing jump while turning around starts a side flip. The launch sets vertical speed to 62 units per frame and sets forward speed to 8 units per frame. Mario faces the intended direction and the flip sound plays during the rise.",
+      "behavior": "A jump press while turning around selects side flip. Normal action entry sets vertical speed to 62, forward speed to 8, and logical facing to the intended direction. During the flip the rendered rig is offset by half a turn from that logical facing, except when the air step grabs a ledge. Its sound cue uses animation frame 6 rather than vertical velocity. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "launchImpulse",
@@ -2371,6 +2501,12 @@
           "value": 8,
           "unit": "units/frame",
           "source": "src/game/mario.c:839"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2385,6 +2521,26 @@
         {
           "path": "src/game/mario.c",
           "line": 838
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 840
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 608
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 613
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2400,7 +2556,7 @@
       "node": "player-airborne",
       "name": "Wall kick",
       "summary": "Kick off a wall after an air hit within a short input window",
-      "behavior": "After an air hit on a wall, pressing jump within 2 frames starts a wall kick. A later hit leaves a 5 frame window for the same input. The kick reverses facing and launches with 62 units per frame. Forward speed rises to at least 24 units per frame.",
+      "behavior": "In the common airborne movement route, a wall collision enters the wall-hit action only above 16 raw units per frame. A fresh jump press in its first two action frames kicks immediately. If it reaches the third frame, that same impact transitions into a bonk and sets a five-frame wall-kick timer; this is a continuation window from the same wall, not a second collision. A late press also requires the bonk action to remain active and its timer to be nonzero. Normal action entry sets vertical speed to 62 and raises forward speed to at least 24. The early branch briefly writes 52 before action entry replaces it with 62. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
         {
           "name": "earlyWindow",
@@ -2425,6 +2581,18 @@
           "value": 24,
           "unit": "units/frame",
           "source": "src/game/mario.c:832"
+        },
+        {
+          "name": "minWallHitSpeed",
+          "value": 16,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_airborne.c:391"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2439,6 +2607,42 @@
         {
           "path": "src/game/mario.c",
           "line": 828
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 391
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1314
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1316
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1329
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 1148
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1407
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 1717
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2454,10 +2658,10 @@
       "node": "player-airborne",
       "name": "Ground pound",
       "summary": "Midair stall then a fast downward slam with a landing shake",
-      "behavior": "Pressing ground pound in the air starts a 10 frame windup. During the windup Mario rises by a shrinking offset that starts at 20 units and drops by 2 units per frame, only when 160 units of headroom exist. Then vertical speed sets to -50 units per frame and forward speed sets to zero. Landing triggers a camera shake.",
+      "behavior": "The initial state raises the player during its first ten action frames, using an offset starting at 20 raw units and decreasing by 2 each frame. A rise is allowed only when the proposed position plus 160 units remains strictly below the ceiling. Every initial-state frame sets vertical speed to -50 and forward speed to zero without taking the falling physics step yet. The initial state ends when its timer reaches the current animation loop end plus four frames; ten frames is the rise window, not the total windup. The falling state then takes air steps, and landing triggers the impact behavior and camera shake.",
       "constants": [
         {
-          "name": "windupFrames",
+          "name": "riseFrames",
           "value": 10,
           "unit": "frames",
           "source": "src/game/mario_actions_airborne.c:925"
@@ -2485,6 +2689,12 @@
           "value": -50,
           "unit": "units/frame",
           "source": "src/game/mario_actions_airborne.c:934"
+        },
+        {
+          "name": "animationTailFrames",
+          "value": 4,
+          "unit": "frames",
+          "source": "src/game/mario_actions_airborne.c:944"
         }
       ],
       "sources": [
@@ -2499,6 +2709,22 @@
         {
           "path": "src/game/mario_actions_airborne.c",
           "line": 971
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 944
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 934
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 935
+        },
+        {
+          "path": "src/game/mario_actions_airborne.c",
+          "line": 950
         }
       ],
       "capabilities": [],
@@ -2514,7 +2740,7 @@
       "node": "player-airborne",
       "name": "Dive",
       "summary": "Forward dive that adds speed and caps the total",
-      "behavior": "Pressing dive in the air adds 15 units per frame to forward speed and caps the result at 48 units per frame. The dive turns a landing into a slide. A dive near an object can grab it. Wall contact after a dive causes a backward air knockback.",
+      "behavior": "On dive action entry, add 15 raw units per frame to forward speed once and cap the result at 48. A landing transitions into a slide. Eligible object contacts may transition to a grab. Wall contact after a dive causes backward air knockback.",
       "constants": [
         {
           "name": "speedBoost",
@@ -2552,14 +2778,8 @@
       "node": "player-submerged",
       "name": "Flutter kick",
       "summary": "Hold jump underwater to kick toward a target swim speed",
-      "behavior": "A water jump sets vertical speed to 62 units per frame. Underwater, holding jump uses the flutter kick and moves forward speed toward 12 units per frame with 0.1 acceleration and 0.15 deceleration. The kick animation plays below 14 units per frame. Base swim strength is 160.",
+      "behavior": "Holding jump through the breaststroke transition reaches flutter kick after fourteen action frames. Flutter kick moves forward speed toward 12 raw units per frame, adding up to 0.1 below target or subtracting up to 0.15 above it, and resets swim strength to 160. Common swimming limits forward speed to 28 and subtracts 0.5 when speed exceeds strength divided by 10, which is 16 at this strength. The kick animation is selected below speed 14. A fresh surface-jump press additionally requires the integer probe of height plus 1.5 to reach water level minus 80, nonnegative pitch, and stick Y below -60. That branch briefly writes vertical speed 62, but both of its action-entry calls pass argument zero and replace it with 42; 42 is the normal effective water-jump launch. Where this vertical-launch helper is reached, a nonzero squish timer or quicksand depth greater than 1 halves its computed vertical velocity.",
       "constants": [
-        {
-          "name": "waterJumpSpeed",
-          "value": 62,
-          "unit": "units/frame",
-          "source": "src/game/mario_actions_submerged.c:499"
-        },
         {
           "name": "kickTargetSpeed",
           "value": 12,
@@ -2589,6 +2809,48 @@
           "value": 160,
           "unit": "strength",
           "source": "src/game/mario_actions_submerged.c:20"
+        },
+        {
+          "name": "waterJumpSpeed",
+          "value": 42,
+          "unit": "units/frame",
+          "source": "src/game/mario.c:808"
+        },
+        {
+          "name": "breaststrokeFrames",
+          "value": 14,
+          "unit": "frames",
+          "source": "src/game/mario_actions_submerged.c:525"
+        },
+        {
+          "name": "maxSwimSpeed",
+          "value": 28,
+          "unit": "units/frame",
+          "source": "src/game/mario_actions_submerged.c:232"
+        },
+        {
+          "name": "extraSwimDeceleration",
+          "value": 0.5,
+          "unit": "units/frame\u00b2",
+          "source": "src/game/mario_actions_submerged.c:247"
+        },
+        {
+          "name": "surfaceDepthAllowance",
+          "value": 80,
+          "unit": "units",
+          "source": "src/game/mario_actions_submerged.c:496"
+        },
+        {
+          "name": "surfaceJumpStickThreshold",
+          "value": -60,
+          "unit": "raw stick units",
+          "source": "src/game/mario_actions_submerged.c:496"
+        },
+        {
+          "name": "squishOrSandLaunchScale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/mario.c:769"
         }
       ],
       "sources": [
@@ -2603,6 +2865,50 @@
         {
           "path": "src/game/mario_actions_submerged.c",
           "line": 625
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 808
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 525
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 232
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 247
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 496
+        },
+        {
+          "path": "src/engine/math_util.c",
+          "line": 679
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 445
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 502
+        },
+        {
+          "path": "src/game/mario_actions_submerged.c",
+          "line": 504
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 769
+        },
+        {
+          "path": "src/game/mario.c",
+          "line": 768
         }
       ],
       "capabilities": [],
@@ -2616,9 +2922,9 @@
     {
       "id": "camera-follow",
       "node": "camera-follow",
-      "name": "Camera follow",
-      "summary": "Lakitu trails Mario with smoothed position and focus behind him",
-      "behavior": "The behind camera keeps a maximum distance of 800 units and a vertical focus offset of 125 units, with a 300 unit minimum distance. Lakitu approaches the goal state asymptotically. Horizontal focus speed targets 0.8 as a dimensionless interpolation factor, vertical focus speed and both position speeds target 0.3 as a dimensionless interpolation factor, and each target approaches at 0.05 per frame. The default Mario camera frames at the current zoom distance.",
+      "name": "Behind-camera mode and smoothing",
+      "summary": "Special-mode behind-camera distances and per-frame smoothing factors; not the general default camera.",
+      "behavior": "The special behind-camera mode, used for flight, water-surface movement and cannon travel, starts with maximum distance 800, focus height offset 125, and a minimum distance constraint of 300 raw units. The close R-button selection reduces the maximum to 350 and focus offset to 120. These are mode-specific values rather than the general default camera. Separately, the camera controller approaches horizontal focus factor 0.8 and vertical focus and position factors 0.3; each factor approaches its target by five percent of the remaining gap per update. These are dimensionless interpolation factors, not world-space velocities. When the smooth-movement flag is off, the helper snaps to its target. The update_mario_camera function is a CLOSE/FREE_ROAM transition helper, not evidence for a default camera mode.",
       "constants": [
         {
           "name": "maxDistance",
@@ -2661,6 +2967,18 @@
           "value": 0.05,
           "unit": "dimensionless interpolation factor",
           "source": "src/game/camera.c:2947"
+        },
+        {
+          "name": "closeMaxDistance",
+          "value": 350,
+          "unit": "units",
+          "source": "src/game/camera.c:1769"
+        },
+        {
+          "name": "closeFocusHeight",
+          "value": 120,
+          "unit": "units",
+          "source": "src/game/camera.c:1770"
         }
       ],
       "sources": [
@@ -2675,6 +2993,26 @@
         {
           "path": "src/game/camera.c",
           "line": 3011
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 1769
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 1770
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 1894
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2043
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 4004
         }
       ],
       "capabilities": [],
