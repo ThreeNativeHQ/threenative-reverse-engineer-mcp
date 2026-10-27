@@ -418,36 +418,36 @@
       "node": "server-movement",
       "name": "Ground acceleration and friction",
       "summary": "Ground movement reaches a fixed top speed quickly, then friction pulls the player to a stop.",
-      "behavior": "The intended direction comes from the yaw of the view angles. The server caps the requested horizontal speed, measures the shortfall along that direction, and adds acceleration proportional to the requested speed, limited by the shortfall. Friction lowers speed each frame and uses a stop-speed floor, so slow motion decays gently. Near a ledge the friction coefficient doubles, which prevents accidental slides off edges.",
+      "behavior": "NetQuake server code. The intended direction comes from the yaw of the view angles. The server caps the requested speed, measures the shortfall along that direction, and adds acceleration proportional to the requested speed and the frame time, limited by the shortfall. Friction lowers speed each frame by friction times a control speed (never below the stop speed) times the frame time, so slow motion decays gently. When a probe 16 units ahead finds no floor within 34 units below, the friction coefficient doubles, which stops accidental slides off edges.",
       "constants": [
         {
           "name": "Maximum ground speed",
           "value": 320,
-          "unit": "map units/second of intended ground speed, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second cap on the requested speed; NetQuake C cvar default sv_maxspeed; a cap with no frame scaling",
           "source": "WinQuake/sv_user.c:167"
         },
         {
           "name": "Ground acceleration",
           "value": 10,
-          "unit": "acceleration coefficient per second, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "per second coefficient; NetQuake C cvar default sv_accelerate; step = coefficient x requested speed x frame time, taken from the server frame time each frame (0.001 to 0.1 s; fixed 0.05 s on a dedicated server)",
           "source": "WinQuake/sv_user.c:168"
         },
         {
           "name": "Ground friction",
           "value": 4,
-          "unit": "friction coefficient per second, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "per second coefficient; C cvar default sv_friction; speed lost = coefficient x control speed x frame time, taken from the server frame time each frame (0.001 to 0.1 s; fixed 0.05 s on a dedicated server)",
           "source": "WinQuake/sv_phys.c:42"
         },
         {
           "name": "Stop speed",
           "value": 100,
-          "unit": "map units/second of speed floor for friction, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second floor for the friction control speed; C cvar default sv_stopspeed; no frame scaling",
           "source": "WinQuake/sv_phys.c:43"
         },
         {
           "name": "Edge friction multiplier",
           "value": 2,
-          "unit": "friction multiplier applied near a ledge, evaluated per server frame at the dedicated default of 20 Hz",
+          "unit": "dimensionless multiplier on friction when a ledge probe finds no floor; C cvar default edgefriction; checked every server frame",
           "source": "WinQuake/sv_user.c:27"
         }
       ],
@@ -469,24 +469,24 @@
       "node": "server-movement",
       "name": "Air control",
       "summary": "Airborne steering has a small speed ceiling, so jumps keep most of their momentum.",
-      "behavior": "When no floor contact exists, ground friction is skipped and steering acceleration uses a separate low cap on desired speed. The player can change direction in the air, but the change accumulates slowly because only a small amount of velocity is added along the new direction. Existing horizontal momentum remains dominant for the whole jump.",
+      "behavior": "NetQuake server code. When the player is not on the floor, ground friction is skipped and steering uses a separate low cap of 30 units/second on the wished speed when measuring the shortfall. The player can change direction in the air, but each frame adds only a small velocity along the new direction, limited by that shortfall. Existing horizontal momentum stays dominant for the whole jump.",
       "constants": [
         {
           "name": "Air steering speed cap",
           "value": 30,
-          "unit": "map units/second of desired air speed, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second cap on the wished speed used for the air shortfall test; no frame scaling",
           "source": "WinQuake/sv_user.c:213"
         },
         {
           "name": "Air acceleration coefficient",
           "value": 10,
-          "unit": "acceleration coefficient per second, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "per second coefficient (the sv_accelerate default); step = coefficient x full requested speed x frame time, taken from the server frame time each frame (0.001 to 0.1 s; fixed 0.05 s on a dedicated server)",
           "source": "WinQuake/sv_user.c:168"
         },
         {
           "name": "Air speed clamp reference",
           "value": 320,
-          "unit": "map units/second of normal ground speed, used per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second cap (sv_maxspeed default) on the requested speed; it also scales the air step; no frame scaling",
           "source": "WinQuake/sv_user.c:167"
         }
       ],
@@ -506,31 +506,31 @@
       "id": "jump-impulse",
       "node": "quakeworld-pmove",
       "name": "Jump impulse",
-      "summary": "Jumping adds a fixed upward velocity only from the ground and only after the jump key is released.",
-      "behavior": "The jump input is edge-triggered. A grounded player receives a fixed upward impulse, and the jump flag stays set until the key is released, which prevents automatic bunny hopping from a held key. In deep water the normal jump is replaced by a small upward swim speed. Facing a low ledge while swimming triggers a separate exit move with a stronger upward push and a forward burst.",
+      "summary": "QuakeWorld shared movement code gives a fixed upward velocity only from the ground and only after the jump key is released.",
+      "behavior": "QuakeWorld movement code (QW/client/pmove.c). The jump input is edge-triggered. A grounded player gets a fixed upward impulse and the jump flag stays set until the key is released, which prevents automatic bunny hopping. In water (waterlevel 2 or more) jump becomes a swim-up speed: 100 in water, 80 in slime, 50 in lava. Facing a low ledge while swimming and not sinking fast starts a separate exit move with an upward push and a forward burst.",
       "constants": [
         {
           "name": "Jump velocity",
           "value": 270,
-          "unit": "map units/second of upward velocity, applied per movement command, command rate unverified",
+          "unit": "map units/second added to vertical velocity once per jump press; instantaneous, not scaled by frame time",
           "source": "QW/client/pmove.c:681"
         },
         {
           "name": "Water exit upward velocity",
           "value": 310,
-          "unit": "map units/second of upward velocity, applied per movement command, command rate unverified",
+          "unit": "map units/second of vertical velocity set once when the ledge exit starts; instantaneous",
           "source": "QW/client/pmove.c:721"
         },
         {
           "name": "Water exit forward velocity",
           "value": 50,
-          "unit": "map units/second of forward velocity, applied per movement command, command rate unverified",
+          "unit": "map units/second of horizontal velocity along the flattened view direction, set once when the ledge exit starts; instantaneous",
           "source": "QW/client/pmove.c:720"
         },
         {
           "name": "Water swim upward velocity",
           "value": 100,
-          "unit": "map units/second of upward velocity, applied per movement command, command rate unverified",
+          "unit": "map units/second of vertical velocity set on each movement command while jump is held in plain water (slime 80, lava 50); not scaled by frame time",
           "source": "QW/client/pmove.c:666"
         }
       ],
@@ -553,30 +553,30 @@
       "node": "server-movement",
       "name": "Water movement",
       "summary": "Deep water reduces top speed, adds vertical intent, and makes idle players sink slowly.",
-      "behavior": "At waist depth or deeper the movement mode becomes swimming. Horizontal intent is combined with vertical intent, and zero input produces a slow downward drift. The desired speed is capped and then reduced by a swim factor. Drag lowers all three velocity components each frame, so direction changes feel heavy and momentum fades quickly.",
+      "behavior": "NetQuake server code. At waterlevel 2 (waist) or deeper the mode becomes swimming. Horizontal intent is combined with vertical intent, and zero input gives a slow downward drift. The wished velocity is capped at the ground speed cap, then its speed is multiplied by 0.7. Drag removes a share of all three velocity components each frame, with no stop-speed floor, so direction changes feel heavy and momentum fades quickly.",
       "constants": [
         {
           "name": "Swimming depth tier",
           "value": 2,
-          "unit": "water depth tier, evaluated per server frame at the dedicated default of 20 Hz",
+          "unit": "water level number (2 = waist deep) that switches to swim movement; checked every server frame",
           "source": "WinQuake/sv_user.c:422"
         },
         {
           "name": "Idle sink rate",
           "value": 60,
-          "unit": "map units/second of downward drift, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second of downward wished velocity when no input is held, before the 0.7 swim factor (so about 42 units/second effective); no frame scaling",
           "source": "WinQuake/sv_user.c:262"
         },
         {
           "name": "Swim speed factor",
           "value": 0.7,
-          "unit": "multiplier of the normal ground speed cap, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "dimensionless multiplier on the wished speed after the sv_maxspeed cap; no frame scaling",
           "source": "WinQuake/sv_user.c:272"
         },
         {
           "name": "Water friction",
           "value": 4,
-          "unit": "drag coefficient per second, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "per second coefficient (the sv_friction default, no extra water factor); speed lost = coefficient x speed x frame time, taken from the server frame time each frame (0.001 to 0.1 s; fixed 0.05 s on a dedicated server)",
           "source": "WinQuake/sv_phys.c:42"
         }
       ],
@@ -599,30 +599,30 @@
       "node": "server-physics",
       "name": "Stair stepping",
       "summary": "The player climbs low steps by lifting, moving forward, and dropping onto the higher floor.",
-      "behavior": "A normal slide move is attempted first. When it blocks on a rise, the player is lifted by the step height, moved forward at the original horizontal velocity, and dropped. A landing surface must be flat enough to count as ground, or the move reverts to the unstepped result. If progress stalls, the server nudges the player in several directions and retries the move.",
+      "behavior": "NetQuake server code. A normal slide move is attempted first. When it is blocked, the player is lifted by the step height, moved forward at the original horizontal velocity, and dropped by the step height. The landing surface must be flat enough to count as ground. If progress stalls, the server nudges the player in eight directions by a small amount and retries the move.",
       "constants": [
         {
           "name": "Step height",
           "value": 18,
-          "unit": "map units of vertical step reach, applied per walking move at the dedicated default of 20 Hz",
+          "unit": "map units of vertical lift and drop in a walking move; fixed, tried on every blocked walk move",
           "source": "WinQuake/sv_phys.c:957"
         },
         {
           "name": "Ground normal threshold",
           "value": 0.7,
-          "unit": "surface normal Z component threshold, evaluated per landing at the dedicated default of 20 Hz",
+          "unit": "dimensionless minimum surface normal Z to count as ground; checked on each landing",
           "source": "WinQuake/sv_phys.c:1033"
         },
         {
           "name": "Unstick probe duration",
           "value": 0.1,
-          "unit": "seconds per recovery move, applied per unstick attempt at the dedicated default of 20 Hz",
+          "unit": "seconds of simulated time for each unstick retry move; fixed, not tied to the frame time",
           "source": "WinQuake/sv_phys.c:933"
         },
         {
           "name": "Unstick side step",
           "value": 2,
-          "unit": "map units of lateral nudge, applied per unstick attempt at the dedicated default of 20 Hz",
+          "unit": "map units of push per axis for each of the eight retry directions; once per retry",
           "source": "WinQuake/sv_phys.c:917"
         }
       ],
@@ -645,24 +645,24 @@
       "node": "server-physics",
       "name": "Gravity and velocity clamp",
       "summary": "Falling speed grows linearly with gravity and is capped per axis before each move.",
-      "behavior": "Every server frame adds downward acceleration scaled by the entity gravity multiplier. Before integration, each velocity axis is clamped to a maximum positive and negative value, so boosts and falls cannot exceed the engine limit. There is no quadratic air drag, which means fall speed grows at a constant rate until the clamp or a floor stops it.",
+      "behavior": "NetQuake server code. Every server frame, a walking entity that is not in water adds downward velocity of gravity times its gravity multiplier times the frame time. Each velocity axis is clamped to plus or minus the maximum velocity before integration, so boosts and falls cannot exceed the engine limit. There is no air drag, so fall speed grows at a constant rate until the clamp or a floor stops it.",
       "constants": [
         {
           "name": "Gravity",
           "value": 800,
-          "unit": "map units/second squared, integrated per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second squared; C cvar default sv_gravity; velocity change = gravity x multiplier x frame time, taken from the server frame time each frame (0.001 to 0.1 s; fixed 0.05 s on a dedicated server)",
           "source": "WinQuake/sv_phys.c:44"
         },
         {
           "name": "Maximum velocity per axis",
           "value": 2000,
-          "unit": "map units/second, clamped per server frame at the dedicated default of 20 Hz",
+          "unit": "map units/second per axis; C cvar default sv_maxvelocity; clamped every server frame",
           "source": "WinQuake/sv_phys.c:45"
         },
         {
           "name": "Default entity gravity multiplier",
           "value": 1.0,
-          "unit": "dimensionless multiplier, applied per server frame at the dedicated default of 20 Hz",
+          "unit": "dimensionless multiplier used when the entity has no gravity field value; applied every server frame",
           "source": "WinQuake/sv_phys.c:387"
         }
       ],
@@ -682,25 +682,25 @@
       "id": "bouncing-projectiles",
       "node": "server-physics",
       "name": "Bouncing projectiles",
-      "summary": "Tossed objects reflect from surfaces with extra restitution and settle when vertical speed is low.",
-      "behavior": "Toss-mode entities integrate velocity and gravity, then clip against the first surface. A bounce reflects the velocity with extra restitution, so each impact loses less speed than a pure mirror. On a floor-like surface, low vertical speed or a non-bouncing mode clears both linear and angular velocity, which makes the object come to rest.",
+      "summary": "Tossed objects bounce off surfaces with half their normal speed and settle when vertical speed is low.",
+      "behavior": "Toss-mode entities integrate velocity and gravity, then clip against the first surface. A bounce-type entity removes the surface-normal speed with an overbounce factor of 1.5: a factor of 1 would only slide along the surface and 2 would mirror perfectly, so half of the normal speed returns. On a floor-like surface, low vertical speed or a non-bouncing movetype clears both linear and angular velocity, which brings the object to rest.",
       "constants": [
         {
           "name": "Bounce reflection multiplier",
           "value": 1.5,
-          "unit": "velocity multiplier per surface impact, evaluated per bounce at the dedicated default of 20 Hz",
+          "unit": "dimensionless overbounce factor on the surface-normal velocity (1 = slide, 2 = perfect mirror); applied per impact, not frame scaled",
           "source": "WinQuake/sv_phys.c:1313"
         },
         {
           "name": "Settle speed",
           "value": 60,
-          "unit": "map units/second of vertical speed, checked per landing at the dedicated default of 20 Hz",
+          "unit": "map units/second of vertical speed after the bounce below which the object stops; checked per floor impact",
           "source": "WinQuake/sv_phys.c:1329"
         },
         {
           "name": "Floor normal threshold",
           "value": 0.7,
-          "unit": "surface normal Z component threshold, evaluated per landing at the dedicated default of 20 Hz",
+          "unit": "dimensionless minimum surface normal Z for a floor impact; checked per impact",
           "source": "WinQuake/sv_phys.c:1324"
         }
       ],
@@ -722,36 +722,36 @@
       "node": "client-view",
       "name": "View bob",
       "summary": "The first-person eye height cycles with horizontal speed and is clamped against extreme offsets.",
-      "behavior": "View height follows a sine-like cycle whose amplitude is proportional to horizontal speed. The cycle has a configurable period and an upward fraction, which makes the rise faster than the fall. The final offset is clamped, and standing still removes the effect because speed drives the amplitude.",
+      "behavior": "First-person view height follows a cycle driven by client time. Amplitude is horizontal speed times the bob scale, blended as 30 percent steady offset plus 70 percent of a sine wave over the cycle. The cycle has a period and a fraction spent rising (0.5 gives equal rise and fall). The final offset is clamped, and standing still removes the effect because speed drives the amplitude.",
       "constants": [
         {
           "name": "Bob amplitude scale",
           "value": 0.02,
-          "unit": "view units per map unit/second of horizontal speed, applied per client frame, rate unverified",
+          "unit": "view height units per map unit/second of horizontal speed, before the 0.3 plus 0.7 sine blend; C cvar default cl_bob; recomputed every rendered frame",
           "source": "WinQuake/view.c:44"
         },
         {
           "name": "Bob cycle period",
           "value": 0.6,
-          "unit": "seconds per full cycle, evaluated per client frame, rate unverified",
+          "unit": "seconds of client time per full cycle; C cvar default cl_bobcycle; not frame scaled",
           "source": "WinQuake/view.c:45"
         },
         {
           "name": "Bob upward fraction",
           "value": 0.5,
-          "unit": "fraction of the cycle used for upward motion, applied per client frame, rate unverified",
+          "unit": "fraction of the cycle spent in the rising half; C cvar default cl_bobup; not frame scaled",
           "source": "WinQuake/view.c:46"
         },
         {
           "name": "Bob upper clamp",
           "value": 4,
-          "unit": "view units of maximum upward offset, clamped per client frame, rate unverified",
+          "unit": "view height units of maximum upward offset; checked every rendered frame",
           "source": "WinQuake/view.c:130"
         },
         {
           "name": "Bob lower clamp",
           "value": -7,
-          "unit": "view units of maximum downward offset, clamped per client frame, rate unverified",
+          "unit": "view height units of maximum downward offset; checked every rendered frame",
           "source": "WinQuake/view.c:132"
         }
       ],
@@ -771,38 +771,44 @@
       "id": "camera-roll-kick",
       "node": "client-view",
       "name": "View roll and damage kick",
-      "summary": "Side speed rolls the camera, and damage adds a short pitch and roll kick.",
-      "behavior": "Lateral velocity rolls the view around the forward axis, strongest at high side speed and limited to a small angle. Damage adds a temporary pitch and roll kick whose size follows the damage amount and hit side, then decays over the kick time. Both effects combine with the base view angles.",
+      "summary": "Side speed rolls the camera, and damage adds a short pitch and roll kick that fades linearly.",
+      "behavior": "Lateral velocity along the view's right axis rolls the view, scaling linearly up to a small maximum angle. A damage event computes a count (half the blood plus half the armor damage, at least 10), then sets a roll kick and a pitch kick from that count and the direction of the hit. The kick fades linearly to zero over the kick time. Both effects add to the base view angles.",
       "constants": [
         {
           "name": "Maximum view roll",
           "value": 2.0,
-          "unit": "degrees at full lateral speed, applied per client frame, rate unverified",
+          "unit": "degrees of roll at or above the full roll speed; C cvar default cl_rollangle; recomputed every rendered frame",
           "source": "WinQuake/view.c:42"
         },
         {
           "name": "Full roll speed",
           "value": 200,
-          "unit": "map units/second of lateral speed, evaluated per client frame, rate unverified",
+          "unit": "map units/second of lateral speed that gives the maximum roll; C cvar default cl_rollspeed; recomputed every rendered frame",
           "source": "WinQuake/view.c:41"
         },
         {
           "name": "Kick decay time",
           "value": 0.5,
-          "unit": "seconds of decay, applied per damage event",
+          "unit": "seconds of client time over which a kick fades linearly; C cvar default v_kicktime; counted down by the frame time",
           "source": "WinQuake/view.c:48"
         },
         {
           "name": "Damage roll kick",
           "value": 0.6,
-          "unit": "degrees at full kick strength, applied per damage event",
+          "unit": "degrees of peak roll per unit of damage count, scaled by the sideways component (-1 to 1) of the hit direction; C cvar default v_kickroll; set once per damage event",
           "source": "WinQuake/view.c:49"
         },
         {
           "name": "Damage pitch kick",
           "value": 0.6,
-          "unit": "degrees at full kick strength, applied per damage event",
+          "unit": "degrees of peak pitch per unit of damage count, scaled by the forward component (-1 to 1) of the hit direction; C cvar default v_kickpitch; set once per damage event",
           "source": "WinQuake/view.c:50"
+        },
+        {
+          "name": "Minimum damage count",
+          "value": 10,
+          "unit": "damage count floor used for the kick size; set once per damage event",
+          "source": "WinQuake/view.c:332"
         }
       ],
       "sources": [
@@ -860,7 +866,8 @@
         {"path": "WinQuake/cl_main.c", "line": 36},
         {"path": "WinQuake/cl_main.c", "line": 39},
         {"path": "WinQuake/cl_input.c", "line": 244},
-        {"path": "WinQuake/cl_input.c", "line": 264}
+        {"path": "WinQuake/cl_input.c", "line": 264},
+        {"path": "WinQuake/in_win.c", "line": 704}
       ],
       "capabilities": [
         "mouse yaw",
@@ -875,24 +882,24 @@
       "node": "chase-camera",
       "name": "Third-person camera",
       "summary": "A chase view pulls the camera back and up while aiming at the point the player looks at.",
-      "behavior": "The third-person view starts from the first-person eye point, moves backward along the view direction, shifts right and upward by the configured offsets, then aims at the point the player is looking at. There is no obstacle sweep, so geometry can block the view. The offset values are exposed as user settings.",
+      "behavior": "The third-person view starts from the first-person eye point, moves backward along the view direction by the back offset, moves left by the right offset (a positive value moves it left) and sets height to eye height plus the up offset. It then aims at the point the player looks at, found by a trace up to 4096 units. The camera position is not swept against geometry, so walls can block the view. The offsets are user settings.",
       "constants": [
         {
           "name": "Chase distance",
           "value": 100,
-          "unit": "map units behind the player, applied per client frame, rate unverified",
+          "unit": "map units behind the eye point along the view direction; C cvar default chase_back; applied every rendered frame",
           "source": "WinQuake/chase.c:24"
         },
         {
           "name": "Chase height",
           "value": 16,
-          "unit": "map units above the player, applied per client frame, rate unverified",
+          "unit": "map units above the eye point in world up; C cvar default chase_up; applied every rendered frame",
           "source": "WinQuake/chase.c:25"
         },
         {
           "name": "Chase side offset",
           "value": 0,
-          "unit": "map units to the player right, applied per client frame, rate unverified",
+          "unit": "map units to the player's left (positive value moves the camera left); C cvar default chase_right; applied every rendered frame",
           "source": "WinQuake/chase.c:26"
         }
       ],
@@ -930,7 +937,7 @@
         {
           "name": "Square spread radius",
           "value": 0.04,
-          "unit": "fraction of forward distance, applied per pellet per shot",
+          "unit": "maximum random offset per axis, as a fraction of the aim direction length, per pellet; applied each shot",
           "source": "qw-qc/weapons.qc:336"
         },
         {
@@ -969,13 +976,13 @@
         {
           "name": "Horizontal spread radius",
           "value": 0.14,
-          "unit": "fraction of forward distance, applied per pellet per shot",
+          "unit": "maximum random sideways offset, as a fraction of the aim direction length, per pellet; applied each shot",
           "source": "qw-qc/weapons.qc:363"
         },
         {
           "name": "Vertical spread radius",
           "value": 0.08,
-          "unit": "fraction of forward distance, applied per pellet per shot",
+          "unit": "maximum random vertical offset, as a fraction of the aim direction length, per pellet; applied each shot",
           "source": "qw-qc/weapons.qc:363"
         }
       ],
@@ -1048,7 +1055,7 @@
       "node": "game-weapons",
       "name": "Nailgun ballistics",
       "summary": "Nails are fast small projectiles with a short refire delay and two damage tiers.",
-      "behavior": "Nails are fast, small projectiles with a short refire delay. The normal nail deals light damage, while the super nail costs two rounds and deals double damage. Both use the same launch speed and expire after several seconds.",
+      "behavior": "Nails are fast, small projectiles with a short refire delay. The normal nail deals light damage. The super nail costs two rounds and deals double damage. Both fly at the same speed and are removed after a few seconds if they hit nothing.",
       "constants": [
         {
           "name": "Nail damage",
@@ -1071,8 +1078,14 @@
         {
           "name": "Nail refire delay",
           "value": 0.2,
-          "unit": "seconds between shots, applied per nailgun shot",
+          "unit": "seconds between shots, for both nail types, game time",
           "source": "qw-qc/weapons.qc:784"
+        },
+        {
+          "name": "Nail lifetime",
+          "value": 6,
+          "unit": "seconds of game time before an unspent nail is removed; set per nail",
+          "source": "qw-qc/weapons.qc:737"
         }
       ],
       "sources": [
@@ -1092,12 +1105,12 @@
       "node": "game-weapons",
       "name": "Lightning beam",
       "summary": "The lightning gun traces a short beam that damages targets along its path.",
-      "behavior": "The lightning gun traces a beam to the first solid surface within its fixed range and damages valid targets along the beam path. Each shot spends one cell. Firing under deep water discharges all remaining cells in a radial blast instead of producing a beam.",
+      "behavior": "The lightning gun traces a beam from the player, forward to the first solid surface within its fixed range, and damages targets along it, using two extra side-offset traces to catch neighbors. Each firing step spends one cell. Firing in water deeper than waist level discharges all remaining cells as radial damage instead of a beam.",
       "constants": [
         {
           "name": "Beam damage",
           "value": 30,
-          "unit": "health points per strike, applied per shot",
+          "unit": "health points per beam hit, applied on each firing step (the animation steps every 0.1 s while the fire key is held)",
           "source": "qw-qc/weapons.qc:611"
         },
         {
@@ -1109,7 +1122,7 @@
         {
           "name": "Underwater discharge damage",
           "value": 35,
-          "unit": "health points per cell, applied per underwater shot",
+          "unit": "health points of radial damage per cell spent; applied once on an underwater shot",
           "source": "qw-qc/weapons.qc:580"
         }
       ],
@@ -1130,7 +1143,7 @@
       "node": "game-weapons",
       "name": "Grenade ballistics",
       "summary": "Grenades arc at moderate speed, bounce, and explode on a fixed fuse.",
-      "behavior": "Grenades launch at moderate speed with an upward arc and bounce off surfaces. A fixed fuse detonates them, and the explosion applies distance-scaled splash damage. Because the fuse runs on game time, a long throw can detonate away from the aim point or after the target has moved.",
+      "behavior": "Grenades launch at moderate speed with an upward arc and bounce off surfaces. A fixed fuse detonates them, or they detonate on touching a damageable target, and the explosion applies distance-scaled splash damage. Because the fuse runs on game time, a long throw can detonate away from the aim point or after the target has moved.",
       "constants": [
         {
           "name": "Grenade launch speed",
@@ -1200,6 +1213,12 @@
           "value": 40,
           "unit": "map units added to blast radius, applied per explosion",
           "source": "qw-qc/combat.qc:284"
+        },
+        {
+          "name": "Splash falloff per distance",
+          "value": 0.5,
+          "unit": "health points lost per map unit of distance from the blast center, measured to the target's center; applied per explosion",
+          "source": "qw-qc/combat.qc:298"
         }
       ],
       "sources": [
@@ -1226,25 +1245,25 @@
         {
           "name": "Hull minimum X and Y",
           "value": -16,
-          "unit": "map units, applied per collision test, rate unverified",
+          "unit": "map units (QuakeWorld shared movement hull, fixed, no time dependence)",
           "source": "QW/client/pmove.c:36"
         },
         {
           "name": "Hull minimum Z",
           "value": -24,
-          "unit": "map units, applied per collision test, rate unverified",
+          "unit": "map units (QuakeWorld shared movement hull, fixed, no time dependence)",
           "source": "QW/client/pmove.c:36"
         },
         {
           "name": "Hull maximum X and Y",
           "value": 16,
-          "unit": "map units, applied per collision test, rate unverified",
+          "unit": "map units (QuakeWorld shared movement hull, fixed, no time dependence)",
           "source": "QW/client/pmove.c:37"
         },
         {
           "name": "Hull maximum Z",
           "value": 32,
-          "unit": "map units, applied per collision test, rate unverified",
+          "unit": "map units (QuakeWorld shared movement hull, fixed, no time dependence)",
           "source": "QW/client/pmove.c:37"
         }
       ],
@@ -1270,7 +1289,7 @@
         {
           "name": "Default eye height",
           "value": 22,
-          "unit": "map units above the player origin, applied per client frame, rate unverified",
+          "unit": "map units above the player origin; fixed offset added every rendered frame",
           "source": "WinQuake/protocol.h:67"
         }
       ],
@@ -1289,42 +1308,42 @@
       "node": "client-input",
       "name": "Input speeds and run modifier",
       "summary": "Keyboard movement uses fixed speeds, and a speed key doubles them and raises turn rates.",
-      "behavior": "Keyboard movement builds forward, side, and vertical intent from fixed speeds. Holding the speed key doubles all three intent values. Keyboard turning adds yaw and pitch at fixed angular rates, and the same speed key raises the turn rate.",
+      "behavior": "Keyboard movement builds forward, side, and vertical intent from fixed speeds. Holding the speed key doubles all three intent values. The server then caps the combined speed at the ground speed cap, so a doubled forward speed of 400 or a side speed of 350 is cut to 320. Keyboard turning adds yaw and pitch at fixed angular rates, and the same speed key raises the turn rate.",
       "constants": [
         {
           "name": "Forward speed",
           "value": 200,
-          "unit": "map units/second of intended movement, applied per input sample, rate unverified",
+          "unit": "map units/second of intended movement from one key; C cvar default cl_forwardspeed; sampled every input frame, before the server speed cap",
           "source": "WinQuake/cl_input.c:213"
         },
         {
           "name": "Side speed",
           "value": 350,
-          "unit": "map units/second of intended movement, applied per input sample, rate unverified",
+          "unit": "map units/second of intended movement from one key; C cvar default cl_sidespeed; sampled every input frame, before the server speed cap",
           "source": "WinQuake/cl_input.c:215"
         },
         {
           "name": "Speed key multiplier",
           "value": 2.0,
-          "unit": "movement multiplier, applied per input sample, rate unverified",
+          "unit": "dimensionless multiplier on forward, side and vertical intent; C cvar default cl_movespeedkey; applied every input frame",
           "source": "WinQuake/cl_input.c:217"
         },
         {
           "name": "Keyboard yaw rate",
           "value": 140,
-          "unit": "degrees/second, applied per client frame, rate unverified",
+          "unit": "degrees/second while a turn key is held; C cvar default cl_yawspeed; multiplied by the client frame time each frame",
           "source": "WinQuake/cl_input.c:219"
         },
         {
           "name": "Keyboard pitch rate",
           "value": 150,
-          "unit": "degrees/second, applied per client frame, rate unverified",
+          "unit": "degrees/second while a look key is held; C cvar default cl_pitchspeed; multiplied by the client frame time each frame",
           "source": "WinQuake/cl_input.c:220"
         },
         {
           "name": "Speed key angle multiplier",
           "value": 1.5,
-          "unit": "angular rate multiplier, applied per client frame, rate unverified",
+          "unit": "dimensionless multiplier on turn rates while the speed key is held; C cvar default cl_anglespeedkey; applied every client frame",
           "source": "WinQuake/cl_input.c:222"
         }
       ],
