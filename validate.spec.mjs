@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const game = JSON.parse(readFileSync(new URL('./test-fixture.json', import.meta.url)));
 const catalog = JSON.parse(readFileSync(new URL('./catalog.json', import.meta.url)));
 const sm64Row = catalog.find(row => row.id === 'sm64');
-const ootRow = catalog.find(row => row.id === 'oot');
+const tier2Row = {id: 'demo-tier2', title: 'Demo', platform: 'PC', repo: 'https://github.com/example/demo', tier: 2};
 const tier1 = catalog.filter(row => row.tier === 1).map(row => ({id: row.id}));
 test('strict data schema refuses code fields, fences, broken links and source traversal', () => {
   assert.doesNotThrow(() => validateGame(game));
@@ -30,22 +30,22 @@ test('catalog rows follow the strict engine index contract', () => {
   assert.doesNotThrow(() => validateCatalog(catalog, tier1));
   const row = sm64Row;
   for (const mutated of [
-    [{...row, extra: 'bad'}, ootRow],
-    [{id: row.id, title: row.title, platform: row.platform, repo: row.repo}, ootRow],
-    [{...row, tier: 3}, ootRow],
-    [{...row, id: 'Not_Kebab'}, ootRow],
-    [{...row, title: '```fenced```'}, ootRow],
-    [{...row, platform: '~~~'}, ootRow],
-    [{...row, repo: ''}, ootRow],
-    [{...row, title: '   '}, ootRow],
+    [{...row, extra: 'bad'}, tier2Row],
+    [{id: row.id, title: row.title, platform: row.platform, repo: row.repo}, tier2Row],
+    [{...row, tier: 3}, tier2Row],
+    [{...row, id: 'Not_Kebab'}, tier2Row],
+    [{...row, title: '```fenced```'}, tier2Row],
+    [{...row, platform: '~~~'}, tier2Row],
+    [{...row, repo: ''}, tier2Row],
+    [{...row, title: '   '}, tier2Row],
     [row, row],
   ]) assert.throws(() => validateCatalog(mutated, [{id: 'sm64'}]));
 });
 
 test('catalog and game files keep a coherent tier relationship', () => {
   assert.throws(() => validateCatalog(catalog, [...tier1, {id: 'ghost'}]));
-  assert.throws(() => validateCatalog([ootRow], [{id: 'oot'}]));
+  assert.throws(() => validateCatalog([tier2Row], [{id: 'demo-tier2'}]));
   assert.throws(() => validateCatalog([sm64Row], []));
-  assert.doesNotThrow(() => validateCatalog([sm64Row, ootRow], [{id: 'sm64'}]));
+  assert.doesNotThrow(() => validateCatalog([sm64Row, tier2Row], [{id: 'sm64'}]));
   assert.throws(() => validateCatalog(catalog, tier1, [{game: 'ghost'}]));
 });
