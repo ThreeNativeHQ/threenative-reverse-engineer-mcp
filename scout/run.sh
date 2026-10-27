@@ -26,9 +26,16 @@ SHA: $sha
 Source tree to read: .sources/$id-tree
 Write: game-$id.json at the repo root"
 
-PATH="$HOME/.nvm/versions/node/v24.16.0/bin:$PATH" \
-DSH_PERMISSION_MODE=danger-full-access \
-DSH_TELEMETRY_MODE=DISABLED \
-dsh --profile headless "$prompt" 2>&1 | tee ".sources/$id.scout.log"
+# SCOUT_ARM=<wrapper> runs the scout through a wrapper that takes <workdir> <brief file>
+# (for example the save-tokens arm.sh) when the dsh DeepSeek balance is empty.
+printf '%s\n' "$prompt" > ".sources/$id.brief.md"
+if [ -n "${SCOUT_ARM:-}" ]; then
+  "$SCOUT_ARM" "$PWD" ".sources/$id.brief.md" 2>&1 | tee ".sources/$id.scout.log"
+else
+  PATH="$HOME/.nvm/versions/node/v24.16.0/bin:$PATH" \
+  DSH_PERMISSION_MODE=danger-full-access \
+  DSH_TELEMETRY_MODE=DISABLED \
+  dsh --profile headless "$prompt" 2>&1 | tee ".sources/$id.scout.log"
+fi
 
 node validate.mjs --source ".sources/$id" --game "$id"
