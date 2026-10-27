@@ -1,0 +1,1964 @@
+{
+  "version": 1,
+  "id": "super-smash-bros-vetritheretri",
+  "title": "Super Smash Bros. 64",
+  "repo": "https://github.com/vetritheretri/ssb-decomp-re",
+  "sha": "572a747d8171137718fad472c5d7473dc7309ffd",
+  "nodes": [
+    {
+      "id": "fighter-core",
+      "name": "Fighter core update loop",
+      "purpose": "Coordinates controller sampling, status transitions, physics integration, hit processing, and match setup for every fighter.",
+      "paths": [
+        "src/ft/ftmain.c",
+        "src/ft/ftkey.c",
+        "src/ft/ftdef.h"
+      ],
+      "functions": [
+        {
+          "name": "ftMainProcUpdateInterrupt",
+          "path": "src/ft/ftmain.c",
+          "lines": [
+            1214,
+            1574
+          ]
+        },
+        {
+          "name": "ftMainProcPhysicsMap",
+          "path": "src/ft/ftmain.c",
+          "lines": [
+            1739,
+            1915
+          ]
+        },
+        {
+          "name": "ftMainProcessHitCollisionStatsMain",
+          "path": "src/ft/ftmain.c",
+          "lines": [
+            2666,
+            2996
+          ]
+        },
+        {
+          "name": "ftMainProcParams",
+          "path": "src/ft/ftmain.c",
+          "lines": [
+            3816,
+            4082
+          ]
+        },
+        {
+          "name": "ftMainSetStatus",
+          "path": "src/ft/ftmain.c",
+          "lines": [
+            4365,
+            4822
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics",
+        "global-collision",
+        "map-collision"
+      ]
+    },
+    {
+      "id": "fighter-attributes",
+      "name": "Fighter attribute tables",
+      "purpose": "Holds per-character movement, jump, air, weight, shield, and camera tuning values loaded from relocated data.",
+      "paths": [
+        "src/ft/ftdata.c",
+        "src/ft/ftmanager.c",
+        "src/relocData/203_MarioMain.c",
+        "src/relocData/209_FoxMain.c",
+        "src/relocData/213_DonkeyMain.c",
+        "src/relocData/217_SamusMain.c"
+      ],
+      "functions": [
+        {
+          "name": "ftManagerSetupFilesKind",
+          "path": "src/ft/ftmanager.c",
+          "lines": [
+            300,
+            339
+          ]
+        },
+        {
+          "name": "ftManagerInitFighter",
+          "path": "src/ft/ftmanager.c",
+          "lines": [
+            418,
+            669
+          ]
+        },
+        {
+          "name": "ftManagerMakeFighter",
+          "path": "src/ft/ftmanager.c",
+          "lines": [
+            671,
+            909
+          ]
+        }
+      ],
+      "dependsOn": [],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-physics",
+      "name": "Fighter physics integrator",
+      "purpose": "Applies gravity, terminal velocity, fast fall, air drift, surface friction, and ground-to-air velocity transfer on each update.",
+      "paths": [
+        "src/ft/ftphysics.c",
+        "src/ft/ftdef.h",
+        "src/ft/ftcommon.h",
+        "src/ft/ftmain.c",
+        "src/mp/mpcollision.c",
+        "src/ft/ftcommon/ftcommonlanding.c",
+        "src/relocData/203_MarioMain.c",
+        "src/relocData/209_FoxMain.c",
+        "src/relocData/213_DonkeyMain.c",
+        "src/relocData/217_SamusMain.c"
+      ],
+      "functions": [
+        {
+          "name": "ftPhysicsApplyGroundVelFriction",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            158,
+            165
+          ]
+        },
+        {
+          "name": "ftPhysicsApplyGravityClampTVel",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            216,
+            224
+          ]
+        },
+        {
+          "name": "ftPhysicsApplyFastFall",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            227,
+            230
+          ]
+        },
+        {
+          "name": "ftPhysicsCheckSetFastFall",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            233,
+            246
+          ]
+        },
+        {
+          "name": "ftPhysicsClampAirVelXStickRange",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            300,
+            315
+          ]
+        },
+        {
+          "name": "ftPhysicsApplyAirVelXFriction",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            324,
+            344
+          ]
+        },
+        {
+          "name": "ftPhysicsApplyAirVelDrift",
+          "path": "src/ft/ftphysics.c",
+          "lines": [
+            347,
+            359
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-attributes",
+        "map-collision"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-ground-movement",
+      "name": "Ground movement states",
+      "purpose": "Groups walk tiers, dash, run transitions, and ground speed limits shared by every fighter.",
+      "paths": [
+        "src/ft/ftcommon.h",
+        "src/ft/ftcommon/ftcommonwalk.c",
+        "src/ft/ftcommon/ftcommondash.c",
+        "src/ft/ftcommon/ftcommonrun.c",
+        "src/relocData/203_MarioMain.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommonWalkGetWalkStatus",
+          "path": "src/ft/ftcommon/ftcommonwalk.c",
+          "lines": [
+            58,
+            76
+          ]
+        },
+        {
+          "name": "ftCommonWalkProcPhysics",
+          "path": "src/ft/ftcommon/ftcommonwalk.c",
+          "lines": [
+            97,
+            104
+          ]
+        },
+        {
+          "name": "ftCommonDashSetStatus",
+          "path": "src/ft/ftcommon/ftcommondash.c",
+          "lines": [
+            112,
+            123
+          ]
+        },
+        {
+          "name": "ftCommonDashProcPhysics",
+          "path": "src/ft/ftcommon/ftcommondash.c",
+          "lines": [
+            86,
+            97
+          ]
+        },
+        {
+          "name": "ftCommonRunSetStatus",
+          "path": "src/ft/ftcommon/ftcommonrun.c",
+          "lines": [
+            28,
+            36
+          ]
+        },
+        {
+          "name": "ftCommonRunCheckInterruptDash",
+          "path": "src/ft/ftcommon/ftcommonrun.c",
+          "lines": [
+            38,
+            53
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics",
+        "fighter-attributes"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-air-states",
+      "name": "Jump and aerial states",
+      "purpose": "Groups jump squat, short hop, double jump, fall, landing, platform drop, and tech windows.",
+      "paths": [
+        "src/ft/ftcommon.h",
+        "src/ft/ftcommon/ftcommonjump.c",
+        "src/ft/ftcommon/ftcommonkneebend.c",
+        "src/ft/ftcommon/ftcommonjumpaerial.c",
+        "src/ft/ftcommon/ftcommonfall.c",
+        "src/ft/ftcommon/ftcommonlanding.c",
+        "src/ft/ftcommon/ftcommonpass.c",
+        "src/ft/ftcommon/ftcommonpassive.c",
+        "src/ft/ftmain.c",
+        "src/relocData/203_MarioMain.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommonJumpGetJumpForceButton",
+          "path": "src/ft/ftcommon/ftcommonjump.c",
+          "lines": [
+            19,
+            63
+          ]
+        },
+        {
+          "name": "ftCommonJumpSetStatus",
+          "path": "src/ft/ftcommon/ftcommonjump.c",
+          "lines": [
+            65,
+            100
+          ]
+        },
+        {
+          "name": "ftCommonKneeBendProcUpdate",
+          "path": "src/ft/ftcommon/ftcommonkneebend.c",
+          "lines": [
+            10,
+            31
+          ]
+        },
+        {
+          "name": "ftCommonJumpAerialSetStatus",
+          "path": "src/ft/ftcommon/ftcommonjumpaerial.c",
+          "lines": [
+            125,
+            180
+          ]
+        },
+        {
+          "name": "ftCommonFallSetStatus",
+          "path": "src/ft/ftcommon/ftcommonfall.c",
+          "lines": [
+            19,
+            40
+          ]
+        },
+        {
+          "name": "ftCommonLandingSetStatus",
+          "path": "src/ft/ftcommon/ftcommonlanding.c",
+          "lines": [
+            71,
+            81
+          ]
+        },
+        {
+          "name": "ftCommonPassCheckInputSuccess",
+          "path": "src/ft/ftcommon/ftcommonpass.c",
+          "lines": [
+            47,
+            54
+          ]
+        },
+        {
+          "name": "ftCommonPassiveCheckInterruptDamage",
+          "path": "src/ft/ftcommon/ftcommonpassive.c",
+          "lines": [
+            23,
+            33
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics",
+        "fighter-ground-movement",
+        "map-collision"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-damage",
+      "name": "Damage and hit reaction",
+      "purpose": "Converts hit data into knockback, hitstun, damage levels, hitlag, and directional influence.",
+      "paths": [
+        "src/ft/ftcommon/ftcommondamage.c",
+        "src/ft/ftparam.c",
+        "src/ft/ftcommon.h",
+        "src/ft/ftmain.c",
+        "src/relocData/203_MarioMain.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommonDamageGetKnockbackAngle",
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "lines": [
+            285,
+            311
+          ]
+        },
+        {
+          "name": "ftCommonDamageGetDamageLevel",
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "lines": [
+            314,
+            333
+          ]
+        },
+        {
+          "name": "ftCommonDamageCommonProcLagUpdate",
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "lines": [
+            239,
+            258
+          ]
+        },
+        {
+          "name": "ftCommonDamageInitDamageVars",
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "lines": [
+            473,
+            660
+          ]
+        },
+        {
+          "name": "ftParamGetCommonKnockback",
+          "path": "src/ft/ftparam.c",
+          "lines": [
+            1451,
+            1474
+          ]
+        },
+        {
+          "name": "ftParamGetHitStun",
+          "path": "src/ft/ftparam.c",
+          "lines": [
+            1505,
+            1508
+          ]
+        },
+        {
+          "name": "ftParamGetHitLag",
+          "path": "src/ft/ftparam.c",
+          "lines": [
+            1511,
+            1524
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics",
+        "fighter-attributes"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-guard",
+      "name": "Shield and guard",
+      "purpose": "Tracks shield health, decay, size scaling, shieldstun, and pushback for guarding fighters.",
+      "paths": [
+        "src/ft/ftcommon/ftcommonguard1.c",
+        "src/ft/ftcommon/ftcommonguard2.c",
+        "src/ft/ftcommon.h",
+        "src/ft/ftmain.c",
+        "src/ft/ftmanager.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommonGuardUpdateShieldVars",
+          "path": "src/ft/ftcommon/ftcommonguard1.c",
+          "lines": [
+            72,
+            122
+          ]
+        },
+        {
+          "name": "ftCommonGuardUpdateShieldCollision",
+          "path": "src/ft/ftcommon/ftcommonguard1.c",
+          "lines": [
+            125,
+            146
+          ]
+        },
+        {
+          "name": "ftCommonGuardSetStatusFromEscape",
+          "path": "src/ft/ftcommon/ftcommonguard2.c",
+          "lines": [
+            10,
+            44
+          ]
+        },
+        {
+          "name": "ftCommonGuardSetOffSetStatus",
+          "path": "src/ft/ftcommon/ftcommonguard2.c",
+          "lines": [
+            113,
+            132
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-damage"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "fighter-ledge-death",
+      "name": "Ledge and blast zone",
+      "purpose": "Implements ledge hold limits, re-grab timing, and out-of-bounds knockout checks.",
+      "paths": [
+        "src/ft/ftcommon/ftcommoncliffcatchwait.c",
+        "src/ft/ftcommon/ftcommondead.c",
+        "src/ft/ftcommon.h",
+        "src/gm/gmcamera.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommonCliffWaitSetStatus",
+          "path": "src/ft/ftcommon/ftcommoncliffcatchwait.c",
+          "lines": [
+            98,
+            119
+          ]
+        },
+        {
+          "name": "ftCommonCliffWaitCheckFall",
+          "path": "src/ft/ftcommon/ftcommoncliffcatchwait.c",
+          "lines": [
+            122,
+            138
+          ]
+        },
+        {
+          "name": "ftCommonDeadCheckInterruptCommon",
+          "path": "src/ft/ftcommon/ftcommondead.c",
+          "lines": [
+            533,
+            645
+          ]
+        }
+      ],
+      "dependsOn": [
+        "map-collision",
+        "global-camera"
+      ],
+      "parent": "fighter-core"
+    },
+    {
+      "id": "global-camera",
+      "name": "Battle camera",
+      "purpose": "Frames fighter targets, adjusts zoom and field of view, and smooths camera travel.",
+      "paths": [
+        "src/gm/gmcamera.c"
+      ],
+      "functions": [
+        {
+          "name": "gmCameraGetPlayerNumZoomRange",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            192,
+            201
+          ]
+        },
+        {
+          "name": "gmCameraCalcFighterZoomRange",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            204,
+            214
+          ]
+        },
+        {
+          "name": "gmCameraGetTargetAtY",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            217,
+            228
+          ]
+        },
+        {
+          "name": "gmCameraUpdateInterests",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            231,
+            467
+          ]
+        },
+        {
+          "name": "gmCameraGetClampDimensionsMax",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            469,
+            488
+          ]
+        },
+        {
+          "name": "gmCameraAdjustFOV",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            618,
+            621
+          ]
+        },
+        {
+          "name": "gmCameraDefaultFuncCamera",
+          "path": "src/gm/gmcamera.c",
+          "lines": [
+            624,
+            644
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-attributes",
+        "map-collision"
+      ]
+    },
+    {
+      "id": "map-collision",
+      "name": "Map collision",
+      "purpose": "Provides floor material friction, kinetic state changes, landing checks, and map line queries.",
+      "paths": [
+        "src/mp/mpcollision.c",
+        "src/mp/mpcommon.c"
+      ],
+      "functions": [
+        {
+          "name": "mpCommonCheckFighterLanding",
+          "path": "src/mp/mpcommon.c",
+          "lines": [
+            581,
+            586
+          ]
+        },
+        {
+          "name": "mpCommonUpdateFighterKinetics",
+          "path": "src/mp/mpcommon.c",
+          "lines": [
+            852,
+            868
+          ]
+        },
+        {
+          "name": "mpCommonSetFighterGround",
+          "path": "src/mp/mpcommon.c",
+          "lines": [
+            882,
+            892
+          ]
+        },
+        {
+          "name": "mpCommonSetFighterAir",
+          "path": "src/mp/mpcommon.c",
+          "lines": [
+            894,
+            902
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "global-collision",
+      "name": "Attack collision sweep",
+      "purpose": "Performs swept attack and hurtbox tests, joint-attached hitbox placement, and inverse-size scaling.",
+      "paths": [
+        "src/gm/gmcollision.c",
+        "src/ft/ftmain.c",
+        "src/relocData/203_MarioMain.c"
+      ],
+      "functions": [
+        {
+          "name": "gmCollisionGetFighterPartsWorldPosition",
+          "path": "src/gm/gmcollision.c",
+          "lines": [
+            491,
+            530
+          ]
+        },
+        {
+          "name": "gmCollisionTestRectangle",
+          "path": "src/gm/gmcollision.c",
+          "lines": [
+            661,
+            778
+          ]
+        },
+        {
+          "name": "gmCollisionTestSphere",
+          "path": "src/gm/gmcollision.c",
+          "lines": [
+            780,
+            1002
+          ]
+        },
+        {
+          "name": "gmCollisionCheckFighterAttackDamageCollide",
+          "path": "src/gm/gmcollision.c",
+          "lines": [
+            1379,
+            1402
+          ]
+        }
+      ],
+      "dependsOn": [
+        "map-collision",
+        "fighter-attributes"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "walk-speed-tiers",
+      "node": "fighter-ground-movement",
+      "name": "Walk speed tiers",
+      "summary": "Stick tilt selects slow, medium, or fast walk, and ground speed follows stick displacement scaled by a per-fighter multiplier.",
+      "behavior": "The game compares absolute horizontal stick displacement with two thresholds to choose a walk tier, and it enters walk only after the stick crosses a small dead zone. Ground speed is driven toward stick displacement times the fighter walk multiplier, then reduced by the fighter traction value. Releasing the stick lets friction bring speed to zero without reversing direction.",
+      "constants": [
+        {
+          "name": "fast walk stick threshold",
+          "value": 62,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:22"
+        },
+        {
+          "name": "medium walk stick threshold",
+          "value": 26,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:23"
+        },
+        {
+          "name": "walk entry dead zone",
+          "value": 8,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon/ftcommonwalk.c:131"
+        },
+        {
+          "name": "sample fighter walk speed multiplier",
+          "value": 0.3,
+          "unit": "world units/frame per stick unit at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:243"
+        },
+        {
+          "name": "sample fighter ground traction",
+          "value": 1.5,
+          "unit": "friction multiplier, applied each 60 Hz update",
+          "source": "src/relocData/203_MarioMain.c:244"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonwalk.c",
+          "line": 58
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonwalk.c",
+          "line": 97
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 22
+        }
+      ],
+      "capabilities": [
+        "ground_movement",
+        "walk_speed_tiers",
+        "stick_thresholds"
+      ],
+      "tags": [
+        "movement",
+        "ground",
+        "input"
+      ]
+    },
+    {
+      "id": "dash-run-transition",
+      "node": "fighter-ground-movement",
+      "name": "Dash and run transition",
+      "summary": "A quick stick flick starts a dash with a burst of speed, and holding the direction converts it to a run after a character-specific frame.",
+      "behavior": "Dash entry needs horizontal stick beyond a large threshold inside a short input window. Dash speed starts at the fighter dash value, begins losing speed after a fixed frame, and switches to run once the dash animation reaches the fighter dash-to-run frame while the stick stays held. Ending a dash without running leaves a fraction of the ground speed.",
+      "constants": [
+        {
+          "name": "dash stick threshold",
+          "value": 56,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:30"
+        },
+        {
+          "name": "dash input buffer",
+          "value": 3,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:28"
+        },
+        {
+          "name": "dash deceleration start",
+          "value": 7,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:31"
+        },
+        {
+          "name": "run stick threshold",
+          "value": 50,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:33"
+        },
+        {
+          "name": "sample fighter dash initial speed",
+          "value": 54,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:245"
+        },
+        {
+          "name": "sample fighter dash deceleration",
+          "value": 2.8,
+          "unit": "world units/frame squared at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:246"
+        },
+        {
+          "name": "sample fighter run speed",
+          "value": 44,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:247"
+        },
+        {
+          "name": "sample fighter dash to run frame",
+          "value": 14,
+          "unit": "frames at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:263"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommondash.c",
+          "line": 112
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommondash.c",
+          "line": 86
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonrun.c",
+          "line": 38
+        }
+      ],
+      "capabilities": [
+        "ground_movement",
+        "dash",
+        "run"
+      ],
+      "tags": [
+        "movement",
+        "ground",
+        "speed"
+      ]
+    },
+    {
+      "id": "jump-force-and-shorthop",
+      "node": "fighter-air-states",
+      "name": "Jump force and short hop",
+      "summary": "Jump height comes from stick force or button force, with the short-hop choice made inside a three-frame window.",
+      "behavior": "A grounded jump first enters a knee-bend state whose length comes from the fighter table. Stick jumps keep the largest vertical stick value seen during that state, while button jumps derive force from horizontal stick displacement and choose short or long force. The short-hop flag is latched only when a button releases within the first three frames, and the final vertical velocity is clamped before launch.",
+      "constants": [
+        {
+          "name": "stick jump threshold",
+          "value": 53,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:47"
+        },
+        {
+          "name": "knee-bend input buffer",
+          "value": 3,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:41"
+        },
+        {
+          "name": "short jump force",
+          "value": 9,
+          "unit": "jump force units per stick unit at 60 Hz",
+          "source": "src/ft/ftcommon.h:48"
+        },
+        {
+          "name": "long jump force",
+          "value": 17,
+          "unit": "jump force units per stick unit at 60 Hz",
+          "source": "src/ft/ftcommon.h:49"
+        },
+        {
+          "name": "short jump minimum",
+          "value": 36,
+          "unit": "jump force units at 60 Hz",
+          "source": "src/ft/ftcommon.h:50"
+        },
+        {
+          "name": "long jump minimum",
+          "value": 63,
+          "unit": "jump force units at 60 Hz",
+          "source": "src/ft/ftcommon.h:51"
+        },
+        {
+          "name": "jump height clamp",
+          "value": 77,
+          "unit": "jump force units at 60 Hz",
+          "source": "src/ft/ftcommon.h:52"
+        },
+        {
+          "name": "short hop window",
+          "value": 3,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:54"
+        },
+        {
+          "name": "sample fighter jump height multiplier",
+          "value": 0.7,
+          "unit": "vertical velocity multiplier per force unit at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:250"
+        },
+        {
+          "name": "sample fighter jump height base",
+          "value": 26,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:251"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonjump.c",
+          "line": 19
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonjump.c",
+          "line": 65
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonkneebend.c",
+          "line": 10
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "short_hop",
+        "jump_squat"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "input"
+      ]
+    },
+    {
+      "id": "double-jump",
+      "node": "fighter-air-states",
+      "name": "Double jump and multi-jump",
+      "summary": "An airborne jump consumes one jump charge, applies a fighter-scaled vertical impulse, and lets a few fighters chain extra jumps.",
+      "behavior": "The aerial jump uses the full controller range as its force, multiplies it by the fighter jump height values and the aerial height factor, then increments the jump count. Horizontal aerial speed uses a separate per-fighter multiplier. Some fighters can reverse facing during the first twelve frames, and two character families have fixed declining velocities for their extra jumps.",
+      "constants": [
+        {
+          "name": "aerial stick threshold",
+          "value": 53,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:61"
+        },
+        {
+          "name": "aerial turn window",
+          "value": 12,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:63"
+        },
+        {
+          "name": "aerial turn stick threshold",
+          "value": -30,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:62"
+        },
+        {
+          "name": "sample fighter aerial velocity multiplier",
+          "value": 0.35,
+          "unit": "world units/frame per stick unit at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:252"
+        },
+        {
+          "name": "sample fighter aerial height multiplier",
+          "value": 0.9,
+          "unit": "vertical velocity multiplier per jump at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:253"
+        },
+        {
+          "name": "first extra jump velocity",
+          "value": 60,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommonjumpaerial.c:10"
+        },
+        {
+          "name": "second extra jump velocity",
+          "value": 52,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommonjumpaerial.c:10"
+        },
+        {
+          "name": "third extra jump velocity",
+          "value": 47,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommonjumpaerial.c:10"
+        },
+        {
+          "name": "fourth extra jump velocity",
+          "value": 40,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommonjumpaerial.c:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonjumpaerial.c",
+          "line": 125
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonjumpaerial.c",
+          "line": 182
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 63
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "double_jump",
+        "multi_jump"
+      ],
+      "tags": [
+        "movement",
+        "aerial",
+        "jump"
+      ]
+    },
+    {
+      "id": "fast-fall",
+      "node": "fighter-physics",
+      "name": "Fast fall",
+      "summary": "A downward stick flick while falling sets vertical speed to the fighter fast-fall terminal velocity and marks the landing as heavy.",
+      "behavior": "Fast fall arms only when the fighter is already descending and the stick crosses a deep downward threshold inside a short input window. Once armed, vertical speed is written directly to the fighter fast-fall terminal value on each update, ignoring normal gravity acceleration. Landing checks compare falling speed with that same terminal value to choose the heavy landing animation.",
+      "constants": [
+        {
+          "name": "fast fall stick threshold",
+          "value": -53,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:70"
+        },
+        {
+          "name": "fast fall input buffer",
+          "value": 4,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:71"
+        },
+        {
+          "name": "fast fall speed for default fighter",
+          "value": 70,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:259"
+        },
+        {
+          "name": "fast fall speed for fast faller",
+          "value": 96,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/209_FoxMain.c:280"
+        },
+        {
+          "name": "fast fall speed for heavy fighter",
+          "value": 89,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/213_DonkeyMain.c:297"
+        },
+        {
+          "name": "fast fall speed for floaty fighter",
+          "value": 67,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/217_SamusMain.c:359"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 227
+        },
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 233
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonlanding.c",
+          "line": 71
+        }
+      ],
+      "capabilities": [
+        "fast_fall",
+        "terminal_velocity",
+        "landing"
+      ],
+      "tags": [
+        "physics",
+        "aerial",
+        "feel"
+      ]
+    },
+    {
+      "id": "air-drift-and-gravity",
+      "node": "fighter-physics",
+      "name": "Air drift and gravity",
+      "summary": "Air control adds acceleration from stick input, clamps horizontal speed, and applies friction when the stick is near neutral.",
+      "behavior": "Each update subtracts gravity from vertical speed and clamps descent at the fighter normal terminal velocity. Horizontal drift needs stick displacement above a small dead zone; stick input adds acceleration, the result is clamped to the fighter maximum air speed, and air friction pulls the value toward zero after drift is applied. When current horizontal speed already exceeds the maximum, the code steps it down toward the limit instead of clamping instantly.",
+      "constants": [
+        {
+          "name": "air drift dead zone",
+          "value": 8,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftdef.h:14"
+        },
+        {
+          "name": "sample fighter air acceleration",
+          "value": 0.025,
+          "unit": "world units/frame squared per stick unit at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:254"
+        },
+        {
+          "name": "sample fighter maximum air speed",
+          "value": 30,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:255"
+        },
+        {
+          "name": "sample fighter air friction",
+          "value": 0.2,
+          "unit": "world units/frame squared at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:256"
+        },
+        {
+          "name": "sample fighter gravity",
+          "value": 2.4,
+          "unit": "world units/frame squared at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:257"
+        },
+        {
+          "name": "sample fighter normal terminal velocity",
+          "value": 44,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:258"
+        },
+        {
+          "name": "overspeed decay step",
+          "value": 1,
+          "unit": "world units/frame at 60 Hz",
+          "source": "src/ft/ftphysics.c:278"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 216
+        },
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 300
+        },
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 347
+        }
+      ],
+      "capabilities": [
+        "air_control",
+        "gravity",
+        "terminal_velocity"
+      ],
+      "tags": [
+        "physics",
+        "aerial",
+        "feel"
+      ]
+    },
+    {
+      "id": "ground-friction",
+      "node": "fighter-physics",
+      "name": "Ground friction by surface",
+      "summary": "Ground friction combines a floor material value with fighter traction, and knockback sliding uses a quarter of that friction.",
+      "behavior": "Ground speed loses friction each update until it reaches zero, and the amount is the floor material coefficient multiplied by the fighter traction attribute. A speed clamp on the opposite side prevents friction from reversing direction. While a fighter slides from damage on the ground, the same material and traction product is scaled down before it is applied.",
+      "constants": [
+        {
+          "name": "default floor material friction",
+          "value": 4,
+          "unit": "friction units per 60 Hz update",
+          "source": "src/mp/mpcollision.c:15"
+        },
+        {
+          "name": "second floor material friction",
+          "value": 3,
+          "unit": "friction units per 60 Hz update",
+          "source": "src/mp/mpcollision.c:15"
+        },
+        {
+          "name": "third floor material friction",
+          "value": 3,
+          "unit": "friction units per 60 Hz update",
+          "source": "src/mp/mpcollision.c:16"
+        },
+        {
+          "name": "lowest floor material friction",
+          "value": 1,
+          "unit": "friction units per 60 Hz update",
+          "source": "src/mp/mpcollision.c:16"
+        },
+        {
+          "name": "fighter traction",
+          "value": 1.5,
+          "unit": "friction multiplier, applied each 60 Hz update",
+          "source": "src/relocData/203_MarioMain.c:244"
+        },
+        {
+          "name": "damage slide friction scale",
+          "value": 0.25,
+          "unit": "fraction of normal friction per 60 Hz update",
+          "source": "src/ft/ftmain.c:1791"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftphysics.c",
+          "line": 158
+        },
+        {
+          "path": "src/mp/mpcollision.c",
+          "line": 13
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 1791
+        }
+      ],
+      "capabilities": [
+        "ground_friction",
+        "surface_materials",
+        "damage_slide"
+      ],
+      "tags": [
+        "physics",
+        "ground",
+        "feel"
+      ]
+    },
+    {
+      "id": "knockback-formula",
+      "node": "fighter-damage",
+      "name": "Knockback formula",
+      "summary": "Hit damage and accumulated percent feed a scaled knockback value that mixes fighter weight, attack scaling, and handicap.",
+      "behavior": "When a hit has no fixed knockback weight, the game adds current percent to queued damage, scales it by a damage coefficient and by hit damage, then multiplies by the defender weight factor. It adds a flat base, applies attack scale and base values, applies the match damage ratio, and multiplies both handicap table entries. The result is capped before it becomes launch speed.",
+      "constants": [
+        {
+          "name": "weight factor",
+          "value": 1.4,
+          "unit": "dimensionless knockback factor, applied per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1457"
+        },
+        {
+          "name": "flat knockback base",
+          "value": 18,
+          "unit": "knockback units per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1457"
+        },
+        {
+          "name": "damage coefficient",
+          "value": 0.1,
+          "unit": "knockback units per percent damage per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1463"
+        },
+        {
+          "name": "hit damage coefficient",
+          "value": 0.05,
+          "unit": "knockback units per percent damage squared per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1463"
+        },
+        {
+          "name": "knockback cap",
+          "value": 2500,
+          "unit": "knockback units per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1465"
+        },
+        {
+          "name": "sample fighter weight",
+          "value": 1,
+          "unit": "dimensionless weight factor, applied per hit at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:261"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftparam.c",
+          "line": 1451
+        },
+        {
+          "path": "src/ft/ftparam.c",
+          "line": 1457
+        },
+        {
+          "path": "src/ft/ftparam.c",
+          "line": 1463
+        }
+      ],
+      "capabilities": [
+        "knockback",
+        "weight_scaling",
+        "damage_scaling"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "feel"
+      ]
+    },
+    {
+      "id": "hitstun-and-damage-levels",
+      "node": "fighter-damage",
+      "name": "Hitstun and damage levels",
+      "summary": "Knockback becomes hitstun at a fixed divisor, and hitstun selects a light, medium, heavy, or airborne reaction.",
+      "behavior": "Hitstun is knockback divided by a constant, so launch speed and stun length stay proportional. The game compares the result with three thresholds to pick one of four reaction levels; the highest level lifts the fighter off the ground. A forced status override also promotes the reaction to the airborne level.",
+      "constants": [
+        {
+          "name": "hitstun divisor",
+          "value": 1.875,
+          "unit": "knockback units per hitstun frame at 60 Hz",
+          "source": "src/ft/ftparam.c:1507"
+        },
+        {
+          "name": "light reaction ceiling",
+          "value": 12,
+          "unit": "hitstun frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:101"
+        },
+        {
+          "name": "medium reaction ceiling",
+          "value": 24,
+          "unit": "hitstun frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:103"
+        },
+        {
+          "name": "heavy reaction ceiling",
+          "value": 32,
+          "unit": "hitstun frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:106"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "line": 314
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "line": 473
+        },
+        {
+          "path": "src/ft/ftparam.c",
+          "line": 1505
+        }
+      ],
+      "capabilities": [
+        "hitstun",
+        "damage_levels",
+        "reaction"
+      ],
+      "tags": [
+        "combat",
+        "damage"
+      ]
+    },
+    {
+      "id": "hitlag-freeze",
+      "node": "fighter-damage",
+      "name": "Hitlag freeze",
+      "summary": "Each hit freezes both fighters for a damage-scaled number of updates, while button presses stay buffered.",
+      "behavior": "Hitlag length comes from damage divided by three plus a flat value, then is scaled by the hit multiplier; crouching cuts the result to two thirds. During hitlag the game skips physics and animation advances but records new button presses so they register when the freeze ends. Electric hits use a larger hitlag multiplier stored on the attacker.",
+      "constants": [
+        {
+          "name": "hitlag damage divisor",
+          "value": 3,
+          "unit": "damage points per hitlag frame at 60 Hz",
+          "source": "src/ft/ftparam.c:1514"
+        },
+        {
+          "name": "hitlag flat bonus",
+          "value": 5,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftparam.c:1514"
+        },
+        {
+          "name": "crouch hitlag scale numerator",
+          "value": 2,
+          "unit": "multiplier per hit at 60 Hz",
+          "source": "src/ft/ftparam.c:1521"
+        },
+        {
+          "name": "electric hitlag multiplier",
+          "value": 1.5,
+          "unit": "multiplier per hit at 60 Hz",
+          "source": "src/ft/ftmain.c:2874"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftparam.c",
+          "line": 1511
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 3988
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 1259
+        }
+      ],
+      "capabilities": [
+        "hitlag",
+        "freeze_frames",
+        "input_buffer"
+      ],
+      "tags": [
+        "combat",
+        "feel",
+        "timing"
+      ]
+    },
+    {
+      "id": "smash-directional-influence",
+      "node": "fighter-damage",
+      "name": "Smash directional influence",
+      "summary": "A fast stick flick during hitlag shifts the fighter position by stick displacement times a damage-direction multiplier.",
+      "behavior": "During hitlag, if stick magnitude reaches the smash threshold and either axis was tapped within the input buffer, the fighter model translates directly by the stick vector times the multiplier. The tap counters reset so one flick produces one shift. The multiplier differs between regions.",
+      "constants": [
+        {
+          "name": "smash directional influence stick threshold",
+          "value": 53,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:74"
+        },
+        {
+          "name": "smash directional influence tap buffer",
+          "value": 4,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:73"
+        },
+        {
+          "name": "smash directional influence shift multiplier",
+          "value": 2.1,
+          "unit": "world units per stick unit per hit at 60 Hz",
+          "source": "src/ft/ftcommon.h:92"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "line": 239
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommondamage.c",
+          "line": 251
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 92
+        }
+      ],
+      "capabilities": [
+        "directional_influence",
+        "smash_di",
+        "hitlag"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "input"
+      ]
+    },
+    {
+      "id": "shield-decay-and-size",
+      "node": "fighter-guard",
+      "name": "Shield decay and size",
+      "summary": "Shield health drains on a fixed interval, regenerates slowly out of guard, and controls shield size.",
+      "behavior": "A guarding fighter loses one shield health every sixteen updates until the shield breaks. Outside guard, a shield below full heals one point every ten updates. Shield scale blends a health ratio with fixed scale constants and the fighter shield size attribute; a break resets health to a fixed low value.",
+      "constants": [
+        {
+          "name": "maximum shield health",
+          "value": 55,
+          "unit": "shield health points, restored on spawn at 60 Hz simulation",
+          "source": "src/ft/ftmanager.c:431"
+        },
+        {
+          "name": "shield decay interval",
+          "value": 16,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:234"
+        },
+        {
+          "name": "shield heal interval",
+          "value": 10,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftmain.c:3845"
+        },
+        {
+          "name": "shield size health divisor",
+          "value": 55,
+          "unit": "shield health points per size unit at 60 Hz",
+          "source": "src/ft/ftcommon.h:236"
+        },
+        {
+          "name": "shield size floor scale",
+          "value": 0.65,
+          "unit": "size multiplier per 60 Hz update",
+          "source": "src/ft/ftcommon.h:237"
+        },
+        {
+          "name": "shield size added scale",
+          "value": 0.35,
+          "unit": "size multiplier per 60 Hz update",
+          "source": "src/ft/ftcommon.h:238"
+        },
+        {
+          "name": "shield size divisor",
+          "value": 30,
+          "unit": "size units per 60 Hz update",
+          "source": "src/ft/ftcommon.h:239"
+        },
+        {
+          "name": "shield break health",
+          "value": 30,
+          "unit": "shield health points, set on break at 60 Hz",
+          "source": "src/ft/ftmain.c:3852"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonguard1.c",
+          "line": 72
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonguard1.c",
+          "line": 125
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 3837
+        }
+      ],
+      "capabilities": [
+        "shield",
+        "shield_health",
+        "shield_size"
+      ],
+      "tags": [
+        "defense",
+        "shield",
+        "feel"
+      ]
+    },
+    {
+      "id": "shield-pushback",
+      "node": "fighter-guard",
+      "name": "Shieldstun and pushback",
+      "summary": "Blocked damage becomes shieldstun frames, and those frames drive horizontal pushback on the defender.",
+      "behavior": "When a hit is blocked, shield damage is multiplied by a regional constant and a flat bonus is added to produce shieldstun frames. The defender slides away from the attacker at a speed equal to those frames times a velocity multiplier, while the release delay still counts down.",
+      "constants": [
+        {
+          "name": "shieldstun multiplier",
+          "value": 1.62,
+          "unit": "shieldstun frames per shield damage point at 60 Hz",
+          "source": "src/ft/ftcommon.h:241"
+        },
+        {
+          "name": "shieldstun flat bonus",
+          "value": 4,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:245"
+        },
+        {
+          "name": "shield pushback velocity multiplier",
+          "value": 2,
+          "unit": "world units/frame per shieldstun frame at 60 Hz",
+          "source": "src/ft/ftcommon.h:246"
+        },
+        {
+          "name": "guard release delay",
+          "value": 8,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:233"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonguard2.c",
+          "line": 113
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonguard2.c",
+          "line": 119
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonguard2.c",
+          "line": 121
+        }
+      ],
+      "capabilities": [
+        "shieldstun",
+        "pushback",
+        "guard"
+      ],
+      "tags": [
+        "defense",
+        "shield",
+        "combat"
+      ]
+    },
+    {
+      "id": "ledge-hold",
+      "node": "fighter-ledge-death",
+      "name": "Ledge hold and re-grab",
+      "summary": "Ledge hold time shortens with damage, and a cooldown blocks immediate re-grabs.",
+      "behavior": "After grabbing a ledge, a fighter waits a long fixed time at low damage and a shorter time at high damage. When the wait expires, the fighter drops away and starts a ledge catch cooldown.",
+      "constants": [
+        {
+          "name": "ledge re-grab cooldown",
+          "value": 30,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:178"
+        },
+        {
+          "name": "high damage threshold",
+          "value": 100,
+          "unit": "percent damage, checked each 60 Hz update",
+          "source": "src/ft/ftcommon.h:180"
+        },
+        {
+          "name": "high damage hold time",
+          "value": 480,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:182"
+        },
+        {
+          "name": "low damage hold time",
+          "value": 1080,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:183"
+        },
+        {
+          "name": "player tag hold time",
+          "value": 120,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommoncliffcatchwait.c:114"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommoncliffcatchwait.c",
+          "line": 98
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommoncliffcatchwait.c",
+          "line": 122
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 178
+        }
+      ],
+      "capabilities": [
+        "ledge",
+        "ledge_hold",
+        "regrab"
+      ],
+      "tags": [
+        "movement",
+        "ledge",
+        "timing"
+      ]
+    },
+    {
+      "id": "platform-drop",
+      "node": "fighter-air-states",
+      "name": "Platform drop-through",
+      "summary": "A deep downward stick flick drops a fighter through a passable platform by ignoring the current floor line.",
+      "behavior": "The drop check needs the stick below a downward threshold within a short tap window and a floor flagged as passable. Entering the state clears vertical speed, clamps horizontal air speed, and ignores the floor line just left. Crouch can queue the same drop for a few frames.",
+      "constants": [
+        {
+          "name": "drop stick threshold",
+          "value": -53,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:126"
+        },
+        {
+          "name": "drop input buffer",
+          "value": 4,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:127"
+        },
+        {
+          "name": "crouch drop wait",
+          "value": 3,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:131"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonpass.c",
+          "line": 47
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommonpass.c",
+          "line": 19
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 126
+        }
+      ],
+      "capabilities": [
+        "platform_drop",
+        "pass_through",
+        "crouch"
+      ],
+      "tags": [
+        "movement",
+        "platform",
+        "input"
+      ]
+    },
+    {
+      "id": "tech-window",
+      "node": "fighter-air-states",
+      "name": "Tech window",
+      "summary": "A Z press shortly before impact converts a knockdown into a tech, and a missed tech allows a directional roll.",
+      "behavior": "The game tracks updates since the last Z press and treats a press inside a twenty-frame window as a tech request when a damage collision is about to ground the fighter. A failed tech can still become a directional get-up roll when horizontal stick passes a small threshold.",
+      "constants": [
+        {
+          "name": "tech buffer window",
+          "value": 20,
+          "unit": "frames at 60 Hz",
+          "source": "src/ft/ftcommon.h:175"
+        },
+        {
+          "name": "missed tech roll stick threshold",
+          "value": 20,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:173"
+        },
+        {
+          "name": "tech direction dead zone",
+          "value": 20,
+          "unit": "controller stick units, sampled each 60 Hz update",
+          "source": "src/ft/ftcommon.h:176"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommonpassive.c",
+          "line": 23
+        },
+        {
+          "path": "src/ft/ftcommon.h",
+          "line": 175
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 1377
+        }
+      ],
+      "capabilities": [
+        "tech",
+        "getup",
+        "input_buffer"
+      ],
+      "tags": [
+        "movement",
+        "defense",
+        "timing"
+      ]
+    },
+    {
+      "id": "battle-camera-framing",
+      "node": "global-camera",
+      "name": "Battle camera framing",
+      "summary": "The battle camera frames all fighters inside facing-biased boxes, zooms with player count, and smooths field of view and travel.",
+      "behavior": "Each fighter contributes a box that reaches farther in front than behind based on facing, plus a fixed vertical margin. The union sets horizontal and vertical interest, which becomes a target distance clamped between fixed limits. Player count picks a zoom multiplier, and camera travel and field of view move toward their targets by a fraction each update.",
+      "constants": [
+        {
+          "name": "vertical field of view",
+          "value": 38,
+          "unit": "degrees, smoothed each 60 Hz update",
+          "source": "src/gm/gmcamera.c:636"
+        },
+        {
+          "name": "near plane",
+          "value": 256,
+          "unit": "world units, fixed projection distance for 60 Hz frames",
+          "source": "src/gm/gmcamera.c:16"
+        },
+        {
+          "name": "far plane",
+          "value": 39936,
+          "unit": "world units, fixed projection distance for 60 Hz frames",
+          "source": "src/gm/gmcamera.c:16"
+        },
+        {
+          "name": "one player zoom",
+          "value": 1.5,
+          "unit": "dimensionless camera multiplier, applied each 60 Hz update",
+          "source": "src/gm/gmcamera.c:43"
+        },
+        {
+          "name": "two player zoom",
+          "value": 1.32,
+          "unit": "dimensionless camera multiplier, applied each 60 Hz update",
+          "source": "src/gm/gmcamera.c:44"
+        },
+        {
+          "name": "three player zoom",
+          "value": 1.16,
+          "unit": "dimensionless camera multiplier, applied each 60 Hz update",
+          "source": "src/gm/gmcamera.c:45"
+        },
+        {
+          "name": "four player zoom",
+          "value": 1,
+          "unit": "dimensionless camera multiplier, applied each 60 Hz update",
+          "source": "src/gm/gmcamera.c:46"
+        },
+        {
+          "name": "front interest margin",
+          "value": 1000,
+          "unit": "world units, evaluated each 60 Hz update",
+          "source": "src/gm/gmcamera.c:356"
+        },
+        {
+          "name": "rear interest margin",
+          "value": 700,
+          "unit": "world units, evaluated each 60 Hz update",
+          "source": "src/gm/gmcamera.c:357"
+        },
+        {
+          "name": "vertical interest margin",
+          "value": 700,
+          "unit": "world units, evaluated each 60 Hz update",
+          "source": "src/gm/gmcamera.c:372"
+        },
+        {
+          "name": "minimum target distance",
+          "value": 2500,
+          "unit": "world units, clamped each 60 Hz update",
+          "source": "src/gm/gmcamera.c:479"
+        },
+        {
+          "name": "maximum target distance",
+          "value": 30000,
+          "unit": "world units, clamped each 60 Hz update",
+          "source": "src/gm/gmcamera.c:483"
+        },
+        {
+          "name": "far pan fraction",
+          "value": 0.1,
+          "unit": "fraction of remaining distance per 60 Hz update",
+          "source": "src/gm/gmcamera.c:545"
+        },
+        {
+          "name": "near pan fraction",
+          "value": 0.05,
+          "unit": "fraction of remaining distance per 60 Hz update",
+          "source": "src/gm/gmcamera.c:549"
+        },
+        {
+          "name": "field of view smoothing",
+          "value": 0.1,
+          "unit": "fraction of remaining difference per 60 Hz update",
+          "source": "src/gm/gmcamera.c:620"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gm/gmcamera.c",
+          "line": 624
+        },
+        {
+          "path": "src/gm/gmcamera.c",
+          "line": 231
+        },
+        {
+          "path": "src/gm/gmcamera.c",
+          "line": 469
+        }
+      ],
+      "capabilities": [
+        "camera",
+        "camera_zoom",
+        "camera_tracking"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "framing"
+      ]
+    },
+    {
+      "id": "blast-zone-knockout",
+      "node": "fighter-ledge-death",
+      "name": "Blast zone knockout",
+      "summary": "Crossing a stage map boundary knocks a fighter out, with a random upward star knockout at the top boundary.",
+      "behavior": "Each update compares the fighter top joint against map bounds, ignoring bosses and fighters flagged to stay inside. A bottom or side crossing starts a directional knockout; a top crossing picks a star launch most of the time and the upward fall launch otherwise. In limit mode the same bounds teleport the fighter inward instead of causing a knockout.",
+      "constants": [
+        {
+          "name": "top upward-fall knockout chance denominator",
+          "value": 6,
+          "unit": "one in N top-boundary knockouts at 60 Hz",
+          "source": "src/ft/ftcommon/ftcommondead.c:637"
+        },
+        {
+          "name": "limit mode inward offset",
+          "value": 500,
+          "unit": "world units, applied each 60 Hz update",
+          "source": "src/ft/ftcommon/ftcommondead.c:550"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftcommon/ftcommondead.c",
+          "line": 533
+        },
+        {
+          "path": "src/ft/ftcommon/ftcommondead.c",
+          "line": 637
+        },
+        {
+          "path": "src/gm/gmcamera.c",
+          "line": 77
+        }
+      ],
+      "capabilities": [
+        "blast_zone",
+        "knockout",
+        "star_ko"
+      ],
+      "tags": [
+        "combat",
+        "death",
+        "camera"
+      ]
+    },
+    {
+      "id": "hitbox-sweep",
+      "node": "global-collision",
+      "name": "Swept hitbox placement",
+      "summary": "Attack colliders follow animated joints and sweep from their previous position to their current position for hit tests.",
+      "behavior": "On the first active update an attack collider copies its offset and converts it to world space from its joint. Later updates keep the previous position, recompute the current position, and hit tests sweep the segment between them. Collider offsets can be scaled by the inverse of the fighter size attribute so the same animation works at different body scales.",
+      "constants": [
+        {
+          "name": "sample fighter size",
+          "value": 1.12,
+          "unit": "size multiplier, applied per hitbox update at 60 Hz",
+          "source": "src/relocData/203_MarioMain.c:234"
+        },
+        {
+          "name": "inverse size numerator",
+          "value": 1,
+          "unit": "size ratio numerator, applied per hitbox update at 60 Hz",
+          "source": "src/ft/ftmain.c:1876"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 1872
+        },
+        {
+          "path": "src/ft/ftmain.c",
+          "line": 1896
+        },
+        {
+          "path": "src/gm/gmcollision.c",
+          "line": 661
+        },
+        {
+          "path": "src/gm/gmcollision.c",
+          "line": 780
+        }
+      ],
+      "capabilities": [
+        "hitbox",
+        "sweep",
+        "collision"
+      ],
+      "tags": [
+        "combat",
+        "collision",
+        "hitbox"
+      ]
+    }
+  ]
+}
