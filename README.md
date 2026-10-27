@@ -5,9 +5,10 @@ attribute this repository and preserve each game's pinned source links. The link
 source repositories retain their own licences. Read them, borrow algorithms and defaults,
 and copy no source code, comments, levels, character names or art into cards or games.
 
-`catalog.json` lists Tier-1 mapped games and Tier-2 repositories to explore on demand.
-`game-<id>.json` holds a map and mechanic cards at one full Git commit SHA. The strict
-`schema.json` rejects unknown fields and fenced code in every string. `validate.mjs`
+`data/catalog.json` lists Tier-1 mapped games and Tier-2 repositories to explore on demand.
+`data/games/<id>.json` holds a map and mechanic cards at one full Git commit SHA. The strict
+`schemas/game.schema.json` and `schemas/catalog.schema.json` reject unknown fields, wrong
+types, missing fields and fenced code in every string. `scripts/validate.mjs`
 checks links, paths, function ranges and numeric literals against that exact source revision.
 Those checks cannot establish effective values after later assignments or action transitions;
 every card needs semantic source review before a release. Raw units and action-update frames
@@ -16,13 +17,17 @@ rate is assumed across source regions.
 
 ```sh
 npm ci
-node --test validate.spec.mjs
+npm test
+npm run check:data   # offline: layout, schemas, links, catalog tiers, formatting
 npm run validate
 npm run release:assets
 ```
 
+Authored data is canonical JSON: `JSON.stringify(value, null, 2)` plus one trailing newline,
+with object insertion order and array order preserved.
 Validation fetches only the pinned source commits into ignored `.sources/`.
-Use `node validate.mjs --source /path/to/pinned/clone` to reuse a local clone.
+Use `npm run validate -- --game <id> --source /path/to/pinned/clone` to reuse a local clone
+for one game; catalog consistency is still checked for the whole library.
 Release assets in `.release/` are `index.json.gz` (catalog plus searchable stubs)
 and one lazy `game-<id>.json` per mapped game. Tag `v0.1` after review; the single
 workflow validates every source citation before publishing.
@@ -42,6 +47,8 @@ Existing rows keep their id and tier; a repository listed twice gets one row.
 
 ## Scouts
 
-A scout is one headless agent run that maps one pinned repository into `game-<id>.json`.
-Run `npm run scout -- <id> <repo> <sha>`; it clones into `.sources/` and logs to `.sources/<id>.scout.log`.
+A scout is one headless agent run that maps one pinned repository into `data/games/<id>.json`.
+Run `npm run scout -- <id> <repo> <sha>`; it clones into `.sources/`, logs to `.sources/<id>.scout.log`
+and then runs the validator on that game. Promoting a new map with a Tier-1 catalog row belongs
+to the import/review lane, not to the scout.
 Every card gets a full human or agent review before merge.

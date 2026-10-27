@@ -5,24 +5,14 @@ import { execFileSync } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
-const schema = JSON.parse(readFileSync(new URL('./schema.json', import.meta.url)));
-const validate = new Ajv({ allErrors: true }).compile(schema);
-const catalogSchema = {
-  type: 'array',
-  items: {
-    type: 'object',
-    additionalProperties: false,
-    required: ['id', 'title', 'platform', 'repo', 'tier'],
-    properties: {
-      id: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' },
-      title: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
-      platform: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
-      repo: { type: 'string', minLength: 1, pattern: '^(?!\\s*$)(?![\\s\\S]*(?:```|~~~))[\\s\\S]+$' },
-      tier: { type: 'integer', enum: [1, 2] },
-    },
-  },
-};
-const validateCatalogRows = new Ajv({ allErrors: true }).compile(catalogSchema);
+const root = fileURLToPath(new URL('..', import.meta.url));
+const ajv = new Ajv({ allErrors: true });
+const readSchema = name => JSON.parse(readFileSync(new URL(`../schemas/${name}`, import.meta.url)));
+const validateGameDocument = ajv.compile(readSchema('game.schema.json'));
+const validateCatalogDocument = ajv.compile(readSchema('catalog.schema.json'));
+
+export const canonical = value => `${JSON.stringify(value, null, 2)}\n`;
+
 function unique(ids) {
   if (new Set(ids).size !== ids.length) throw new Error('duplicate ids');
 }
@@ -31,7 +21,7 @@ function sourcePath(value) {
     throw new Error(`unsafe source path: ${value}`);
 }
 export function validateCatalog(catalog, games, stubs = []) {
-  if (!validateCatalogRows(catalog)) throw new Error(JSON.stringify(validateCatalogRows.errors));
+  if (!validateCatalogDocument(catalog)) throw new Error(JSON.stringify(validateCatalogDocument.errors));
   unique(catalog.map(row => row.id));
   const rows = new Map(catalog.map(row => [row.id, row]));
   const gameIdList = games.map(game => game.id);
@@ -49,7 +39,7 @@ export function validateCatalog(catalog, games, stubs = []) {
   return catalog;
 }
 export function validateGame(game) {
-  if (!validate(game)) throw new Error(JSON.stringify(validate.errors));
+  if (!validateGameDocument(game)) throw new Error(JSON.stringify(validateGameDocument.errors));
   unique(game.nodes.map(node => node.id));
   unique(game.cards.map(card => card.id));
   const nodes = new Map(game.nodes.map(node => [node.id, node]));
@@ -74,6 +64,33 @@ export function validateGame(game) {
     }
   }
   return game;
+}
+function read(name) {
+  const text = readFileSync(path.join(root, name), 'utf8');
+  return { name, text, value: JSON.parse(text) };
+}
+export function loadLibrary() {
+  for (const name of readdirSync(root))
+    if (name === 'catalog.json' || /^game-.*\.json$/u.test(name))
+      throw new Error(`legacy root data ${name}: authored data lives under data/`);
+  if (!existsSync(path.join(root, 'data', 'games'))) throw new Error('missing data/games directory');
+  const docs = readdirSync(path.join(root, 'data', 'games'))
+    .filter(name => name.endsWith('.json'))
+    .sort()
+    .map(name => read(path.join('data', 'games', name)));
+  if (!docs.length) throw new Error('no games');
+  const games = docs.map(doc => {
+    validateGame(doc.value);
+    const name = path.basename(doc.name, '.json');
+    if (doc.value.id !== name) throw new Error(`game file ${doc.name} holds id ${doc.value.id}: rename it to ${doc.value.id}.json`);
+    return doc.value;
+  });
+  const catalog = read(path.join('data', 'catalog.json'));
+  validateCatalog(catalog.value, games);
+  for (const doc of [...docs, catalog])
+    if (doc.text !== canonical(doc.value))
+      throw new Error(`noncanonical JSON in ${doc.name}: write JSON.stringify(value, null, 2) plus one trailing newline`);
+  return { catalog: catalog.value, games };
 }
 function verifySources(game, source) {
   const lines = new Map();
@@ -111,35 +128,39 @@ function verifySources(game, source) {
   }
 }
 export function run(args = process.argv.slice(2)) {
-  const gameFlag = args.indexOf('--game');
-  const gameId = gameFlag >= 0 ? args[gameFlag + 1] : undefined;
-  if (gameFlag >= 0 && !gameId) throw new Error('missing --game id');
-  const files = readdirSync('.').filter(name => /^game-.*\.json$/u.test(name));
-  if (gameId !== undefined && !files.includes(`game-${gameId}.json`)) throw new Error(`no game file for ${gameId}`);
-  const games = (gameId === undefined ? files : [`game-${gameId}.json`]).map(name => validateGame(JSON.parse(readFileSync(name))));
-  if (!games.length) throw new Error('no games');
-  for (const game of games) {
-    const sourceFlag = args.indexOf('--source');
-    const source = sourceFlag >= 0 ? args[sourceFlag + 1] : path.resolve('.sources', game.id);
-    if (!source) throw new Error('missing --source path');
-    if (sourceFlag < 0) {
-      if (!existsSync(source)) { mkdirSync(source, { recursive: true }); execFileSync('git', ['init', '--bare', source]); }
-      execFileSync('git', ['-C', source, 'fetch', '--depth=1', game.repo, game.sha], { stdio: 'inherit' });
+  const flag = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
+  const gameId = flag('--game');
+  if (args.includes('--game') && !gameId) throw new Error('missing --game id');
+  const source = flag('--source');
+  if (args.includes('--source') && !source) throw new Error('missing --source path');
+  const { catalog, games } = loadLibrary();
+  const selected = gameId === undefined ? games : games.filter(game => game.id === gameId);
+  if (!selected.length) throw new Error(`no game file for ${gameId}`);
+  if (args.includes('--data-only')) {
+    console.log(`data: ${catalog.length} catalog rows and ${games.length} games are canonical and consistent`);
+    return;
+  }
+  for (const game of selected) {
+    const checkout = source ?? path.join(root, '.sources', game.id);
+    if (source === undefined) {
+      if (!existsSync(checkout)) { mkdirSync(checkout, { recursive: true }); execFileSync('git', ['init', '--bare', checkout]); }
+      execFileSync('git', ['-C', checkout, 'fetch', '--depth=1', game.repo, game.sha], { stdio: 'inherit' });
     }
-    verifySources(game, source);
+    verifySources(game, checkout);
     console.log(`${game.id}@${game.sha}: ${game.nodes.length} nodes, ${game.cards.length} cards, all pinned source checks passed`);
   }
   if (games.find(game => game.id === 'sm64')?.cards.length < 10) throw new Error('SM64 needs at least 10 cards');
   if (args.includes('--release')) {
-    const catalog = JSON.parse(readFileSync('catalog.json'));
     const stubs = games.flatMap(game => [
       ...game.nodes.map(node => ({ id: node.id, game: game.id, kind: 'node', name: node.name, summary: node.purpose, tags: [], capabilities: [] })),
       ...game.cards.map(card => ({ id: card.id, game: game.id, kind: 'card', name: card.name, summary: card.summary, tags: card.tags, capabilities: card.capabilities })),
     ]);
     validateCatalog(catalog, games, stubs);
-    mkdirSync('.release', { recursive: true });
-    writeFileSync('.release/index.json.gz', gzipSync(JSON.stringify({ version: 1, games: catalog, stubs })));
-    for (const game of games) writeFileSync(`.release/game-${game.id}.json`, JSON.stringify(game));
+    mkdirSync(path.join(root, '.release'), { recursive: true });
+    writeFileSync(path.join(root, '.release', 'index.json.gz'), gzipSync(JSON.stringify({ version: 1, games: catalog, stubs })));
+    for (const game of games) writeFileSync(path.join(root, '.release', `game-${game.id}.json`), JSON.stringify(game));
   }
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try { run(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+}

@@ -4,10 +4,12 @@ You are one headless scout. Read one game repository at a pinned commit and writ
 
 ## Output
 
-Write exactly one file, game-<id>.json, at the repository root. It must match schema.json exactly:
+Write exactly one file, data/games/<id>.json. It must match schemas/game.schema.json exactly:
 - Top level: version 1, id, title, repo, sha, nodes, cards. No unknown fields.
+- The file name holds the same id as the document.
 - sha is the full 40-hexadecimal commit SHA.
 - All strings are original prose. Use no fenced code, no code excerpts and no comments.
+- Canonical formatting: JSON.stringify(value, null, 2) plus one trailing newline.
 
 ## Guardrail
 
@@ -29,6 +31,10 @@ Each node has id, name, purpose, paths, functions and dependsOn. Nodes cover the
 
 Write at least 10 cards for mechanics that users ask for: movement, jump, camera, combat, physics feel. Each card is linked to a node through card.node and has at least one source.
 
+## Catalog ownership
+
+data/catalog.json is not yours to write. The review lane promotes your game with a Tier-1 catalog row. Validation runs over the whole library, so a missing Tier-1 row is reported to that lane, not fixed here.
+
 ## Finish
 
-From the repository root run `node validate.mjs --source .sources/<id> --game <id>`. Fix every error it prints and repeat until it passes.
+From the repository root run `node scripts/validate.mjs --source .sources/<id> --game <id>`. Fix every error it prints in your file and repeat until it passes.

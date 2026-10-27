@@ -1,8 +1,9 @@
 // Tier-2 import: one catalog row per project in the Greatest Games Decompilations List README.
-// Usage: node import.mjs <README.md>   (rewrites catalog.json; existing rows keep their id and tier)
-import { readFileSync, writeFileSync } from 'node:fs';
+// Usage: npm run import -- <README.md>   (rewrites data/catalog.json; existing rows keep their id and tier)
+import { readFileSync, writeFileSync, renameSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { canonical, loadLibrary, validateCatalog } from './validate.mjs';
 
 // The first link is the project; a ✦ marker and extra " · [link]" mirrors are ignored.
 const ROW = /^- \*\*(.+?)\*\*(?: ✦)? — \[[^\]]+\]\((https:\/\/[^)\s]+)\)(.*)$/u;
@@ -38,8 +39,23 @@ export function importList(readme, existing) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const catalog = JSON.parse(readFileSync('catalog.json', 'utf8'));
-  const rows = importList(readFileSync(process.argv[2], 'utf8'), catalog);
-  writeFileSync('catalog.json', `${JSON.stringify(rows, null, 2)}\n`);
-  console.log(`catalog: ${catalog.length} -> ${rows.length} rows`);
+  try {
+    if (!process.argv[2]) throw new Error('usage: npm run import -- <README.md>');
+    const { catalog, games } = loadLibrary();
+    const rows = importList(readFileSync(process.argv[2], 'utf8'), catalog);
+    validateCatalog(rows, games);
+    const root = fileURLToPath(new URL('..', import.meta.url));
+    const target = path.join(root, 'data', 'catalog.json');
+    const candidate = path.join(root, 'data', `.catalog.${process.pid}.json`);
+    try {
+      writeFileSync(candidate, canonical(rows));
+      renameSync(candidate, target);
+    } finally {
+      rmSync(candidate, { force: true });
+    }
+    console.log(`catalog: ${catalog.length} -> ${rows.length} rows`);
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+  }
 }

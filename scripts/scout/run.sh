@@ -1,8 +1,11 @@
 #!/bin/sh
 set -eu
 
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+cd "$root"
+
 usage() {
-  printf 'usage: sh scout/run.sh <id> <repo-url> <40-hex-sha>\n' >&2
+  printf 'usage: sh scripts/scout/run.sh <id> <repo-url> <40-hex-sha>\n' >&2
   exit 2
 }
 
@@ -18,13 +21,13 @@ mkdir -p .sources
 git -C ".sources/$id" fetch --depth=1 "$repo" "$sha"
 [ -d ".sources/$id-tree" ] || git -C ".sources/$id" worktree add --detach "../$id-tree" "$sha"
 
-prompt="$(cat scout/BRIEF.md)
+prompt="$(cat scripts/scout/BRIEF.md)
 
 Game id: $id
 Repo: $repo
 SHA: $sha
 Source tree to read: .sources/$id-tree
-Write: game-$id.json at the repo root"
+Write: data/games/$id.json"
 
 # SCOUT_ARM=<wrapper> runs the scout through a wrapper that takes <workdir> <brief file>
 # (for example the save-tokens arm.sh) when the dsh DeepSeek balance is empty.
@@ -38,4 +41,4 @@ else
   dsh --profile headless "$prompt" 2>&1 | tee ".sources/$id.scout.log"
 fi
 
-node validate.mjs --source ".sources/$id" --game "$id"
+node scripts/validate.mjs --source ".sources/$id" --game "$id"
