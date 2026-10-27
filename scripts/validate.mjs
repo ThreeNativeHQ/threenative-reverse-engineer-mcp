@@ -31,6 +31,7 @@ export function validateCatalog(catalog, games, stubs = []) {
     const row = rows.get(id);
     if (!row) throw new Error(`game ${id} absent from catalog`);
     if (row.tier !== 1) throw new Error(`game ${id} needs a tier 1 catalog row`);
+    if (row.rating === undefined) throw new Error(`game ${id} needs a 1-5 catalog rating`);
   }
   for (const row of catalog)
     if (row.tier === 1 && !gameIds.has(row.id)) throw new Error(`tier 1 ${row.id} has no game file`);

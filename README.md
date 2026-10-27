@@ -28,6 +28,14 @@ with object insertion order and array order preserved.
 Validation fetches only the pinned source commits into ignored `.sources/`.
 Use `npm run validate -- --game <id> --source /path/to/pinned/clone` to reuse a local clone
 for one game; catalog consistency is still checked for the whole library.
+## Ratings
+
+Every mapped (Tier-1) catalog row carries a `rating` from 1 to 5 for how canonical the game is:
+5 genre-defining, 4 landmark, 3 notable, 2 niche, 1 minor. It is one editorial value per game,
+owned by the reviewing lane and kept on the catalog row only, so a game file and its row cannot
+disagree. Tier-2 rows stay unrated until someone maps the game; `npm run check:data` fails when a
+mapped game has no rating.
+
 Release assets in `.release/` are `index.json.gz` (catalog plus searchable stubs)
 and one lazy `game-<id>.json` per mapped game. Tag `v0.1` after review; the single
 workflow validates every source citation before publishing.
