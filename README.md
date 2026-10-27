@@ -33,6 +33,13 @@ Saved project references return a contribution issue command for review here.
 Contributions need original prose, meaningful constants with `path:line` sources,
 valid map links, and a full commit SHA. Code, art and level layouts belong outside this data.
 
+## Tier 2 import
+
+Tier 2 holds one catalog row per project in the
+[Greatest Games Decompilations List](https://github.com/Carter54git/Greates-Games-Decompilations-List).
+Download its README at a pinned commit and run `npm run import -- <README.md>`.
+Existing rows keep their id and tier; a repository listed twice gets one row.
+
 ## Scouts
 
 A scout is one headless agent run that maps one pinned repository into `game-<id>.json`.
