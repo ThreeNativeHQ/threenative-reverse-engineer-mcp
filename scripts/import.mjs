@@ -3,14 +3,37 @@
 import { readFileSync, writeFileSync, renameSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { canonical, loadLibrary, validateCatalog } from './validate.mjs';
+import { canonical, loadLibrary, platforms, validateCatalog } from './validate.mjs';
 
 // The first link is the project; a ✦ marker and extra " · [link]" mirrors are ignored.
 const ROW = /^- \*\*(.+?)\*\*(?: ✦)? — \[[^\]]+\]\((https:\/\/[^)\s]+)\)(.*)$/u;
 const NOTE = / — \*(.*)\*\s*$/u;
-const PORT_NOTE = /^(?:Source port|Reimplementation), ([^.]+)\./u;
 const repoKey = url => url.toLowerCase().replace(/(?:\.git)?\/*$/u, '');
 const slug = text => text.normalize('NFKD').replace(/[\u0300-\u036f]/gu, '').toLowerCase().replace(/[^a-z0-9]+/gu, '-').replace(/^-+|-+$/gu, '');
+
+// Project kind comes from the list's own note; a note that only comments on the project
+// (version, expansion, AI-assisted) keeps the decompilation default.
+const KIND_RULES = [
+  [/^Static recompilation\b/u, 'static-recompilation'],
+  [/^Disassembly\b/u, 'disassembly'],
+  [/^Genesis disassembly\b/u, 'disassembly'],
+  [/^Engine reimplementation\b/u, 'engine-reimplementation'],
+  [/^Open-source .*reimplementation\b/u, 'engine-reimplementation'],
+  [/^Reversed reimplementation\b/u, 'engine-reimplementation'],
+  [/^Reverse-engineered .*port\b/u, 'port'],
+  [/^Source port\b/u, 'source-port'],
+  [/^Browser port\b/u, 'browser-port'],
+  [/^Native PC port\b/u, 'port'],
+  [/^Port\b/u, 'port'],
+];
+
+export function classify(section, note) {
+  const named = /^[^,]+, ([^.]+)\./u.exec(note)?.[1].trim();
+  const platform = named && platforms.has(named) ? named : platforms.has(section) ? section : 'unknown';
+  const kind = section === 'System software and emulators' ? 'system-software'
+    : KIND_RULES.find(([pattern]) => pattern.test(note))?.[1] ?? 'decompilation';
+  return { platform, kind };
+}
 
 export function importList(readme, existing) {
   const rows = [...existing];
@@ -32,7 +55,8 @@ export function importList(readme, existing) {
     let id = ids.has(base) ? `${base}-${slug(owner ?? '')}` : base;
     for (let n = 2; ids.has(id); n++) id = `${base}-${n}`;
     ids.add(id);
-    rows.push({ id, title, platform: PORT_NOTE.exec(note)?.[1] ?? section, repo, tier: 2 });
+    const { platform, kind } = classify(section, note);
+    rows.push({ id, title, platform, repo, tier: 2, kind });
   }
   if (found === 0) throw new Error('the list holds no projects');
   return rows;

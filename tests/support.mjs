@@ -71,7 +71,7 @@ export function makeSourceRepo() {
   return { dir, sha: git('rev-parse', 'HEAD').trim() };
 }
 
-export const catalogRow = (id = 'demo') => ({ id, title: `Demo ${id}`, platform: 'PC', repo: `https://github.com/example/${id}`, tier: 1, rating: 5, genre: 'platformer' });
+export const catalogRow = (id = 'demo') => ({ id, title: `Demo ${id}`, platform: 'PC / DOS', repo: `https://github.com/example/${id}`, tier: 1, kind: 'decompilation', rating: 5, genre: 'platformer' });
 
 export function demoGame(sha, id = 'demo') {
   const node = (name, extra) => ({ id: name, name, purpose: `${name} purpose`, paths: ['src/game/mario.c'], functions: [], dependsOn: [], ...extra });

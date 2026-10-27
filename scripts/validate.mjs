@@ -9,7 +9,9 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const ajv = new Ajv({ allErrors: true });
 const readSchema = name => JSON.parse(readFileSync(new URL(`../schemas/${name}`, import.meta.url)));
 const validateGameDocument = ajv.compile(readSchema('game.schema.json'));
-const validateCatalogDocument = ajv.compile(readSchema('catalog.schema.json'));
+const catalogSchema = readSchema('catalog.schema.json');
+const validateCatalogDocument = ajv.compile(catalogSchema);
+export const platforms = new Set(catalogSchema.items.properties.platform.enum);
 
 export const canonical = value => `${JSON.stringify(value, null, 2)}\n`;
 
@@ -33,6 +35,7 @@ export function validateCatalog(catalog, games, stubs = []) {
     if (row.tier !== 1) throw new Error(`game ${id} needs a tier 1 catalog row`);
     if (row.rating === undefined) throw new Error(`game ${id} needs a 1-5 catalog rating`);
     if (row.genre === undefined) throw new Error(`game ${id} needs a catalog genre`);
+    if (row.platform === 'unknown') throw new Error(`game ${id} needs a catalog platform`);
   }
   for (const row of catalog)
     if (row.tier === 1 && !gameIds.has(row.id)) throw new Error(`tier 1 ${row.id} has no game file`);

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const game = JSON.parse(readFileSync(new URL('./fixtures/game.json', import.meta.url)));
 const catalog = JSON.parse(readFileSync(new URL('../data/catalog.json', import.meta.url)));
 const sm64Row = catalog.find(row => row.id === 'sm64');
-const tier2Row = {id: 'demo-tier2', title: 'Demo', platform: 'PC', repo: 'https://github.com/example/demo', tier: 2};
+const tier2Row = {id: 'demo-tier2', title: 'Demo', platform: 'PC / DOS', repo: 'https://github.com/example/demo', tier: 2, kind: 'decompilation'};
 const tier1 = catalog.filter(row => row.tier === 1).map(row => ({id: row.id}));
 const without = (value, name) => Object.fromEntries(Object.entries(value).filter(([key]) => key !== name));
 
@@ -43,6 +43,10 @@ test('the disk-loaded catalog schema refuses unknown fields, missing fields and 
     [{...sm64Row, genre: 'platforming'}, tier2Row],
     [{...sm64Row, genre: 'Platformer'}, tier2Row],
     [{...sm64Row, subgenre: '3D Platformer'}, tier2Row],
+    [{...sm64Row, platform: 'PC'}, tier2Row],
+    [{...sm64Row, kind: 'decompiled'}, tier2Row],
+    [without(sm64Row, 'kind'), tier2Row],
+    [without(sm64Row, 'platform'), tier2Row],
     [{...sm64Row, id: 'Not_Kebab'}, tier2Row],
     [{...sm64Row, title: '```fenced```'}, tier2Row],
     [{...sm64Row, platform: '~~~'}, tier2Row],
@@ -59,6 +63,7 @@ test('the tracked catalog passes the schema and the tier relationships', () => {
   assert.throws(() => validateCatalog([tier2Row], [{id: 'demo-tier2'}]));
   assert.throws(() => validateCatalog([without(sm64Row, 'rating'), tier2Row], [{id: 'sm64'}]), /rating/);
   assert.throws(() => validateCatalog([without(sm64Row, 'genre'), tier2Row], [{id: 'sm64'}]), /genre/);
+  assert.throws(() => validateCatalog([{...sm64Row, platform: 'unknown'}, tier2Row], [{id: 'sm64'}]), /platform/);
   assert.throws(() => validateCatalog([sm64Row], []));
   assert.throws(() => validateCatalog(catalog, tier1, [{game: 'ghost'}]));
 });

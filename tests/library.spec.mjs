@@ -32,6 +32,19 @@ test('the tracked library keeps the canonical layout and no legacy root files', 
   ]) assert.ok(tracked.includes(name), name);
 });
 
+test('every catalog row carries a canonical platform and project kind', () => {
+  const catalog = JSON.parse(readFileSync(path.join(root, 'data', 'catalog.json'), 'utf8'));
+  const schema = JSON.parse(readFileSync(path.join(root, 'schemas', 'catalog.schema.json'), 'utf8'));
+  const platforms = new Set(schema.items.properties.platform.enum);
+  const kinds = new Set(schema.items.properties.kind.enum);
+  for (const row of catalog) {
+    assert.ok(platforms.has(row.platform), `${row.id} platform ${row.platform}`);
+    assert.ok(kinds.has(row.kind), `${row.id} kind ${row.kind}`);
+  }
+  const leaked = catalog.filter(row => /reimplementation|Source ports|System software|^Other$|Multiplatform|^PC$/u.test(row.platform));
+  assert.deepEqual(leaked.map(row => row.id), []);
+});
+
 test('every mapped game carries a 1-5 rating and a genre on its catalog row', () => {
   const catalog = JSON.parse(readFileSync(path.join(root, 'data', 'catalog.json'), 'utf8'));
   const mapped = catalog.filter(row => row.tier === 1);

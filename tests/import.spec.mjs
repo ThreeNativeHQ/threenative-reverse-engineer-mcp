@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { importList } from '../scripts/import.mjs';
+import { classify, importList } from '../scripts/import.mjs';
 import { validateCatalog } from '../scripts/validate.mjs';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
@@ -25,7 +25,18 @@ const readme = `# List
 - **Arx Libertatis** — [arx/ArxLibertatis](https://github.com/arx/ArxLibertatis) — *Source port, PC / DOS. Inactive or archived.*
 - **Quake (QuakeSpasm)** — [sezero/quakespasm](https://github.com/sezero/quakespasm) — *Source port, PC / DOS.*
 `;
-const existing = [{ id: 'sm64', title: 'Super Mario 64', platform: 'Nintendo 64', repo: 'https://github.com/n64decomp/sm64', tier: 1, rating: 5, genre: 'platformer' }];
+const existing = [{ id: 'sm64', title: 'Super Mario 64', platform: 'Nintendo 64', repo: 'https://github.com/n64decomp/sm64', tier: 1, kind: 'decompilation', rating: 5, genre: 'platformer' }];
+
+test('classify turns list sections and notes into canonical platform and kind', () => {
+  assert.deepEqual(classify('Nintendo 64', ''), { platform: 'Nintendo 64', kind: 'decompilation' });
+  assert.deepEqual(classify('Nintendo 64', 'Port.'), { platform: 'Nintendo 64', kind: 'port' });
+  assert.deepEqual(classify('Source ports', 'Source port, Mac.'), { platform: 'Mac', kind: 'source-port' });
+  assert.deepEqual(classify('Open-source reimplementations', 'Engine reimplementation, Mobile.'), { platform: 'Mobile', kind: 'engine-reimplementation' });
+  assert.deepEqual(classify('Open-source reimplementations', 'Browser port, PC / DOS.'), { platform: 'PC / DOS', kind: 'browser-port' });
+  assert.deepEqual(classify('Other', 'Static recompilation. Target platform not stated in the repository.'), { platform: 'unknown', kind: 'static-recompilation' });
+  assert.deepEqual(classify('System software and emulators', 'Disassembly.'), { platform: 'unknown', kind: 'system-software' });
+  assert.deepEqual(classify('PlayStation', 'Matching decompilation of the DOS executable'), { platform: 'PlayStation', kind: 'decompilation' });
+});
 
 test('one tier-2 row per list project, platform from the section or the port note', () => {
   const rows = importList(readme, existing);
@@ -33,7 +44,7 @@ test('one tier-2 row per list project, platform from the section or the port not
   assert.equal(rows.find(row => row.id === 'paperboy').repo, 'https://github.com/marijnvdwerf/paperboy-n64');
   assert.equal(rows.find(row => row.id === 'mario-kart-64').repo, 'https://github.com/n64decomp/mk64');
   assert.deepEqual(rows.find(row => row.repo.endsWith('arx/ArxLibertatis')), {
-    id: 'arx-libertatis', title: 'Arx Libertatis', platform: 'PC / DOS', repo: 'https://github.com/arx/ArxLibertatis', tier: 2,
+    id: 'arx-libertatis', title: 'Arx Libertatis', platform: 'PC / DOS', repo: 'https://github.com/arx/ArxLibertatis', tier: 2, kind: 'source-port',
   });
   assert.deepEqual(rows.filter(row => row.title === '1080° Snowboarding').map(row => row.id), ['1080-snowboarding', '1080-snowboarding-djsaunde']);
   assert.doesNotThrow(() => validateCatalog(rows, [{ id: 'sm64' }]));
@@ -48,7 +59,7 @@ test('a second import keeps every existing id and tier', () => {
 });
 
 test('existing rows the list does not hold are kept', () => {
-  const quake = { id: 'quake', title: 'Quake', platform: 'PC', repo: 'https://github.com/id-Software/Quake', tier: 1, rating: 5, genre: 'shooter' };
+  const quake = { id: 'quake', title: 'Quake', platform: 'PC / DOS', repo: 'https://github.com/id-Software/Quake', tier: 1, kind: 'original-source', rating: 5, genre: 'shooter' };
   assert.ok(importList(readme, [...existing, quake]).some(row => row.id === 'quake'));
 });
 

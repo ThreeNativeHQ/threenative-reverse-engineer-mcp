@@ -45,6 +45,21 @@ party) plus an optional lowercase `subgenre` label such as `rts`, `fps` or `metr
 the catalog row only and are required for mapped games, so `npm run check:data` fails when a mapped
 game is unclassified. Tier-2 rows stay unclassified until someone reviews the game.
 
+## Platforms and project kinds
+
+`platform` is a closed vocabulary of the 52 platform names used by the decompilation list
+(for example `Nintendo 64`, `PC / DOS`, `SNES / Super Famicom`), or `unknown` when the list
+names no platform (system software, emulators, multiplatform entries). List sections that are
+not platforms — `Open-source reimplementations`, `Source ports`, `System software and emulators`,
+`Other`, `Multiplatform` — never appear as a platform value.
+
+`kind` records what the listed repository is: `decompilation`, `disassembly`,
+`static-recompilation`, `port`, `source-port`, `browser-port`, `engine-reimplementation`,
+`system-software` or `original-source`. Both fields are derived from the list's section and its
+note text (for example `Engine reimplementation, Mobile.` yields that kind and that platform),
+so they are derived, not invented. Mapped games must name a real platform; `unknown` is only
+for unexplored catalog rows.
+
 Release assets in `.release/` are `index.json.gz` (catalog plus searchable stubs)
 and one lazy `game-<id>.json` per mapped game. Tag `v0.1` after review; the single
 workflow validates every source citation before publishing.
