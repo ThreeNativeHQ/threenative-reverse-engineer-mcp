@@ -4,6 +4,9 @@ import { validateCatalog, validateGame } from './validate.mjs';
 import { readFileSync } from 'node:fs';
 const game = JSON.parse(readFileSync(new URL('./test-fixture.json', import.meta.url)));
 const catalog = JSON.parse(readFileSync(new URL('./catalog.json', import.meta.url)));
+const sm64Row = catalog.find(row => row.id === 'sm64');
+const ootRow = catalog.find(row => row.id === 'oot');
+const tier1 = catalog.filter(row => row.tier === 1).map(row => ({id: row.id}));
 test('strict data schema refuses code fields, fences, broken links and source traversal', () => {
   assert.doesNotThrow(() => validateGame(game));
   for (const mutated of [
@@ -24,25 +27,25 @@ test('the seed records effective water-jump velocity after action entry', () => 
 });
 
 test('catalog rows follow the strict engine index contract', () => {
-  assert.doesNotThrow(() => validateCatalog(catalog, [{id: 'sm64'}]));
-  const row = catalog[0];
+  assert.doesNotThrow(() => validateCatalog(catalog, tier1));
+  const row = sm64Row;
   for (const mutated of [
-    [{...row, extra: 'bad'}, catalog[1]],
-    [{id: row.id, title: row.title, platform: row.platform, repo: row.repo}, catalog[1]],
-    [{...row, tier: 3}, catalog[1]],
-    [{...row, id: 'Not_Kebab'}, catalog[1]],
-    [{...row, title: '```fenced```'}, catalog[1]],
-    [{...row, platform: '~~~'}, catalog[1]],
-    [{...row, repo: ''}, catalog[1]],
-    [{...row, title: '   '}, catalog[1]],
+    [{...row, extra: 'bad'}, ootRow],
+    [{id: row.id, title: row.title, platform: row.platform, repo: row.repo}, ootRow],
+    [{...row, tier: 3}, ootRow],
+    [{...row, id: 'Not_Kebab'}, ootRow],
+    [{...row, title: '```fenced```'}, ootRow],
+    [{...row, platform: '~~~'}, ootRow],
+    [{...row, repo: ''}, ootRow],
+    [{...row, title: '   '}, ootRow],
     [row, row],
   ]) assert.throws(() => validateCatalog(mutated, [{id: 'sm64'}]));
 });
 
 test('catalog and game files keep a coherent tier relationship', () => {
-  assert.throws(() => validateCatalog(catalog, [{id: 'sm64'}, {id: 'ghost'}]));
-  assert.throws(() => validateCatalog([catalog[1]], [{id: 'oot'}]));
-  assert.throws(() => validateCatalog([catalog[0]], []));
-  assert.doesNotThrow(() => validateCatalog([catalog[0], catalog[1]], [{id: 'sm64'}]));
-  assert.throws(() => validateCatalog(catalog, [{id: 'sm64'}], [{game: 'ghost'}]));
+  assert.throws(() => validateCatalog(catalog, [...tier1, {id: 'ghost'}]));
+  assert.throws(() => validateCatalog([ootRow], [{id: 'oot'}]));
+  assert.throws(() => validateCatalog([sm64Row], []));
+  assert.doesNotThrow(() => validateCatalog([sm64Row, ootRow], [{id: 'sm64'}]));
+  assert.throws(() => validateCatalog(catalog, tier1, [{game: 'ghost'}]));
 });
