@@ -1,11 +1,11 @@
 # PRD-001 — Organize and validate the reference library
 
-**Status:** IN PROGRESS — implementation complete, shared CI evidence pending (AC-8)
+**Status:** DONE
 **Priority:** P2 — Canonical data locations and consistent validation across authoring and release are unfinished.
 **Complexity:** 3 (LOW)
 **Owner:** Implementing agent
 **Depends on:** None
-**Progress:** 7/8 acceptance criteria verified; AC-8 waits for the CI `validate` run on the pushed revision.
+**Progress:** 8/8 acceptance criteria verified.
 
 ## Context
 
@@ -97,7 +97,7 @@ Shared actor: repository CI, triggered by the implementation revision.
 - [x] AC-5 [local]: The scout command and brief produce the canonical game path and successfully invoke the real validator on that output. — proof: `node --test tests/scout.spec.mjs` (preserve argument rejection tests; use `SCOUT_ARM` with a local pinned Git fixture, assert the written data path and successful source verification). — Evidence: The `SCOUT_ARM` fixture run exits 0 with `demo@<sha>: 3 nodes, 1 cards, all pinned source checks passed` and writes `data/games/demo.json`; `.sources/demo.brief.md` instructs `Write: data/games/demo.json`, matching `scripts/scout/BRIEF.md:7`; the runner resolves the repository root from its own location (`scripts/scout/run.sh:4`) and calls `scripts/validate.mjs` (`scripts/scout/run.sh:44`). The three argument-rejection tests still exit 2.
 - [x] AC-6 [local]: Existing targeted pinned-source validation still succeeds through the updated npm entry point, and bad source citations still fail. — proof: targeted CLI cases in `node --test tests/library.spec.mjs` using the fixture's exact Git SHA and `npm run validate -- --game <id> --source <fixture-repo>`; retain the existing real SM64 constant regression. — Evidence: All five tracked games pass through `npm run validate -- --game <id> --source .sources/<id>` against local pinned checkouts: sm64 49 nodes/11 cards, quake 9/22, oot 8/17, openra 8/15, super-metroid-sm 8/15. A wrong fixture constant fails with `constant launchSpeed=70 absent`; a broken sibling game still fails under `--game demo`; `tests/validate.spec.mjs` keeps the `flutter-kick`/`waterJumpSpeed` regression on real data.
 - [x] AC-7 [local]: Release generation preserves the version-1 catalog/stub contract, gzip index name, and per-game asset names/content. — proof: release CLI cases in `node --test tests/library.spec.mjs` (build into a fresh disposable `.release/` from a pinned fixture; decompress/parse index and assert references, schema-valid game content, and exact asset set). — Evidence: The fixture build produces exactly `index.json.gz` and `game-<id>.json`; the decompressed index reports `version: 1`, `games` deep-equal to the catalog, and node/card stubs with the expected shape, and each game asset is byte-equal to `JSON.stringify(game)` and schema-valid. Building from all five real tracked games produced assets byte-identical to the pre-migration `.release/` (equal sha256 for `index.json.gz` and every `game-<id>.json`; 3287 games, 162 stubs).
-- [ ] AC-8 [shared]: The implementation PR's `validate` job collects all moved suites and successfully builds release assets from all tracked real games. — proof: `.github/workflows/release.yml` job `validate`: `npm ci`, `npm test`, `npm run check:data`, `npm run release:assets`; record the actual run URL and candidate revision. — Evidence: pending. The workflow now runs those four steps (`.github/workflows/release.yml:20-22`), and the same release build passed locally on the implementation revision (AC-7). The CI run URL and revision are recorded after the push.
+- [x] AC-8 [shared]: The implementation PR's `validate` job collects all moved suites and successfully builds release assets from all tracked real games. — proof: `.github/workflows/release.yml` job `validate`: `npm ci`, `npm test`, `npm run check:data`, `npm run release:assets`; record the actual run URL and candidate revision. — Evidence: [run 40444998246](https://github.com/ThreeNativeHQ/threenative-reverse-engineer-mcp/actions/runs/40444998246), PR #1 / `pull_request` on candidate revision `097cdd4eb0a13b858e44fafed2818bb46810484c`: job `validate` succeeded through `npm ci`, `npm test`, `npm run check:data` and `npm run release:assets`, then uploaded the reference assets. The same revision passed the same steps locally (AC-7), and the built assets were byte-identical to the pre-migration build.
 
 ## Integration Ledger
 
@@ -142,7 +142,7 @@ Locations describe the implemented entry points at this revision; the npm comman
 
 #### Phase 3: Verify real release compatibility and finish the refactor
 
-**Status:** IN PROGRESS — local verification complete; shared CI run pending
+**Status:** COMPLETE
 
 **Files:** `.github/workflows/release.yml`, `README.md`, this PRD; implementation fixes only where observed checks require them.
 
