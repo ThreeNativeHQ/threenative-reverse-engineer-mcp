@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { validateGame } from '../scripts/validate.mjs';
@@ -52,7 +53,9 @@ const faults = [
   ['source path traversal', dir => write(dir, 'data/games/demo.json', { ...demoGame(SHA), nodes: demoGame(SHA).nodes.map((node, index) => index ? node : { ...node, paths: ['../secret'] }) }), /unsafe source path/],
   ['unknown field', dir => write(dir, 'data/games/demo.json', { ...demoGame(SHA), code: 'bad' }), /additionalProperties/],
   ['wrong field type', dir => write(dir, 'data/catalog.json', [{ ...catalogRow(), tier: '1' }]), /tier/],
-  ['noncanonical formatting', dir => writeFileSync(path.join(dir, 'data/catalog.json'), `${JSON.stringify([catalogRow()], null, 4)}\n`), /noncanonical JSON/],
+  ['noncanonical catalog formatting', dir => writeFileSync(path.join(dir, 'data/catalog.json'), `${JSON.stringify([catalogRow()], null, 4)}\n`), /noncanonical JSON/],
+  ['noncanonical game formatting', dir => writeFileSync(path.join(dir, 'data/games/demo.json'), `${JSON.stringify(demoGame(SHA), null, 4)}\n`), /noncanonical JSON/],
+  ['empty library', dir => unlinkSync(path.join(dir, 'data/games/demo.json')), /no games/],
 ];
 
 for (const [name, damage, expected] of faults) {
@@ -130,3 +133,71 @@ test('release assets keep the version-1 contract and exact asset set', t => {
     summary: 'Three timed jumps launch higher', tags: ['jump'], capabilities: [],
   }]);
 });
+
+test('both schemas are loaded from disk, not hardcoded', t => {
+  const dir = makeLibrary({ games: [demoGame(SHA)] });
+  t.after(() => cleanup(dir));
+  const accepted = runNode(dir, ['scripts/validate.mjs', '--data-only']);
+  assert.equal(accepted.status, 0, accepted.stderr);
+  for (const [file, mutate, expected] of [
+    ['game.schema.json', spec => { spec.properties.version.const = 2; }, /version/],
+    ['catalog.schema.json', spec => { spec.items.required.push('licence'); }, /licence/],
+  ]) {
+    const target = path.join(dir, 'schemas', file);
+    const original = readFileSync(target, 'utf8');
+    const spec = JSON.parse(original);
+    mutate(spec);
+    writeFileSync(target, `${JSON.stringify(spec, null, 2)}\n`);
+    const changed = runNode(dir, ['scripts/validate.mjs', '--data-only']);
+    writeFileSync(target, original);
+    assert.notEqual(changed.status, 0, `a changed ${file} had no effect`);
+    assert.match(changed.stderr, expected);
+  }
+  assert.equal(runNode(dir, ['scripts/validate.mjs', '--data-only']).status, 0, 'restored schemas still reject valid data');
+});
+
+test('check:data is read-only and offline', t => {
+  const dir = makeLibrary({ games: [demoGame(SHA)] });
+  t.after(() => cleanup(dir));
+  const before = digest(dir);
+  const result = runNode(dir, ['scripts/validate.mjs', '--data-only']);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(digest(dir), before);
+  assert.equal(existsSync(path.join(dir, '.sources')), false, 'data-only check fetched sources');
+  assert.equal(existsSync(path.join(dir, '.release')), false, 'data-only check wrote release assets');
+});
+
+test('no stale root routing references remain in tracked code, scripts or docs', () => {
+  const tracked = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n')
+    .filter(name => /^(?:package\.json|README\.md|scripts\/|tests\/|\.github\/)/u.test(name));
+  const stale = tracked.flatMap(name => {
+    const text = readFileSync(path.join(root, name), 'utf8');
+    return [/node validate\.mjs/u, /node import\.mjs/u, /(?<!scripts\/)scout\/run\.sh/u, /test-fixture\.json/u]
+      .filter(pattern => pattern.test(text))
+      .map(pattern => `${name}: ${pattern.source}`);
+  });
+  assert.deepEqual(stale, []);
+  const { scripts } = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
+  for (const [name, command] of Object.entries(scripts)) {
+    const target = command.split(' ').find(token => /\.(?:mjs|sh)$/u.test(token) && !token.startsWith('-'));
+    assert.ok(target, `${name} has no runnable target`);
+    if (target.includes('*'))
+      assert.ok(readdirSync(path.dirname(path.join(root, target))).some(name => name.endsWith('.spec.mjs')), `${name} -> ${target}`);
+    else assert.ok(existsSync(path.join(root, target)), `${name} -> ${target}`);
+  }
+});
+
+test('the scout brief and runner name the same authored output path', () => {
+  const runner = readFileSync(path.join(root, 'scripts', 'scout', 'run.sh'), 'utf8');
+  const brief = readFileSync(path.join(root, 'scripts', 'scout', 'BRIEF.md'), 'utf8');
+  const written = /^Write: (data\/games\/\$id\.json)/mu.exec(runner);
+  assert.ok(written, 'the runner prompt names no canonical output path');
+  assert.ok(brief.includes(written[1].replace('$id', '<id>')), `the brief does not name ${written[1]}`);
+});
+
+function digest(dir) {
+  return readdirSync(path.join(dir, 'data'), { recursive: true })
+    .filter(name => name.endsWith('.json'))
+    .sort()
+    .map(name => `${name}:${createHash('sha256').update(readFileSync(path.join(dir, 'data', name))).digest('hex')}`);
+}
