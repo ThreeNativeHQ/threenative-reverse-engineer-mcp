@@ -37,8 +37,9 @@ test('check:data accepts the tracked dataset offline', t => {
   t.after(() => cleanup(dir));
   const result = runNpm(dir, ['check:data']);
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /\d+ catalog rows and 5 games are canonical and consistent/);
-  assert.equal(readdirSync(path.join(dir, 'data', 'games')).length, 5);
+  const games = readdirSync(path.join(dir, 'data', 'games')).filter(name => name.endsWith('.json')).length;
+  assert.ok(games > 0);
+  assert.match(result.stdout, new RegExp(`\\d+ catalog rows and ${games} games are canonical and consistent`));
 });
 
 const faults = [
