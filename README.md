@@ -32,3 +32,9 @@ ThreeNative's existing engine MCP serves `engine_search_references`,
 Saved project references return a contribution issue command for review here.
 Contributions need original prose, meaningful constants with `path:line` sources,
 valid map links, and a full commit SHA. Code, art and level layouts belong outside this data.
+
+## Scouts
+
+A scout is one headless agent run that maps one pinned repository into `game-<id>.json`.
+Run `npm run scout -- <id> <repo> <sha>`; it clones into `.sources/` and logs to `.sources/<id>.scout.log`.
+Every card gets a full human or agent review before merge.

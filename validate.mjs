@@ -111,7 +111,12 @@ function verifySources(game, source) {
   }
 }
 export function run(args = process.argv.slice(2)) {
-  const games = readdirSync('.').filter(name => /^game-.*\.json$/u.test(name)).map(name => validateGame(JSON.parse(readFileSync(name))));
+  const gameFlag = args.indexOf('--game');
+  const gameId = gameFlag >= 0 ? args[gameFlag + 1] : undefined;
+  if (gameFlag >= 0 && !gameId) throw new Error('missing --game id');
+  const files = readdirSync('.').filter(name => /^game-.*\.json$/u.test(name));
+  if (gameId !== undefined && !files.includes(`game-${gameId}.json`)) throw new Error(`no game file for ${gameId}`);
+  const games = (gameId === undefined ? files : [`game-${gameId}.json`]).map(name => validateGame(JSON.parse(readFileSync(name))));
   if (!games.length) throw new Error('no games');
   for (const game of games) {
     const sourceFlag = args.indexOf('--source');
