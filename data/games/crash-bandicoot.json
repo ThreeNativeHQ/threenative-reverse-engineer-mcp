@@ -1,0 +1,1873 @@
+{
+  "version": 1,
+  "id": "crash-bandicoot",
+  "title": "Crash Bandicoot",
+  "repo": "https://github.com/wurlyfox/c1",
+  "sha": "256fdcef59f15a190290cc19db3fa9a707843b69",
+  "nodes": [
+    {
+      "id": "core-loop",
+      "name": "Core loop",
+      "purpose": "One iteration per rendered frame: pause toggle, level hand-off, camera update, world transform, object update",
+      "paths": [
+        "src/main.c"
+      ],
+      "functions": [
+        {
+          "name": "main",
+          "path": "src/main.c",
+          "lines": [
+            94,
+            104
+          ]
+        },
+        {
+          "name": "CoreObjectsCreate",
+          "path": "src/main.c",
+          "lines": [
+            107,
+            132
+          ]
+        },
+        {
+          "name": "CoreLoop",
+          "path": "src/main.c",
+          "lines": [
+            135,
+            300
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input",
+      "name": "Pad input",
+      "purpose": "Reads both controller ports, keeps a three-frame history and resolves conflicting directions before gameplay reads them",
+      "paths": [
+        "src/pad.c",
+        "src/pad.h"
+      ],
+      "functions": [
+        {
+          "name": "PadInit",
+          "path": "src/pad.c",
+          "lines": [
+            24,
+            36
+          ]
+        },
+        {
+          "name": "PadUpdatePbak",
+          "path": "src/pad.c",
+          "lines": [
+            38,
+            64
+          ]
+        },
+        {
+          "name": "PadUpdate",
+          "path": "src/pad.c",
+          "lines": [
+            69,
+            95
+          ]
+        }
+      ],
+      "dependsOn": [
+        "core-loop"
+      ]
+    },
+    {
+      "id": "gool-objects",
+      "name": "Object lifecycle",
+      "purpose": "Zone entities become engine objects: allocation, script binding, per-frame stepping and stacked-box ordering",
+      "paths": [
+        "src/gool.c",
+        "src/gool.h"
+      ],
+      "functions": [
+        {
+          "name": "GoolObjectSpawn",
+          "path": "src/gool.c",
+          "lines": [
+            609,
+            719
+          ]
+        },
+        {
+          "name": "GoolObjectCreate",
+          "path": "src/gool.c",
+          "lines": [
+            722,
+            745
+          ]
+        },
+        {
+          "name": "GoolObjectInit",
+          "path": "src/gool.c",
+          "lines": [
+            748,
+            827
+          ]
+        },
+        {
+          "name": "GoolUpdateObjects",
+          "path": "src/gool.c",
+          "lines": [
+            965,
+            984
+          ]
+        }
+      ],
+      "dependsOn": [
+        "core-loop"
+      ]
+    },
+    {
+      "id": "gool-physics",
+      "parent": "gool-objects",
+      "name": "Self-propelled motion",
+      "purpose": "Direction-driven acceleration and turning, velocity integration, gravity and the stored ground plane",
+      "paths": [
+        "src/gool.c"
+      ],
+      "functions": [
+        {
+          "name": "GoolObjectControlDir",
+          "path": "src/gool.c",
+          "lines": [
+            1722,
+            1795
+          ]
+        },
+        {
+          "name": "GoolObjectPhysics",
+          "path": "src/gool.c",
+          "lines": [
+            1798,
+            1880
+          ]
+        },
+        {
+          "name": "GoolObjectRotate",
+          "path": "src/gool.c",
+          "lines": [
+            3455,
+            3508
+          ]
+        },
+        {
+          "name": "GoolSeek",
+          "path": "src/gool.c",
+          "lines": [
+            3556,
+            3565
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gool-objects",
+        "input"
+      ]
+    },
+    {
+      "id": "gool-script",
+      "parent": "gool-objects",
+      "name": "Script interpreter and events",
+      "purpose": "Byte-code stepping, contact tests, event dispatch and the protection state machine around object colours",
+      "paths": [
+        "src/gool.c",
+        "src/gool.h"
+      ],
+      "functions": [
+        {
+          "name": "GoolObjectUpdate",
+          "path": "src/gool.c",
+          "lines": [
+            1089,
+            1212
+          ]
+        },
+        {
+          "name": "GoolObjectColors",
+          "path": "src/gool.c",
+          "lines": [
+            1578,
+            1629
+          ]
+        },
+        {
+          "name": "GoolTestControls",
+          "path": "src/gool.c",
+          "lines": [
+            1965,
+            2043
+          ]
+        },
+        {
+          "name": "GoolObjectInterpret",
+          "path": "src/gool.c",
+          "lines": [
+            2097,
+            2406
+          ]
+        },
+        {
+          "name": "GoolSendEvent",
+          "path": "src/gool.c",
+          "lines": [
+            3376,
+            3452
+          ]
+        },
+        {
+          "name": "GoolCollide",
+          "path": "src/gool.c",
+          "lines": [
+            3694,
+            3737
+          ]
+        },
+        {
+          "name": "GoolSendIfColliding",
+          "path": "src/gool.c",
+          "lines": [
+            3740,
+            3804
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gool-objects"
+      ]
+    },
+    {
+      "id": "collision",
+      "name": "Solid collision",
+      "purpose": "Sub-stepped translation against floor, walls and ceiling with terrain octrees, a wall bitmap and a solid ground plane",
+      "paths": [
+        "src/solid.c"
+      ],
+      "functions": [
+        {
+          "name": "TransSmoothStopAtSolid",
+          "path": "src/solid.c",
+          "lines": [
+            103,
+            154
+          ]
+        },
+        {
+          "name": "TransPullStopAtSolid",
+          "path": "src/solid.c",
+          "lines": [
+            157,
+            200
+          ]
+        },
+        {
+          "name": "StopAtFloor",
+          "path": "src/solid.c",
+          "lines": [
+            322,
+            407
+          ]
+        },
+        {
+          "name": "StopAtCeil",
+          "path": "src/solid.c",
+          "lines": [
+            410,
+            475
+          ]
+        },
+        {
+          "name": "StopAtZone",
+          "path": "src/solid.c",
+          "lines": [
+            478,
+            516
+          ]
+        },
+        {
+          "name": "TransStopAtSolid",
+          "path": "src/solid.c",
+          "lines": [
+            519,
+            560
+          ]
+        },
+        {
+          "name": "StopAtWalls",
+          "path": "src/solid.c",
+          "lines": [
+            872,
+            950
+          ]
+        },
+        {
+          "name": "FindFloorY",
+          "path": "src/solid.c",
+          "lines": [
+            1164,
+            1240
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gool-physics",
+        "level"
+      ]
+    },
+    {
+      "id": "level",
+      "name": "Zone streaming and restart state",
+      "purpose": "Zone and camera-path graph, page load lists, neighbour spawn groups and saved restart state",
+      "paths": [
+        "src/level.c",
+        "src/level.h"
+      ],
+      "functions": [
+        {
+          "name": "LevelSpawnObjects",
+          "path": "src/level.c",
+          "lines": [
+            152,
+            171
+          ]
+        },
+        {
+          "name": "LevelUpdate",
+          "path": "src/level.c",
+          "lines": [
+            220,
+            337
+          ]
+        },
+        {
+          "name": "LevelSaveState",
+          "path": "src/level.c",
+          "lines": [
+            449,
+            481
+          ]
+        },
+        {
+          "name": "LevelRestart",
+          "path": "src/level.c",
+          "lines": [
+            484,
+            568
+          ]
+        },
+        {
+          "name": "ZoneFindNeighbor",
+          "path": "src/level.c",
+          "lines": [
+            623,
+            640
+          ]
+        },
+        {
+          "name": "ZoneQueryOctrees",
+          "path": "src/level.c",
+          "lines": [
+            1359,
+            1391
+          ]
+        }
+      ],
+      "dependsOn": [
+        "core-loop",
+        "gool-objects"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Rail camera",
+      "purpose": "Path progress estimation, offset seeking, neighbour path selection and the scripted death orbit",
+      "paths": [
+        "src/cam.c",
+        "src/cam.h"
+      ],
+      "functions": [
+        {
+          "name": "CamAdjustProgress",
+          "path": "src/cam.c",
+          "lines": [
+            59,
+            101
+          ]
+        },
+        {
+          "name": "CamGetProgress",
+          "path": "src/cam.c",
+          "lines": [
+            104,
+            175
+          ]
+        },
+        {
+          "name": "CamGetProgress2",
+          "path": "src/cam.c",
+          "lines": [
+            178,
+            273
+          ]
+        },
+        {
+          "name": "CamFollow",
+          "path": "src/cam.c",
+          "lines": [
+            276,
+            487
+          ]
+        },
+        {
+          "name": "CamUpdate",
+          "path": "src/cam.c",
+          "lines": [
+            490,
+            668
+          ]
+        },
+        {
+          "name": "CamDeath",
+          "path": "src/cam.c",
+          "lines": [
+            671,
+            746
+          ]
+        }
+      ],
+      "dependsOn": [
+        "level"
+      ]
+    },
+    {
+      "id": "render",
+      "name": "Camera matrices and projection",
+      "purpose": "Field-of-view projection distance, camera basis composition and screen shake",
+      "paths": [
+        "src/gfx.c",
+        "src/gfx.h"
+      ],
+      "functions": [
+        {
+          "name": "GfxScreenProj",
+          "path": "src/gfx.c",
+          "lines": [
+            734,
+            742
+          ]
+        },
+        {
+          "name": "GfxInitMatrices",
+          "path": "src/gfx.c",
+          "lines": [
+            745,
+            784
+          ]
+        },
+        {
+          "name": "GfxUpdateMatrices",
+          "path": "src/gfx.c",
+          "lines": [
+            787,
+            892
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-movement",
+      "node": "gool-physics",
+      "name": "Ground running and turning",
+      "summary": "Direction-held running with a per-state acceleration profile, a header-first turn rule and a hard speed cap",
+      "behavior": "The four direction bits are read as one nibble and looked up in a sixteen-entry table that maps each valid combination to a heading and a speed scale; diagonals carry a scale of 0x147 while pure forward and pure sideways steps carry 0x100, so diagonals are about 1.28 times faster than the single-axis rows. The same function picks one of seven acceleration profiles from the object state: stopped, ground-to-air, air-to-ground, fling, script-protected, moving-on-ground and moving-in-air. On the ground the actor sets its target heading directly and adds acceleration while its speed is at or under 0x100 or while the heading error is within 0x400 of a full turn; a larger error zeroes speed, so a reversal costs one stop instead of skating. With no valid direction the deceleration of the active profile is subtracted and clamped at zero, and after integration speed is clamped to the profile maximum. Velocity is then built from the resulting heading with the sine on x and the cosine on z, so heading 0 points along positive z.",
+      "constants": [
+        {
+          "name": "groundSpeedCeiling",
+          "value": "0x64000",
+          "unit": "16.16 fixed-point position units per update, scaled by ticks-per-frame over 1024",
+          "source": "src/gool.c:106"
+        },
+        {
+          "name": "groundAcceleration",
+          "value": "0x1A0AAA",
+          "unit": "16.16 fixed-point units added to speed each update, scaled by ticks-per-frame over 1024",
+          "source": "src/gool.c:106"
+        },
+        {
+          "name": "groundDeceleration",
+          "value": "0x271000",
+          "unit": "16.16 fixed-point units removed from speed each update, scaled by ticks-per-frame over 1024",
+          "source": "src/gool.c:106"
+        },
+        {
+          "name": "diagonalSpeedScale",
+          "value": "0x147",
+          "unit": "8-bit speed multiplier (256 equals 1.0), applied per update",
+          "source": "src/gool.c:86"
+        },
+        {
+          "name": "turnInPlaceAngle",
+          "value": "0x400",
+          "unit": "12-bit angle units (4096 per full turn), compared once per update",
+          "source": "src/gool.c:1781"
+        },
+        {
+          "name": "directHeadingSpeed",
+          "value": "0x100",
+          "unit": "16.16 fixed-point speed units, tested once per update",
+          "source": "src/gool.c:1781"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 82
+        },
+        {
+          "path": "src/gool.c",
+          "line": 100
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1722
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1745
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1747
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1781
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1792
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1815
+        }
+      ],
+      "capabilities": [
+        "direction-held locomotion",
+        "acceleration profiles per state",
+        "hard speed clamp",
+        "stop on reversal"
+      ],
+      "tags": [
+        "movement",
+        "run",
+        "acceleration",
+        "turning",
+        "ground"
+      ]
+    },
+    {
+      "id": "camera-relative-steering",
+      "node": "gool-physics",
+      "name": "Camera-relative steering",
+      "summary": "Held directions are headings offset from the current camera yaw, so forward always runs away from the camera",
+      "behavior": "Each entry of the direction table stores a heading offset rather than a world angle: forward is 0, reverse is 0x800, the two side steps are 0x400 and 0xC00, and the four diagonals sit at 0x200, 0x600, 0xA00 and 0xE00. The steering target is that offset plus the camera yaw, reduced to the twelve-bit circle, so the same button produces a different world heading after the camera swings. The render step refreshes the yaw value once per frame from the camera path rotation and masks it to 0xFFF; when the current zone declares a fixed-axis camera flag the yaw is forced to zero, which makes the direction pad behave like world axes. Heading error is folded into the range of half a turn by subtracting from 0x1000, so the actor rotates the short way. In the air the acceleration is multiplied by the cosine of that error, heading changes below 0x7C8 of turn are followed at a fixed angular rate, and larger changes bleed speed instead of turning.",
+      "constants": [
+        {
+          "name": "reverseHeading",
+          "value": "0x800",
+          "unit": "12-bit angle units offset from camera yaw, applied per update",
+          "source": "src/gool.c:84"
+        },
+        {
+          "name": "sideHeading",
+          "value": "0x400",
+          "unit": "12-bit angle units offset from camera yaw, applied per update",
+          "source": "src/gool.c:85"
+        },
+        {
+          "name": "diagonalHeading",
+          "value": "0x200",
+          "unit": "12-bit angle units offset from camera yaw, applied per update",
+          "source": "src/gool.c:89"
+        },
+        {
+          "name": "halfTurn",
+          "value": "0x1000",
+          "unit": "12-bit angle units, used to fold heading error once per update",
+          "source": "src/gool.c:1760"
+        },
+        {
+          "name": "airborneTurnLimit",
+          "value": "0x7C8",
+          "unit": "12-bit angle units, tested once per update",
+          "source": "src/gool.c:1767"
+        },
+        {
+          "name": "airborneTurnRate",
+          "value": "0xF00",
+          "unit": "12-bit angle units per update, scaled by ticks-per-frame over 1024",
+          "source": "src/gool.c:1769"
+        },
+        {
+          "name": "cameraYawMask",
+          "value": "0xFFF",
+          "unit": "12-bit angle mask, applied once per rendered frame",
+          "source": "src/gfx.c:885"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 1756
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1757
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1763
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 882
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 885
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 888
+        }
+      ],
+      "capabilities": [
+        "camera-relative input",
+        "yaw masking",
+        "fixed-axis zones",
+        "short-way rotation"
+      ],
+      "tags": [
+        "movement",
+        "camera",
+        "steering",
+        "input"
+      ]
+    },
+    {
+      "id": "airborne-gravity",
+      "node": "gool-physics",
+      "name": "Gravity, fall speed and ground plane",
+      "summary": "Gravity is a constant downward step per update with a terminal fall speed, and floors are a stored height the actor is snapped onto",
+      "behavior": "Any object flagged for gravity has 4000 position units times the frame scale subtracted from its vertical velocity each update, and the result is clamped at a terminal fall speed of 0x2EE000. A separate solid-ground flag treats a stored floor height as an infinite horizontal plane: as soon as the actor's y reaches or passes that height it is placed exactly on it, the landed status bit is set, the impact timestamp is recorded, and a negative vertical velocity is copied into the impact-speed field before being zeroed, which is what the animation code reads after a fall. Upward motion is not blocked by that plane, so a jump leaves the ground on its own; the collision pass, not this integrator, stops a rising actor against a ceiling. The jump impulses themselves live in the per-object scripts, not in the engine, so the engine only supplies the arc shape, the fall cap and the landing record.",
+      "constants": [
+        {
+          "name": "gravityStep",
+          "value": 4000,
+          "unit": "16.16 fixed-point position units subtracted from vertical speed each update, scaled by ticks-per-frame over 1024",
+          "source": "src/gool.c:1870"
+        },
+        {
+          "name": "terminalFallSpeed",
+          "value": "0x2EE000",
+          "unit": "16.16 fixed-point downward velocity clamp, tested every update",
+          "source": "src/gool.c:1871"
+        },
+        {
+          "name": "headClearance",
+          "value": "0x29901",
+          "unit": "16.16 fixed-point vertical extent from feet to crown, checked every collision sub-step",
+          "source": "src/solid.c:551"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 1798
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1860
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1861
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1863
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1865
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1869
+        },
+        {
+          "path": "src/solid.c",
+          "line": 551
+        }
+      ],
+      "capabilities": [
+        "constant gravity",
+        "terminal velocity",
+        "floor snapping",
+        "landing impact record"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "jump arc",
+        "falling"
+      ]
+    },
+    {
+      "id": "spin-hit-routing",
+      "node": "gool-script",
+      "name": "Contact routing and collider priority",
+      "summary": "Every object keeps a single collider, and a spin contact is an event id delivered to whoever currently owns that slot",
+      "behavior": "Contact is not stored as a list: each object carries one collider pointer, so exactly one partner is remembered per object at a time. When a new candidate overlaps, an object whose state flags include the collision-priority bit takes the slot immediately and the previous partner is dropped; otherwise the candidate only wins when its approximate Manhattan distance to the target is smaller than the current collider's, so the nearest overlapping hazard keeps the contact until it separates. Priority is also what lets a scripted state claim a target without passing the distance test. Once the slot is assigned, damage and interaction are plain event ids: 0x300 for a direct hit, 0x400 for a spin hit, 0xA00 for a contact that a protected actor reflects back, and 0 for landing on a target. Optional hotspot sizes shrink both bounds symmetrically on x and z before the overlap test, so a generous visual model can still demand a tight touch.",
+      "constants": [
+        {
+          "name": "spinHitEvent",
+          "value": "0x400",
+          "unit": "event channel id, dispatched once per contact",
+          "source": "src/gool.h:14"
+        },
+        {
+          "name": "directHitEvent",
+          "value": "0x300",
+          "unit": "event channel id, dispatched once per contact",
+          "source": "src/gool.h:13"
+        },
+        {
+          "name": "reflectedHitEvent",
+          "value": "0xA00",
+          "unit": "event channel id, dispatched once per contact",
+          "source": "src/gool.h:18"
+        },
+        {
+          "name": "collisionPriorityFlag",
+          "value": "0x800",
+          "unit": "object state flag bit, tested on every contact update",
+          "source": "src/gool.c:3701"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 3694
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3700
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3710
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3716
+        },
+        {
+          "path": "src/gool.h",
+          "line": 13
+        },
+        {
+          "path": "src/gool.h",
+          "line": 14
+        },
+        {
+          "path": "src/gool.h",
+          "line": 18
+        }
+      ],
+      "capabilities": [
+        "single collider per object",
+        "nearest-contact priority",
+        "priority override",
+        "event-id damage channels"
+      ],
+      "tags": [
+        "combat",
+        "spin",
+        "collision",
+        "events"
+      ]
+    },
+    {
+      "id": "contact-damage-throttle",
+      "node": "gool-script",
+      "name": "Broadcast contact throttling",
+      "summary": "Area contact queries filter to hazards and interactive objects, and the radius variant fires only on the first few contacts of a sustained overlap",
+      "behavior": "The engine broadcasts an event by walking all eight object handles in post order and testing each recipient with a query type. Types one and three restrict recipients to hazards and interactive objects, identified by object category 0x300 or 0x400, and then require a full bound overlap or the sender's origin inside the recipient bound. The radius variant builds a box around the sender origin from its misc vector, checks the recipient bound against it, and delivers only while the running contact count is under three or is a multiple of five, which stops a long overlap from retriggering a heavy reaction every update. The unrestricted types deliver to every recipient without a geometric test, which is how global notifications such as restart and end-of-level reach objects that are not touching anything.",
+      "constants": [
+        {
+          "name": "throttleFreeContacts",
+          "value": 3,
+          "unit": "contact count at the start of an overlap, counted once per update",
+          "source": "src/gool.c:3794"
+        },
+        {
+          "name": "throttlePeriod",
+          "value": 5,
+          "unit": "updates between later contacts of the same overlap",
+          "source": "src/gool.c:3794"
+        },
+        {
+          "name": "hazardCategory",
+          "value": "0x300",
+          "unit": "object category id, matched on every broadcast",
+          "source": "src/gool.c:3759"
+        },
+        {
+          "name": "interactiveCategory",
+          "value": "0x400",
+          "unit": "object category id, matched on every broadcast",
+          "source": "src/gool.c:3759"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 3740
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3757
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3759
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3786
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3793
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3807
+        }
+      ],
+      "capabilities": [
+        "category-filtered broadcasts",
+        "bound and point contact tests",
+        "radius contact test",
+        "sustained-contact throttling"
+      ],
+      "tags": [
+        "combat",
+        "events",
+        "collision",
+        "damage"
+      ]
+    },
+    {
+      "id": "invulnerability-timers",
+      "node": "gool-script",
+      "name": "Protection timers and damage lock",
+      "summary": "Temporary protection is a small state machine with per-state expiry counts, a four-step colour cycle and a status word that refuses damage states",
+      "behavior": "Protection is an integer state polled once per update after the script step. States four, three and five expire after 60, 451 and 602 updates respectively, returning colours to the zone palette so the effect cannot last forever. States two through four share one flash: the draw counter is taken modulo four and scaled, and the resulting brightness climbs and falls between 0x7F and 0x47F, giving a four-beat blink rather than a random flicker. States six and seven are short control locks that end after 15 updates, or immediately if the object finishes a landing, and hand the direction pad back by re-setting the control flag. While the protection state is between two and four, event dispatch stamps incoming recipients with a status word carrying bits 0x1000 and 0x2, so damage states are rejected for the whole window instead of being applied and unwound.",
+      "constants": [
+        {
+          "name": "shortProtectionUpdates",
+          "value": 60,
+          "unit": "updates, which the source treats as one second",
+          "source": "src/gool.c:1591"
+        },
+        {
+          "name": "longProtectionUpdates",
+          "value": 451,
+          "unit": "updates, about seven and a half seconds at 60 updates per second",
+          "source": "src/gool.c:1599"
+        },
+        {
+          "name": "extendedProtectionUpdates",
+          "value": 602,
+          "unit": "updates, about ten seconds at 60 updates per second",
+          "source": "src/gool.c:1602"
+        },
+        {
+          "name": "flashCycleLength",
+          "value": 4,
+          "unit": "draws per colour cycle, advanced once per rendered frame",
+          "source": "src/gool.c:1605"
+        },
+        {
+          "name": "flashBrightness",
+          "value": "0x47F",
+          "unit": "colour intensity peak, applied per rendered frame",
+          "source": "src/gool.c:1606"
+        },
+        {
+          "name": "controlLockUpdates",
+          "value": 15,
+          "unit": "updates, a quarter second at 60 updates per second",
+          "source": "src/gool.c:1612"
+        },
+        {
+          "name": "damageLockStatus",
+          "value": "0x1002",
+          "unit": "status flag bits set on every event dispatch during protection",
+          "source": "src/gool.c:3441"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 1578
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1590
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1612
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1618
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3440
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3441
+        }
+      ],
+      "capabilities": [
+        "timed protection",
+        "four-beat colour flash",
+        "damage state suppression",
+        "control lock hand-back"
+      ],
+      "tags": [
+        "protection",
+        "invulnerability",
+        "timers",
+        "damage"
+      ]
+    },
+    {
+      "id": "crate-stack-spawn",
+      "node": "gool-objects",
+      "name": "Box column spawning and staggering",
+      "summary": "Vertical columns of breakables are linked while spawning, lifted one box height per step and given staggered update counters",
+      "behavior": "Box entities are spawned in file order, and the spawner remembers the previous box entity. If the new one sits within 10 units in x, 10 in z and 100 in y of the previous entity, the two are linked into a doubly linked list and the new box is placed one box height above the running column height; otherwise the column height restarts at one box height and the list is reset. Boxes that were already spawned still advance the column height, so a stack stays aligned after its lower members are destroyed. Each box is then lifted by the difference between one box height and the accumulated column height, which is what turns a flat authoring layout into a vertical stack. In zones without the location-dependent flag the box takes a start counter derived from an xor of its position, masked to three bits, and a nonzero counter sets the stall bit so the boxes in a column never run their logic on the same update.",
+      "constants": [
+        {
+          "name": "boxHeight",
+          "value": "0x19000",
+          "unit": "16.16 fixed-point position units per stacked box, applied once at spawn",
+          "source": "src/gool.c:644"
+        },
+        {
+          "name": "columnToleranceXZ",
+          "value": 10,
+          "unit": "16.16 fixed-point position units, compared once per spawned box",
+          "source": "src/gool.c:639"
+        },
+        {
+          "name": "columnToleranceY",
+          "value": 100,
+          "unit": "16.16 fixed-point position units of vertical gap, compared once per spawned box",
+          "source": "src/gool.c:641"
+        },
+        {
+          "name": "staggerMask",
+          "value": 7,
+          "unit": "three-bit mask over the position hash, applied once at spawn",
+          "source": "src/gool.c:712"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 609
+        },
+        {
+          "path": "src/gool.c",
+          "line": 637
+        },
+        {
+          "path": "src/gool.c",
+          "line": 648
+        },
+        {
+          "path": "src/gool.c",
+          "line": 652
+        },
+        {
+          "path": "src/gool.c",
+          "line": 654
+        },
+        {
+          "path": "src/gool.c",
+          "line": 709
+        },
+        {
+          "path": "src/gool.c",
+          "line": 712
+        },
+        {
+          "path": "src/gool.c",
+          "line": 715
+        }
+      ],
+      "capabilities": [
+        "stacked spawn ordering",
+        "column height tracking",
+        "per-box update staggering"
+      ],
+      "tags": [
+        "crates",
+        "spawning",
+        "stacking",
+        "objects"
+      ]
+    },
+    {
+      "id": "crate-break-bounce",
+      "node": "collision",
+      "name": "Landing on a box top",
+      "summary": "A box below overrides terrain height, and the break-or-bounce flag only appears once the actor has been off the floor for four updates",
+      "behavior": "The floor pass first looks for the highest solid object under the proposed position; if one is found it overrides the terrain height and the contact flags switch from on-the-floor to on-an-object with a top hit. When that object is a box, the floor offset becomes exactly one box height, so the feet come to rest on the lid rather than sinking into it. The break-or-bounce bit 0x4000 is added only when the actor's animation stamp is at least four updates newer than its last floor contact, which is what forces a separate landing before a rebound can consume a box. Any positive vertical velocity clears the grounded, box-bounce and contact bits up front, so a rebound does not re-consume the same collision. When the stopped-by-solid path reports an event, it passes a single 0x6400 argument and skips that report while a box-stack break is pending.",
+      "constants": [
+        {
+          "name": "boxFloorOffset",
+          "value": "0x19000",
+          "unit": "16.16 fixed-point position units added to the floor height on each landing",
+          "source": "src/solid.c:367"
+        },
+        {
+          "name": "reboundDelayUpdates",
+          "value": 4,
+          "unit": "updates since the last floor contact, checked on each landing",
+          "source": "src/solid.c:368"
+        },
+        {
+          "name": "breakOrBounceFlag",
+          "value": "0x4000",
+          "unit": "contact flag bit set on qualified landings, evaluated every landing update",
+          "source": "src/solid.c:369"
+        },
+        {
+          "name": "topHitFlags",
+          "value": "0x200001",
+          "unit": "contact flag bits for on-an-object plus top hit, set on each landing update",
+          "source": "src/solid.c:364"
+        },
+        {
+          "name": "contactArgument",
+          "value": "0x6400",
+          "unit": "single 16.16 fixed-point event argument passed with each contact event",
+          "source": "src/solid.c:148"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/solid.c",
+          "line": 322
+        },
+        {
+          "path": "src/solid.c",
+          "line": 362
+        },
+        {
+          "path": "src/solid.c",
+          "line": 366
+        },
+        {
+          "path": "src/solid.c",
+          "line": 372
+        },
+        {
+          "path": "src/solid.c",
+          "line": 147
+        },
+        {
+          "path": "src/solid.c",
+          "line": 148
+        }
+      ],
+      "capabilities": [
+        "box-top floor height",
+        "delayed break flag",
+        "rebound guard on rising motion"
+      ],
+      "tags": [
+        "crates",
+        "jump",
+        "landing",
+        "collision"
+      ]
+    },
+    {
+      "id": "scenery-collision",
+      "node": "collision",
+      "name": "Sub-stepped scenery collision and wall slide",
+      "summary": "Movement is cut into short sub-steps and each one is resolved against floor, a solid-cell bitmap and ceiling, sliding along walls instead of stopping dead",
+      "behavior": "A requested translation is divided until no iteration covers more than 25600 units on x or z or 153600 on y, and the loop keeps applying the remainder, so a fast object cannot tunnel through a thin floor. Each iteration resolves the floor first, then plots a wall bitmap around the actor, projects the horizontal delta onto that bitmap and tests the destination cell; if it is solid, the search walks a precomputed spiral of 152 offsets that is ordered by distance and covers a 32 by 32 cell square, and the first free cell found becomes the new horizontal position. Using the nearest free cell rather than the original request is what produces sliding along angled walls. A ceiling test then clamps the actor to the ceiling minus its head clearance and clears upward velocity, and the zone test either snaps a falling actor to a solid zone bottom or converts the fall into a hole death. If the achieved horizontal delta stays under 2 units while horizontal velocity is nonzero, the actor is remembered as resting against geometry so the next update can cancel the residual slide; a status bit 0x100 records free movement.",
+      "constants": [
+        {
+          "name": "maxHorizontalSubStep",
+          "value": 25600,
+          "unit": "16.16 fixed-point position units per collision sub-step, repeated every update",
+          "source": "src/solid.c:168"
+        },
+        {
+          "name": "maxVerticalSubStep",
+          "value": 153600,
+          "unit": "16.16 fixed-point position units per collision sub-step, repeated every update",
+          "source": "src/solid.c:169"
+        },
+        {
+          "name": "bitmapDeltaScale",
+          "value": 8192,
+          "unit": "16.16 fixed-point position units divided by four to give one wall bitmap cell, per collision sub-step, repeated every update",
+          "source": "src/solid.c:529"
+        },
+        {
+          "name": "wallSearchOffsets",
+          "value": 152,
+          "unit": "distance-ordered offset entries scanned per blocked collision sub-step, repeated every update",
+          "source": "src/solid.c:46"
+        },
+        {
+          "name": "restTolerance",
+          "value": 2,
+          "unit": "16.16 fixed-point position units, compared once per translation",
+          "source": "src/solid.c:138"
+        },
+        {
+          "name": "freeMovementFlag",
+          "value": "0x100",
+          "unit": "status flag bit set per resolved collision sub-step, evaluated every update",
+          "source": "src/solid.c:544"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/solid.c",
+          "line": 157
+        },
+        {
+          "path": "src/solid.c",
+          "line": 165
+        },
+        {
+          "path": "src/solid.c",
+          "line": 183
+        },
+        {
+          "path": "src/solid.c",
+          "line": 519
+        },
+        {
+          "path": "src/solid.c",
+          "line": 534
+        },
+        {
+          "path": "src/solid.c",
+          "line": 872
+        },
+        {
+          "path": "src/solid.c",
+          "line": 882
+        },
+        {
+          "path": "src/solid.c",
+          "line": 544
+        },
+        {
+          "path": "src/solid.c",
+          "line": 551
+        }
+      ],
+      "capabilities": [
+        "bounded sub-steps",
+        "terrain octree floor and ceiling queries",
+        "solid-cell wall bitmap",
+        "wall sliding",
+        "zone-bottom fall handling"
+      ],
+      "tags": [
+        "collision",
+        "walls",
+        "terrain",
+        "physics"
+      ]
+    },
+    {
+      "id": "checkpoint-respawn",
+      "node": "level",
+      "name": "Death restart and checkpoint state",
+      "summary": "A restart reloads the saved zone, path and progress, re-arms the checkpoint spawn and rebuilds spawn bits instead of reloading the whole level",
+      "behavior": "Restart first broadcasts a respawn event to every collider, then terminates objects in the neighbouring zones, unloads the current page list and reopens the saved zone and path at the saved progress. The player is recreated, its transform, rotation and scale are copied back, velocity, speed and target rotation are cleared, the collider pair is detached, the draw counter and screen shake are reset and the world, object and camera display flags are re-enabled. On a first spawn the saved spawn bits are restored; a live checkpoint clears the destroyed bit of its own slot and sets the visited bit, then every spawned bit is cleared so a restart respawns the level contents while keeping the checkpoint record. The respawn counter advances by 0x100 per restart, the death counter advances by 0x100 except when the restart came from a saved state, where it resets, and the collected-box counter loses 0x100 when a checkpoint exists. A fresh save starts with four lives held at eight fractional bits.",
+      "constants": [
+        {
+          "name": "respawnCounterStep",
+          "value": "0x100",
+          "unit": "counter units with eight fractional bits, added once per restart",
+          "source": "src/level.c:555"
+        },
+        {
+          "name": "deathCounterStep",
+          "value": "0x100",
+          "unit": "counter units with eight fractional bits, added once per death restart",
+          "source": "src/level.c:559"
+        },
+        {
+          "name": "initialLives",
+          "value": 4,
+          "unit": "lives, a static starting value with no timestep",
+          "source": "src/level.c:361"
+        },
+        {
+          "name": "checkpointSpawnBit",
+          "value": 8,
+          "unit": "spawn-table bit set for the checkpoint slot, applied once on the first spawn",
+          "source": "src/level.c:523"
+        },
+        {
+          "name": "destroyedSpawnBit",
+          "value": 2,
+          "unit": "spawn-table bit cleared for the checkpoint slot, applied once on the first spawn",
+          "source": "src/level.c:522"
+        },
+        {
+          "name": "checkpointBoxAdjust",
+          "value": "0x100",
+          "unit": "counter units with eight fractional bits, subtracted once when a checkpoint exists",
+          "source": "src/level.c:566"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/level.c",
+          "line": 484
+        },
+        {
+          "path": "src/level.c",
+          "line": 498
+        },
+        {
+          "path": "src/level.c",
+          "line": 518
+        },
+        {
+          "path": "src/level.c",
+          "line": 521
+        },
+        {
+          "path": "src/level.c",
+          "line": 526
+        },
+        {
+          "path": "src/level.c",
+          "line": 533
+        },
+        {
+          "path": "src/level.c",
+          "line": 536
+        },
+        {
+          "path": "src/level.c",
+          "line": 540
+        },
+        {
+          "path": "src/level.c",
+          "line": 544
+        },
+        {
+          "path": "src/level.c",
+          "line": 553
+        },
+        {
+          "path": "src/level.c",
+          "line": 359
+        }
+      ],
+      "capabilities": [
+        "state save and restart",
+        "checkpoint spawn re-arm",
+        "spawn bit rebuild",
+        "death and respawn counters"
+      ],
+      "tags": [
+        "death",
+        "checkpoint",
+        "restart",
+        "saves"
+      ]
+    },
+    {
+      "id": "zone-streaming",
+      "node": "level",
+      "name": "Zone streaming driven by camera progress",
+      "summary": "Zones and camera paths form a graph; a change of zone, path or path point swaps the page load list and triggers the next spawn group",
+      "behavior": "The level is a graph of zones joined by camera paths, and progress along the current path is the streaming cursor rather than the player position. An update clamps progress to the path range, compares zone, path and integer point index, and returns without touching anything when all three match. Changing to a different path first loads the poly list of whichever end is nearer, then replays the recorded per-point polygon deltas from that end to the new index, so remeshing is incremental instead of a full rebuild. Changing zone unloads the previous load list, opens the new zone's entries and pages, and marks each neighbour as displayable by setting its first two display bits. Objects are spawned from the new zone's neighbours after the update, but only entities in group 3 are spawned by that pass, and the same test lets the spawner recognise the player's main entity and refuse to spawn a second one. Capacity is fixed by design: 96 live objects, 304 spawn records and a 3592-entry table of visited spawn tags.",
+      "constants": [
+        {
+          "name": "objectPoolSize",
+          "value": 96,
+          "unit": "live objects, a static allocation with no timestep",
+          "source": "src/gool.h:128"
+        },
+        {
+          "name": "visitedSpawnTableSize",
+          "value": 3592,
+          "unit": "spawn tag entries, a static table with no timestep",
+          "source": "src/gool.h:129"
+        },
+        {
+          "name": "spawnRecordCount",
+          "value": 304,
+          "unit": "spawn records per level, fixed at load",
+          "source": "src/gool.h:130"
+        },
+        {
+          "name": "neighbourDisplayFlags",
+          "value": 3,
+          "unit": "display flag bits set on a neighbour zone, once per zone change",
+          "source": "src/level.c:311"
+        },
+        {
+          "name": "streamedEntityGroup",
+          "value": 3,
+          "unit": "entity group id, tested on every spawn pass",
+          "source": "src/level.c:167"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/level.c",
+          "line": 152
+        },
+        {
+          "path": "src/level.c",
+          "line": 235
+        },
+        {
+          "path": "src/level.c",
+          "line": 239
+        },
+        {
+          "path": "src/level.c",
+          "line": 294
+        },
+        {
+          "path": "src/level.c",
+          "line": 307
+        },
+        {
+          "path": "src/level.c",
+          "line": 311
+        },
+        {
+          "path": "src/gool.c",
+          "line": 630
+        }
+      ],
+      "capabilities": [
+        "zone graph streaming",
+        "incremental polygon list updates",
+        "neighbour page load lists",
+        "spawn group gating",
+        "single main entity guard"
+      ],
+      "tags": [
+        "level",
+        "streaming",
+        "zones",
+        "spawning"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera",
+      "name": "Follow camera and rail switching",
+      "summary": "The follow camera seeks a distance behind the actor and converts the actor's projection onto candidate rails into path progress",
+      "behavior": "Each update the rig chooses an offset first. Backward offset seeks toward minus 0x12C00 at 0x3200 per update; forward offset seeks toward plus 0x12C00, except in one zone whose far limit is 0x4B000. Vertical pan and rail zoom follow the current path's own camera values through seek steps of 0x6400 and 0x1900, and the zoom value is ignored near either end of the path. In zones whose rail zoom exceeds 0x31FFF the camera is treated as first person, and holding down pushes it back while holding up pulls it in. The rig then projects the actor onto the current rail plus every eligible neighbour rail, rejects any candidate whose lateral offset from the rail exceeds 3200 units, and prefers a rail whose camera mode is 1 outright, otherwise the nearest with real progress. A resulting progress change that maps to 30000 units or less is applied immediately; larger changes are applied in a trimmed step so a rail switch reads as a pan rather than a cut.",
+      "constants": [
+        {
+          "name": "railOffsetLimit",
+          "value": "0x12C00",
+          "unit": "16.16 fixed-point position units behind the actor, sought every update",
+          "source": "src/cam.c:318"
+        },
+        {
+          "name": "offsetSeekStep",
+          "value": "0x3200",
+          "unit": "16.16 fixed-point position units per update",
+          "source": "src/cam.c:318"
+        },
+        {
+          "name": "wideOffsetLimit",
+          "value": "0x4B000",
+          "unit": "16.16 fixed-point position units in front of the actor, sought every update in one zone",
+          "source": "src/cam.c:320"
+        },
+        {
+          "name": "zoomSeekStep",
+          "value": "0x1900",
+          "unit": "16.16 fixed-point position units per update",
+          "source": "src/cam.c:361"
+        },
+        {
+          "name": "panSeekStep",
+          "value": "0x6400",
+          "unit": "16.16 fixed-point position units per update",
+          "source": "src/cam.c:367"
+        },
+        {
+          "name": "firstPersonZoomThreshold",
+          "value": "0x31FFF",
+          "unit": "16.16 fixed-point rail zoom compared every update",
+          "source": "src/cam.c:299"
+        },
+        {
+          "name": "lateralTolerance",
+          "value": 3200,
+          "unit": "16.16 fixed-point position units of allowed lateral offset, tested every update",
+          "source": "src/cam.c:166"
+        },
+        {
+          "name": "directProgressDistance",
+          "value": 30000,
+          "unit": "16.16 fixed-point position units of progress change, the cut-off for an immediate rail jump each update",
+          "source": "src/cam.c:465"
+        },
+        {
+          "name": "midPathWindow",
+          "value": 50,
+          "unit": "path points from either end, a threshold evaluated every update",
+          "source": "src/cam.c:294"
+        },
+        {
+          "name": "railEndWindow",
+          "value": 10,
+          "unit": "path points from either end where zoom seeking is suppressed, evaluated every update",
+          "source": "src/cam.c:358"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/cam.c",
+          "line": 276
+        },
+        {
+          "path": "src/cam.c",
+          "line": 299
+        },
+        {
+          "path": "src/cam.c",
+          "line": 318
+        },
+        {
+          "path": "src/cam.c",
+          "line": 361
+        },
+        {
+          "path": "src/cam.c",
+          "line": 367
+        },
+        {
+          "path": "src/cam.c",
+          "line": 166
+        },
+        {
+          "path": "src/cam.c",
+          "line": 465
+        },
+        {
+          "path": "src/cam.c",
+          "line": 483
+        },
+        {
+          "path": "src/cam.c",
+          "line": 294
+        },
+        {
+          "path": "src/cam.c",
+          "line": 359
+        }
+      ],
+      "capabilities": [
+        "offset seeking",
+        "rail projection",
+        "neighbour rail selection",
+        "smooth rail switching",
+        "first-person offset control"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "paths",
+        "smoothing"
+      ]
+    },
+    {
+      "id": "death-camera",
+      "node": "camera",
+      "name": "Fatal spin orbit camera",
+      "summary": "A death display flag swaps the follow camera for a nine-update spiral that settles at a fixed radius and height around the actor",
+      "behavior": "When the current display flags include the spin-death bit, the camera update diverts from the follow logic to the death routine instead of computing rail progress. The routine takes one vertex of the actor's current animation frame, transforms it by the actor transform and scale, and works out its yaw and pitch as seen from the camera. For the first nine updates it divides the remaining yaw difference by nine, stores that step, and adds it to the camera yaw so the orbit closes in on the actor within those updates; separately it seeks the horizontal radius toward 175000 and the camera height toward the vertex height plus 120000 in steps of 102400. Pitch is rotated toward the point, at half rate once the remaining error is under 0x72 of a turn. While the spin-acceleration display flag is set, 22 is added to the horizontal rotation every update, which keeps the camera turning after the orbit has converged. The camera translation is then rebuilt by rotating the radius vector around the actor, so the result is a circle rather than a straight pull-back.",
+      "constants": [
+        {
+          "name": "orbitUpdates",
+          "value": 9,
+          "unit": "updates over which the yaw correction is distributed, once per death",
+          "source": "src/cam.c:708"
+        },
+        {
+          "name": "yawStepDivisor",
+          "value": 9,
+          "unit": "divisor applied to the remaining yaw difference once per death, matching the update count",
+          "source": "src/cam.c:710"
+        },
+        {
+          "name": "orbitAcceleration",
+          "value": 22,
+          "unit": "12-bit angle units added to horizontal rotation per update while spin acceleration is flagged",
+          "source": "src/cam.c:714"
+        },
+        {
+          "name": "pitchSnapTolerance",
+          "value": "0x72",
+          "unit": "12-bit angle units, about ten degrees, tested every update",
+          "source": "src/cam.c:720"
+        },
+        {
+          "name": "orbitHeightOffset",
+          "value": 120000,
+          "unit": "16.16 fixed-point position units above the tracked vertex, sought every update",
+          "source": "src/cam.c:731"
+        },
+        {
+          "name": "orbitHeightSeekStep",
+          "value": 102400,
+          "unit": "16.16 fixed-point position units per update",
+          "source": "src/cam.c:731"
+        },
+        {
+          "name": "orbitRadius",
+          "value": 175000,
+          "unit": "16.16 fixed-point position units of horizontal distance, sought every update",
+          "source": "src/cam.c:733"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/cam.c",
+          "line": 671
+        },
+        {
+          "path": "src/cam.c",
+          "line": 501
+        },
+        {
+          "path": "src/cam.c",
+          "line": 502
+        },
+        {
+          "path": "src/cam.c",
+          "line": 709
+        },
+        {
+          "path": "src/cam.c",
+          "line": 715
+        },
+        {
+          "path": "src/cam.c",
+          "line": 726
+        },
+        {
+          "path": "src/cam.c",
+          "line": 731
+        },
+        {
+          "path": "src/cam.c",
+          "line": 733
+        }
+      ],
+      "capabilities": [
+        "death camera takeover",
+        "timed yaw convergence",
+        "radius and height seeking",
+        "accelerated spin"
+      ],
+      "tags": [
+        "camera",
+        "death",
+        "orbit",
+        "cutscene"
+      ]
+    },
+    {
+      "id": "input-masking",
+      "node": "input",
+      "name": "Pad decoding and direction conflicts",
+      "summary": "One 8-way direction field per port, with opposite presses resolved by priority before scripts read the pad",
+      "behavior": "Each update pushes the previous state down a three-deep history, reads the hardware word and keeps the upper sixteen bits for port 0 and the lower sixteen for port 1. Opposite directions are impossible in the result: if up is held, the down bit is masked off, and if left is held, the right bit is masked off, so a diagonal is always one vertical plus one horizontal. The newly tapped set is then computed as the bits held now but not in the previous frame, masked so the two click-stick bits can never appear as taps. Script code reaches the pad through a control test that can read the tapped set, the held set, or the union of the current and previous tapped sets, and can test a single decoded direction, a raw direction nibble or the union of two frames. During recorded playback the pad contents are replaced from the recording frame and the lock is released when an action button, start or select is recorded.",
+      "constants": [
+        {
+          "name": "downMask",
+          "value": "0xBFFF",
+          "unit": "button bit mask applied once per update when up is held",
+          "source": "src/pad.c:88"
+        },
+        {
+          "name": "rightMask",
+          "value": "0xDFFF",
+          "unit": "button bit mask applied once per update when left is held",
+          "source": "src/pad.c:90"
+        },
+        {
+          "name": "tapMask",
+          "value": "0xF9FF",
+          "unit": "button bit mask applied to newly tapped bits once per update",
+          "source": "src/pad.c:93"
+        },
+        {
+          "name": "portShifts",
+          "value": 16,
+          "unit": "bit shift separating port 0 and port 1 in the hardware word, applied once per update",
+          "source": "src/pad.c:84"
+        },
+        {
+          "name": "playbackReleaseMask",
+          "value": "0x9F0",
+          "unit": "button bit mask tested once per playback frame",
+          "source": "src/pad.c:54"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/pad.c",
+          "line": 69
+        },
+        {
+          "path": "src/pad.c",
+          "line": 84
+        },
+        {
+          "path": "src/pad.c",
+          "line": 85
+        },
+        {
+          "path": "src/pad.c",
+          "line": 87
+        },
+        {
+          "path": "src/pad.c",
+          "line": 89
+        },
+        {
+          "path": "src/pad.c",
+          "line": 93
+        },
+        {
+          "path": "src/pad.c",
+          "line": 54
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1965
+        }
+      ],
+      "capabilities": [
+        "two-port pad history",
+        "opposite-direction masking",
+        "tap edge detection",
+        "scripted control tests",
+        "recorded playback lock"
+      ],
+      "tags": [
+        "input",
+        "pad",
+        "controls",
+        "edges"
+      ]
+    },
+    {
+      "id": "frame-timestep",
+      "node": "core-loop",
+      "name": "Frame timestep scaling",
+      "summary": "Every physics increment is multiplied by the measured ticks per frame against a 1024 reference and capped, so a slow frame moves proportionally more",
+      "behavior": "The loop runs one game update per rendered frame, and the display layer measures how many ticks elapsed between draws, rounds that measurement to half-frame steps and stores it. The frame counter used by timers is simply the draw stamp divided by 34, so a nominal frame is 34 ticks and all the update counts used by protection, break and respawn logic are in those units. Each physics path reads the stored tick count, clamps it to 0x66, and multiplies its per-update increment by that value over 1024 before applying it, so an exactly nominal frame behaves as authored and a late frame applies a proportionally larger step, to a hard limit. Angular rotation, acceleration and translation all use the same scale, which keeps authored per-frame numbers coherent when the frame budget changes.",
+      "constants": [
+        {
+          "name": "nominalFrameTicks",
+          "value": 34,
+          "unit": "timer ticks per nominal frame, dividing the draw stamp once per update",
+          "source": "src/gool.c:972"
+        },
+        {
+          "name": "timestepCap",
+          "value": "0x66",
+          "unit": "ticks per frame clamp, applied to every physics update",
+          "source": "src/gool.c:1808"
+        },
+        {
+          "name": "scaleReference",
+          "value": 1024,
+          "unit": "scale denominator applied to every physics update alongside the tick count",
+          "source": "src/gool.c:1830"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gool.c",
+          "line": 965
+        },
+        {
+          "path": "src/gool.c",
+          "line": 974
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1806
+        },
+        {
+          "path": "src/gool.c",
+          "line": 1830
+        },
+        {
+          "path": "src/gool.c",
+          "line": 3462
+        },
+        {
+          "path": "src/main.c",
+          "line": 245
+        },
+        {
+          "path": "src/main.c",
+          "line": 268
+        }
+      ],
+      "capabilities": [
+        "variable timestep compensation",
+        "tick-count clamping",
+        "frame-counted timers"
+      ],
+      "tags": [
+        "timestep",
+        "frame rate",
+        "physics",
+        "loop"
+      ]
+    },
+    {
+      "id": "view-projection",
+      "node": "render",
+      "name": "Field of view and camera basis",
+      "summary": "Field of view is a five-entry projection-distance table and the screen basis compresses height to five eighths",
+      "behavior": "The level header carries a field of view in degrees, and the renderer converts it through a table of five entries into the projection distance used by every later transform: 30 degrees gives 960, 37 gives 800, 55 gives 500, 60 gives 460 and 90 gives 288, so a narrower view is a longer projection distance. Camera orientation is composed from the three camera angles as separate yaw, pitch and roll matrices multiplied in order, and the translation is subtracted from world coordinates rather than applied to the model. The screen-space basis is derived from that matrix with the horizontal row unchanged, the vertical row scaled by minus five eighths and the depth row negated, which flattens the view vertically and is what gives the picture its wide, low horizon. Screen shake is added as a vertical screen offset and then decays by its own magnitude each frame so any shake settles at zero. A newly initialised camera starts 128000 units out on z with zero rotation.",
+      "constants": [
+        {
+          "name": "projectionAt30Degrees",
+          "value": 960,
+          "unit": "projection distance in screen units, set once at level load",
+          "source": "src/gfx.c:736"
+        },
+        {
+          "name": "projectionAt37Degrees",
+          "value": 800,
+          "unit": "projection distance in screen units, set once at level load",
+          "source": "src/gfx.c:737"
+        },
+        {
+          "name": "projectionAt55Degrees",
+          "value": 500,
+          "unit": "projection distance in screen units, set once at level load",
+          "source": "src/gfx.c:738"
+        },
+        {
+          "name": "projectionAt60Degrees",
+          "value": 460,
+          "unit": "projection distance in screen units, set once at level load",
+          "source": "src/gfx.c:739"
+        },
+        {
+          "name": "projectionAt90Degrees",
+          "value": 288,
+          "unit": "projection distance in screen units, set once at level load",
+          "source": "src/gfx.c:740"
+        },
+        {
+          "name": "verticalRowScaleNumerator",
+          "value": -5,
+          "unit": "numerator of the negative five-eighths vertical scale, rebuilt every rendered frame",
+          "source": "src/gfx.c:842"
+        },
+        {
+          "name": "initialCameraDistance",
+          "value": 128000,
+          "unit": "16.16 fixed-point position units on z, set once at initialisation",
+          "source": "src/gfx.c:774"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gfx.c",
+          "line": 734
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 745
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 787
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 842
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 843
+        },
+        {
+          "path": "src/gfx.c",
+          "line": 878
+        }
+      ],
+      "capabilities": [
+        "table-driven field of view",
+        "camera basis composition",
+        "vertical foreshortening",
+        "screen shake decay"
+      ],
+      "tags": [
+        "rendering",
+        "camera",
+        "projection",
+        "feel"
+      ]
+    }
+  ]
+}

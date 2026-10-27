@@ -1,0 +1,1612 @@
+{
+  "version": 1,
+  "id": "tomb-raider-i-ii",
+  "title": "Tomb Raider I-II (TRX engine)",
+  "repo": "https://github.com/LostArtefacts/TRX",
+  "sha": "4d55f7d3130f9d04bdc1fefb85bf4d8fa93a22d3",
+  "nodes": [
+    {
+      "id": "lara-core",
+      "name": "Lara body and interaction",
+      "purpose": "Lara body reference and shared limits, plus the helpers that test where she stands relative to an item and walk her onto a stand point",
+      "paths": [
+        "src/trx/game/lara/common.c",
+        "src/trx/game/lara/const.h",
+        "src/trx/game/lara/interact.c",
+        "src/trx/game/objects/general/pickup.c"
+      ],
+      "functions": [
+        {
+          "name": "Lara_Animate",
+          "path": "src/trx/game/lara/common.c",
+          "lines": [
+            499,
+            637
+          ]
+        },
+        {
+          "name": "Lara_TakeDamage",
+          "path": "src/trx/game/lara/common.c",
+          "lines": [
+            688,
+            696
+          ]
+        },
+        {
+          "name": "Lara_TestPosition",
+          "path": "src/trx/game/lara/common.c",
+          "lines": [
+            738,
+            788
+          ]
+        },
+        {
+          "name": "Lara_MovePositionEx",
+          "path": "src/trx/game/lara/common.c",
+          "lines": [
+            852,
+            942
+          ]
+        },
+        {
+          "name": "Lara_Interact_CanControl",
+          "path": "src/trx/game/lara/interact.c",
+          "lines": [
+            68,
+            105
+          ]
+        },
+        {
+          "name": "Lara_Interact_Reach",
+          "path": "src/trx/game/lara/interact.c",
+          "lines": [
+            139,
+            149
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "lara-control",
+      "parent": "lara-core",
+      "name": "Per-update control and environment",
+      "purpose": "The per-update Lara tick, the water status it selects from the water plane, the air supply and drowning damage, and the room re-home that follows her",
+      "paths": [
+        "src/trx/game/lara/control.c",
+        "src/trx/game/lara/misc.c"
+      ],
+      "functions": [
+        {
+          "name": "Lara_Control",
+          "path": "src/trx/game/lara/control.c",
+          "lines": [
+            1114,
+            1183
+          ]
+        },
+        {
+          "name": "Lara_Control_SelectEnvironment",
+          "path": "src/trx/game/lara/control.c",
+          "lines": [
+            1050,
+            1112
+          ]
+        },
+        {
+          "name": "M_HandleUnderwater",
+          "path": "src/trx/game/lara/control.c",
+          "lines": [
+            755,
+            840
+          ]
+        },
+        {
+          "name": "M_HandleEnvironment",
+          "path": "src/trx/game/lara/control.c",
+          "lines": [
+            930,
+            1000
+          ]
+        },
+        {
+          "name": "Lara_UpdateRoomToHeight",
+          "path": "src/trx/game/lara/misc.c",
+          "lines": [
+            519,
+            531
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-core"
+      ]
+    },
+    {
+      "id": "lara-movement",
+      "parent": "lara-control",
+      "name": "Ground locomotion",
+      "purpose": "Walking, running, sprinting, wading and rolling, with the ground collision that each of those states runs",
+      "paths": [
+        "src/trx/game/lara/state/land.c",
+        "src/trx/game/lara/col/land.c"
+      ],
+      "functions": [
+        {
+          "name": "M_Walk",
+          "path": "src/trx/game/lara/state/land.c",
+          "lines": [
+            101,
+            136
+          ]
+        },
+        {
+          "name": "M_Run",
+          "path": "src/trx/game/lara/state/land.c",
+          "lines": [
+            176,
+            258
+          ]
+        },
+        {
+          "name": "M_Wade",
+          "path": "src/trx/game/lara/state/land.c",
+          "lines": [
+            260,
+            314
+          ]
+        },
+        {
+          "name": "M_Sprint",
+          "path": "src/trx/game/lara/state/land.c",
+          "lines": [
+            836,
+            893
+          ]
+        },
+        {
+          "name": "M_Roll",
+          "path": "src/trx/game/lara/col/land.c",
+          "lines": [
+            692,
+            723
+          ]
+        },
+        {
+          "name": "M_RollContinue",
+          "path": "src/trx/game/lara/col/land.c",
+          "lines": [
+            725,
+            751
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-control"
+      ]
+    },
+    {
+      "id": "lara-jump",
+      "parent": "lara-movement",
+      "name": "Jump states",
+      "purpose": "The jump and compression states that choose a launch direction from the floor ahead and steer while airborne",
+      "paths": [
+        "src/trx/game/lara/state/jump.c"
+      ],
+      "functions": [
+        {
+          "name": "M_Compress",
+          "path": "src/trx/game/lara/state/jump.c",
+          "lines": [
+            20,
+            56
+          ]
+        },
+        {
+          "name": "M_UpJump",
+          "path": "src/trx/game/lara/state/jump.c",
+          "lines": [
+            58,
+            67
+          ]
+        },
+        {
+          "name": "M_NeutralJumpRoll",
+          "path": "src/trx/game/lara/state/jump.c",
+          "lines": [
+            69,
+            84
+          ]
+        },
+        {
+          "name": "M_ForwardJump",
+          "path": "src/trx/game/lara/state/jump.c",
+          "lines": [
+            86,
+            119
+          ]
+        },
+        {
+          "name": "M_SideJump",
+          "path": "src/trx/game/lara/state/jump.c",
+          "lines": [
+            141,
+            156
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-movement"
+      ]
+    },
+    {
+      "id": "lara-jump-collision",
+      "parent": "lara-jump",
+      "name": "Airborne collision",
+      "purpose": "The airborne collision states: wall deflection, the reach grab, the fast fall and the landing that decides fall damage",
+      "paths": [
+        "src/trx/game/lara/col/jump.c"
+      ],
+      "functions": [
+        {
+          "name": "M_TestHangJump",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            70,
+            155
+          ]
+        },
+        {
+          "name": "M_SideBackJump",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            418,
+            465
+          ]
+        },
+        {
+          "name": "M_Reach",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            499,
+            535
+          ]
+        },
+        {
+          "name": "M_FastFall",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            584,
+            614
+          ]
+        },
+        {
+          "name": "Lara_Col_TestEdgeCatch",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            616,
+            639
+          ]
+        },
+        {
+          "name": "Lara_Col_LandedBad",
+          "path": "src/trx/game/lara/col/jump.c",
+          "lines": [
+            738,
+            780
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-jump",
+        "world-collision"
+      ]
+    },
+    {
+      "id": "lara-climb",
+      "parent": "lara-jump-collision",
+      "name": "Hang, shimmy and climb",
+      "purpose": "Hanging from a ledge or ladder, sideways shimmy along it, climb column testing and the ledge jump",
+      "paths": [
+        "src/trx/game/lara/col/climb.c",
+        "src/trx/game/lara/state/climb.c"
+      ],
+      "functions": [
+        {
+          "name": "M_IsValidHangPos",
+          "path": "src/trx/game/lara/col/climb.c",
+          "lines": [
+            273,
+            323
+          ]
+        },
+        {
+          "name": "M_TestLedgeJump",
+          "path": "src/trx/game/lara/col/climb.c",
+          "lines": [
+            784,
+            812
+          ]
+        },
+        {
+          "name": "M_Hang",
+          "path": "src/trx/game/lara/col/climb.c",
+          "lines": [
+            841,
+            904
+          ]
+        },
+        {
+          "name": "M_Shimmy",
+          "path": "src/trx/game/lara/col/climb.c",
+          "lines": [
+            906,
+            914
+          ]
+        },
+        {
+          "name": "Lara_Col_HangTest",
+          "path": "src/trx/game/lara/col/climb.c",
+          "lines": [
+            1238,
+            1371
+          ]
+        },
+        {
+          "name": "M_SetCornerAnim",
+          "path": "src/trx/game/lara/state/climb.c",
+          "lines": [
+            51,
+            110
+          ]
+        },
+        {
+          "name": "M_StanceLadder",
+          "path": "src/trx/game/lara/state/climb.c",
+          "lines": [
+            163,
+            185
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-jump-collision"
+      ]
+    },
+    {
+      "id": "lara-swim",
+      "parent": "lara-control",
+      "name": "Underwater and surface swimming",
+      "purpose": "Treading, swimming, gliding and surface states, plus the water collision that deflects her off walls and lifts her out at a shallow ledge",
+      "paths": [
+        "src/trx/game/lara/state/swim.c",
+        "src/trx/game/lara/col/swim.c"
+      ],
+      "functions": [
+        {
+          "name": "M_Tread",
+          "path": "src/trx/game/lara/state/swim.c",
+          "lines": [
+            45,
+            75
+          ]
+        },
+        {
+          "name": "M_Swim",
+          "path": "src/trx/game/lara/state/swim.c",
+          "lines": [
+            77,
+            108
+          ]
+        },
+        {
+          "name": "M_Glide",
+          "path": "src/trx/game/lara/state/swim.c",
+          "lines": [
+            110,
+            134
+          ]
+        },
+        {
+          "name": "M_TreadSurface",
+          "path": "src/trx/game/lara/state/swim.c",
+          "lines": [
+            136,
+            185
+          ]
+        },
+        {
+          "name": "M_ForwardSurface",
+          "path": "src/trx/game/lara/state/swim.c",
+          "lines": [
+            187,
+            208
+          ]
+        },
+        {
+          "name": "M_TestWaterClimbOut",
+          "path": "src/trx/game/lara/col/swim.c",
+          "lines": [
+            45,
+            123
+          ]
+        },
+        {
+          "name": "M_TestWaterDepth",
+          "path": "src/trx/game/lara/col/swim.c",
+          "lines": [
+            125,
+            152
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-control"
+      ]
+    },
+    {
+      "id": "world-collision",
+      "name": "Collision against room geometry",
+      "purpose": "The height-aware collision query that samples the sector under an item and around it, and the sector lookup that resolves a world position into a room",
+      "paths": [
+        "src/trx/game/collision/common.c",
+        "src/trx/game/rooms/geometry.c",
+        "src/trx/game/lara/col.c"
+      ],
+      "functions": [
+        {
+          "name": "M_FillSide",
+          "path": "src/trx/game/collision/common.c",
+          "lines": [
+            98,
+            172
+          ]
+        },
+        {
+          "name": "Collide_GetCollisionInfo",
+          "path": "src/trx/game/collision/common.c",
+          "lines": [
+            365,
+            622
+          ]
+        },
+        {
+          "name": "Room_GetSector",
+          "path": "src/trx/game/rooms/geometry.c",
+          "lines": [
+            223,
+            287
+          ]
+        },
+        {
+          "name": "Room_GetSectorOnWalkable",
+          "path": "src/trx/game/rooms/geometry.c",
+          "lines": [
+            289,
+            333
+          ]
+        },
+        {
+          "name": "Lara_Col_GetInfo",
+          "path": "src/trx/game/lara/col.c",
+          "lines": [
+            128,
+            133
+          ]
+        },
+        {
+          "name": "Lara_Col_Shift",
+          "path": "src/trx/game/lara/col.c",
+          "lines": [
+            135,
+            138
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "parent": "world-collision",
+      "name": "Chase camera",
+      "purpose": "The third-person camera: its ideal position behind the body, the smoothing that chases it, and the sector clamping that keeps it out of walls",
+      "paths": [
+        "src/trx/game/camera/los_camera.c",
+        "src/trx/game/camera/common.c",
+        "src/trx/game/camera/const.h"
+      ],
+      "functions": [
+        {
+          "name": "M_LOS",
+          "path": "src/trx/game/camera/los_camera.c",
+          "lines": [
+            77,
+            156
+          ]
+        },
+        {
+          "name": "M_Collide",
+          "path": "src/trx/game/camera/los_camera.c",
+          "lines": [
+            177,
+            256
+          ]
+        },
+        {
+          "name": "M_Move",
+          "path": "src/trx/game/camera/los_camera.c",
+          "lines": [
+            306,
+            389
+          ]
+        },
+        {
+          "name": "M_GetIdeal",
+          "path": "src/trx/game/camera/los_camera.c",
+          "lines": [
+            391,
+            443
+          ]
+        },
+        {
+          "name": "M_Chase",
+          "path": "src/trx/game/camera/los_camera.c",
+          "lines": [
+            445,
+            512
+          ]
+        },
+        {
+          "name": "Camera_Update",
+          "path": "src/trx/game/camera/common.c",
+          "lines": [
+            181,
+            274
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-collision"
+      ]
+    },
+    {
+      "id": "gun",
+      "parent": "lara-control",
+      "name": "Weapon handling",
+      "purpose": "The weapon state machine that draws and holsters, the target search that locks on in three dimensions, and the shot that resolves against target spheres",
+      "paths": [
+        "src/trx/game/gun/control.c",
+        "src/trx/game/gun/misc.c"
+      ],
+      "functions": [
+        {
+          "name": "M_ConsiderTarget",
+          "path": "src/trx/game/gun/misc.c",
+          "lines": [
+            63,
+            127
+          ]
+        },
+        {
+          "name": "Gun_FindTargetPoint",
+          "path": "src/trx/game/gun/misc.c",
+          "lines": [
+            173,
+            190
+          ]
+        },
+        {
+          "name": "Gun_TargetInfo",
+          "path": "src/trx/game/gun/misc.c",
+          "lines": [
+            223,
+            286
+          ]
+        },
+        {
+          "name": "M_UpdateGunState",
+          "path": "src/trx/game/gun/control.c",
+          "lines": [
+            324,
+            344
+          ]
+        },
+        {
+          "name": "Gun_Control",
+          "path": "src/trx/game/gun/control.c",
+          "lines": [
+            355,
+            457
+          ]
+        },
+        {
+          "name": "Gun_FireWeapon",
+          "path": "src/trx/game/gun/control.c",
+          "lines": [
+            467,
+            587
+          ]
+        }
+      ],
+      "dependsOn": [
+        "lara-control",
+        "camera"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "run-steering",
+      "node": "lara-movement",
+      "name": "Run steering and turn ramp",
+      "summary": "Held direction builds a turn rate that is added to the body yaw once per update and decays when let go",
+      "behavior": "A direction held while walking or running does not turn the body by a fixed angle. It adds the turn increment to a signed rate carried on Lara, clamps that rate at the cap for the current gait, and then adds the whole rate to the body yaw once per update, so the yaw accelerates over the first few updates and keeps turning for a few after the direction is released. Releasing decays the rate by the undo amount per update. The same rate is mirrored into a sideways roll of the body, clamped separately, which is the visible lean into the turn. Walking uses the slow cap and running the fast cap, so a pivot on the run turns at twice the peak rate of a pivot on the walk.",
+      "constants": [
+        {
+          "name": "turnIncrement",
+          "value": 409,
+          "unit": "engine angle units per update at 30 Hz (65536 per full turn)",
+          "source": "src/trx/game/lara/const.h:20"
+        },
+        {
+          "name": "turnUndo",
+          "value": 364,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:19"
+        },
+        {
+          "name": "runTurnCap",
+          "value": 1456,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/land.c:20"
+        },
+        {
+          "name": "walkTurnCap",
+          "value": 728,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:21"
+        },
+        {
+          "name": "leanRate",
+          "value": 273,
+          "unit": "engine roll units per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:25"
+        },
+        {
+          "name": "leanCap",
+          "value": 2002,
+          "unit": "engine roll units at 30 Hz",
+          "source": "src/trx/game/lara/const.h:26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 216
+        },
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 115
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 738
+        },
+        {
+          "path": "src/trx/game/lara/const.h",
+          "line": 20
+        }
+      ],
+      "capabilities": [
+        "ground steering",
+        "turn acceleration",
+        "body lean"
+      ],
+      "tags": [
+        "run",
+        "turn rate",
+        "steering",
+        "movement"
+      ]
+    },
+    {
+      "id": "sprint",
+      "node": "lara-movement",
+      "name": "Sprint",
+      "summary": "A faster gait with its own turn cap and lean, paid for out of a budget that only refills off the sprint",
+      "behavior": "Sprint is requested from the run state and is only entered when the sprint budget is full on the frame the request begins, unless the responsive variant is enabled. While sprinting, direction builds a turn rate with the sprint increment up to the sprint cap, and the body lean is allowed to grow a little further than it can at a run. The budget drains only while the sprint state is current and is refilled one unit per update in every other state, so back-to-back bursts need a pause between them; in toggle mode the request is also cleared once the budget is gone, while she wades, or when sprint is disabled. Jump during a sprint goes to the sprint roll instead of an ordinary jump.",
+      "constants": [
+        {
+          "name": "sprintTurnIncrement",
+          "value": 409,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/land.c:22"
+        },
+        {
+          "name": "sprintTurnCap",
+          "value": 728,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/land.c:23"
+        },
+        {
+          "name": "sprintLeanCap",
+          "value": 2192,
+          "unit": "engine roll units at 30 Hz",
+          "source": "src/trx/game/lara/state/land.c:24"
+        },
+        {
+          "name": "simulationRate",
+          "value": 30,
+          "unit": "updates per second (fixed timestep)",
+          "source": "src/trx/game/const.h:5"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 836
+        },
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 192
+        },
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 205
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 937
+        }
+      ],
+      "capabilities": [
+        "sprint",
+        "stamina budget",
+        "sprint slide"
+      ],
+      "tags": [
+        "sprint",
+        "movement",
+        "stamina"
+      ]
+    },
+    {
+      "id": "roll",
+      "node": "lara-movement",
+      "name": "Roll",
+      "summary": "Ground roll that drops gravity, keeps the body swept forward, and continues into a backwards run",
+      "behavior": "Roll is taken from the run or the stop state. The switch does not start the roll animation at its first frame: it enters two frames in, which is where the tuck reads. During the roll the state clears gravity and vertical speed, keeps slope walls treated as walls, and lets the animation drive her forward. The continuation variant keeps the same suppression of gravity but reverses the move direction by half a turn relative to her facing, and either variant falls out of the roll into an ordinary fall when the floor drops away further than a step.",
+      "constants": [
+        {
+          "name": "rollEntryFrame",
+          "value": 2,
+          "unit": "animation frames from the roll animation start",
+          "source": "src/trx/game/lara/state/land.c:17"
+        },
+        {
+          "name": "stepUpAllowance",
+          "value": 384,
+          "unit": "world units at 30 Hz",
+          "source": "src/trx/game/lara/const.h:36"
+        },
+        {
+          "name": "dropToFall",
+          "value": 200,
+          "unit": "world units at 30 Hz",
+          "source": "src/trx/game/lara/col/land.c:741"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 183
+        },
+        {
+          "path": "src/trx/game/lara/state/land.c",
+          "line": 187
+        },
+        {
+          "path": "src/trx/game/lara/col/land.c",
+          "line": 692
+        },
+        {
+          "path": "src/trx/game/lara/col/land.c",
+          "line": 725
+        },
+        {
+          "path": "src/trx/game/lara/col/land.c",
+          "line": 730
+        }
+      ],
+      "capabilities": [
+        "ground roll",
+        "roll continuation",
+        "gravity suppression"
+      ],
+      "tags": [
+        "roll",
+        "movement",
+        "evasion"
+      ]
+    },
+    {
+      "id": "jump",
+      "node": "lara-jump",
+      "name": "Standing and running jump",
+      "summary": "Jump direction is chosen by probing the floor one step away in four directions, and airborne turns use their own cap",
+      "behavior": "A jump press from standing enters a compression state rather than launching at once. From the compression the engine probes the floor one step ahead in each of the four cardinal directions and picks the jump animation that matches the direction whose floor is within the step-up allowance, so the same press gives a forward, back, left or right jump depending on the geometry around her. On the way up, action turns a forward jump into a reach and walk turns it into a swan dive, and roll turns it into a twist. Airborne steering adds the same turn increment but clamps at the jump cap, which is a third of the run cap. Once vertical speed passes the fast fall threshold the airborne state switches to a fast fall, which drops her with a much steeper speed curve.",
+      "constants": [
+        {
+          "name": "jumpTurnCap",
+          "value": 546,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/jump.c:11"
+        },
+        {
+          "name": "fastFallThreshold",
+          "value": 131,
+          "unit": "world units of vertical speed per update at 30 Hz",
+          "source": "src/trx/game/lara/state/jump.c:12"
+        },
+        {
+          "name": "directionProbeDistance",
+          "value": 256,
+          "unit": "world units probed ahead, re-probed each update at 30 Hz",
+          "source": "src/trx/game/const.h:7"
+        },
+        {
+          "name": "stepUpAllowance",
+          "value": 384,
+          "unit": "world units at 30 Hz",
+          "source": "src/trx/game/lara/const.h:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/state/jump.c",
+          "line": 20
+        },
+        {
+          "path": "src/trx/game/lara/state/jump.c",
+          "line": 86
+        },
+        {
+          "path": "src/trx/game/lara/state/jump.c",
+          "line": 141
+        },
+        {
+          "path": "src/trx/game/lara/state/jump.c",
+          "line": 58
+        },
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 418
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "directional jump",
+        "air control",
+        "swan dive"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "air control"
+      ]
+    },
+    {
+      "id": "gravity",
+      "node": "lara-core",
+      "name": "Gravity and velocity integration",
+      "summary": "Vertical speed grows six per update until terminal, and horizontal speed is stepped along the stored move angle",
+      "behavior": "A body with gravity on has its vertical speed raised by six every update until it reaches the terminal value of 128, after which the growth falls to one per update, and the vertical speed is then added to the position. Horizontal speed is not a fixed number: it comes from the animation velocity plus its acceleration over the elapsed frames, and each update the position is stepped by that speed along the move angle the state wrote. Both axes therefore integrate in world space at the same time, which is what makes a jump an arc rather than a scripted path. In swamp rooms the vertical speed is halved and decayed instead of accelerated, and horizontal speed decays by an eighth per update until it drops below eight and stops.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 6,
+          "unit": "world units per update added to vertical speed at 30 Hz",
+          "source": "src/trx/game/const.h:11"
+        },
+        {
+          "name": "terminalVerticalSpeed",
+          "value": 128,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/const.h:12"
+        },
+        {
+          "name": "simulationRate",
+          "value": 30,
+          "unit": "updates per second (fixed timestep)",
+          "source": "src/trx/game/const.h:5"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/common.c",
+          "line": 499
+        },
+        {
+          "path": "src/trx/game/lara/common.c",
+          "line": 626
+        },
+        {
+          "path": "src/trx/game/lara/common.c",
+          "line": 635
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "velocity integration",
+        "swamp drag"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "integration"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "lara-jump-collision",
+      "name": "Fall damage",
+      "summary": "Landings are free up to a threshold vertical speed, ramp quadratically over the next fourteen units, then kill",
+      "behavior": "On landing the engine subtracts the damage start speed from the vertical speed she arrived with. A result at or below zero is a free landing. A result within the damage length scales a quadratic fraction of her whole health pool, so the first units past the threshold cost almost nothing and the last cost nearly everything, and the landing is classed as bad when that damage would take her below zero rather than exactly to it. Anything past the start plus the length is fatal outright. A fast dive has its own, harsher test: landing from a dive above 133 of vertical speed kills her instead of stopping her.",
+      "constants": [
+        {
+          "name": "damageStartSpeed",
+          "value": 140,
+          "unit": "world units of vertical speed per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:39"
+        },
+        {
+          "name": "damageLength",
+          "value": 14,
+          "unit": "world units of vertical speed per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:40"
+        },
+        {
+          "name": "healthPool",
+          "value": 1000,
+          "unit": "health points",
+          "source": "src/trx/game/lara/const.h:8"
+        },
+        {
+          "name": "fatalDiveSpeed",
+          "value": 133,
+          "unit": "world units of vertical speed per update at 30 Hz",
+          "source": "src/trx/game/lara/col/jump.c:574"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 738
+        },
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 574
+        },
+        {
+          "path": "src/trx/game/lara/state/jump.c",
+          "line": 10
+        },
+        {
+          "path": "src/trx/game/lara/const.h",
+          "line": 39
+        }
+      ],
+      "capabilities": [
+        "fall damage",
+        "fatal fall",
+        "dive landing"
+      ],
+      "tags": [
+        "damage",
+        "fall",
+        "health"
+      ]
+    },
+    {
+      "id": "ledge-grab",
+      "node": "lara-jump-collision",
+      "name": "Mid-air ledge grab",
+      "summary": "A reach grab needs an edge inside a facing cone, head clearance and air under her, then snaps her to the hang",
+      "behavior": "A grab is offered while airborne only when the action button is held and her hands are free. The collision result must be a front hit, the ceiling above her must be at least the step-up allowance clear of her head, and the floor she is passing over must be at least 200 units below her, so she cannot grab while standing. The facing is then snapped to whichever cardinal direction lies within a 35 degree cone of her yaw. The catch itself resolves in two ways: a level front floor within the slope tolerance grabs directly, and otherwise the update that crosses the sector boundary grabs at that boundary, rounded down to whole steps. Either way she is moved onto the edge and left with a small forward and a small downward speed; the grab made while jumping straight up starts the hang animation twelve frames in, so the hands are already on the ledge.",
+      "constants": [
+        {
+          "name": "grabFacingCone",
+          "value": 6370,
+          "unit": "engine angle units each way from the body yaw, tested per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:30"
+        },
+        {
+          "name": "minimumFloorDrop",
+          "value": 200,
+          "unit": "world units below the body at 30 Hz",
+          "source": "src/trx/game/lara/col/jump.c:81"
+        },
+        {
+          "name": "headClearance",
+          "value": -32,
+          "unit": "world units of ceiling relative to the body at 30 Hz",
+          "source": "src/trx/game/lara/col/jump.c:20"
+        },
+        {
+          "name": "hangStartFrame",
+          "value": 12,
+          "unit": "animation frames into the reach animation",
+          "source": "src/trx/game/lara/col/jump.c:15"
+        },
+        {
+          "name": "postCatchSpeed",
+          "value": 2,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/lara/col/jump.c:150"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 70
+        },
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 96
+        },
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 616
+        },
+        {
+          "path": "src/trx/game/lara/col/jump.c",
+          "line": 150
+        }
+      ],
+      "capabilities": [
+        "ledge grab",
+        "hang snap",
+        "grab cone"
+      ],
+      "tags": [
+        "grab",
+        "ledge",
+        "airborne"
+      ]
+    },
+    {
+      "id": "climb-shimmy",
+      "node": "lara-climb",
+      "name": "Hang, shimmy and climb",
+      "summary": "Sideways movement along a ledge, a hang height floor of 900, and climb columns that respect ceiling intrusion",
+      "behavior": "While hanging, sideways input selects the shimmy state and the collision routine walks her along the ledge with the move direction set at right angles to her facing, re-testing the hang at every step so a corner or an end stops her. A hang position is rejected when the two ends of the ledge under her differ by more than the slope tolerance, and a climb position that would leave less than 900 units of drop is treated as a stand rather than a hang. A climb column is unusable when the ceiling intrudes more than 512 units, and small floor or ceiling mismatches up to 70 units are absorbed as a shift instead of blocking the move. Jumping up from a hang additionally needs headroom of 858 units above her and 240 units of surface in front to push against.",
+      "constants": [
+        {
+          "name": "minimumHangDrop",
+          "value": 900,
+          "unit": "world units at 30 Hz",
+          "source": "src/trx/game/lara/col/climb.c:11"
+        },
+        {
+          "name": "climbTolerance",
+          "value": 70,
+          "unit": "world units of floor or ceiling mismatch at 30 Hz",
+          "source": "src/trx/game/lara/col/climb.c:10"
+        },
+        {
+          "name": "ladderHeadroom",
+          "value": 512,
+          "unit": "world units of ceiling intrusion at 30 Hz",
+          "source": "src/trx/game/lara/col/climb.c:14"
+        },
+        {
+          "name": "pullUpHeadroom",
+          "value": 858,
+          "unit": "world units above the body at 30 Hz",
+          "source": "src/trx/game/lara/col/climb.c:21"
+        },
+        {
+          "name": "pullUpPushHeight",
+          "value": 240,
+          "unit": "world units in front of the body at 30 Hz",
+          "source": "src/trx/game/lara/col/climb.c:20"
+        },
+        {
+          "name": "slopeTolerance",
+          "value": 60,
+          "unit": "world units of height difference between the two ends of a ledge",
+          "source": "src/trx/game/lara/const.h:37"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/col/climb.c",
+          "line": 841
+        },
+        {
+          "path": "src/trx/game/lara/col/climb.c",
+          "line": 906
+        },
+        {
+          "path": "src/trx/game/lara/col/climb.c",
+          "line": 273
+        },
+        {
+          "path": "src/trx/game/lara/state/climb.c",
+          "line": 148
+        },
+        {
+          "path": "src/trx/game/lara/col/climb.c",
+          "line": 784
+        }
+      ],
+      "capabilities": [
+        "ledge hang",
+        "shimmy",
+        "ladder climb",
+        "ledge jump"
+      ],
+      "tags": [
+        "climb",
+        "shimmy",
+        "hang",
+        "traversal"
+      ]
+    },
+    {
+      "id": "swim-dive",
+      "node": "lara-swim",
+      "name": "Swimming and diving",
+      "summary": "Pitch-steered underwater movement with separate depth and surface speed caps, and a held dive that starts with a fixed pitch",
+      "behavior": "Underwater, forward and back drive the pitch and left and right drive the yaw, with the sideways lean reduced to the medium turn cap. Swimming gains eight of depth speed per update up to the swim cap, coasting loses six per update, and the state drops back to treading once the speed falls to two thirds of the cap. At the surface the same controls give a much lower cap of 60 and pitch input is ignored while holding the surface. Holding jump at the surface counts updates in a dive timer, and when the counter reaches ten the dive begins with a fixed 45 degree down pitch and a starting depth speed of 80. Water collision deflects her by the underwater wall angle, and at a shallow shelf of less than two steps it switches her to standing rather than letting her swim into the floor.",
+      "constants": [
+        {
+          "name": "underwaterSpeedCap",
+          "value": 200,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/swim.c:12"
+        },
+        {
+          "name": "surfaceSpeedCap",
+          "value": 60,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/swim.c:11"
+        },
+        {
+          "name": "diveDelay",
+          "value": 10,
+          "unit": "updates at 30 Hz",
+          "source": "src/trx/game/lara/const.h:10"
+        },
+        {
+          "name": "diveStartSpeed",
+          "value": 80,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/lara/state/swim.c:179"
+        },
+        {
+          "name": "surfaceColliderHeight",
+          "value": 700,
+          "unit": "world units at 30 Hz",
+          "source": "src/trx/game/lara/col/swim.c:9"
+        },
+        {
+          "name": "underwaterDeflectPitch",
+          "value": 45,
+          "unit": "degrees of pitch at 30 Hz",
+          "source": "src/trx/game/lara/col/swim.c:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/state/swim.c",
+          "line": 77
+        },
+        {
+          "path": "src/trx/game/lara/state/swim.c",
+          "line": 110
+        },
+        {
+          "path": "src/trx/game/lara/state/swim.c",
+          "line": 136
+        },
+        {
+          "path": "src/trx/game/lara/state/swim.c",
+          "line": 174
+        },
+        {
+          "path": "src/trx/game/lara/col/swim.c",
+          "line": 45
+        },
+        {
+          "path": "src/trx/game/lara/col/swim.c",
+          "line": 233
+        }
+      ],
+      "capabilities": [
+        "swimming",
+        "diving",
+        "surface swim",
+        "water collision"
+      ],
+      "tags": [
+        "swim",
+        "water",
+        "dive",
+        "movement"
+      ]
+    },
+    {
+      "id": "water-and-air",
+      "node": "lara-control",
+      "name": "Water status, air and drowning",
+      "summary": "Water status is decided from the water plane each time she is placed, and air drains under water until damage starts",
+      "behavior": "Water status is not a property of the room alone. The room flags say a room holds water, but the depth she is over and the height of the water plane relative to her decide the outcome: when the water is deeper than the swim depth, or the plane stands at least a step above her position, she goes underwater; otherwise she reaches the surface and is parked just below the plane. A shallower overlap makes her wade, and a swamp-flagged room forces wading whatever the plane says. Underwater she spends one unit of a fixed air supply per update; when the supply is exhausted she takes five damage per update, which is where the classic slow drowning comes from. A swamp that closes over her head spends six air per update and then ten damage per update. At the surface she regains ten air per update, and above water the supply refills to full.",
+      "constants": [
+        {
+          "name": "swimDepthThreshold",
+          "value": 730,
+          "unit": "world units of water below the body at 30 Hz",
+          "source": "src/trx/game/lara/const.h:17"
+        },
+        {
+          "name": "airSupply",
+          "value": 1800,
+          "unit": "air units, spent one per update at 30 Hz",
+          "source": "src/trx/game/lara/const.h:9"
+        },
+        {
+          "name": "drowningDamage",
+          "value": 5,
+          "unit": "health points per update at 30 Hz",
+          "source": "src/trx/game/lara/control.c:32"
+        },
+        {
+          "name": "swampDamage",
+          "value": 10,
+          "unit": "health points per update at 30 Hz",
+          "source": "src/trx/game/lara/control.c:33"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 1050
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 1071
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 930
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 968
+        },
+        {
+          "path": "src/trx/game/lara/control.c",
+          "line": 951
+        }
+      ],
+      "capabilities": [
+        "water status",
+        "air supply",
+        "drowning damage"
+      ],
+      "tags": [
+        "water",
+        "air",
+        "damage",
+        "health"
+      ]
+    },
+    {
+      "id": "item-pickup",
+      "node": "lara-core",
+      "name": "Item pickup reach",
+      "summary": "A pickup is an oriented box in the item frame, and she is walked onto the stand point sixteen units at a time",
+      "behavior": "A pickup does not need her to touch the item. Each pickup object carries a box in its own local frame, a quarter of a wall sideways and a hundred units up and down, with a narrow pitch window and no yaw or roll window, and the test transforms her offset into that frame before comparing. The controlled variant used when the engine walks her to items widens the vertical window to two hundred. When the box test passes, she is moved toward the stand point by sixteen units per update and turned by two degrees per update until the point is reached, and only then does the pickup animation run. The interaction only starts with the action button held, her hands free, her feet on the ground and her body in the standing idle.",
+      "constants": [
+        {
+          "name": "reachHalfHeight",
+          "value": 100,
+          "unit": "world units above and below the item at 30 Hz",
+          "source": "src/trx/game/objects/general/pickup.c:63"
+        },
+        {
+          "name": "controlledReachHalfHeight",
+          "value": 200,
+          "unit": "world units above and below the item at 30 Hz",
+          "source": "src/trx/game/objects/general/pickup.c:74"
+        },
+        {
+          "name": "moveStep",
+          "value": 16,
+          "unit": "world units per update at 30 Hz",
+          "source": "src/trx/game/lara/common.c:38"
+        },
+        {
+          "name": "moveTurn",
+          "value": 364,
+          "unit": "engine angle units per update at 30 Hz",
+          "source": "src/trx/game/lara/common.c:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/objects/general/pickup.c",
+          "line": 60
+        },
+        {
+          "path": "src/trx/game/lara/common.c",
+          "line": 852
+        },
+        {
+          "path": "src/trx/game/lara/interact.c",
+          "line": 139
+        },
+        {
+          "path": "src/trx/game/lara/interact.c",
+          "line": 68
+        }
+      ],
+      "capabilities": [
+        "item pickup",
+        "walk to item",
+        "oriented reach box"
+      ],
+      "tags": [
+        "pickup",
+        "interaction",
+        "items"
+      ]
+    },
+    {
+      "id": "collision-probes",
+      "node": "world-collision",
+      "name": "Height-aware collision probes",
+      "summary": "Five points around the body are sampled at floor and ceiling height, with extra headroom, to produce a push and a floor delta",
+      "behavior": "Collision is a query, not a solid body simulation. The engine samples the sector under the body centre, then the sectors one body radius ahead and to either side, plus a second pair of lateral samples taken after the room of the first pair is resolved, and for each one it records the floor and ceiling height relative to the item as well as the surface type and the local tilt. The probe height is the body height plus a fixed allowance above the head, so a ceiling that is merely low is caught before the body actually reaches it. The result is a collision type plus a horizontal shift and a vertical floor delta that the state routines apply to the position, and the slope classification decides whether a slope counts as a wall, a pit or ground for the current state.",
+      "constants": [
+        {
+          "name": "headroomAllowance",
+          "value": 160,
+          "unit": "world units added above the body height at 30 Hz",
+          "source": "src/trx/game/collision/common.c:16"
+        },
+        {
+          "name": "cornerProbeDistance",
+          "value": 250,
+          "unit": "world units from the body centre at 30 Hz",
+          "source": "src/trx/game/collision/common.c:17"
+        },
+        {
+          "name": "bodyHeight",
+          "value": 762,
+          "unit": "world units",
+          "source": "src/trx/game/lara/const.h:13"
+        },
+        {
+          "name": "bodyRadius",
+          "value": 100,
+          "unit": "world units",
+          "source": "src/trx/game/lara/const.h:16"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/collision/common.c",
+          "line": 365
+        },
+        {
+          "path": "src/trx/game/collision/common.c",
+          "line": 98
+        },
+        {
+          "path": "src/trx/game/lara/col.c",
+          "line": 128
+        },
+        {
+          "path": "src/trx/game/lara/col.c",
+          "line": 135
+        }
+      ],
+      "capabilities": [
+        "sector probing",
+        "floor and ceiling deltas",
+        "slope classification"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "geometry"
+      ]
+    },
+    {
+      "id": "room-portals",
+      "node": "world-collision",
+      "name": "Room lookup through portals",
+      "summary": "A world position is resolved to a sector by sector index, then chased through wall, pit and sky portals",
+      "behavior": "Rooms are tile grids, so a position maps to a sector by shifting its offset from the room origin by the wall shift, which is ten bits and therefore one sector per 1024 units. Each sector records the room that lies through its wall, the room below its floor and the room above its ceiling. The lookup follows the wall portal into the neighbour and repeats, then follows pit portals downward while the position is below the floor and sky portals upward while it is above the ceiling, which is how a stack of overlapping rooms resolves to the one that actually contains the point in three dimensions rather than the one nearest in plan. An empty portal is the terminator, and the resolved sector carries the height and tilt used by every collision query.",
+      "constants": [
+        {
+          "name": "wallShift",
+          "value": 10,
+          "unit": "bits, so one sector per 1024 world units",
+          "source": "src/trx/game/const.h:9"
+        },
+        {
+          "name": "roomLimit",
+          "value": 1024,
+          "unit": "rooms per level",
+          "source": "src/trx/game/rooms/const.h:3"
+        },
+        {
+          "name": "sectorSize",
+          "value": 1024,
+          "unit": "world units per sector edge",
+          "source": "src/trx/game/const.h:8"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/rooms/geometry.c",
+          "line": 223
+        },
+        {
+          "path": "src/trx/game/rooms/geometry.c",
+          "line": 230
+        },
+        {
+          "path": "src/trx/game/rooms/geometry.c",
+          "line": 253
+        },
+        {
+          "path": "src/trx/game/rooms/geometry.c",
+          "line": 263
+        },
+        {
+          "path": "src/trx/game/rooms/geometry.c",
+          "line": 275
+        }
+      ],
+      "capabilities": [
+        "room portals",
+        "sector lookup",
+        "stacked rooms"
+      ],
+      "tags": [
+        "rooms",
+        "geometry",
+        "portals"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera",
+      "name": "Chase camera",
+      "summary": "The camera chases an ideal point behind the body by dividing the remaining offset, then clamps itself out of the geometry",
+      "behavior": "The chase camera aims at a point inside the body rather than at its origin, then places its ideal position a fixed distance behind that aim along her yaw, foreshortened by the pitch. The default pitch is ten degrees down and is clamped to a wide elevation range. The actual position moves toward the ideal by dividing the remaining offset by the chase speed every update, which is exponential smoothing: quick when the gap is large, slow when it is small, so it trails her rather than snapping. Before the move, the ideal is clamped 384 units clear of the sector bounds on each horizontal axis, and after the move the camera itself is pushed inside the floor and ceiling with a 255 unit margin, which is what stops it sinking into geometry on stairs and in tight rooms. Aiming a weapon or entering a look mode swaps in a strategy that takes its angles from the locked target instead.",
+      "constants": [
+        {
+          "name": "chaseSpeed",
+          "value": 10,
+          "unit": "smoothing divisor applied per update at 30 Hz",
+          "source": "src/trx/game/camera/los_camera.c:16"
+        },
+        {
+          "name": "collisionClearance",
+          "value": 384,
+          "unit": "world units around the ideal camera position at 30 Hz",
+          "source": "src/trx/game/camera/los_camera.c:14"
+        },
+        {
+          "name": "defaultPitch",
+          "value": -1820,
+          "unit": "engine angle units (ten degrees down) per update at 30 Hz",
+          "source": "src/trx/game/camera/los_camera.c:12"
+        },
+        {
+          "name": "defaultDistance",
+          "value": 1536,
+          "unit": "world units behind the aim point",
+          "source": "src/trx/game/camera/const.h:7"
+        },
+        {
+          "name": "verticalMargin",
+          "value": 255,
+          "unit": "world units kept from floor and ceiling at 30 Hz",
+          "source": "src/trx/game/camera/los_camera.c:369"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/camera/los_camera.c",
+          "line": 306
+        },
+        {
+          "path": "src/trx/game/camera/los_camera.c",
+          "line": 445
+        },
+        {
+          "path": "src/trx/game/camera/common.c",
+          "line": 181
+        },
+        {
+          "path": "src/trx/game/camera/los_camera.c",
+          "line": 369
+        }
+      ],
+      "capabilities": [
+        "third-person follow",
+        "camera collision",
+        "aim camera"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "smoothing"
+      ]
+    },
+    {
+      "id": "weapon-aim-fire",
+      "node": "gun",
+      "name": "Weapon draw and auto-aim",
+      "summary": "Drawing runs a state machine into a ready pose, and firing resolves a lock in three dimensions before the shot is cast",
+      "behavior": "The weapon state machine has an armless state, a draw state that plays the weapon draw animation, a ready state, and an undraw state. A draw request while armless switches to the draw state and resets both arm frame counters; when the draw animation finishes the state becomes ready, and only then does the trigger do anything. In the ready state the engine searches for a lock every update: it rejects anything outside the weapon reach along any axis, then requires line of sight from a point 650 units below the body reference to the target and an azimuth and pitch inside the weapon lock window. Among the survivors the smallest azimuth offset wins, but a candidate within fifteen degrees of the best and nearer is preferred over it. Firing casts along the arm angles from the muzzle with a random scatter inside the weapon accuracy cone and resolves the hit against the spheres of the target, so aiming is a genuine 3D ray test rather than a 2D overlap.",
+      "constants": [
+        {
+          "name": "aimOriginOffset",
+          "value": 650,
+          "unit": "world units below the body reference at 30 Hz",
+          "source": "src/trx/game/gun/misc.c:539"
+        },
+        {
+          "name": "nearTargetSlack",
+          "value": 2730,
+          "unit": "engine angle units (fifteen degrees) per lock search at 30 Hz",
+          "source": "src/trx/game/gun/misc.c:28"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/trx/game/gun/control.c",
+          "line": 355
+        },
+        {
+          "path": "src/trx/game/gun/control.c",
+          "line": 467
+        },
+        {
+          "path": "src/trx/game/gun/misc.c",
+          "line": 539
+        },
+        {
+          "path": "src/trx/game/gun/misc.c",
+          "line": 239
+        },
+        {
+          "path": "src/trx/game/gun/misc.c",
+          "line": 63
+        },
+        {
+          "path": "src/trx/game/gun/control.c",
+          "line": 324
+        }
+      ],
+      "capabilities": [
+        "weapon draw",
+        "auto-aim lock",
+        "hitscan shot"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "aim",
+        "camera"
+      ]
+    }
+  ]
+}

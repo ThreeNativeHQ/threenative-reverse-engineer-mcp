@@ -28,6 +28,14 @@ with object insertion order and array order preserved.
 Validation fetches only the pinned source commits into ignored `.sources/`.
 Use `npm run validate -- --game <id> --source /path/to/pinned/clone` to reuse a local clone
 for one game; catalog consistency is still checked for the whole library.
+## Scope: 3D only
+
+The ThreeNative engine is 3D only, so this library maps 3D games only. Do not add a Tier-1
+row or a `data/games/<id>.json` map for a 2D game, and reject a 2D candidate in review
+however canonical it is. Tier-2 rows mirror the upstream decompilation list and may name 2D
+titles; they stay unrated and unmapped. The two 2D entries that predate this rule,
+`super-metroid-sm` and `openra`, are legacy and not a precedent.
+
 ## Ratings
 
 Every mapped (Tier-1) catalog row carries a `rating` from 1 to 5 for how canonical the game is:

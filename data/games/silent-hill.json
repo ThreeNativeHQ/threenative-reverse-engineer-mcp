@@ -1,0 +1,1515 @@
+{
+  "version": 1,
+  "id": "silent-hill",
+  "title": "Silent Hill",
+  "repo": "https://github.com/Vatuu/silent-hill-decomp",
+  "sha": "b5a5a0ebea542a81cf863380492c776f2bf30222",
+  "nodes": [
+    {
+      "id": "player-control",
+      "name": "Player control and combat states",
+      "purpose": "Per-update player locomotion, steering, weapon raising and incoming damage handling for the third-person protagonist",
+      "paths": [
+        "src/bodyprog/player_control.c"
+      ],
+      "functions": [
+        {
+          "name": "func_80070B84",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            436,
+            477
+          ]
+        },
+        {
+          "name": "func_80070CF0",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            479,
+            512
+          ]
+        },
+        {
+          "name": "Player_CharaRotate",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            630,
+            666
+          ]
+        },
+        {
+          "name": "Player_CombatStateUpdate",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            4138,
+            4497
+          ]
+        },
+        {
+          "name": "Player_LowerBodyUpdate",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            4542,
+            6512
+          ]
+        },
+        {
+          "name": "Player_ReceiveDamage",
+          "path": "src/bodyprog/player_control.c",
+          "lines": [
+            6961,
+            7374
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "chara-motion",
+      "name": "Character motion integration",
+      "purpose": "Turns move and fall speed into a position offset, warps the body onto the floor and searches for a target when a weapon is raised",
+      "paths": [
+        "src/bodyprog/bodyprog_npc_8005BF38.c"
+      ],
+      "functions": [
+        {
+          "name": "Chara_MovementUpdate0",
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "lines": [
+            69,
+            114
+          ]
+        },
+        {
+          "name": "Chara_MovementUpdate1",
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "lines": [
+            116,
+            166
+          ]
+        },
+        {
+          "name": "func_8005CD38",
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "lines": [
+            168,
+            388
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-shapes"
+      ]
+    },
+    {
+      "id": "collision-shapes",
+      "name": "Wall and floor collision response",
+      "purpose": "Cylinder and box collision against map geometry, wall detection from floor-height probes and the push that keeps a body out of walls",
+      "paths": [
+        "src/bodyprog/collision/collision.c"
+      ],
+      "functions": [
+        {
+          "name": "Collision_SurfaceGet",
+          "path": "src/bodyprog/collision/collision.c",
+          "lines": [
+            124,
+            176
+          ]
+        },
+        {
+          "name": "Collision_WallResponse",
+          "path": "src/bodyprog/collision/collision.c",
+          "lines": [
+            190,
+            306
+          ]
+        },
+        {
+          "name": "Collision_WallPush",
+          "path": "src/bodyprog/collision/collision.c",
+          "lines": [
+            308,
+            382
+          ]
+        },
+        {
+          "name": "Collision_CharaCollisionSetup",
+          "path": "src/bodyprog/collision/collision.c",
+          "lines": [
+            384,
+            430
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "collision-rays",
+      "name": "Ray casts",
+      "purpose": "Ray setup and stepping against polygons and collision cylinders, used for occlusion, sight and swing visibility",
+      "paths": [
+        "src/bodyprog/collision/ray.c"
+      ],
+      "functions": [
+        {
+          "name": "Ray_TraceQuery",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            18,
+            45
+          ]
+        },
+        {
+          "name": "Ray_CharaTraceQuery",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            48,
+            74
+          ]
+        },
+        {
+          "name": "Ray_LosHitCheck",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            89,
+            115
+          ]
+        },
+        {
+          "name": "func_8006DC18",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            117,
+            139
+          ]
+        },
+        {
+          "name": "Ray_TraceSetup",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            141,
+            195
+          ]
+        },
+        {
+          "name": "Ray_TraceRun",
+          "path": "src/bodyprog/collision/ray.c",
+          "lines": [
+            197,
+            251
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-shapes"
+      ]
+    },
+    {
+      "id": "collision-triggers",
+      "name": "Trigger volumes and head room",
+      "purpose": "Overlap tests against collision trigger boxes, heights derived from those boxes and the ceiling clamp applied to vertical movement",
+      "paths": [
+        "src/bodyprog/collision/trigger.c",
+        "include/bodyprog/collision/collision.h"
+      ],
+      "functions": [
+        {
+          "name": "func_8006F3C4",
+          "path": "src/bodyprog/collision/trigger.c",
+          "lines": [
+            102,
+            185
+          ]
+        },
+        {
+          "name": "Collision_CeilingHeightGet",
+          "path": "src/bodyprog/collision/trigger.c",
+          "lines": [
+            187,
+            320
+          ]
+        },
+        {
+          "name": "Collision_TriggerOffsetGet",
+          "path": "src/bodyprog/collision/trigger.c",
+          "lines": [
+            322,
+            364
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "npc-perception",
+      "name": "Enemy sight checks",
+      "purpose": "Angular sight probes and distance-gated line checks that decide whether an enemy can see the player character",
+      "paths": [
+        "src/bodyprog/collision/los.c"
+      ],
+      "functions": [
+        {
+          "name": "func_8006F99C",
+          "path": "src/bodyprog/collision/los.c",
+          "lines": [
+            18,
+            60
+          ]
+        },
+        {
+          "name": "func_8006FD90",
+          "path": "src/bodyprog/collision/los.c",
+          "lines": [
+            137,
+            196
+          ]
+        },
+        {
+          "name": "Los_NpcToPlayerHitCheck",
+          "path": "src/bodyprog/collision/los.c",
+          "lines": [
+            228,
+            241
+          ]
+        },
+        {
+          "name": "Los_CharaHitCheck",
+          "path": "src/bodyprog/collision/los.c",
+          "lines": [
+            279,
+            289
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-rays"
+      ]
+    },
+    {
+      "id": "combat-resolution",
+      "name": "Attack resolution",
+      "purpose": "Attack state, damage rolls and the swept attack volume that decides which body a swing or shot connects with",
+      "paths": [
+        "src/bodyprog/bodyprog_combat_8008A058.c"
+      ],
+      "functions": [
+        {
+          "name": "func_8008A0E4",
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "lines": [
+            103,
+            203
+          ]
+        },
+        {
+          "name": "func_8008B714",
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "lines": [
+            1218,
+            1579
+          ]
+        },
+        {
+          "name": "func_8008BF84",
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "lines": [
+            1581,
+            1970
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-rays"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Camera system",
+      "purpose": "Camera target selection, smoothing thresholds and switching between chase, settle and self view around the player character in 3D",
+      "paths": [
+        "src/bodyprog/view/vc_main.c"
+      ],
+      "functions": [
+        {
+          "name": "vcExecCamera",
+          "path": "src/bodyprog/view/vc_main.c",
+          "lines": [
+            296,
+            367
+          ]
+        },
+        {
+          "name": "vcRetSmoothCamMvF",
+          "path": "src/bodyprog/view/vc_main.c",
+          "lines": [
+            402,
+            449
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "area-load",
+      "name": "Area transitions",
+      "purpose": "Room and overlay loads driven by map events, the spawn point hand-off and the fade and blur that cover the swap",
+      "paths": [
+        "src/bodyprog/events/game_sys_states.c",
+        "include/bodyprog/map/map.h"
+      ],
+      "functions": [
+        {
+          "name": "SysState_LoadArea_Update",
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "lines": [
+            617,
+            675
+          ]
+        },
+        {
+          "name": "AreaLoad_UpdatePlayerPosition",
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "lines": [
+            677,
+            680
+          ]
+        },
+        {
+          "name": "AreaLoad_TransitionFlags",
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "lines": [
+            687,
+            695
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    },
+    {
+      "id": "lighting",
+      "name": "Flashlight lighting",
+      "purpose": "Intensity ramp of the light source carried by the player character and the blend between lit and unlit environment descriptions",
+      "paths": [
+        "src/bodyprog/world/world_effects.c"
+      ],
+      "functions": [
+        {
+          "name": "Gfx_EffectsUpdate",
+          "path": "src/bodyprog/world/world_effects.c",
+          "lines": [
+            395,
+            479
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "walk-and-run-speed",
+      "node": "player-control",
+      "name": "Walk, run and speed zones",
+      "summary": "Two locomotion gears whose run ceiling is chosen per region, with slow walk and run floor values that shape the pace",
+      "behavior": "Forward movement has two gears. The walk gear interpolates speed from a base to a ceiling as the movement axis leaves its dead zone, so a light deflection walks and a full deflection is still a walk. Holding the run button switches to the run gear, whose ceiling comes from the region the player stands in: a slow zone caps at 3.5, an ordinary zone at 4.0 and a fast zone at 5.0 world units per second. The run gear never drops below a floor of 2.0, so even a barely deflected axis commits to a run instead of blending back into walking. Speed is a velocity in world units per second that the motion integration multiplies by the frame delta, so the resulting travel is frame-rate independent.",
+      "constants": [
+        {
+          "name": "walk speed at the dead zone edge",
+          "value": 0.75,
+          "unit": "world units/second at the low end of the walk ramp, integrated per update",
+          "source": "src/bodyprog/player_control.c:4957"
+        },
+        {
+          "name": "walk speed at full axis throw",
+          "value": 1.4,
+          "unit": "world units/second at the top of the walk ramp, integrated per update",
+          "source": "src/bodyprog/player_control.c:4957"
+        },
+        {
+          "name": "backward walk speed at full axis throw",
+          "value": 1.15,
+          "unit": "world units/second at the top of the backward walk ramp, integrated per update",
+          "source": "src/bodyprog/player_control.c:5371"
+        },
+        {
+          "name": "run speed floor",
+          "value": 2,
+          "unit": "world units/second, integrated per update",
+          "source": "src/bodyprog/player_control.c:5120"
+        },
+        {
+          "name": "run ceiling in a fast zone",
+          "value": 5,
+          "unit": "world units/second, integrated per update",
+          "source": "src/bodyprog/player_control.c:4550"
+        },
+        {
+          "name": "run ceiling in an ordinary zone",
+          "value": 4,
+          "unit": "world units/second, integrated per update",
+          "source": "src/bodyprog/player_control.c:4551"
+        },
+        {
+          "name": "run ceiling in a slow zone",
+          "value": 3.5,
+          "unit": "world units/second, integrated per update",
+          "source": "src/bodyprog/player_control.c:4551"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4542
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4550
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4551
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4957
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5120
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5371
+        }
+      ],
+      "capabilities": [
+        "separate a cautious walk from a committed run",
+        "vary the run ceiling per level region",
+        "keep a minimum run speed regardless of axis throw"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "locomotion"
+      ]
+    },
+    {
+      "id": "run-acceleration",
+      "node": "player-control",
+      "name": "Speed ramp and brake",
+      "summary": "Speed is approached over several updates, quickly below 3.5 units per second and softly above it",
+      "behavior": "The run gear does not jump to its ceiling. While the current speed stays under 3.5 world units per second it climbs by 0.75 units per second of speed on every update scaled to a 30 Hz step; past that threshold the step collapses to a quarter of the frame delta, so the final approach to the ceiling is slower and the run settles rather than snapping. Letting go of the movement axis brakes by 0.4 units per second of speed per update, and while a run is still nominally held the value floors at the region ceiling instead of zero. The walk gear feeds the same routine with its own base and ceiling, so both gears share one acceleration model and the difference between them is entirely the numbers.",
+      "constants": [
+        {
+          "name": "acceleration step below the threshold",
+          "value": 0.75,
+          "unit": "world units/second of speed per 30 Hz update, delta-time scaled",
+          "source": "src/bodyprog/player_control.c:5111"
+        },
+        {
+          "name": "speed threshold for the gentler ramp",
+          "value": 3.5,
+          "unit": "world units/second of speed",
+          "source": "src/bodyprog/player_control.c:5109"
+        },
+        {
+          "name": "brake step when input stops",
+          "value": 0.4,
+          "unit": "world units/second of speed per 30 Hz update, delta-time scaled",
+          "source": "src/bodyprog/player_control.c:5144"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 436
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4554
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5100
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5109
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5111
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5144
+        }
+      ],
+      "capabilities": [
+        "accelerate into a run over a short ramp",
+        "decelerate with a fixed brake step",
+        "make the top of the ramp softer than the bottom"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "feel"
+      ]
+    },
+    {
+      "id": "steering-rate",
+      "node": "player-control",
+      "name": "Steering rate",
+      "summary": "The horizontal axis rotates the character in place at a gear-dependent rate, scaled by how far the axis is deflected",
+      "behavior": "Steering is tank-style: the horizontal axis turns the character rather than aiming the direction of travel. The axis value past the dead zone is divided by the full axis span of 64 counts and multiplied by a gear-dependent rate, so a gentle deflection turns slowly and a full deflection turns at the full rate. Running uses a rate of 10, walking uses 7 and raising a weapon drops it to 5, which is why aiming feels heavy. A d-pad press is expressed as the same full-span count, so digital and analog input reach the same maximum. Because the rate is applied to the heading every update, the turn is a continuous velocity rather than a rotation to a target angle, and the character keeps turning for as long as the axis is held.",
+      "constants": [
+        {
+          "name": "steering rate while running",
+          "value": 10,
+          "unit": "steering scale in angle units, applied per update at 30 Hz",
+          "source": "src/bodyprog/player_control.c:4840"
+        },
+        {
+          "name": "steering rate while walking",
+          "value": 7,
+          "unit": "steering scale in angle units, applied per update at 30 Hz",
+          "source": "src/bodyprog/player_control.c:4844"
+        },
+        {
+          "name": "steering rate while aiming",
+          "value": 5,
+          "unit": "steering scale in angle units, applied per update at 30 Hz",
+          "source": "src/bodyprog/player_control.c:5016"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 630
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 636
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 2466
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4840
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4844
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5016
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 8536
+        }
+      ],
+      "capabilities": [
+        "turn in place with an analog rate",
+        "slow steering while a weapon is raised",
+        "match digital and analog turn speed"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "controls"
+      ]
+    },
+    {
+      "id": "sidestep-heading",
+      "node": "player-control",
+      "name": "Sidestep and reverse heading",
+      "summary": "Stepping sideways and walking backward are heading offsets, so the body keeps facing one way while it travels another",
+      "behavior": "Stepping left or right is not a turn: while the step axis is held the heading offset is set to a quarter turn away from the facing direction on the matching side, so the character walks laterally while the body still faces forward. Walking backward sets the same offset to a half turn, which makes the model face the camera direction while its travel goes the other way, and the walk speed ceiling for that gear is lower than the forward one. The offset is reapplied on every update and returns to zero when the step axis is released, so no residual angle is left behind after a sidestep.",
+      "constants": [
+        {
+          "name": "sidestep heading offset",
+          "value": 90,
+          "unit": "degrees of heading offset held per update",
+          "source": "src/bodyprog/player_control.c:4785"
+        },
+        {
+          "name": "left sidestep heading offset",
+          "value": -90,
+          "unit": "degrees of heading offset held per update",
+          "source": "src/bodyprog/player_control.c:5656"
+        },
+        {
+          "name": "backward walk heading offset",
+          "value": 180,
+          "unit": "degrees of heading offset held per update",
+          "source": "src/bodyprog/player_control.c:5497"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4785
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4800
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5497
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5577
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 5656
+        }
+      ],
+      "capabilities": [
+        "strafe sideways without turning the body",
+        "walk backwards while still facing forward",
+        "restore the facing direction when the step axis is released"
+      ],
+      "tags": [
+        "movement",
+        "strafe",
+        "heading"
+      ]
+    },
+    {
+      "id": "aim-assist",
+      "node": "chara-motion",
+      "name": "Weapon target search",
+      "summary": "Raising a weapon locks onto an enemy inside a cone or a forward probe, and darkness shrinks the region",
+      "behavior": "When a weapon is raised the game searches the enemy slots for the best target. Living bodies are kept, sorted by how far off the facing direction they sit, and ties are broken with distance; the chosen body must also be reachable by a ray from the aim origin, so a target behind a wall is discarded. With automatic aiming enabled the region is a cone of 50 degrees around the facing direction reaching 10 world units in lit surroundings and only 3 units in a dark environment. With automatic aiming disabled the region becomes a probe point pushed ahead of the aim origin with a radius around it: 3 units ahead with a 7 unit radius in light, shrinking to 0.9 ahead and 2.1 in darkness. The search also solves a vertical angle to the target's collision box centre and rejects candidates whose vertical angle leaves the forward half space, so aiming works against enemies standing above or below the aim origin instead of assuming a flat plane. When nothing is found the aim pitch resets to straight ahead.",
+      "constants": [
+        {
+          "name": "automatic aim cone half angle",
+          "value": 50,
+          "unit": "degrees around the facing direction",
+          "source": "src/bodyprog/player_control.c:4171"
+        },
+        {
+          "name": "automatic aim reach in light",
+          "value": 10,
+          "unit": "world units",
+          "source": "src/bodyprog/player_control.c:4171"
+        },
+        {
+          "name": "automatic aim reach in darkness",
+          "value": 3,
+          "unit": "world units",
+          "source": "src/bodyprog/player_control.c:4175"
+        },
+        {
+          "name": "manual aim probe distance in light",
+          "value": 3,
+          "unit": "world units ahead of the aim origin",
+          "source": "src/bodyprog/player_control.c:4180"
+        },
+        {
+          "name": "manual aim probe radius in light",
+          "value": 7,
+          "unit": "world units around the probe point",
+          "source": "src/bodyprog/player_control.c:4180"
+        },
+        {
+          "name": "manual aim probe distance in darkness",
+          "value": 0.9,
+          "unit": "world units ahead of the aim origin",
+          "source": "src/bodyprog/player_control.c:4184"
+        },
+        {
+          "name": "manual aim probe radius in darkness",
+          "value": 2.1,
+          "unit": "world units around the probe point",
+          "source": "src/bodyprog/player_control.c:4184"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4138
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4171
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4175
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4180
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 4184
+        },
+        {
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "line": 168
+        },
+        {
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "line": 267
+        },
+        {
+          "path": "src/bodyprog/bodyprog_npc_8005BF38.c",
+          "line": 336
+        }
+      ],
+      "capabilities": [
+        "snap aim to a nearby enemy",
+        "reduce aim assist range in darkness",
+        "solve a vertical aim angle to a target",
+        "reject targets behind geometry"
+      ],
+      "tags": [
+        "combat",
+        "aim",
+        "targeting",
+        "3d"
+      ]
+    },
+    {
+      "id": "melee-strike",
+      "node": "combat-resolution",
+      "name": "Swing hit volume",
+      "summary": "A swing reaches only bodies inside a 3 unit radius and inside a box that turns with the swing",
+      "behavior": "A melee swing tests every living body each update. The candidate must sit within 3 world units of the attacker in the horizontal plane, a ray from the attacker's box top to the candidate's box top must not be stopped by geometry first, and then the candidate's box is rotated into the attacker's swing frame and compared against an attack box. That attack box is the attacker's own box grown outwards by the equipped weapon's per-axis extents, so a long weapon widens the volume and the vertical extent decides whether a low or airborne body is caught. Vertical overlap is checked separately by offsetting the candidate's height against the attacker's origin. Weapon data also carries a start and end keyframe window, so the volume is only tested during the frames in which the weapon is actually moving through the arc.",
+      "constants": [
+        {
+          "name": "horizontal reach of melee candidates",
+          "value": 3,
+          "unit": "world units in the horizontal plane",
+          "source": "src/bodyprog/bodyprog_combat_8008A058.c:1773"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1581
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1773
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1805
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1831
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1834
+        }
+      ],
+      "capabilities": [
+        "limit melee reach in three dimensions",
+        "occlude swings behind walls",
+        "scale the hit volume with weapon size"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "collision"
+      ]
+    },
+    {
+      "id": "weapon-damage",
+      "node": "combat-resolution",
+      "name": "Damage roll",
+      "summary": "Damage is the weapon's base value scaled by a random factor near one, with a large bonus for a target that has not been hit yet",
+      "behavior": "Each attack type owns a base damage value in the weapon table. Resolution multiplies that base by a random factor built from 4.5 minus a random fraction, shifted down twice, which lands the result inside a band from about three quarters to about one and an eighth of the base: roughly a twelve percent spread per hit. Melee attacks against a body that is not already flagged as hit multiply the result by 4, which is the bonus for striking an unaware or unaware-of-angle enemy, and the same path zeroes the vertical offset for shotgun fire so pellets spread without a height bias. Gas weapons add a flat 200 to the base while their power timer is high, and a kick or stomp on a body flagged as downed substitutes a fixed 1000. Guns offset the hit from the muzzle position in the weapon data while melee weapons use a swing-frame offset.",
+      "constants": [
+        {
+          "name": "damage roll centre",
+          "value": 4.5,
+          "unit": "unitless multiplier numerator before the shift",
+          "source": "src/bodyprog/bodyprog_combat_8008A058.c:1354"
+        },
+        {
+          "name": "unaware target damage multiplier",
+          "value": 4,
+          "unit": "unitless multiplier",
+          "source": "src/bodyprog/bodyprog_combat_8008A058.c:1391"
+        },
+        {
+          "name": "gas weapon power bonus",
+          "value": 200,
+          "unit": "damage points added to the base",
+          "source": "src/bodyprog/bodyprog_combat_8008A058.c:1321"
+        },
+        {
+          "name": "downed target damage substitute",
+          "value": 1000,
+          "unit": "damage points replacing the base",
+          "source": "src/bodyprog/bodyprog_combat_8008A058.c:1346"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1218
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1321
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1346
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1354
+        },
+        {
+          "path": "src/bodyprog/bodyprog_combat_8008A058.c",
+          "line": 1391
+        }
+      ],
+      "capabilities": [
+        "randomise damage around a weapon baseline",
+        "reward striking an unaware enemy",
+        "override damage for finishers and gas weapons"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "weapons"
+      ]
+    },
+    {
+      "id": "damage-reaction",
+      "node": "player-control",
+      "name": "Incoming hit reaction",
+      "summary": "The side a hit comes from selects one of four torso reactions, and difficulty scales the amount before it is applied",
+      "behavior": "When an enemy attack connects, the angle from the attacker to the player character's facing is folded into quadrants: 45 to 135 degrees selects the left torso reaction, 135 to 225 the front, 225 to 315 the right, and everything else the back, so a hit from behind plays a different animation from one taken head on. Feet level attacks split at 179.95 degrees into a front and a back reaction instead. The amount is then scaled by difficulty, three quarters on easy and one and a half times on hard, and one specific map index doubles it on top of that before any difficulty scaling. Hits are ignored outright while damage is globally disabled or while the character is already in a grab, throw or get-up state, which is how the game expresses invulnerability windows without a timer.",
+      "constants": [
+        {
+          "name": "left torso reaction start angle",
+          "value": 45,
+          "unit": "degrees of hit angle relative to facing",
+          "source": "src/bodyprog/player_control.c:7249"
+        },
+        {
+          "name": "front torso reaction start angle",
+          "value": 135,
+          "unit": "degrees of hit angle relative to facing",
+          "source": "src/bodyprog/player_control.c:7254"
+        },
+        {
+          "name": "right torso reaction start angle",
+          "value": 225,
+          "unit": "degrees of hit angle relative to facing",
+          "source": "src/bodyprog/player_control.c:7259"
+        },
+        {
+          "name": "feet reaction front and back split",
+          "value": 179.95,
+          "unit": "degrees of hit angle relative to facing",
+          "source": "src/bodyprog/player_control.c:7273"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 6961
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 6994
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7249
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7254
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7259
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7273
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7316
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7325
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7329
+        }
+      ],
+      "capabilities": [
+        "choose a hit reaction from the incoming direction",
+        "scale incoming damage by difficulty",
+        "suppress damage during scripted states"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "reaction",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "health-regeneration",
+      "node": "player-control",
+      "name": "Health ceiling and slow regeneration",
+      "summary": "Health caps at 100 and creeps back while a separate saturation budget drains",
+      "behavior": "Health is a fixed-point value clamped to a ceiling of 100. A second value, the saturation budget, is itself capped at 300 seconds and drains with real time; while it is above zero health gains one point per second and is clamped again at the ceiling. Incoming damage subtracts from health but does not refill or extend the budget, so recovery is a slow trickle after every hit rather than a full heal, and a long quiet stretch is what actually restores the character. Health below zero is snapped to a dead marker that latches the death state, and the death path clears the saturation budget so no further trickle can run. Because the budget ceiling is three hundred seconds of healing and the pool is a hundred points, a fully saturated character regenerates for five minutes of game time.",
+      "constants": [
+        {
+          "name": "health ceiling",
+          "value": 100,
+          "unit": "health points",
+          "source": "src/bodyprog/player_control.c:1295"
+        },
+        {
+          "name": "saturation budget ceiling",
+          "value": 300,
+          "unit": "seconds of regeneration",
+          "source": "src/bodyprog/player_control.c:1290"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 1289
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 1290
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 1294
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 1295
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7336
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7338
+        },
+        {
+          "path": "src/bodyprog/player_control.c",
+          "line": 7346
+        }
+      ],
+      "capabilities": [
+        "regenerate health slowly over time",
+        "cap health and the regeneration budget separately",
+        "latch death when health falls below zero"
+      ],
+      "tags": [
+        "health",
+        "status",
+        "survival"
+      ]
+    },
+    {
+      "id": "enemy-sight",
+      "node": "npc-perception",
+      "name": "Enemy sight probes",
+      "summary": "Sight is sampled by rays fanned out from the enemy's facing and widened geometrically until one is clear",
+      "behavior": "To decide whether it can see the player character an enemy casts up to fifteen rays. The first jitters within a small band either side of the current heading; the following pairs widen geometrically by doubling a 256 unit offset and alternating sides, so the search sweeps from a narrow look straight ahead to a wide scan. The narrowest clear offset wins, which lets an enemy notice the player through a gap instead of only along its exact facing. A separate distance check inflates the allowed range by the squared offset angle, which makes a character standing directly in front detectable from much further away than one at the edge of the forward arc. The player-facing check aims its ray slightly downward from the enemy's origin and requires the ray to reach the player's collision cylinder without hitting anything else, so a body on lower ground is still visible while a body behind cover is not.",
+      "constants": [
+        {
+          "name": "sight ray attempts",
+          "value": 15,
+          "unit": "ray casts per sight check",
+          "source": "src/bodyprog/collision/los.c:25"
+        },
+        {
+          "name": "widest probe step",
+          "value": 256,
+          "unit": "angle units per doubling step, 4096 to a full turn",
+          "source": "src/bodyprog/collision/los.c:33"
+        },
+        {
+          "name": "downward aim offset of the player image check",
+          "value": -0.1,
+          "unit": "world units of vertical ray offset",
+          "source": "src/bodyprog/collision/los.c:237"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/collision/los.c",
+          "line": 18
+        },
+        {
+          "path": "src/bodyprog/collision/los.c",
+          "line": 25
+        },
+        {
+          "path": "src/bodyprog/collision/los.c",
+          "line": 33
+        },
+        {
+          "path": "src/bodyprog/collision/los.c",
+          "line": 170
+        },
+        {
+          "path": "src/bodyprog/collision/los.c",
+          "line": 228
+        }
+      ],
+      "capabilities": [
+        "notice the player through gaps",
+        "extend detection range straight ahead",
+        "ignore a player behind cover",
+        "see a player standing on lower ground"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "line-of-sight",
+        "3d"
+      ]
+    },
+    {
+      "id": "ray-occlusion",
+      "node": "collision-rays",
+      "name": "Occlusion and line rays",
+      "summary": "One ray primitive serves sight, shots and swing occlusion, with an optional cylinder radius",
+      "behavior": "Every sight and occlusion query reduces to a start point, a three dimensional offset and a flag for whether collision cylinders are considered. The setup refuses a ray whose horizontal component is zero, normalises the offset so the horizontal travel becomes the ray length, stores the endpoints in a coarser fixed-point space so the geometry test has room for interpolation, and reports the closest hit together with the body it belongs to. Three variants exist: a plain geometry ray with no radius, a character ray that can name the body that was struck, and a thick ray with a 0.3 unit radius used where a query should tolerate grazing a corner. A miss still fills in the travelled distance and a default floor height, so the caller can reason about how far the ray reached even when nothing was hit.",
+      "constants": [
+        {
+          "name": "thick ray radius",
+          "value": 0.3,
+          "unit": "world units of cylinder radius",
+          "source": "src/bodyprog/collision/ray.c:123"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/collision/ray.c",
+          "line": 18
+        },
+        {
+          "path": "src/bodyprog/collision/ray.c",
+          "line": 48
+        },
+        {
+          "path": "src/bodyprog/collision/ray.c",
+          "line": 89
+        },
+        {
+          "path": "src/bodyprog/collision/ray.c",
+          "line": 117
+        },
+        {
+          "path": "src/bodyprog/collision/ray.c",
+          "line": 141
+        }
+      ],
+      "capabilities": [
+        "occlude a target behind geometry",
+        "identify which body a ray struck",
+        "widen a ray to tolerate corners"
+      ],
+      "tags": [
+        "collision",
+        "raycast",
+        "line-of-sight"
+      ]
+    },
+    {
+      "id": "wall-collision",
+      "node": "collision-shapes",
+      "name": "Wall and drop detection",
+      "summary": "Walls are inferred from a ring of floor-height samples, and the body is pushed away from ledges",
+      "behavior": "Walls are not separate objects. The resolve step samples floor height around the moving body on a ring of 0.2 world units and compares each sample against the body's own height minus half a unit; a sample below that bound counts as wall-height floor, and three such samples must be found before the wall is accepted, so one stray sample cannot stop movement. If the body is instead about to walk off a drop, sixteen probes find the lowest floor, the search walks both ways from that lowest point to find the two edges of the gap, and the resolve pushes the body along half the angle between those edges. The push is a small per-update offset, so the body slides around a ledge rather than being snapped away from it, and the collision cylinder itself is placed slightly below the body origin so that standing on a slope does not register as a wall.",
+      "constants": [
+        {
+          "name": "wall probe count",
+          "value": 9,
+          "unit": "floor height samples per wall test",
+          "source": "src/bodyprog/collision/collision.c:192"
+        },
+        {
+          "name": "wall samples required",
+          "value": 3,
+          "unit": "wall-height samples before a wall is accepted",
+          "source": "src/bodyprog/collision/collision.c:195"
+        },
+        {
+          "name": "height difference treated as wall",
+          "value": 0.5,
+          "unit": "world units below the body origin",
+          "source": "src/bodyprog/collision/collision.c:196"
+        },
+        {
+          "name": "probe ring radius",
+          "value": 0.2,
+          "unit": "world units from the body origin",
+          "source": "src/bodyprog/collision/collision.c:254"
+        },
+        {
+          "name": "drop push probe count",
+          "value": 16,
+          "unit": "floor height samples per side-step test",
+          "source": "src/bodyprog/collision/collision.c:310"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 124
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 190
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 192
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 195
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 196
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 254
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 308
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 310
+        },
+        {
+          "path": "src/bodyprog/collision/collision.c",
+          "line": 377
+        }
+      ],
+      "capabilities": [
+        "block movement into walls",
+        "infer walls from floor height instead of wall geometry",
+        "keep the body from sliding off a drop",
+        "step over small height changes"
+      ],
+      "tags": [
+        "collision",
+        "walls",
+        "physics",
+        "3d"
+      ]
+    },
+    {
+      "id": "ceiling-headroom",
+      "node": "collision-triggers",
+      "name": "Head room and trigger overlap",
+      "summary": "Trigger boxes carry a derived height, and the lowest one overhead clamps movement along the vertical axis",
+      "behavior": "Collision triggers describe overhead clearance with a height given in half-unit steps behind a fixed 1.5 unit offset, so a trigger's ceiling is always a small whole number of steps away from the floor it was authored against. A moving body first rejects triggers with a coarse axis-aligned box test, then projects its move offset forward and tests again: a trigger that would be entered from the side pushes the offset back along the shortest exit direction, while a trigger that stays overhead records the lowest ceiling seen. Vertical movement is then clamped so the top of the collision shape stops one tenth of a unit below that ceiling. When nothing overhead qualifies, the ceiling keeps its sentinel value of minus sixteen units, which is also what tells the clamp to stay out of the way entirely, and a failed query falls back to a floor height of eight units so a body standing outside the collision data never falls through the world.",
+      "constants": [
+        {
+          "name": "trigger height offset",
+          "value": 1.5,
+          "unit": "world units subtracted from the half-step height",
+          "source": "src/bodyprog/collision/trigger.c:28"
+        },
+        {
+          "name": "ceiling clearance buffer",
+          "value": 0.1,
+          "unit": "world units kept below the ceiling",
+          "source": "include/bodyprog/collision/collision.h:14"
+        },
+        {
+          "name": "ceiling sentinel",
+          "value": -16,
+          "unit": "world units, meaning no ceiling overhead",
+          "source": "include/bodyprog/collision/collision.h:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/collision/trigger.c",
+          "line": 27
+        },
+        {
+          "path": "src/bodyprog/collision/trigger.c",
+          "line": 28
+        },
+        {
+          "path": "src/bodyprog/collision/trigger.c",
+          "line": 187
+        },
+        {
+          "path": "src/bodyprog/collision/trigger.c",
+          "line": 322
+        },
+        {
+          "path": "include/bodyprog/collision/collision.h",
+          "line": 12
+        },
+        {
+          "path": "include/bodyprog/collision/collision.h",
+          "line": 14
+        }
+      ],
+      "capabilities": [
+        "stop upward movement at a low ceiling",
+        "give a trigger volume a height",
+        "push a body out of a trigger entered sideways"
+      ],
+      "tags": [
+        "collision",
+        "ceiling",
+        "vertical",
+        "3d"
+      ]
+    },
+    {
+      "id": "camera-motion",
+      "node": "camera",
+      "name": "Camera lag and mode switching",
+      "summary": "The camera compares its previous and requested pose and only eases when the change is small enough",
+      "behavior": "Camera motion is classified after the target pose is computed for the update. The interpolation weight is the frame's tick count clamped between one and four ticks, and the translation and rotation deltas are divided by it to get a per-tick rate. If the resulting translation exceeds 0.0125 world units per tick the camera abandons easing and switches to a chase mode that snaps toward the new pose. Rotation is tested the same way: more than 20 degrees of pitch change or more than 30 degrees of yaw change, with the yaw term scaled by the cosine of the pitch so a steeply tilted camera tolerates more spin, also forces the chase mode, while smaller changes let the camera stay in its settle mode and smooth the motion. The result is a camera that glides behind a walking character but cuts instantly across a door, a cutscene or a spawn.",
+      "constants": [
+        {
+          "name": "easing translation limit",
+          "value": 0.0125,
+          "unit": "world units moved per 60 Hz tick",
+          "source": "src/bodyprog/view/vc_main.c:404"
+        },
+        {
+          "name": "pitch change limit",
+          "value": 20,
+          "unit": "degrees per interpolated step",
+          "source": "src/bodyprog/view/vc_main.c:405"
+        },
+        {
+          "name": "yaw change limit",
+          "value": 30,
+          "unit": "degrees per interpolated step",
+          "source": "src/bodyprog/view/vc_main.c:406"
+        },
+        {
+          "name": "maximum interpolation ticks",
+          "value": 4,
+          "unit": "60 Hz ticks, the divisor applied to the pose delta",
+          "source": "src/bodyprog/view/vc_main.c:408"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 296
+        },
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 402
+        },
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 404
+        },
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 405
+        },
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 406
+        },
+        {
+          "path": "src/bodyprog/view/vc_main.c",
+          "line": 415
+        }
+      ],
+      "capabilities": [
+        "smooth the camera when the subject moves a little",
+        "snap the camera on a large move",
+        "limit how far the camera drifts per tick"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "3d"
+      ]
+    },
+    {
+      "id": "door-transition",
+      "node": "area-load",
+      "name": "Room and area transitions",
+      "summary": "A door either reloads a room inside the current overlay or swaps the overlay, and the spawn can inherit the player's offset",
+      "behavior": "A transition is a map event whose system state is one of the load states. The load copies the event's loading screen, sound pair and transition flags, resolves the destination map point, and then branches: when the current state names an overlay load it raises the overlay-transition flag, writes the new map index and reloads the overlay; otherwise it raises the room-transition flag and changes the music without swapping the overlay. When the destination point carries the entry-relative parameter the spawn is shifted by the player's current offset from the map point that owns the event, so entering a corridor keeps the player's lateral position instead of dropping the body at the point's origin. The event's camera-rail bit decides whether the camera follows a rail after the load, and the state ends on the loading screen against a motion-blurred background. Doors themselves are box or facing-box trigger types, so a door only responds when the player character stands inside the volume and looks toward it.",
+      "constants": [
+        {
+          "name": "entry-relative spawn parameter",
+          "value": 1,
+          "unit": "map point trigger parameter value, unitless",
+          "source": "src/bodyprog/events/game_sys_states.c:636"
+        },
+        {
+          "name": "facing box trigger type",
+          "value": 3,
+          "unit": "trigger type value, unitless",
+          "source": "include/bodyprog/map/map.h:155"
+        },
+        {
+          "name": "plain box trigger type",
+          "value": 4,
+          "unit": "trigger type value, unitless",
+          "source": "include/bodyprog/map/map.h:156"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 617
+        },
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 636
+        },
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 644
+        },
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 652
+        },
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 665
+        },
+        {
+          "path": "src/bodyprog/events/game_sys_states.c",
+          "line": 679
+        },
+        {
+          "path": "include/bodyprog/map/map.h",
+          "line": 153
+        },
+        {
+          "path": "include/bodyprog/map/map.h",
+          "line": 155
+        },
+        {
+          "path": "include/bodyprog/map/map.h",
+          "line": 156
+        }
+      ],
+      "capabilities": [
+        "carry the player position across a room change",
+        "swap overlays for a large area change",
+        "require the player to face a door for it to respond"
+      ],
+      "tags": [
+        "transition",
+        "doors",
+        "level",
+        "camera"
+      ]
+    },
+    {
+      "id": "flashlight-spot",
+      "node": "lighting",
+      "name": "Flashlight ramp and light blend",
+      "summary": "The carried light fades in and out over a quarter of a second and blends two environment descriptions",
+      "behavior": "The light source is a spotlight carried on a bone of the player character: its position and direction are transformed out of that bone every update, so the cone follows the body rather than the camera. Intensity is a value from zero to one that rises by 4 units per second while the switch is on and falls at the same rate when it is off, which makes a full fade take a quarter of a second. The current intensity is used as the weight in a blend between two precomputed environment descriptions, one for the lit state and one for the unlit state, so fog and ambient parameters move continuously instead of snapping when the switch flips. A flash effect can also boost the spotlight intensity by 0.3 for a single update to sell a lightning strike or a muzzle flash, and the resulting light intensity is multiplied by the current environment brightness before it reaches the render state.",
+      "constants": [
+        {
+          "name": "intensity ramp rate",
+          "value": 4,
+          "unit": "intensity units/second, delta-time scaled",
+          "source": "src/bodyprog/world/world_effects.c:411"
+        },
+        {
+          "name": "intensity ceiling",
+          "value": 1,
+          "unit": "normalised intensity, upper clamp bound",
+          "source": "src/bodyprog/world/world_effects.c:418"
+        },
+        {
+          "name": "flash spotlight boost",
+          "value": 0.3,
+          "unit": "intensity units added for one update",
+          "source": "src/bodyprog/world/world_effects.c:461"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 395
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 411
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 415
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 418
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 446
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 461
+        },
+        {
+          "path": "src/bodyprog/world/world_effects.c",
+          "line": 470
+        }
+      ],
+      "capabilities": [
+        "fade a carried light in and out",
+        "blend lighting parameters by a scalar",
+        "pulse the light for a flash"
+      ],
+      "tags": [
+        "lighting",
+        "flashlight",
+        "atmosphere",
+        "3d"
+      ]
+    }
+  ]
+}
