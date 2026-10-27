@@ -1,0 +1,939 @@
+{
+  "version": 1,
+  "id": "grand-theft-auto-iii-re3",
+  "title": "Grand Theft Auto III",
+  "repo": "https://github.com/mrxenginner/re3",
+  "sha": "b050e1cc63b1869e6b514ab2f1a00ef4969e0c84",
+  "nodes": [
+    {
+      "id": "physics-core",
+      "name": "Rigid-body physics core",
+      "purpose": "Applies gravity, spring suspension impulses and collision response to every physical entity.",
+      "paths": [
+        "src/entities/Physical.cpp",
+        "src/entities/Physical.h"
+      ],
+      "functions": [
+        {
+          "name": "CPhysical::ApplySpringCollision",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            465,
+            476
+          ]
+        },
+        {
+          "name": "CPhysical::ApplySpringDampening",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            479,
+            501
+          ]
+        },
+        {
+          "name": "CPhysical::ApplyGravity",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            503,
+            508
+          ]
+        },
+        {
+          "name": "CPhysical::ApplyCollisionAlt",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            816,
+            870
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "vehicle-handling",
+      "name": "Vehicle handling and wheel forces",
+      "purpose": "Turns per-model handling data into suspension, traction and ground-contact forces for each wheel.",
+      "paths": [
+        "src/vehicles/Automobile.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CAutomobile::CAutomobile",
+          "path": "src/vehicles/Automobile.cpp",
+          "lines": [
+            63,
+            210
+          ]
+        },
+        {
+          "name": "CAutomobile::ProcessControl",
+          "path": "src/vehicles/Automobile.cpp",
+          "lines": [
+            224,
+            1226
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "vehicle-damage",
+      "name": "Vehicle damage model",
+      "purpose": "Scales collision damage by component group and advances wheel, door, panel and engine damage past fixed thresholds.",
+      "paths": [
+        "src/vehicles/DamageManager.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CDamageManager::ApplyDamage",
+          "path": "src/vehicles/DamageManager.cpp",
+          "lines": [
+            53,
+            92
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-handling"
+      ]
+    },
+    {
+      "id": "traffic-ai",
+      "name": "Traffic and mission AI",
+      "purpose": "Chooses when distant cars switch between simplified and full AI, and sets cruise speed and destination behaviour.",
+      "paths": [
+        "src/control/CarAI.cpp",
+        "src/control/CarCtrl.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CCarAI::FindSwitchDistanceClose",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            24,
+            27
+          ]
+        },
+        {
+          "name": "CCarAI::FindSwitchDistanceFar",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            34,
+            39
+          ]
+        },
+        {
+          "name": "CCarAI::UpdateCarAI",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            41,
+            449
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-handling"
+      ]
+    },
+    {
+      "id": "ped-ai",
+      "name": "Pedestrian AI state machine",
+      "purpose": "Runs pedestrian objectives, wait deadlines and state transitions on top of the shared ped simulation.",
+      "paths": [
+        "src/peds/PedAI.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPed::SetObjectiveTimer",
+          "path": "src/peds/PedAI.cpp",
+          "lines": [
+            36,
+            44
+          ]
+        },
+        {
+          "name": "CPed::ProcessObjective",
+          "path": "src/peds/PedAI.cpp",
+          "lines": [
+            719,
+            1958
+          ]
+        },
+        {
+          "name": "CPed::SetCarJack_AllClear",
+          "path": "src/peds/PedAI.cpp",
+          "lines": [
+            3336,
+            3367
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "weapons",
+      "name": "Weapon firing and damage",
+      "purpose": "Resolves fire origin, aim scatter and damage multipliers for ranged and melee attacks.",
+      "paths": [
+        "src/weapons/Weapon.cpp",
+        "src/weapons/WeaponInfo.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CWeapon::Fire",
+          "path": "src/weapons/Weapon.cpp",
+          "lines": [
+            128,
+            338
+          ]
+        },
+        {
+          "name": "CWeaponInfo::LoadWeaponData",
+          "path": "src/weapons/WeaponInfo.cpp",
+          "lines": [
+            50,
+            161
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "explosions",
+      "name": "Explosion propagation",
+      "purpose": "Spawns explosion instances with radius and power, then applies iterative area damage.",
+      "paths": [
+        "src/weapons/Explosion.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CExplosion::AddExplosion",
+          "path": "src/weapons/Explosion.cpp",
+          "lines": [
+            89,
+            313
+          ]
+        },
+        {
+          "name": "CExplosion::Update",
+          "path": "src/weapons/Explosion.cpp",
+          "lines": [
+            315,
+            437
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapons"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Third-person camera",
+      "purpose": "Maintains follow distance, yaw switching and interpolation between third-person camera modes.",
+      "paths": [
+        "src/core/Camera.cpp",
+        "src/core/Cam.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CCamera::Process",
+          "path": "src/core/Camera.cpp",
+          "lines": [
+            251,
+            769
+          ]
+        },
+        {
+          "name": "CCam::Init",
+          "path": "src/core/Cam.cpp",
+          "lines": [
+            38,
+            84
+          ]
+        },
+        {
+          "name": "CCam::Process",
+          "path": "src/core/Cam.cpp",
+          "lines": [
+            86,
+            370
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-control",
+      "name": "Player movement and stamina",
+      "purpose": "Tracks sprint stamina, exhaustion and capacity growth from player input and the shared timer.",
+      "paths": [
+        "src/peds/PlayerPed.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPlayerPed::UseSprintEnergy",
+          "path": "src/peds/PlayerPed.cpp",
+          "lines": [
+            174,
+            187
+          ]
+        },
+        {
+          "name": "CPlayerPed::ProcessControl",
+          "path": "src/peds/PlayerPed.cpp",
+          "lines": [
+            1295,
+            1500
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ped-ai"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "gravity-acceleration",
+      "node": "physics-core",
+      "name": "Constant downward acceleration",
+      "summary": "Every gravity-affected body loses vertical speed at a fixed rate per physics step.",
+      "behavior": "The engine subtracts a fixed acceleration scaled by the frame time from vertical velocity. Airborne vehicles, pedestrians and loose props share the same value, so a fall looks consistent across entity types, and the clamped time step keeps the acceleration stable when frames run long.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 0.008,
+          "unit": "game units per time step squared at 30 Hz (1 step = 1/30 s)",
+          "source": "src/entities/Physical.h:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 506
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "free-fall",
+        "frame-rate-stability"
+      ],
+      "tags": [
+        "physics",
+        "foundation"
+      ]
+    },
+    {
+      "id": "suspension-spring-bias",
+      "node": "physics-core",
+      "name": "Suspension spring impulse",
+      "summary": "Compressed suspension springs push the chassis up with an impulse scaled by compression and axle bias.",
+      "behavior": "Each wheel whose spring is compressed below full extension contributes an impulse along the wheel direction. The impulse grows linearly with compression and is doubled by the bias term, then applied as both linear and rotational force at the contact point so the chassis pitches as well as rises.",
+      "constants": [
+        {
+          "name": "spring bias factor",
+          "value": 2,
+          "unit": "dimensionless impulse multiplier per physics step at 30 Hz",
+          "source": "src/entities/Physical.cpp:470"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 470
+        }
+      ],
+      "capabilities": [
+        "suspension",
+        "springs",
+        "impulse"
+      ],
+      "tags": [
+        "physics",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "suspension-damping",
+      "node": "physics-core",
+      "name": "Suspension damping",
+      "summary": "Damper impulse removes spring velocity along the wheel axis and is capped to keep deep oscillations stable.",
+      "behavior": "The damper measures the relative speed of the contact point along the spring direction, averages the chassis and point speeds, and applies a counter-impulse scaled by damping, mass and a fixed coefficient. The integration step is capped at three time steps, which prevents an over-compressed wheel from launching the car.",
+      "constants": [
+        {
+          "name": "damping impulse scale",
+          "value": 0.53,
+          "unit": "dimensionless damping scale per physics step at 30 Hz",
+          "source": "src/entities/Physical.cpp:488"
+        },
+        {
+          "name": "damping step cap",
+          "value": 3,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/entities/Physical.cpp:487"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 488
+        }
+      ],
+      "capabilities": [
+        "damping",
+        "stability",
+        "suspension"
+      ],
+      "tags": [
+        "physics",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "traction-force",
+      "node": "vehicle-handling",
+      "name": "Per-wheel traction budget",
+      "summary": "Drive traction starts from a small base coefficient, is multiplied by handling data and divided across four wheels.",
+      "behavior": "Under physics control the base traction is 0.004 and is multiplied by the handling traction multiplier, then divided by four so the drive force is shared across the wheels. The same chain feeds skid and wheel-spin calculations, so a low multiplier slides earlier while a high one keeps the tyres hooked up.",
+      "constants": [
+        {
+          "name": "base traction",
+          "value": 0.004,
+          "unit": "traction coefficient per physics step at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:725"
+        },
+        {
+          "name": "traction divisor",
+          "value": 4,
+          "unit": "wheels (dimensionless divisor), applied per physics step at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:728"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 725
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 728
+        }
+      ],
+      "capabilities": [
+        "traction",
+        "grip",
+        "drivetrain"
+      ],
+      "tags": [
+        "vehicle",
+        "physics"
+      ]
+    },
+    {
+      "id": "wheel-ground-timer",
+      "node": "vehicle-handling",
+      "name": "Wheel ground contact timer",
+      "summary": "A wheel counts as grounded for four time steps after its suspension last touched the road.",
+      "behavior": "When a spring compresses, its wheel timer resets to four; otherwise it decays by the frame time. Any positive timer marks the wheel as on the ground, so drive wheels keep applying force briefly over crests and kerbs instead of cutting traction the instant the spring extends. Body restitution is a separate, low bounce coefficient.",
+      "constants": [
+        {
+          "name": "ground contact hold",
+          "value": 4,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/vehicles/Automobile.cpp:701"
+        },
+        {
+          "name": "body restitution",
+          "value": 0.05,
+          "unit": "dimensionless restitution per collision at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:131"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 701
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 131
+        }
+      ],
+      "capabilities": [
+        "ground-contact",
+        "suspension",
+        "restitution"
+      ],
+      "tags": [
+        "vehicle",
+        "physics"
+      ]
+    },
+    {
+      "id": "vehicle-component-damage",
+      "node": "vehicle-damage",
+      "name": "Component-scaled vehicle damage",
+      "summary": "Incoming collision damage is multiplied per component group and crosses fixed thresholds to break parts.",
+      "behavior": "Impact damage is scaled by a per-group multiplier, then compared against 150 to advance wheel, door or bonnet damage and against 220 to damage the engine or front panels. A heavy hit therefore degrades several systems at once while a light scrape only marks the bodywork.",
+      "constants": [
+        {
+          "name": "front panel multiplier",
+          "value": 2.5,
+          "unit": "damage multiplier per hit, resolved on the 30 Hz physics step",
+          "source": "src/vehicles/DamageManager.cpp:8"
+        },
+        {
+          "name": "part damage threshold",
+          "value": 150,
+          "unit": "damage points per hit, resolved on the 30 Hz physics step",
+          "source": "src/vehicles/DamageManager.cpp:60"
+        },
+        {
+          "name": "engine damage threshold",
+          "value": 220,
+          "unit": "damage points per hit, resolved on the 30 Hz physics step",
+          "source": "src/vehicles/DamageManager.cpp:70"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 8
+        },
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 60
+        },
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "damage",
+        "vehicle-parts",
+        "thresholds"
+      ],
+      "tags": [
+        "vehicle",
+        "combat"
+      ]
+    },
+    {
+      "id": "traffic-switch-distance",
+      "node": "traffic-ai",
+      "name": "AI level switch distance",
+      "summary": "Traffic runs full AI only within 30 m of the player; police keep a 50 m radius.",
+      "behavior": "A normal car switches from simplified to full traffic AI at 30 m, while a law-enforcement vehicle keeps full control out to 50 m. Outside that radius the car follows the road system with cheaper logic, which keeps distant traffic believable without simulating every car at full cost.",
+      "constants": [
+        {
+          "name": "close switch distance",
+          "value": 30,
+          "unit": "meters, evaluated per AI update at 30 Hz",
+          "source": "src/control/CarAI.cpp:26"
+        },
+        {
+          "name": "police switch distance",
+          "value": 50,
+          "unit": "meters, evaluated per AI update at 30 Hz",
+          "source": "src/control/CarAI.cpp:37"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 37
+        }
+      ],
+      "capabilities": [
+        "traffic",
+        "level-of-detail",
+        "ai-switch"
+      ],
+      "tags": [
+        "ai",
+        "traffic"
+      ]
+    },
+    {
+      "id": "traffic-cruise-speed",
+      "node": "traffic-ai",
+      "name": "Traffic cruise speed",
+      "summary": "Civilian cars pick cruise speeds between 9 and 14 m/s; a returning ambulance resumes at 17 m/s.",
+      "behavior": "Road traffic samples a cruise speed per car and stores it as a per-second speed cap. Emergency vehicles returning from a call resume at 17 m/s, so they rejoin traffic faster than ordinary cars and clear the road sooner.",
+      "constants": [
+        {
+          "name": "returning emergency cruise",
+          "value": 17,
+          "unit": "meters per second, applied per AI update at 30 Hz",
+          "source": "src/control/CarAI.cpp:225"
+        },
+        {
+          "name": "lane speed floor",
+          "value": 9,
+          "unit": "meters per second, applied per AI update at 30 Hz",
+          "source": "src/control/CarCtrl.cpp:316"
+        },
+        {
+          "name": "lane speed ceiling",
+          "value": 14,
+          "unit": "meters per second, applied per AI update at 30 Hz",
+          "source": "src/control/CarCtrl.cpp:316"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 225
+        },
+        {
+          "path": "src/control/CarCtrl.cpp",
+          "line": 316
+        }
+      ],
+      "capabilities": [
+        "traffic",
+        "speed",
+        "cruise"
+      ],
+      "tags": [
+        "ai",
+        "traffic"
+      ]
+    },
+    {
+      "id": "ped-state-timer",
+      "node": "ped-ai",
+      "name": "Pedestrian state dwell time",
+      "summary": "Pedestrian state changes hold for 600 ms before the next decision.",
+      "behavior": "When the state machine enters a timed state it stamps the millisecond clock plus 600. The update loop refuses to change state until that stamp passes, which keeps reactions readable instead of flipping every frame and gives each action a visible commit window.",
+      "constants": [
+        {
+          "name": "state dwell",
+          "value": 600,
+          "unit": "milliseconds, checked per AI update at 30 Hz",
+          "source": "src/peds/PedAI.cpp:3356"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/peds/PedAI.cpp",
+          "line": 3356
+        }
+      ],
+      "capabilities": [
+        "ai-timer",
+        "state-machine"
+      ],
+      "tags": [
+        "ai",
+        "pedestrian"
+      ]
+    },
+    {
+      "id": "ped-wait-timer",
+      "node": "ped-ai",
+      "name": "Pedestrian waiting period",
+      "summary": "Idle pedestrians wait two seconds before resuming an objective.",
+      "behavior": "A pedestrian told to wait stores a 2000 ms deadline. Until it expires the ped stays in the wait state; afterwards the objective logic may pick a new destination or resume walking, so crowds pause at crossings and storefronts without freezing permanently.",
+      "constants": [
+        {
+          "name": "wait duration",
+          "value": 2000,
+          "unit": "milliseconds, checked per AI update at 30 Hz",
+          "source": "src/peds/PedAI.cpp:1707"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/peds/PedAI.cpp",
+          "line": 1707
+        }
+      ],
+      "capabilities": [
+        "wait",
+        "ai-timer"
+      ],
+      "tags": [
+        "ai",
+        "pedestrian"
+      ]
+    },
+    {
+      "id": "weapon-fire-offset",
+      "node": "weapons",
+      "name": "Muzzle offset and aim scatter",
+      "summary": "Shots start 0.6 m above the shooter origin and scatter up to 0.2 m at the target plane.",
+      "behavior": "The fire point is raised 0.6 m to clear the weapon model. Aimed shots add a random horizontal offset of up to 0.2 m and a smaller vertical offset, scaled by the weapon inaccuracy value, so sustained fire blooms around the crosshair while a single shot stays close to the aim point.",
+      "constants": [
+        {
+          "name": "muzzle height",
+          "value": 0.6,
+          "unit": "meters above the shooter origin, per shot at 30 Hz",
+          "source": "src/weapons/Weapon.cpp:132"
+        },
+        {
+          "name": "horizontal aim scatter",
+          "value": 0.2,
+          "unit": "meters of aim scatter per shot at 30 Hz",
+          "source": "src/weapons/Weapon.cpp:586"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 132
+        },
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 586
+        }
+      ],
+      "capabilities": [
+        "aim",
+        "spread",
+        "muzzle"
+      ],
+      "tags": [
+        "combat",
+        "weapons"
+      ]
+    },
+    {
+      "id": "adrenaline-melee-damage",
+      "node": "weapons",
+      "name": "Adrenaline melee bonus",
+      "summary": "An adrenaline-active player melee hit deals 3.5 times base damage; a bat finisher deals 100.",
+      "behavior": "A player melee hit checks the adrenaline flag first: with adrenaline active the damage is multiplied by 3.5, while a bat strike timed to the second swing animation applies a flat 100. Otherwise the hit uses the weapon base value, doubled when the victim is a player wielding a bat.",
+      "constants": [
+        {
+          "name": "adrenaline multiplier",
+          "value": 3.5,
+          "unit": "damage multiplier per hit at 30 Hz",
+          "source": "src/weapons/Weapon.cpp:457"
+        },
+        {
+          "name": "bat finisher damage",
+          "value": 100,
+          "unit": "damage points per hit at 30 Hz",
+          "source": "src/weapons/Weapon.cpp:455"
+        },
+        {
+          "name": "bat mirror multiplier",
+          "value": 2,
+          "unit": "damage multiplier per hit at 30 Hz",
+          "source": "src/weapons/Weapon.cpp:461"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 455
+        },
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 457
+        },
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 461
+        }
+      ],
+      "capabilities": [
+        "melee",
+        "damage",
+        "adrenaline"
+      ],
+      "tags": [
+        "combat",
+        "weapons"
+      ]
+    },
+    {
+      "id": "explosion-profile",
+      "node": "explosions",
+      "name": "Grenade explosion profile",
+      "summary": "The grenade explosion uses a 9 m radius and 300 damage power.",
+      "behavior": "Grenades register an explosion instance with a 9 m radius and a power of 300, then propagate damage outward over successive updates. Entities inside the radius take damage that falls off with distance, and the blast also wakes nearby physics bodies and registers an explosion event for AI reactions.",
+      "constants": [
+        {
+          "name": "grenade radius",
+          "value": 9,
+          "unit": "meters, evaluated per explosion update at 30 Hz",
+          "source": "src/weapons/Explosion.cpp:135"
+        },
+        {
+          "name": "grenade power",
+          "value": 300,
+          "unit": "damage units per explosion update at 30 Hz",
+          "source": "src/weapons/Explosion.cpp:136"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/weapons/Explosion.cpp",
+          "line": 135
+        },
+        {
+          "path": "src/weapons/Explosion.cpp",
+          "line": 136
+        }
+      ],
+      "capabilities": [
+        "explosion",
+        "area-damage"
+      ],
+      "tags": [
+        "combat",
+        "explosions"
+      ]
+    },
+    {
+      "id": "camera-follow-distance",
+      "node": "camera",
+      "name": "Follow-camera distance",
+      "summary": "The default third-person camera sits 30 m behind the subject.",
+      "behavior": "The follow camera initialises its trailing distance to 30 and then adjusts it with speed and geometry, keeping the subject visible in tight streets while pulling back on open roads. Interpolation preserves the offset when the camera switches modes, so the cut does not jump.",
+      "constants": [
+        {
+          "name": "follow distance",
+          "value": 30,
+          "unit": "game meters, per rendered frame at 30 Hz",
+          "source": "src/core/Cam.cpp:53"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/Cam.cpp",
+          "line": 53
+        }
+      ],
+      "capabilities": [
+        "camera-follow",
+        "distance"
+      ],
+      "tags": [
+        "camera",
+        "third-person"
+      ]
+    },
+    {
+      "id": "camera-yaw-switch",
+      "node": "camera",
+      "name": "Yaw snap and offset interpolation",
+      "summary": "A yaw jump beyond 0.3 rad marks a camera switch; offsets blend with 0.25 and 0.75 fractions.",
+      "behavior": "After normalising the yaw delta to plus or minus pi, a change larger than 0.3 rad sets the just-switched flag so the camera cuts instead of sweeping through walls. Between modes the offset blends using stop and catch-up fractions of 0.25 and 0.75, which settles the camera quickly without overshoot.",
+      "constants": [
+        {
+          "name": "yaw snap threshold",
+          "value": 0.3,
+          "unit": "radians, evaluated per camera update at 30 Hz",
+          "source": "src/core/Camera.cpp:335"
+        },
+        {
+          "name": "stop fraction",
+          "value": 0.25,
+          "unit": "fraction of camera offset per camera update at 30 Hz",
+          "source": "src/core/Camera.cpp:146"
+        },
+        {
+          "name": "catch-up fraction",
+          "value": 0.75,
+          "unit": "fraction of camera offset per camera update at 30 Hz",
+          "source": "src/core/Camera.cpp:147"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 335
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 146
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 147
+        }
+      ],
+      "capabilities": [
+        "camera-blend",
+        "yaw",
+        "mode-switch"
+      ],
+      "tags": [
+        "camera"
+      ]
+    },
+    {
+      "id": "sprint-stamina",
+      "node": "player-control",
+      "name": "Sprint stamina budget",
+      "summary": "Sprinting drains a 150-step stamina bar, regenerates capacity every 500 steps, and bottoms out at -150.",
+      "behavior": "Each sprinting update subtracts one time step from current stamina until it reaches the -150 exhausted floor, which forces a walk until the bar recovers. Progress accumulates until 500 steps, then maximum stamina rises by 10 up to 1000, so repeated sprinting slowly extends the bar.",
+      "constants": [
+        {
+          "name": "starting stamina",
+          "value": 150,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/peds/PlayerPed.cpp:44"
+        },
+        {
+          "name": "exhaustion floor",
+          "value": -150,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/peds/PlayerPed.cpp:176"
+        },
+        {
+          "name": "capacity gain interval",
+          "value": 500,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/peds/PlayerPed.cpp:182"
+        },
+        {
+          "name": "capacity gain",
+          "value": 10,
+          "unit": "time steps at 30 Hz (1 step = 1/30 s)",
+          "source": "src/peds/PlayerPed.cpp:185"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 176
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 182
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 185
+        }
+      ],
+      "capabilities": [
+        "stamina",
+        "sprint",
+        "progression"
+      ],
+      "tags": [
+        "player",
+        "movement"
+      ]
+    }
+  ]
+}

@@ -13,6 +13,10 @@ Write exactly one file, data/games/<id>.json. It must match schemas/game.schema.
 
 ## Guardrail
 
+3D only. Every card must describe 3D gameplay behaviour; a repository that holds only boot
+firmware, a splat skeleton or engine scaffolding cannot support 12 cards. Write nothing and
+report the shortfall instead of inventing mechanics.
+
 Borrow algorithms and defaults only. Copy no source code, comments, level layouts, character names or art. Write original prose.
 
 ## Units
@@ -37,4 +41,6 @@ data/catalog.json is not yours to write. The review lane promotes your game with
 
 ## Finish
 
-From the repository root run `node scripts/validate.mjs --source .sources/<id> --game <id>`. Fix every error it prints in your file and repeat until it passes.
+From the repository root run `node scripts/validate.mjs --source .sources/<id> --game <id>`. While
+sibling maps are still being authored in parallel, add `--isolated` so their missing files do not
+block your own validation. Fix every error it prints in your file and repeat until it passes.

@@ -1,0 +1,1105 @@
+{
+  "version": 1,
+  "id": "warzone-2100",
+  "title": "Warzone 2100",
+  "repo": "https://github.com/Warzone2100/warzone2100",
+  "sha": "e115b6379c1b831d12980f00f877c1e72e599c68",
+  "nodes": [
+    {
+      "id": "terrain-surface",
+      "name": "Terrain and water surface",
+      "purpose": "Stored tile heights, interpolation into a continuous standing surface, and the water level that can rise above the ground.",
+      "paths": [
+        "src/map.cpp",
+        "src/map.h",
+        "lib/wzmaplib/include/wzmaplib/map.h"
+      ],
+      "functions": [
+        {
+          "name": "map_Height",
+          "path": "src/map.cpp",
+          "lines": [
+            1871,
+            1972
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "locomotion",
+      "name": "Droid locomotion",
+      "purpose": "Terrain speed factors, propulsion speed caps, slope and damage penalties, steering rates and unit collision.",
+      "paths": [
+        "src/move.cpp",
+        "src/droid.cpp",
+        "src/droid.h",
+        "data/base/stats/propulsion.json",
+        "data/base/stats/terraintable.json"
+      ],
+      "functions": [
+        {
+          "name": "moveCalcDroidSpeed",
+          "path": "src/move.cpp",
+          "lines": [
+            1695,
+            1774
+          ]
+        },
+        {
+          "name": "moveUpdateDroidDirection",
+          "path": "src/move.cpp",
+          "lines": [
+            1788,
+            1814
+          ]
+        },
+        {
+          "name": "calcDroidSpeed",
+          "path": "src/droid.cpp",
+          "lines": [
+            1821,
+            1839
+          ]
+        },
+        {
+          "name": "moveCalcDroidSlide",
+          "path": "src/move.cpp",
+          "lines": [
+            1322,
+            1498
+          ]
+        }
+      ],
+      "dependsOn": [
+        "terrain-surface"
+      ]
+    },
+    {
+      "id": "pathfinding",
+      "name": "Route planning",
+      "purpose": "Propulsion-aware tile passability, A* exploration, and lane offsets that keep room from walls and other routes.",
+      "paths": [
+        "src/fpath.cpp",
+        "src/astar.cpp"
+      ],
+      "functions": [
+        {
+          "name": "fpathBaseBlockingTile",
+          "path": "src/fpath.cpp",
+          "lines": [
+            364,
+            397
+          ]
+        },
+        {
+          "name": "fpathRoute",
+          "path": "src/fpath.cpp",
+          "lines": [
+            527,
+            879
+          ]
+        },
+        {
+          "name": "fpathAStarExplore",
+          "path": "src/astar.cpp",
+          "lines": [
+            450,
+            535
+          ]
+        }
+      ],
+      "dependsOn": [
+        "terrain-surface",
+        "locomotion"
+      ]
+    },
+    {
+      "id": "weapons",
+      "name": "Weapon fire control",
+      "purpose": "Range bands from weapon stats, line-of-fire checks, fire pause and magazine reload.",
+      "paths": [
+        "src/combat.cpp",
+        "src/ai.cpp",
+        "src/projectile.cpp",
+        "data/base/stats/weapons.json"
+      ],
+      "functions": [
+        {
+          "name": "combFire",
+          "path": "src/combat.cpp",
+          "lines": [
+            84,
+            372
+          ]
+        },
+        {
+          "name": "aiDroidRange",
+          "path": "src/ai.cpp",
+          "lines": [
+            87,
+            107
+          ]
+        },
+        {
+          "name": "proj_GetLongRange",
+          "path": "src/projectile.cpp",
+          "lines": [
+            1681,
+            1687
+          ]
+        }
+      ],
+      "dependsOn": [
+        "sensors"
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Projectile flight",
+      "purpose": "Direct and ballistic travel, gravity, target aim height, and the splash sphere around impact.",
+      "paths": [
+        "src/projectile.cpp",
+        "src/projectile.h",
+        "data/base/stats/weapons.json"
+      ],
+      "functions": [
+        {
+          "name": "proj_InFlightFunc",
+          "path": "src/projectile.cpp",
+          "lines": [
+            835,
+            1125
+          ]
+        },
+        {
+          "name": "proj_radiusSweep",
+          "path": "src/projectile.cpp",
+          "lines": [
+            1126,
+            1202
+          ]
+        },
+        {
+          "name": "establishTargetHeight",
+          "path": "src/projectile.cpp",
+          "lines": [
+            1950,
+            2054
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapons",
+        "terrain-surface"
+      ]
+    },
+    {
+      "id": "sensors",
+      "name": "Sensors and visibility",
+      "purpose": "Sensor range circles, rules for VTOLs and unbuilt structures, terrain wavecast, and wall line of sight.",
+      "paths": [
+        "src/visibility.cpp",
+        "src/droid.h",
+        "data/base/stats/sensor.json"
+      ],
+      "functions": [
+        {
+          "name": "visOriginHeight",
+          "path": "src/visibility.cpp",
+          "lines": [
+            298,
+            316
+          ]
+        },
+        {
+          "name": "doWaveTerrain",
+          "path": "src/visibility.cpp",
+          "lines": [
+            317,
+            411
+          ]
+        },
+        {
+          "name": "visibleObject",
+          "path": "src/visibility.cpp",
+          "lines": [
+            548,
+            675
+          ]
+        }
+      ],
+      "dependsOn": [
+        "terrain-surface"
+      ]
+    },
+    {
+      "id": "economy",
+      "name": "Construction and research",
+      "purpose": "Structure build points and power reservations, plus research point accumulation and completion.",
+      "paths": [
+        "src/structure.cpp",
+        "src/research.cpp",
+        "data/base/stats/structure.json",
+        "data/base/stats/research.json"
+      ],
+      "functions": [
+        {
+          "name": "structureBuildPointsToCompletion",
+          "path": "src/structure.cpp",
+          "lines": [
+            949,
+            962
+          ]
+        },
+        {
+          "name": "structureBuild",
+          "path": "src/structure.cpp",
+          "lines": [
+            969,
+            1145
+          ]
+        },
+        {
+          "name": "aiUpdateStructure",
+          "path": "src/structure.cpp",
+          "lines": [
+            3201,
+            3791
+          ]
+        },
+        {
+          "name": "listAllyResearch",
+          "path": "src/research.cpp",
+          "lines": [
+            2122,
+            2185
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ai-targeting",
+      "name": "Target selection",
+      "purpose": "Weighted candidate scoring, visibility and damage penalties, and the sensor-capped nearest-target search.",
+      "paths": [
+        "src/ai.cpp"
+      ],
+      "functions": [
+        {
+          "name": "targetAttackWeightIfGreaterThan",
+          "path": "src/ai.cpp",
+          "lines": [
+            281,
+            567
+          ]
+        },
+        {
+          "name": "aiBestNearestTarget",
+          "path": "src/ai.cpp",
+          "lines": [
+            576,
+            780
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapons",
+        "sensors"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "terrain-standing-height",
+      "node": "terrain-surface",
+      "name": "Terrain standing height",
+      "summary": "The world samples a continuous ground height from four tile corners and their centre, so units and projectiles move over a smooth surface rather than tile steps.",
+      "behavior": "Each map tile stores a height in elevation steps. A query converts world coordinates to a tile and a position inside it, reads the four surrounding corner heights, and averages them for a centre value. It then picks the triangle that contains the point and interpolates between the two relevant corners and the centre, producing a continuous standing height. Coordinates are clamped to the map with one tile of leeway for units entering from off-map. Movement, projectile ground checks and sensor origin heights all read this same surface.",
+      "constants": [
+        {
+          "name": "Elevation step",
+          "value": 2,
+          "unit": "world units per stored height level; static conversion, no timestep",
+          "source": "lib/wzmaplib/include/wzmaplib/map.h:47"
+        },
+        {
+          "name": "Height level limit",
+          "value": 256,
+          "unit": "height levels across the map range; static map format limit, no timestep",
+          "source": "src/map.cpp:189"
+        },
+        {
+          "name": "Corner average divisor",
+          "value": 4,
+          "unit": "corner heights averaged into the tile centre height; per height query, no timestep",
+          "source": "src/map.cpp:1910"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/map.cpp",
+          "line": 1871
+        },
+        {
+          "path": "src/map.cpp",
+          "line": 1910
+        },
+        {
+          "path": "src/map.cpp",
+          "line": 189
+        }
+      ],
+      "capabilities": [
+        "continuous ground height",
+        "triangle interpolation",
+        "map-edge clamping"
+      ],
+      "tags": [
+        "terrain",
+        "height",
+        "collision"
+      ]
+    },
+    {
+      "id": "water-surface-floor",
+      "node": "terrain-surface",
+      "name": "Water surface as standing floor",
+      "summary": "Water is a second height field that can sit above the ground, and the gameplay surface is the higher of the two.",
+      "behavior": "Water tiles carry their own level. When a map loads, water is placed a third of a tile below the tile ground height, so shallow water shares the walkable surface while deeper painted water can rise above it. Height queries return the maximum of ground and water, which lets hover and amphibious units cross water while ground units treat deep water as impassable elsewhere. Sensor rays test the same combined surface, so a unit can see across water it could traverse.",
+      "constants": [
+        {
+          "name": "Water depth below ground",
+          "value": 3,
+          "unit": "tile fraction divisor: water sits one third of a 128-unit tile below the ground height; applied at map load, no timestep",
+          "source": "src/map.cpp:1332"
+        },
+        {
+          "name": "World coordinate shift",
+          "value": 7,
+          "unit": "bits, converting a tile coordinate to world units (128 world units per tile); static, no timestep",
+          "source": "lib/wzmaplib/include/wzmaplib/map.h:80"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/map.cpp",
+          "line": 1332
+        },
+        {
+          "path": "src/map.h",
+          "line": 488
+        }
+      ],
+      "capabilities": [
+        "water height field",
+        "higher-surface selection",
+        "shallow-water traversal"
+      ],
+      "tags": [
+        "terrain",
+        "water",
+        "height"
+      ]
+    },
+    {
+      "id": "terrain-speed-cap",
+      "node": "locomotion",
+      "name": "Terrain speed factor and cap",
+      "summary": "A droid base speed is scaled by the terrain table for its propulsion type, then clamped to that propulsion maximum and raised by experience.",
+      "behavior": "The speed calculation multiplies base speed by a terrain speed factor expressed as a percentage. Wheeled, tracked, legged, hover and lift propulsions each read a different column of the terrain table, so the same tile is fast for a hovercraft and slow for wheels. The result is capped at the propulsion maximum speed, then multiplied by a bonus of five percent per experience level. This final value feeds the per-update movement step, so terrain choice changes both top speed and time to cross a map.",
+      "constants": [
+        {
+          "name": "Percentage scale",
+          "value": 100,
+          "unit": "divisor converting the terrain speed factor percentage into a multiplier; applied per speed recalculation, no timestep",
+          "source": "src/droid.cpp:1826"
+        },
+        {
+          "name": "Hover speed on sand",
+          "value": 150,
+          "unit": "percent of base speed; table lookup per speed recalculation, no timestep",
+          "source": "data/base/stats/terraintable.json:9"
+        },
+        {
+          "name": "Experience speed bonus",
+          "value": 5,
+          "unit": "percent of speed added per experience level; applied per speed recalculation, no timestep",
+          "source": "src/droid.h:54"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/droid.cpp",
+          "line": 1826
+        },
+        {
+          "path": "src/droid.cpp",
+          "line": 1829
+        },
+        {
+          "path": "src/droid.h",
+          "line": 54
+        },
+        {
+          "path": "data/base/stats/terraintable.json",
+          "line": 9
+        }
+      ],
+      "capabilities": [
+        "propulsion-specific terrain speed",
+        "maximum speed clamp",
+        "veteran speed bonus"
+      ],
+      "tags": [
+        "movement",
+        "terrain",
+        "speed"
+      ]
+    },
+    {
+      "id": "slope-speed-penalty",
+      "node": "locomotion",
+      "name": "Slope and damage speed penalty",
+      "summary": "Pitch reduces speed linearly up to a 60-degree cutoff, heavy damage takes a third, and a floor keeps badly mapped cliffs from freezing units.",
+      "behavior": "The current pitch is compared against a maximum pitch of 60 degrees. Speed is multiplied by the remaining fraction, so a unit on a 30-degree slope keeps half its speed and a unit at the cutoff stops. Heavily damaged droids in single player lose one third of the remaining speed. If the result falls to 10 world units per second or below, it is raised back to 10, a guard against maps whose cliffs are not flagged as blocking. A unit that just fired a weapon without fire-on-move is set to zero instead.",
+      "constants": [
+        {
+          "name": "Maximum speed pitch",
+          "value": 60,
+          "unit": "degrees of pitch at which slope speed reaches zero; checked per speed recalculation, no timestep",
+          "source": "src/move.cpp:1690"
+        },
+        {
+          "name": "Damaged speed divisor",
+          "value": 3,
+          "unit": "divisor: heavily damaged droids keep two thirds of their speed; applied per speed recalculation, no timestep",
+          "source": "src/move.cpp:1723"
+        },
+        {
+          "name": "Speed floor",
+          "value": 10,
+          "unit": "world units per second minimum for a moving droid; applied per speed recalculation, no timestep",
+          "source": "src/move.cpp:1725"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/move.cpp",
+          "line": 1695
+        },
+        {
+          "path": "src/move.cpp",
+          "line": 1723
+        },
+        {
+          "path": "src/move.cpp",
+          "line": 1725
+        }
+      ],
+      "capabilities": [
+        "slope speed scaling",
+        "damage slow-down",
+        "minimum creep speed"
+      ],
+      "tags": [
+        "movement",
+        "slope",
+        "damage"
+      ]
+    },
+    {
+      "id": "turn-spin-envelope",
+      "node": "locomotion",
+      "name": "Turn and spin envelope",
+      "summary": "Steering blends between a slow turn rate at full speed and a fast spin rate as the droid slows, driven by propulsion stats.",
+      "behavior": "The direction update receives a spin angle and two rates from the propulsion stats. While the droid moves fast it turns at the lower rate; as its speed drops, the allowed rate rises toward the spin rate. The blend is linear in the absolute angle difference, capped at the spin rate, so a stationary droid can pivot quickly while a racing droid must make wide arcs. Legged propulsions expose a 45-degree spin angle with distinct spin and turn rates, which is why tracked and legged units feel different under the same steering input.",
+      "constants": [
+        {
+          "name": "Legged spin angle",
+          "value": 45,
+          "unit": "degrees of angular error used to blend turn rate toward spin rate; applied per direction update, no fixed timestep",
+          "source": "data/base/stats/propulsion.json:8"
+        },
+        {
+          "name": "Legged spin rate",
+          "value": 450,
+          "unit": "engine angle units per update at standstill; propulsion stat, update-rate dependent",
+          "source": "data/base/stats/propulsion.json:9"
+        },
+        {
+          "name": "Legged turn rate",
+          "value": 225,
+          "unit": "engine angle units per update at full speed; propulsion stat, update-rate dependent",
+          "source": "data/base/stats/propulsion.json:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/move.cpp",
+          "line": 1804
+        },
+        {
+          "path": "src/move.cpp",
+          "line": 1788
+        },
+        {
+          "path": "data/base/stats/propulsion.json",
+          "line": 8
+        }
+      ],
+      "capabilities": [
+        "speed-dependent turn rate",
+        "pivot in place",
+        "per-propulsion handling"
+      ],
+      "tags": [
+        "movement",
+        "turning",
+        "steering"
+      ]
+    },
+    {
+      "id": "unit-collision-slide",
+      "node": "locomotion",
+      "name": "Unit collision and slide",
+      "summary": "Moving droids resolve overlaps as circles in the ground plane but respect height separation, and allied soft passes halve the effective radius.",
+      "behavior": "The slide routine compares the mover radius with nearby droid radii. A ground unit ignores a flying unit whose height is above its own radius, and a flying unit ignores ground units below it, so aircraft pass over columns of troops. Allied units can use a soft pass that halves the combined radius, letting friendly columns squeeze past. When a droid has been frustrated by traffic for a while, friendly units are skipped entirely and it clips through them. The resolved slide vector is applied to the movement step, which keeps units on the terrain surface.",
+      "constants": [
+        {
+          "name": "Soft-pass radius divisor",
+          "value": 2,
+          "unit": "divisor on the combined collision radius for allied pass-through; applied per collision resolution, no fixed timestep",
+          "source": "src/move.cpp:1397"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/move.cpp",
+          "line": 1322
+        },
+        {
+          "path": "src/move.cpp",
+          "line": 1397
+        },
+        {
+          "path": "src/move.cpp",
+          "line": 1388
+        }
+      ],
+      "capabilities": [
+        "circle collision",
+        "height separation",
+        "allied soft pass"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "units"
+      ]
+    },
+    {
+      "id": "route-lane-clearance",
+      "node": "pathfinding",
+      "name": "Route lanes and wall clearance",
+      "summary": "A* routes are widened into lanes that keep a fixed clearance from blocking terrain and bias traffic to the right.",
+      "behavior": "Passability is a per-tile bitfield keyed by propulsion, so wheels, tracks and hover each see a different map and lifts ignore scroll limits. After the grid search, the route is shifted into a lane: each path spine keeps a target clearance from blocking ground, offsets half the opposing separation to its right, and spreads units by an id-derived sub-lane step so a group does not stack on one line. The keep-right shift ramps in after the route starts and out before the destination so units converge on the goal instead of arriving offset.",
+      "constants": [
+        {
+          "name": "Wall clearance",
+          "value": 448,
+          "unit": "world units between route spine and blocking ground; static lane geometry, no timestep",
+          "source": "src/astar.cpp:690"
+        },
+        {
+          "name": "Keep-right half separation",
+          "value": 192,
+          "unit": "world units of lateral shift to the route right; static lane geometry, no timestep",
+          "source": "src/astar.cpp:691"
+        },
+        {
+          "name": "Sub-lane spread step",
+          "value": 64,
+          "unit": "world units of id-hashed lateral spread; static lane geometry, no timestep",
+          "source": "src/astar.cpp:692"
+        },
+        {
+          "name": "Lane probe distance",
+          "value": 8,
+          "unit": "tiles scanned outward when measuring wall distance; static lane geometry, no timestep",
+          "source": "src/astar.cpp:728"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/fpath.cpp",
+          "line": 364
+        },
+        {
+          "path": "src/astar.cpp",
+          "line": 690
+        },
+        {
+          "path": "src/astar.cpp",
+          "line": 728
+        }
+      ],
+      "capabilities": [
+        "propulsion-specific passability",
+        "wall-aware lanes",
+        "crowd separation"
+      ],
+      "tags": [
+        "pathfinding",
+        "terrain",
+        "crowd"
+      ]
+    },
+    {
+      "id": "weapon-range-bands",
+      "node": "weapons",
+      "name": "Weapon range bands",
+      "summary": "Each weapon carries a short and a long range; AI range checks and target acquisition use the long band while accuracy is tuned for the short band.",
+      "behavior": "Weapon stats define a short range and a long range. The AI treats the long range as the engagement envelope, so a unit starts considering a target at the outer band and closes until it can fire. Range upgrades raise both bands, and the projectile helpers expose the current long, short and minimum ranges per player. Because the check is a squared distance against the long range, a target just inside the band is engaged even when the weapon accuracy is tuned for the short band.",
+      "constants": [
+        {
+          "name": "Long range",
+          "value": 2048,
+          "unit": "world units, outer engagement band; static stat, no timestep",
+          "source": "data/base/stats/weapons.json:19"
+        },
+        {
+          "name": "Short range",
+          "value": 768,
+          "unit": "world units, inner accuracy band; static stat, no timestep",
+          "source": "data/base/stats/weapons.json:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ai.cpp",
+          "line": 87
+        },
+        {
+          "path": "src/projectile.cpp",
+          "line": 1681
+        },
+        {
+          "path": "data/base/stats/weapons.json",
+          "line": 19
+        }
+      ],
+      "capabilities": [
+        "short and long range bands",
+        "upgradeable range",
+        "squared-distance checks"
+      ],
+      "tags": [
+        "weapons",
+        "range",
+        "ai"
+      ]
+    },
+    {
+      "id": "weapon-fire-cadence",
+      "node": "weapons",
+      "name": "Fire cadence and reload",
+      "summary": "Rate of fire is gated by a per-shot pause, with damage doubling the pause and reloadable weapons waiting for a reload when the magazine empties.",
+      "behavior": "Before firing, the code computes the earliest allowed time from the last shot plus the weapon fire pause, raised to at least one tick so a zero-pause weapon cannot fire every shot in the same tick. Heavily damaged single-player attackers double the pause. Reloadable weapons also track a magazine: when ammo reaches zero the shot waits for the reload time, and the magazine refills when that time has passed. The result is a predictable cadence that players can read from tracer spacing.",
+      "constants": [
+        {
+          "name": "Flak turret fire pause",
+          "value": 1,
+          "unit": "game ticks between shots at 1000 ticks per second; static stat, no frame scaling",
+          "source": "data/base/stats/weapons.json:10"
+        },
+        {
+          "name": "Flak turret reload time",
+          "value": 12,
+          "unit": "game ticks to reload an empty magazine at 1000 ticks per second; static stat, no frame scaling",
+          "source": "data/base/stats/weapons.json:35"
+        },
+        {
+          "name": "Flak turret magazine",
+          "value": 2,
+          "unit": "rounds per magazine before reload; static stat, no timestep",
+          "source": "data/base/stats/weapons.json:30"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/combat.cpp",
+          "line": 138
+        },
+        {
+          "path": "src/combat.cpp",
+          "line": 120
+        },
+        {
+          "path": "src/combat.cpp",
+          "line": 142
+        }
+      ],
+      "capabilities": [
+        "fire-pause gating",
+        "magazine reload",
+        "damage slow-down"
+      ],
+      "tags": [
+        "weapons",
+        "cadence",
+        "reload"
+      ]
+    },
+    {
+      "id": "projectile-flight-arc",
+      "node": "projectiles",
+      "name": "Projectile flight and gravity",
+      "summary": "Direct fire travels in a straight line at the weapon flight speed, while indirect fire follows a ballistic arc under constant gravity and aims at a target-specific height.",
+      "behavior": "Every projectile stores a source, a destination, the game time it was born, and a movement model. Direct projectiles advance along the source-to-destination line by flight speed times elapsed time. Indirect projectiles integrate a vertical velocity under a constant downward acceleration and a horizontal velocity, so their height traces a parabola that peaks mid-flight; the pitch is recomputed from the current vertical and horizontal speeds each update. Aiming uses a target height derived from model extents, with a fixed bonus for VTOLs, and bullets keep a small constant height above that point. A special impact-at-source flag detonates immediately, and laser-satellite shots ignore height entirely.",
+      "constants": [
+        {
+          "name": "Flight speed",
+          "value": 1200,
+          "unit": "world units per second along the flight path; static stat, scaled by elapsed game time",
+          "source": "data/base/stats/weapons.json:13"
+        },
+        {
+          "name": "Projectile gravity",
+          "value": 1000,
+          "unit": "world units per second squared downward acceleration; applied per flight update using elapsed game time",
+          "source": "src/projectile.h:43"
+        },
+        {
+          "name": "Bullet flight height",
+          "value": 16,
+          "unit": "world units above the target aim point; constant for the flight, no timestep",
+          "source": "src/projectile.cpp:1947"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/projectile.cpp",
+          "line": 835
+        },
+        {
+          "path": "src/projectile.cpp",
+          "line": 895
+        },
+        {
+          "path": "src/projectile.cpp",
+          "line": 1950
+        },
+        {
+          "path": "src/projectile.h",
+          "line": 43
+        }
+      ],
+      "capabilities": [
+        "straight-line flight",
+        "ballistic arc",
+        "aim-height offset",
+        "per-update pitch"
+      ],
+      "tags": [
+        "projectiles",
+        "ballistics",
+        "gravity",
+        "height"
+      ]
+    },
+    {
+      "id": "splash-sphere",
+      "node": "projectiles",
+      "name": "Splash sphere",
+      "summary": "Area damage tests nearby objects in a sphere around the impact point, skipping the primary target and honouring air and ground weapon flags.",
+      "behavior": "On impact the radius sweep iterates every object near the impact point using the weapon radius. A target is skipped when it is the primary target, when friendly fire is disabled for the weapon and it belongs to the source player, when the weapon cannot shoot its movement tier, or when a droid position fails the sphere test. Structures are tested by their centre, droids by a sphere so aircraft can be clipped above the blast. Surviving objects take radius damage computed from the weapon splash value and effect modifiers.",
+      "constants": [
+        {
+          "name": "Splash radius",
+          "value": 64,
+          "unit": "world units, sphere radius around impact; static stat, no timestep",
+          "source": "data/base/stats/weapons.json:31"
+        },
+        {
+          "name": "Splash damage",
+          "value": 40,
+          "unit": "damage points applied to each object inside the sphere; static stat, no timestep",
+          "source": "data/base/stats/weapons.json:32"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/projectile.cpp",
+          "line": 1126
+        },
+        {
+          "path": "src/projectile.cpp",
+          "line": 1172
+        },
+        {
+          "path": "data/base/stats/weapons.json",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "sphere area damage",
+        "primary-target exclusion",
+        "air and ground filtering"
+      ],
+      "tags": [
+        "projectiles",
+        "splash",
+        "damage"
+      ]
+    },
+    {
+      "id": "sensor-range-circle",
+      "node": "sensors",
+      "name": "Sensor range and sight rules",
+      "summary": "Vision is a range circle from the unit or structure, with special cases for VTOLs, unbuilt structures and anti-air sights.",
+      "behavior": "A viewer sensor range is read from its stats: a default sensor sees 1024 world units, a sensor tower 2048. Targets inside the circle are visible unless the tile is jammed or a wall blocks line of sight. VTOLs ignore ECM and are always visible inside range, and an anti-air structure sees VTOLs at one and a half times its range. A structure under construction sees nothing, and walls and gates have no vision. Visible targets are what weapons and the AI are allowed to engage.",
+      "constants": [
+        {
+          "name": "Default sensor range",
+          "value": 1024,
+          "unit": "world units radius; static stat, no timestep",
+          "source": "data/base/stats/sensor.json:30"
+        },
+        {
+          "name": "Sensor tower range",
+          "value": 2048,
+          "unit": "world units radius; static stat, no timestep",
+          "source": "data/base/stats/sensor.json:37"
+        },
+        {
+          "name": "Anti-air vision numerator",
+          "value": 3,
+          "unit": "numerator of the 3/2 range multiplier against VTOLs; applied per visibility check, no timestep",
+          "source": "src/visibility.cpp:597"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/visibility.cpp",
+          "line": 548
+        },
+        {
+          "path": "src/visibility.cpp",
+          "line": 554
+        },
+        {
+          "path": "src/visibility.cpp",
+          "line": 597
+        }
+      ],
+      "capabilities": [
+        "range-based vision",
+        "VTOL exceptions",
+        "jammer interaction"
+      ],
+      "tags": [
+        "sensors",
+        "vision",
+        "range"
+      ]
+    },
+    {
+      "id": "terrain-wavecast",
+      "node": "sensors",
+      "name": "Terrain wavecast visibility",
+      "summary": "Terrain is revealed by an angular sweep that keeps a horizon height per direction, so ridges hide the ground behind them.",
+      "behavior": "For each sensor the code walks the tiles of a precomputed wavecast table in angular order. For every tile it computes a perspective height from the sensor eye height and the tile ground or water level, then compares it with the best height seen so far in that direction. A tile is revealed when its perspective height clears the stored horizon, and the horizon is raised to the new height, so a ridge blocks everything behind it while a valley opens a view. A leeway of 80 world units reveals ground slightly above the stored horizon, which keeps small props from punching holes in vision. The per-direction list has a fixed 1360-entry guard.",
+      "constants": [
+        {
+          "name": "Minimum eye height",
+          "value": 80,
+          "unit": "world units added above a unit origin when computing its view height; applied per visibility update, no fixed timestep",
+          "source": "src/visibility.cpp:86"
+        },
+        {
+          "name": "Wavecast list cap",
+          "value": 1360,
+          "unit": "entries in the per-direction horizon list; static guard, no timestep",
+          "source": "src/visibility.cpp:337"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/visibility.cpp",
+          "line": 317
+        },
+        {
+          "path": "src/visibility.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/visibility.cpp",
+          "line": 337
+        }
+      ],
+      "capabilities": [
+        "angular terrain sweep",
+        "horizon occlusion",
+        "ridge hiding"
+      ],
+      "tags": [
+        "sensors",
+        "visibility",
+        "terrain"
+      ]
+    },
+    {
+      "id": "structure-construction",
+      "node": "economy",
+      "name": "Structure construction",
+      "summary": "Buildings accumulate build points from construction droids until they reach the structure cost, with power reserved when work starts.",
+      "behavior": "A structure stores accumulated build points and a build rate. Each update adds the rate, which is the builder build points divided across the game updates, to the accumulated total. Starting from zero requires a power reservation for the first module; without power the contribution is zero, so a brown-out pauses construction. Completion is the accumulated points divided by the structure build points, and a module replaces the base cost with the next module cost. Demolition runs the same path with negative points.",
+      "constants": [
+        {
+          "name": "Bunker build points",
+          "value": 10,
+          "unit": "build points required for the structure; static stat, consumed across updates",
+          "source": "data/base/stats/structure.json:27"
+        },
+        {
+          "name": "Bunker build power",
+          "value": 100,
+          "unit": "power points reserved while building; static stat, held per structure, no timestep",
+          "source": "data/base/stats/structure.json:28"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/structure.cpp",
+          "line": 949
+        },
+        {
+          "path": "src/structure.cpp",
+          "line": 969
+        },
+        {
+          "path": "src/structure.cpp",
+          "line": 1002
+        }
+      ],
+      "capabilities": [
+        "accumulated build points",
+        "power reservation",
+        "module upgrade cost"
+      ],
+      "tags": [
+        "economy",
+        "construction",
+        "power"
+      ]
+    },
+    {
+      "id": "research-progress",
+      "node": "economy",
+      "name": "Research progress and power",
+      "summary": "Research facilities add points toward a topic cost each update, paying its power once, and completion installs the resulting components.",
+      "behavior": "A lab assigned to a topic adds its research points per update, capped so it never overshoots the topic cost. The first contribution requests the topic research power; if power is unavailable the lab adds nothing. Progress is stored per player and shared across allies, so two labs on the same topic advance one bar. The interface estimates remaining time as remaining points divided by the lab point rate. When the bar fills, the research result pass unlocks the component upgrades for the player.",
+      "constants": [
+        {
+          "name": "Half-track propulsion research cost",
+          "value": 7200,
+          "unit": "research points accumulated at the lab point rate; static topic cost, no timestep",
+          "source": "data/base/stats/research.json:35"
+        },
+        {
+          "name": "Half-track propulsion research power",
+          "value": 225,
+          "unit": "power points reserved when research starts; static topic cost, no timestep",
+          "source": "data/base/stats/research.json:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/structure.cpp",
+          "line": 3538
+        },
+        {
+          "path": "src/structure.cpp",
+          "line": 3546
+        },
+        {
+          "path": "src/research.cpp",
+          "line": 2165
+        }
+      ],
+      "capabilities": [
+        "point accumulation",
+        "power gating",
+        "ally-shared progress",
+        "completion unlocks"
+      ],
+      "tags": [
+        "economy",
+        "research",
+        "power"
+      ]
+    },
+    {
+      "id": "ai-target-weight",
+      "node": "ai-targeting",
+      "name": "Target weight scoring and search",
+      "summary": "The AI scores candidates with weapon, distance and damage terms, searches only within sensor range plus six tiles, and switches targets only for a clearly better one.",
+      "behavior": "Each candidate gets a weight starting from the weapon effectiveness against the target propulsion or body class. Sensor range adds a distance bonus while actual distance subtracts thirteen points per tile, so nearer targets win. Damaged targets gain weight scaled by missing health, and target type adds a bonus: weapon and command droids outrank service units, while resource derricks outrank factories. Invisible targets and targets already under heavy fire take penalties. The search radius is the weapon long range plus any extra, clamped to sensor range plus six tiles, so a long-range weapon cannot acquire what the unit cannot see. An existing target is kept unless a new one is better by four tiles of weight.",
+      "constants": [
+        {
+          "name": "Distance weight",
+          "value": 13,
+          "unit": "score points per tile of distance; applied per target evaluation, no fixed timestep",
+          "source": "src/ai.cpp:46"
+        },
+        {
+          "name": "Health weight",
+          "value": 10,
+          "unit": "multiplier converting damage ratio percentage into score points, equal to ten tiles of distance; per evaluation, no timestep",
+          "source": "src/ai.cpp:49"
+        },
+        {
+          "name": "Target switch threshold",
+          "value": 4,
+          "unit": "tiles of score advantage required to switch away from the current target; per evaluation, no timestep",
+          "source": "src/ai.cpp:65"
+        },
+        {
+          "name": "Search radius margin",
+          "value": 6,
+          "unit": "tiles added to sensor range as the maximum search radius; applied per target search, no timestep",
+          "source": "src/ai.cpp:620"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ai.cpp",
+          "line": 281
+        },
+        {
+          "path": "src/ai.cpp",
+          "line": 433
+        },
+        {
+          "path": "src/ai.cpp",
+          "line": 620
+        }
+      ],
+      "capabilities": [
+        "weighted target choice",
+        "damage preference",
+        "type priorities",
+        "sensor-capped search",
+        "target hysteresis"
+      ],
+      "tags": [
+        "ai",
+        "targeting",
+        "combat",
+        "sensors"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1173 @@
+{
+  "version": 1,
+  "id": "grand-theft-auto-vice-city-revc",
+  "title": "Grand Theft Auto: Vice City",
+  "repo": "https://github.com/mrxenginner/reVC",
+  "sha": "a26fff4af555a8a425ac9f17d1dd718d00d1f942",
+  "nodes": [
+    {
+      "id": "physics-core",
+      "name": "Physical simulation core",
+      "purpose": "Rigid-body integration, gravity, friction and suspension impulses shared by vehicles and pedestrians",
+      "paths": [
+        "src/entities/Physical.cpp",
+        "src/entities/Physical.h"
+      ],
+      "functions": [
+        {
+          "name": "CPhysical::ProcessControl",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            353,
+            412
+          ]
+        },
+        {
+          "name": "CPhysical::ApplySpringCollision",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            472,
+            483
+          ]
+        },
+        {
+          "name": "CPhysical::ApplySpringDampening",
+          "path": "src/entities/Physical.cpp",
+          "lines": [
+            503,
+            520
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "vehicle-base",
+      "name": "Vehicle base and transmission",
+      "purpose": "Shared vehicle wheel processing and the automatic gearbox that selects ratios from road speed",
+      "paths": [
+        "src/vehicles/Vehicle.cpp",
+        "src/vehicles/Transmission.cpp",
+        "src/vehicles/Transmission.h"
+      ],
+      "functions": [
+        {
+          "name": "CVehicle::ProcessWheel",
+          "path": "src/vehicles/Vehicle.cpp",
+          "lines": [
+            779,
+            934
+          ]
+        },
+        {
+          "name": "cTransmission::InitGearRatios",
+          "path": "src/vehicles/Transmission.cpp",
+          "lines": [
+            8,
+            40
+          ]
+        },
+        {
+          "name": "cTransmission::CalculateDriveAcceleration",
+          "path": "src/vehicles/Transmission.cpp",
+          "lines": [
+            59,
+            120
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "automobile",
+      "name": "Car handling and damage",
+      "purpose": "Player car inputs, steering ramps, braking, burnout behavior and crash damage routing",
+      "paths": [
+        "src/vehicles/Automobile.cpp",
+        "src/vehicles/DamageManager.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CAutomobile::ProcessControl",
+          "path": "src/vehicles/Automobile.cpp",
+          "lines": [
+            264,
+            470
+          ]
+        },
+        {
+          "name": "CAutomobile::ProcessControlInputs",
+          "path": "src/vehicles/Automobile.cpp",
+          "lines": [
+            3102,
+            3240
+          ]
+        },
+        {
+          "name": "CAutomobile::VehicleDamage",
+          "path": "src/vehicles/Automobile.cpp",
+          "lines": [
+            4094,
+            4327
+          ]
+        },
+        {
+          "name": "CDamageManager::ApplyDamage",
+          "path": "src/vehicles/DamageManager.cpp",
+          "lines": [
+            59,
+            101
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-base",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "bike",
+      "name": "Motorcycle handling",
+      "purpose": "Two-wheel input smoothing, lean torque and low-speed wheelie authority",
+      "paths": [
+        "src/vehicles/Bike.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CBike::ProcessControl",
+          "path": "src/vehicles/Bike.cpp",
+          "lines": [
+            210,
+            600
+          ]
+        },
+        {
+          "name": "CBike::ProcessControlInputs",
+          "path": "src/vehicles/Bike.cpp",
+          "lines": [
+            1813,
+            1944
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-base",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "aircraft",
+      "name": "Aircraft and helicopter control",
+      "purpose": "Flying control impulses, speed clamps and scripted helicopter flight states",
+      "paths": [
+        "src/vehicles/Vehicle.cpp",
+        "src/vehicles/Heli.cpp",
+        "src/vehicles/Plane.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CVehicle::FlyingControl",
+          "path": "src/vehicles/Vehicle.cpp",
+          "lines": [
+            271,
+            564
+          ]
+        },
+        {
+          "name": "CHeli::ProcessControl",
+          "path": "src/vehicles/Heli.cpp",
+          "lines": [
+            124,
+            300
+          ]
+        },
+        {
+          "name": "CPlane::ProcessControl",
+          "path": "src/vehicles/Plane.cpp",
+          "lines": [
+            139,
+            300
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-base",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "boat",
+      "name": "Boat handling",
+      "purpose": "Water buoyancy decay and boat control inputs",
+      "paths": [
+        "src/vehicles/Boat.cpp",
+        "src/vehicles/Floater.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CBoat::ProcessControl",
+          "path": "src/vehicles/Boat.cpp",
+          "lines": [
+            128,
+            300
+          ]
+        },
+        {
+          "name": "CBoat::ProcessControlInputs",
+          "path": "src/vehicles/Boat.cpp",
+          "lines": [
+            767,
+            900
+          ]
+        },
+        {
+          "name": "cBuoyancy::ProcessBuoyancyBoat",
+          "path": "src/vehicles/Floater.cpp",
+          "lines": [
+            61,
+            130
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-base",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Third-person camera",
+      "purpose": "Follow camera heights, zoom steps and interpolation between grounded and vehicle framing",
+      "paths": [
+        "src/core/Camera.cpp",
+        "src/core/Camera.h"
+      ],
+      "functions": [
+        {
+          "name": "CCamera::Process",
+          "path": "src/core/Camera.cpp",
+          "lines": [
+            251,
+            671
+          ]
+        },
+        {
+          "name": "CCamera::CamControl",
+          "path": "src/core/Camera.cpp",
+          "lines": [
+            672,
+            1779
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ped-movement",
+      "name": "Pedestrian movement and stamina",
+      "purpose": "Pedestrian state control, sprint stamina drain and jump landing animation",
+      "paths": [
+        "src/peds/Ped.cpp",
+        "src/peds/PlayerPed.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPed::ProcessControl",
+          "path": "src/peds/Ped.cpp",
+          "lines": [
+            1746,
+            2600
+          ]
+        },
+        {
+          "name": "CPlayerPed::UseSprintEnergy",
+          "path": "src/peds/PlayerPed.cpp",
+          "lines": [
+            204,
+            219
+          ]
+        },
+        {
+          "name": "CPlayerPed::RestoreSprintEnergy",
+          "path": "src/peds/PlayerPed.cpp",
+          "lines": [
+            559,
+            565
+          ]
+        },
+        {
+          "name": "CPlayerPed::RunningLand",
+          "path": "src/peds/PlayerPed.cpp",
+          "lines": [
+            638,
+            655
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Weapon fire and hit resolution",
+      "purpose": "Instant-hit traces, pedestrian damage application and damage-source registration",
+      "paths": [
+        "src/weapons/Weapon.cpp",
+        "src/weapons/WeaponInfo.h"
+      ],
+      "functions": [
+        {
+          "name": "CWeapon::Fire",
+          "path": "src/weapons/Weapon.cpp",
+          "lines": [
+            162,
+            445
+          ]
+        },
+        {
+          "name": "CWeapon::FireInstantHit",
+          "path": "src/weapons/Weapon.cpp",
+          "lines": [
+            865,
+            1223
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ped-movement",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "traffic-ai",
+      "name": "Traffic and mission driving",
+      "purpose": "Cruise speed targets and driving goals used by ambient and mission vehicles",
+      "paths": [
+        "src/control/CarAI.cpp",
+        "src/control/CarCtrl.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CCarAI::UpdateCarAI",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            55,
+            504
+          ]
+        },
+        {
+          "name": "CCarAI::GetCarToGoToCoors",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            510,
+            526
+          ]
+        },
+        {
+          "name": "CCarAI::GetCarToParkAtCoors",
+          "path": "src/control/CarAI.cpp",
+          "lines": [
+            527,
+            534
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-base"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "gravity-fall",
+      "node": "physics-core",
+      "name": "Constant gravity on vertical speed",
+      "summary": "A single gravity constant is subtracted from vertical speed every update, scaled by the frame step.",
+      "behavior": "Every object on the physical base carries a vertical speed in world units per frame. Before integration, the update subtracts the gravity constant multiplied by the current frame time from that vertical speed, so a fall accelerates at a fixed rate independent of mass. Horizontal speed is untouched by this step. The same path runs for vehicles, pedestrians and loose props, which keeps a dropped object and a falling car on identical acceleration.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 0.008,
+          "unit": "world units per frame per frame at the 30 Hz target update (frame-step scaled)",
+          "source": "src/entities/Physical.h:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/entities/Physical.h",
+          "line": 12
+        },
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 553
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "falling",
+        "vertical integration"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "integration"
+      ]
+    },
+    {
+      "id": "suspension-spring",
+      "node": "physics-core",
+      "name": "Suspension spring and damping impulses",
+      "summary": "Compressed suspension emits a doubled spring impulse plus a damped impulse, with the frame step clamped.",
+      "behavior": "A compressed suspension point builds an upward impulse from gravity, body mass, the frame step, the spring constant, the compression ratio and a bias that is doubled inside the impulse. A second impulse removes a fraction of the average contact speed along the spring direction, again scaled by mass and the frame step. The frame step used by both impulses is clamped to three frames so a long hitch cannot inject unbounded energy. The damping factor 0.53 stops the spring from ringing under repeated contact.",
+      "constants": [
+        {
+          "name": "springBias",
+          "value": 2,
+          "unit": "multiplier on the spring impulse, applied per frame at 30 Hz",
+          "source": "src/entities/Physical.cpp:477"
+        },
+        {
+          "name": "stepClamp",
+          "value": 3,
+          "unit": "frames (maximum frame step used by the impulse) at 30 Hz",
+          "source": "src/entities/Physical.cpp:476"
+        },
+        {
+          "name": "dampingFactor",
+          "value": 0.53,
+          "unit": "fraction of average contact speed removed per frame at 30 Hz",
+          "source": "src/entities/Physical.cpp:512"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 477
+        },
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 476
+        },
+        {
+          "path": "src/entities/Physical.cpp",
+          "line": 512
+        }
+      ],
+      "capabilities": [
+        "spring suspension",
+        "contact damping",
+        "frame step clamp"
+      ],
+      "tags": [
+        "physics",
+        "suspension",
+        "damping"
+      ]
+    },
+    {
+      "id": "gear-shift",
+      "node": "vehicle-base",
+      "name": "Automatic gear shift thresholds",
+      "summary": "Gear bands are divided evenly; upshift at two thirds of a band, downshift at forty-two percent.",
+      "behavior": "Gear ratios are laid out as equally spaced speed bands between zero and the handling record top speed. The box requests an upshift once road speed passes 0.6667 of the current band above its lower edge, and a downshift once speed drops below 0.42 of the band. Reverse has its shift-up threshold set just below zero, so the transmission only leaves reverse when the car has essentially stopped or is already rolling forward.",
+      "constants": [
+        {
+          "name": "shiftUpFraction",
+          "value": 0.6667,
+          "unit": "fraction of a gear speed band, evaluated per update at 30 Hz",
+          "source": "src/vehicles/Transmission.cpp:29"
+        },
+        {
+          "name": "shiftDownFraction",
+          "value": 0.42,
+          "unit": "fraction of a gear speed band, evaluated per update at 30 Hz",
+          "source": "src/vehicles/Transmission.cpp:28"
+        },
+        {
+          "name": "reverseShiftUpSpeed",
+          "value": -0.01,
+          "unit": "world units per frame at 30 Hz",
+          "source": "src/vehicles/Transmission.cpp:35"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Transmission.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/vehicles/Transmission.cpp",
+          "line": 28
+        },
+        {
+          "path": "src/vehicles/Transmission.cpp",
+          "line": 35
+        }
+      ],
+      "capabilities": [
+        "automatic transmission",
+        "gear hunting",
+        "reverse interlock"
+      ],
+      "tags": [
+        "driving",
+        "gearbox",
+        "speed"
+      ]
+    },
+    {
+      "id": "brake-bias",
+      "node": "automobile",
+      "name": "Brake force and axle bias",
+      "summary": "Brake impulse scales with pedal, deceleration and frame step; normal cars double the handling bias.",
+      "behavior": "Each update turns the brake pedal position into an impulse by multiplying it by the handling record brake deceleration and the frame step. For player and remote-player cars the front bias is twice the handling bias, and the rear share is derived by subtracting that front value from two. When the same handling record is used by a non-player car flagged for neutral handling, both axles collapse to a bias of one and the car brakes evenly instead of nose-down.",
+      "constants": [
+        {
+          "name": "playerBrakeBiasScale",
+          "value": 2,
+          "unit": "multiplier on the handling brake bias, applied per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:869"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 869
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 867
+        }
+      ],
+      "capabilities": [
+        "braking",
+        "axle bias",
+        "neutral handling"
+      ],
+      "tags": [
+        "driving",
+        "brakes",
+        "handling"
+      ]
+    },
+    {
+      "id": "burnout-launch",
+      "node": "automobile",
+      "name": "Standing burnout trigger",
+      "summary": "Holding both pedals past 150 of 255 while nearly stopped arms a burnout and feeds both pedals.",
+      "behavior": "While absolute speed is below 0.01 the input stage checks whether accelerate and brake are both held above 150 on the 255-scale pad. If they are, the gas and brake pedals receive their normalized raw values and a burnout flag is raised; if not, the brake pedal is cleared. The flag later lets a rear-wheel-drive car cut rear brake and traction and apply a small yaw torque, which turns a stationary launch into wheelspin and rotation instead of a clean start.",
+      "constants": [
+        {
+          "name": "standstillSpeed",
+          "value": 0.01,
+          "unit": "world units per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:3140"
+        },
+        {
+          "name": "burnoutPedalThreshold",
+          "value": 150,
+          "unit": "raw pad units on a 0-255 axis, sampled per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:3142"
+        },
+        {
+          "name": "padFullScale",
+          "value": 255,
+          "unit": "raw pad units at the top of the axis, sampled per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:3143"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3140
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3142
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3143
+        }
+      ],
+      "capabilities": [
+        "burnout",
+        "standing start",
+        "pedal chords"
+      ],
+      "tags": [
+        "driving",
+        "burnout",
+        "input"
+      ]
+    },
+    {
+      "id": "steering-smoothing",
+      "node": "automobile",
+      "name": "Steering input ramp and clamp",
+      "summary": "Steering chases the pad axis at twenty percent per frame step and clamps to a unit range.",
+      "behavior": "The left-right pad axis is divided by 128 to produce a signed target, and the carried steering input moves toward that target by 0.2 multiplied by the frame step. The result is clamped to plus or minus one, so held input cannot exceed full lock and a quick tap cannot jump straight to it. Mouse steering uses the same carried value with separate centering constants, keeping every input device on one normalized scale that the wheel model can consume.",
+      "constants": [
+        {
+          "name": "steerRampRate",
+          "value": 0.2,
+          "unit": "fraction of the remaining error closed per frame at 30 Hz (frame-step scaled)",
+          "source": "src/vehicles/Automobile.cpp:3124"
+        },
+        {
+          "name": "padAxisScale",
+          "value": 128,
+          "unit": "raw pad units per unit of steering input, sampled per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:3123"
+        },
+        {
+          "name": "steerClamp",
+          "value": 1,
+          "unit": "normalized steering input, applied per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:3134"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3123
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3124
+        },
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 3134
+        }
+      ],
+      "capabilities": [
+        "steering ramp",
+        "input normalization",
+        "lock clamp"
+      ],
+      "tags": [
+        "driving",
+        "steering",
+        "input"
+      ]
+    },
+    {
+      "id": "burnout-yaw-torque",
+      "node": "automobile",
+      "name": "Burnout yaw torque",
+      "summary": "A rear-drive burnout applies a small steer-scaled turn force at the rear-left contact.",
+      "behavior": "When a burnout is active and the handling record marks the car as rear-wheel drive, rear brake and rear traction are zeroed and a turn force is applied at the rear-left contact point. The force is minus 0.001 times the body turn mass times the current steer angle, directed along the car right vector. Because the coefficient is small, the result is a slow rotation into the steered direction rather than an instant spin, which lets a player hold a donut with steady input.",
+      "constants": [
+        {
+          "name": "burnoutYawCoefficient",
+          "value": -0.001,
+          "unit": "negative turn force per unit turn mass and steer angle, applied per frame at 30 Hz",
+          "source": "src/vehicles/Automobile.cpp:1082"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Automobile.cpp",
+          "line": 1082
+        }
+      ],
+      "capabilities": [
+        "burnout rotation",
+        "donuts",
+        "rear-drive bias"
+      ],
+      "tags": [
+        "driving",
+        "burnout",
+        "torque"
+      ]
+    },
+    {
+      "id": "engine-damage",
+      "node": "automobile",
+      "name": "Component damage thresholds",
+      "summary": "Hits are scaled per component group; 150 registers damage and 220 on front parts can reach the engine.",
+      "behavior": "Incoming impact damage is first multiplied by a per-group factor, and windscreen hits take an extra 0.6 scale. A hit only registers component damage above 150; below that the damage state is untouched, so light scrapes do not accumulate. Bonnet hits above 220, and front panel or windscreen hits above 220, also advance engine damage, which links bodywork placement to mechanical failure instead of treating every impact the same.",
+      "constants": [
+        {
+          "name": "componentDamageThreshold",
+          "value": 150,
+          "unit": "damage units per impact, evaluated per collision event",
+          "source": "src/vehicles/DamageManager.cpp:68"
+        },
+        {
+          "name": "engineDamageThreshold",
+          "value": 220,
+          "unit": "damage units per impact, evaluated per collision event",
+          "source": "src/vehicles/DamageManager.cpp:78"
+        },
+        {
+          "name": "windscreenDamageScale",
+          "value": 0.6,
+          "unit": "multiplier on windscreen damage, applied per collision event",
+          "source": "src/vehicles/DamageManager.cpp:67"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 67
+        },
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 68
+        },
+        {
+          "path": "src/vehicles/DamageManager.cpp",
+          "line": 78
+        }
+      ],
+      "capabilities": [
+        "component damage",
+        "engine failure",
+        "impact thresholds"
+      ],
+      "tags": [
+        "driving",
+        "damage",
+        "collision"
+      ]
+    },
+    {
+      "id": "bike-lean",
+      "node": "bike",
+      "name": "Motorcycle lean and wheelie authority",
+      "summary": "Lean input ramps at twenty percent per step, clamps to one, and scales torque by min(speed, 0.1).",
+      "behavior": "Vertical pad input builds a lean value by closing twenty percent of the gap to the target each frame step, then clamps the result to plus or minus one. The lean torque uses the smaller of current speed magnitude and 0.1, so a wheelie or stoppie loses authority as soon as the bike is moving quickly and stays controllable at parking speeds. The gas pedal blends part of the force on the sport bike and an even split on other bikes, giving each model a different balance point.",
+      "constants": [
+        {
+          "name": "leanRampRate",
+          "value": 0.2,
+          "unit": "fraction of the remaining error closed per frame at 30 Hz (frame-step scaled)",
+          "source": "src/vehicles/Bike.cpp:1852"
+        },
+        {
+          "name": "leanSpeedCap",
+          "value": 0.1,
+          "unit": "world units per frame at 30 Hz",
+          "source": "src/vehicles/Bike.cpp:258"
+        },
+        {
+          "name": "leanClamp",
+          "value": 1,
+          "unit": "normalized lean input, applied per frame at 30 Hz",
+          "source": "src/vehicles/Bike.cpp:1853"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Bike.cpp",
+          "line": 1852
+        },
+        {
+          "path": "src/vehicles/Bike.cpp",
+          "line": 258
+        },
+        {
+          "path": "src/vehicles/Bike.cpp",
+          "line": 1853
+        }
+      ],
+      "capabilities": [
+        "motorcycle lean",
+        "wheelie",
+        "stoppie"
+      ],
+      "tags": [
+        "driving",
+        "motorcycle",
+        "lean"
+      ]
+    },
+    {
+      "id": "aircraft-speed-clamp",
+      "node": "aircraft",
+      "name": "Flying speed clamps and yaw damping",
+      "summary": "Flying bodies damp yaw by 0.9 per frame step and clamp linear speed to 1.5 and turn speed to 0.2.",
+      "behavior": "In the flying branch the yaw component of turn speed is multiplied by 0.9 raised to the frame step, which makes the damping independent of frame length. Linear speed magnitude is then clamped to 1.5 and turn speed magnitude to 0.2 by scaling the whole vector when it exceeds either limit. The two clamps keep aircraft and airborne cars inside the range where the shared solver stays stable, and they also cap how fast a player can cross the map in a helicopter or plane.",
+      "constants": [
+        {
+          "name": "yawDampingBase",
+          "value": 0.9,
+          "unit": "ratio per frame at 30 Hz (raised to the frame step)",
+          "source": "src/vehicles/Vehicle.cpp:315"
+        },
+        {
+          "name": "maxLinearSpeed",
+          "value": 1.5,
+          "unit": "world units per frame at 30 Hz",
+          "source": "src/vehicles/Vehicle.cpp:320"
+        },
+        {
+          "name": "maxTurnSpeed",
+          "value": 0.2,
+          "unit": "radians per frame at 30 Hz",
+          "source": "src/vehicles/Vehicle.cpp:323"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Vehicle.cpp",
+          "line": 315
+        },
+        {
+          "path": "src/vehicles/Vehicle.cpp",
+          "line": 320
+        },
+        {
+          "path": "src/vehicles/Vehicle.cpp",
+          "line": 323
+        }
+      ],
+      "capabilities": [
+        "flight speed limit",
+        "yaw damping",
+        "vector clamp"
+      ],
+      "tags": [
+        "flight",
+        "aircraft",
+        "physics"
+      ]
+    },
+    {
+      "id": "boat-buoyancy",
+      "node": "boat",
+      "name": "Buoyancy decay while afloat",
+      "summary": "A floating boat loses one percent of its buoyancy accumulator every update.",
+      "behavior": "While a boat is in water its buoyancy value is multiplied by 0.99 on every update, pulling the hull toward its float equilibrium. Damage and ground contact feed the same accumulator through the damage impulse path, so a grounded or damaged boat recovers its float level over several seconds instead of snapping back. The decay runs before the boat control inputs, which means thrust and steering act on an already settling hull.",
+      "constants": [
+        {
+          "name": "buoyancyDecay",
+          "value": 0.99,
+          "unit": "ratio per frame at 30 Hz",
+          "source": "src/vehicles/Boat.cpp:135"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/vehicles/Boat.cpp",
+          "line": 135
+        },
+        {
+          "path": "src/vehicles/Boat.cpp",
+          "line": 130
+        }
+      ],
+      "capabilities": [
+        "buoyancy",
+        "float equilibrium",
+        "water recovery"
+      ],
+      "tags": [
+        "boat",
+        "water",
+        "physics"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera",
+      "name": "Follow camera heights and interpolation",
+      "summary": "Third-person framing uses a 1.85 unit ground clearance, three zoom heights and 0.25/0.75 interpolation stops.",
+      "behavior": "The follow camera starts with a minimum ground distance of 1.85 units and three ground zoom heights of 0.25, 1.5 and 4.0 units. Height and zoom interpolation stop moving at a 0.25 fraction of the target and catch up at 0.75, while a 0.85 gait sway buffer smooths walking bob. A buffered height and height speed are kept on the camera so kerbs, stairs and suspension movement do not snap the view between frames.",
+      "constants": [
+        {
+          "name": "minGroundDistance",
+          "value": 1.85,
+          "unit": "world units, static framing value sampled per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:125"
+        },
+        {
+          "name": "zoomHeightOne",
+          "value": 0.25,
+          "unit": "world units above the target, static framing value sampled per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:128"
+        },
+        {
+          "name": "zoomHeightTwo",
+          "value": 1.5,
+          "unit": "world units above the target, static framing value sampled per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:129"
+        },
+        {
+          "name": "zoomHeightThree",
+          "value": 4,
+          "unit": "world units above the target, static framing value sampled per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:130"
+        },
+        {
+          "name": "stopMovingFraction",
+          "value": 0.25,
+          "unit": "fraction of the interpolation target, evaluated per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:154"
+        },
+        {
+          "name": "catchUpFraction",
+          "value": 0.75,
+          "unit": "fraction of the interpolation target, evaluated per frame at 30 Hz",
+          "source": "src/core/Camera.cpp:155"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 125
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 128
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 129
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 130
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 154
+        },
+        {
+          "path": "src/core/Camera.cpp",
+          "line": 155
+        }
+      ],
+      "capabilities": [
+        "follow camera",
+        "zoom levels",
+        "height smoothing"
+      ],
+      "tags": [
+        "camera",
+        "third person",
+        "framing"
+      ]
+    },
+    {
+      "id": "sprint-stamina",
+      "node": "ped-movement",
+      "name": "Sprint stamina drain and growth",
+      "summary": "Sprint drains one unit per frame to a -150 floor; every 500 progress units raise the 1000 cap by 10.",
+      "behavior": "Each sprinting update subtracts one stamina unit and adds one unit to a progress counter. Sprint becomes unavailable once stamina reaches -150, and every 500 units of progress reset the counter and raise maximum stamina by 10 up to a ceiling of 1000. Outside a sprint, recovery adds restore speed times the frame step times 0.5 until current stamina meets the maximum, so a long sprint is paid back over roughly twice the time it took to spend.",
+      "constants": [
+        {
+          "name": "staminaFloor",
+          "value": -150,
+          "unit": "stamina units, static threshold checked per frame at 30 Hz",
+          "source": "src/peds/PlayerPed.cpp:206"
+        },
+        {
+          "name": "refillProgress",
+          "value": 500,
+          "unit": "stamina progress units per frame at 30 Hz",
+          "source": "src/peds/PlayerPed.cpp:212"
+        },
+        {
+          "name": "maxStaminaCeiling",
+          "value": 1000,
+          "unit": "stamina units, static cap checked per frame at 30 Hz",
+          "source": "src/peds/PlayerPed.cpp:214"
+        },
+        {
+          "name": "maxStaminaStep",
+          "value": 10,
+          "unit": "stamina units granted per 500 progress units",
+          "source": "src/peds/PlayerPed.cpp:215"
+        },
+        {
+          "name": "recoveryScale",
+          "value": 0.5,
+          "unit": "multiplier on restore speed per frame at 30 Hz (frame-step scaled)",
+          "source": "src/peds/PlayerPed.cpp:562"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 206
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 212
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 214
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 215
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 562
+        }
+      ],
+      "capabilities": [
+        "sprint stamina",
+        "stamina growth",
+        "recovery rate"
+      ],
+      "tags": [
+        "movement",
+        "stamina",
+        "player"
+      ]
+    },
+    {
+      "id": "jump-landing",
+      "node": "ped-movement",
+      "name": "Running landing and glide fade",
+      "summary": "A moving fall becomes a jump-land clip above 1.5 speed; glide clips fade with fixed blend deltas.",
+      "behavior": "A fall-land animation is replaced by the jump-land clip when the player is still moving faster than 1.5 units per frame and is pressing a movement axis. The old clip is faded out with a blend delta of -1000, making the switch immediate rather than a visible cross-fade. Releasing a glide or fall-glide clip uses a blend delta of -3.0, which fades it over several frames and keeps a short hop from popping.",
+      "constants": [
+        {
+          "name": "landingSpeedThreshold",
+          "value": 1.5,
+          "unit": "world units per frame at 30 Hz",
+          "source": "src/peds/PlayerPed.cpp:641"
+        },
+        {
+          "name": "landingBlendDelta",
+          "value": -1000,
+          "unit": "animation blend rate per frame at 30 Hz",
+          "source": "src/peds/PlayerPed.cpp:644"
+        },
+        {
+          "name": "glideBlendDelta",
+          "value": -3,
+          "unit": "animation blend rate per frame at 30 Hz",
+          "source": "src/peds/Ped.cpp:2476"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 641
+        },
+        {
+          "path": "src/peds/PlayerPed.cpp",
+          "line": 644
+        },
+        {
+          "path": "src/peds/Ped.cpp",
+          "line": 2476
+        }
+      ],
+      "capabilities": [
+        "landing animation",
+        "glide cancel",
+        "blend control"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "animation"
+      ]
+    },
+    {
+      "id": "weapon-damage",
+      "node": "combat",
+      "name": "Instant-hit torso damage",
+      "summary": "A pedestrian torso hit applies 3.5 times weapon damage and registers the shooter with flag 3.",
+      "behavior": "When an instant-hit trace crosses a pedestrian, the weapon applies damage to the torso; this path passes 3.5 times the weapon damage value. The shooter damage-entity pointer is registered on the victim the first time, and a local flag of 3 records that the hit has been registered. Occupants of vehicles take a separate branch, so a shot into a car routes damage to the vehicle instead of duplicating it on the driver.",
+      "constants": [
+        {
+          "name": "torsoDamageMultiplier",
+          "value": 3.5,
+          "unit": "multiplier on weapon damage per hit",
+          "source": "src/weapons/Weapon.cpp:626"
+        },
+        {
+          "name": "damageRegistrationFlag",
+          "value": 3,
+          "unit": "enum flag set once per hit",
+          "source": "src/weapons/Weapon.cpp:590"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 626
+        },
+        {
+          "path": "src/weapons/Weapon.cpp",
+          "line": 590
+        }
+      ],
+      "capabilities": [
+        "hit damage",
+        "torso targeting",
+        "damage attribution"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "damage"
+      ]
+    },
+    {
+      "id": "traffic-cruise",
+      "node": "traffic-ai",
+      "name": "Traffic cruise speed targets",
+      "summary": "Ambulance return cruises at 17, go-to-coordinate driving at 20 and parking at 10.",
+      "behavior": "An ambulance that has finished an accident response rejoins the road system with a cruise target of 17. A car sent to a coordinate receives 20, while a car asked to park receives 10. The autopilot consumes these targets as its speed setpoint for the current mission, so one driving loop covers emergency returns, ordinary destinations and parking maneuvers with only the target changing between them.",
+      "constants": [
+        {
+          "name": "ambulanceReturnCruise",
+          "value": 17,
+          "unit": "cruise speed target units, applied per update, rate unverified",
+          "source": "src/control/CarAI.cpp:210"
+        },
+        {
+          "name": "goToCoordinateCruise",
+          "value": 20,
+          "unit": "cruise speed target units, applied per update, rate unverified",
+          "source": "src/control/CarAI.cpp:515"
+        },
+        {
+          "name": "parkAtCoordinateCruise",
+          "value": 10,
+          "unit": "cruise speed target units, applied per update, rate unverified",
+          "source": "src/control/CarAI.cpp:531"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 210
+        },
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 515
+        },
+        {
+          "path": "src/control/CarAI.cpp",
+          "line": 531
+        }
+      ],
+      "capabilities": [
+        "cruise speed",
+        "mission driving",
+        "parking approach"
+      ],
+      "tags": [
+        "traffic",
+        "ai",
+        "driving"
+      ]
+    }
+  ]
+}

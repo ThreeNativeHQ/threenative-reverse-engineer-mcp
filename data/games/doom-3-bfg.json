@@ -1,0 +1,2188 @@
+{
+  "version": 1,
+  "id": "doom-3-bfg",
+  "title": "DOOM 3: BFG Edition",
+  "repo": "https://github.com/id-Software/DOOM-3-BFG",
+  "sha": "1caba1979589971b5ed44e315d9ead30b278d8b4",
+  "nodes": [
+    {
+      "id": "frame-timing",
+      "name": "Engine frame timing and game clock",
+      "purpose": "Fixed-rate game clock: how real time is folded into whole engine frames, how the millisecond game clock is derived from the frame counter, and how many game frames run per rendered frame.",
+      "paths": [
+        "neo/framework/Common.cpp",
+        "neo/framework/Common.h",
+        "neo/framework/common_frame.cpp",
+        "neo/d3xp/Game_local.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FRAME_TO_MSEC",
+          "path": "neo/framework/Common.h",
+          "lines": [
+            46,
+            48
+          ]
+        },
+        {
+          "name": "MSEC_TO_FRAME_FLOOR",
+          "path": "neo/framework/Common.h",
+          "lines": [
+            50,
+            52
+          ]
+        },
+        {
+          "name": "idGameThread::Run",
+          "path": "neo/framework/common_frame.cpp",
+          "lines": [
+            86,
+            147
+          ]
+        },
+        {
+          "name": "idCommonLocal::Frame",
+          "path": "neo/framework/common_frame.cpp",
+          "lines": [
+            367,
+            702
+          ]
+        },
+        {
+          "name": "idGameLocal::RunFrame",
+          "path": "neo/d3xp/Game_local.cpp",
+          "lines": [
+            2256,
+            2464
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input-usercmd",
+      "name": "Input sampling and user commands",
+      "purpose": "Turns mouse, keyboard and gamepad state into one user command per engine frame: view angle scaling, movement axis quantization, button bits and the packeting of commands for the game thread.",
+      "paths": [
+        "neo/framework/UsercmdGen.cpp",
+        "neo/framework/UsercmdGen.h"
+      ],
+      "functions": [
+        {
+          "name": "idUsercmdGenLocal::AdjustAngles",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            401,
+            413
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::KeyMove",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            422,
+            434
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::MouseMove",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            441,
+            486
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::CircleToSquare",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            493,
+            545
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::CmdButtons",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            951,
+            980
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::MakeCurrent",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            1003,
+            1056
+          ]
+        },
+        {
+          "name": "idUsercmdGenLocal::BuildCurrentUsercmd",
+          "path": "neo/framework/UsercmdGen.cpp",
+          "lines": [
+            1317,
+            1342
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "player-physics",
+      "name": "Player movement physics",
+      "purpose": "Player body integrator: wish velocity from the command, per-mode acceleration and friction, swept slide moves with step up and step down, water depth modes, ladders and the jump impulse.",
+      "paths": [
+        "neo/d3xp/physics/Physics_Player.cpp",
+        "neo/d3xp/physics/Physics_Player.h"
+      ],
+      "functions": [
+        {
+          "name": "idPhysics_Player::CmdScale",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            81,
+            112
+          ]
+        },
+        {
+          "name": "idPhysics_Player::Accelerate",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            121,
+            155
+          ]
+        },
+        {
+          "name": "idPhysics_Player::SlideMove",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            166,
+            429
+          ]
+        },
+        {
+          "name": "idPhysics_Player::Friction",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            438,
+            493
+          ]
+        },
+        {
+          "name": "idPhysics_Player::WaterMove",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            522,
+            566
+          ]
+        },
+        {
+          "name": "idPhysics_Player::AirMove",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            604,
+            637
+          ]
+        },
+        {
+          "name": "idPhysics_Player::WalkMove",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            644,
+            741
+          ]
+        },
+        {
+          "name": "idPhysics_Player::LadderMove",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            852,
+            924
+          ]
+        },
+        {
+          "name": "idPhysics_Player::CheckGround",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            959,
+            1061
+          ]
+        },
+        {
+          "name": "idPhysics_Player::CheckDuck",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1070,
+            1113
+          ]
+        },
+        {
+          "name": "idPhysics_Player::CheckJump",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1179,
+            1206
+          ]
+        },
+        {
+          "name": "idPhysics_Player::CheckWaterJump",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1213,
+            1249
+          ]
+        },
+        {
+          "name": "idPhysics_Player::SetWaterLevel",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1256,
+            1292
+          ]
+        },
+        {
+          "name": "idPhysics_Player::DropTimers",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1299,
+            1310
+          ]
+        },
+        {
+          "name": "idPhysics_Player::MovePlayer",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1317,
+            1425
+          ]
+        },
+        {
+          "name": "idPhysics_Player::Evaluate",
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "lines": [
+            1711,
+            1744
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "input-usercmd"
+      ]
+    },
+    {
+      "id": "player-state",
+      "name": "Player state, speed and feedback",
+      "purpose": "Per-frame player bookkeeping around the physics: gait and stamina selection, eye height, view pitch clamping, landing impact, damage and armor accounting, weapon sway inputs and flashlight battery.",
+      "paths": [
+        "neo/d3xp/Player.cpp",
+        "neo/d3xp/Player.h"
+      ],
+      "functions": [
+        {
+          "name": "idPlayer::UpdateFlashlight",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            5096,
+            5190
+          ]
+        },
+        {
+          "name": "idPlayer::CrashLand",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            5763,
+            5883
+          ]
+        },
+        {
+          "name": "idPlayer::BobCycle",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            5887,
+            6017
+          ]
+        },
+        {
+          "name": "idPlayer::UpdateViewAngles",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            6048,
+            6126
+          ]
+        },
+        {
+          "name": "idPlayer::UpdateAir",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            6243,
+            6305
+          ]
+        },
+        {
+          "name": "idPlayer::AdjustSpeed",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            6654,
+            6702
+          ]
+        },
+        {
+          "name": "idPlayer::Move_Interpolated",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            6894,
+            6997
+          ]
+        },
+        {
+          "name": "idPlayer::Move",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            7004,
+            7132
+          ]
+        },
+        {
+          "name": "idPlayer::GetPhysicsTimeStep",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            7251,
+            7260
+          ]
+        },
+        {
+          "name": "idPlayer::CalcDamagePoints",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            8165,
+            8257
+          ]
+        },
+        {
+          "name": "idPlayer::GunTurningOffset",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            8701,
+            8746
+          ]
+        },
+        {
+          "name": "idPlayer::GunAcceleratingOffset",
+          "path": "neo/d3xp/Player.cpp",
+          "lines": [
+            8756,
+            8784
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-view",
+      "name": "Player view and cutscene cameras",
+      "purpose": "First-person view effects and the animation camera used by scripted sequences: damage kicks, double vision, screen blobs, and keyframe interpolation along camera paths.",
+      "paths": [
+        "neo/d3xp/PlayerView.cpp",
+        "neo/d3xp/Camera.cpp"
+      ],
+      "functions": [
+        {
+          "name": "idPlayerView::DamageImpulse",
+          "path": "neo/d3xp/PlayerView.cpp",
+          "lines": [
+            241,
+            317
+          ]
+        },
+        {
+          "name": "idPlayerView::WeaponFireFeedback",
+          "path": "neo/d3xp/PlayerView.cpp",
+          "lines": [
+            326,
+            337
+          ]
+        },
+        {
+          "name": "idPlayerView::CalculateShake",
+          "path": "neo/d3xp/PlayerView.cpp",
+          "lines": [
+            344,
+            355
+          ]
+        },
+        {
+          "name": "idPlayerView::AngleOffset",
+          "path": "neo/d3xp/PlayerView.cpp",
+          "lines": [
+            373,
+            390
+          ]
+        },
+        {
+          "name": "idPlayerView::SingleView",
+          "path": "neo/d3xp/PlayerView.cpp",
+          "lines": [
+            397,
+            509
+          ]
+        },
+        {
+          "name": "idCameraAnim::Start",
+          "path": "neo/d3xp/Camera.cpp",
+          "lines": [
+            410,
+            428
+          ]
+        },
+        {
+          "name": "idCameraAnim::GetViewParms",
+          "path": "neo/d3xp/Camera.cpp",
+          "lines": [
+            464,
+            590
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state"
+      ]
+    },
+    {
+      "id": "weapons",
+      "name": "Weapon view model and offsets",
+      "purpose": "Weapon entity that reads its behaviour from the entity definition: muzzle kick decay, view model hide timer, zoom field of view, and the sway offsets applied to the first-person weapon.",
+      "paths": [
+        "neo/d3xp/Weapon.cpp",
+        "neo/d3xp/Weapon.h"
+      ],
+      "functions": [
+        {
+          "name": "idWeapon::Spawn",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            206,
+            220
+          ]
+        },
+        {
+          "name": "idWeapon::GetWeaponDef",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            952,
+            1299
+          ]
+        },
+        {
+          "name": "idWeapon::BeginAttack",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            1792,
+            1807
+          ]
+        },
+        {
+          "name": "idWeapon::MuzzleRise",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            2091,
+            2116
+          ]
+        },
+        {
+          "name": "idWeapon::GetWeaponAngleOffsets",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            2656,
+            2660
+          ]
+        },
+        {
+          "name": "idWeapon::GetWeaponTimeOffsets",
+          "path": "neo/d3xp/Weapon.cpp",
+          "lines": [
+            2667,
+            2670
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state"
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Projectile flight and guidance",
+      "purpose": "Projectile spawning, ballistic integration with gravity and friction, contact detonation and fuse handling, plus the guided variant that steers toward a target under a bounded turn rate.",
+      "paths": [
+        "neo/d3xp/Projectile.cpp",
+        "neo/d3xp/Projectile.h"
+      ],
+      "functions": [
+        {
+          "name": "idProjectile::Launch",
+          "path": "neo/d3xp/Projectile.cpp",
+          "lines": [
+            306,
+            469
+          ]
+        },
+        {
+          "name": "idProjectile::Think",
+          "path": "neo/d3xp/Projectile.cpp",
+          "lines": [
+            476,
+            508
+          ]
+        },
+        {
+          "name": "idProjectile::Collide",
+          "path": "neo/d3xp/Projectile.cpp",
+          "lines": [
+            554,
+            724
+          ]
+        },
+        {
+          "name": "idGuidedProjectile::Think",
+          "path": "neo/d3xp/Projectile.cpp",
+          "lines": [
+            1651,
+            1721
+          ]
+        },
+        {
+          "name": "idGuidedProjectile::Launch",
+          "path": "neo/d3xp/Projectile.cpp",
+          "lines": [
+            1728,
+            1759
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "ai",
+      "name": "Enemy behaviour and turning",
+      "purpose": "Monster decision loop and locomotion glue: moving with animation root motion, steering toward goals, turning under a capped angular rate, and responding to sound, damage and blocked movement.",
+      "paths": [
+        "neo/d3xp/ai/AI.cpp",
+        "neo/d3xp/ai/AI.h"
+      ],
+      "functions": [
+        {
+          "name": "idAI::Think",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            1104,
+            1218
+          ]
+        },
+        {
+          "name": "idAI::FaceEnemy",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            1586,
+            1605
+          ]
+        },
+        {
+          "name": "idAI::GetMovePos",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            2262,
+            2353
+          ]
+        },
+        {
+          "name": "idAI::Turn",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            2431,
+            2496
+          ]
+        },
+        {
+          "name": "idAI::GetMoveDelta",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            2578,
+            2595
+          ]
+        },
+        {
+          "name": "idAI::AnimMove",
+          "path": "neo/d3xp/ai/AI.cpp",
+          "lines": [
+            2713,
+            2808
+          ]
+        }
+      ],
+      "dependsOn": [
+        "nav-aas",
+        "player-physics"
+      ]
+    },
+    {
+      "id": "nav-aas",
+      "name": "Area navigation and pathing",
+      "purpose": "Area graph routing: route lookup, walk and fly path validation with limited lookahead, and side-step obstacle avoidance and trajectory prediction for monsters.",
+      "paths": [
+        "neo/d3xp/ai/AAS_pathing.cpp",
+        "neo/d3xp/ai/AI_pathing.cpp"
+      ],
+      "functions": [
+        {
+          "name": "idAASLocal::WalkPathValid",
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "lines": [
+            140,
+            246
+          ]
+        },
+        {
+          "name": "idAASLocal::WalkPathToGoal",
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "lines": [
+            282,
+            394
+          ]
+        },
+        {
+          "name": "idAASLocal::FlyPathToGoal",
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "lines": [
+            458,
+            545
+          ]
+        },
+        {
+          "name": "idAI::FindPathAroundObstacles",
+          "path": "neo/d3xp/ai/AI_pathing.cpp",
+          "lines": [
+            934,
+            1001
+          ]
+        },
+        {
+          "name": "idAI::PredictPath",
+          "path": "neo/d3xp/ai/AI_pathing.cpp",
+          "lines": [
+            1129,
+            1276
+          ]
+        },
+        {
+          "name": "idAI::PredictTrajectory",
+          "path": "neo/d3xp/ai/AI_pathing.cpp",
+          "lines": [
+            1447,
+            1535
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "animation",
+      "name": "Skeletal animation sampling",
+      "purpose": "Animation playback: frame rate to keyframe conversion with cyclic wrap, blend weights across channels, and the root motion deltas that movement code consumes.",
+      "paths": [
+        "neo/d3xp/anim/Anim.cpp",
+        "neo/d3xp/anim/Anim_Blend.cpp",
+        "neo/d3xp/anim/Anim.h"
+      ],
+      "functions": [
+        {
+          "name": "idMD5Anim::LoadAnim",
+          "path": "neo/d3xp/anim/Anim.cpp",
+          "lines": [
+            168,
+            361
+          ]
+        },
+        {
+          "name": "idMD5Anim::ConvertTimeToFrame",
+          "path": "neo/d3xp/anim/Anim.cpp",
+          "lines": [
+            555,
+            598
+          ]
+        },
+        {
+          "name": "idAnimator::GetDelta",
+          "path": "neo/d3xp/anim/Anim_Blend.cpp",
+          "lines": [
+            3790,
+            3814
+          ]
+        },
+        {
+          "name": "idAnimator::ServiceAnims",
+          "path": "neo/d3xp/anim/Anim_Blend.cpp",
+          "lines": [
+            4164,
+            4190
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "engine-frame-rate",
+      "node": "frame-timing",
+      "name": "Engine frame rate and game clock",
+      "summary": "Game logic advances on a fixed 60 Hz clock built from whole engine frames, while rendering runs at its own pace.",
+      "behavior": "Rendering and the game logic run on separate threads, and the game side is handed a whole number of engine frames per rendered pass. Each pass measures real time since the previous pass, caps it so a long stall is not simulated in full, and multiplies the capped value by the time scale. The product accumulates in a residual; while the residual holds at least the length of the next frame, one game frame is consumed and the residual shrinks by that length, so a slow renderer runs several game frames in one pass and a fast renderer runs none and sleeps briefly. Frame length is expressed in whole milliseconds, so at the default rate consecutive frames are 16 and 17 milliseconds long and the sequence averages to the nominal rate across a second. The clock every entity reads is computed from the frame counter alone rather than from wall time, which keeps all gameplay values on exact multiples of the step. Pausing discards the residual and advances no frames; debug switches either force an exact count of frames per pass or force at least one.",
+      "constants": [
+        {
+          "name": "Engine tick rate",
+          "value": 60,
+          "unit": "engine frames per second, default of the archived frame-rate setting; each frame advances the game clock by a fixed 1/60 s step, about 16.67 ms, latched between map loads",
+          "source": "neo/framework/Common.cpp:83"
+        },
+        {
+          "name": "Millisecond numerator",
+          "value": 1000,
+          "unit": "milliseconds per hundredth-second unit; the frame-to-millisecond conversion multiplies the frame index by 100 times this value, so a frame index maps to whole milliseconds of game time",
+          "source": "neo/framework/Common.cpp:85"
+        },
+        {
+          "name": "Real time clamp",
+          "value": 50,
+          "unit": "milliseconds of real time, the maximum folded into one render pass before simulation; longer gaps are truncated, evaluated per render pass",
+          "source": "neo/framework/common_frame.cpp:57"
+        },
+        {
+          "name": "Time scale",
+          "value": 1,
+          "unit": "dimensionless multiplier on the clamped real delta before it becomes game time, applied per render pass; default of the archived time-scale setting",
+          "source": "neo/framework/common_frame.cpp:73"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/framework/common_frame.cpp",
+          "line": 367
+        },
+        {
+          "path": "neo/framework/common_frame.cpp",
+          "line": 480
+        },
+        {
+          "path": "neo/framework/common_frame.cpp",
+          "line": 511
+        },
+        {
+          "path": "neo/framework/Common.h",
+          "line": 46
+        },
+        {
+          "path": "neo/d3xp/Game_local.cpp",
+          "line": 2300
+        }
+      ],
+      "capabilities": [
+        "fixed timestep simulation",
+        "catch-up frame batching",
+        "real time clamping",
+        "frame-indexed game clock"
+      ],
+      "tags": [
+        "timing",
+        "tick",
+        "frame"
+      ]
+    },
+    {
+      "id": "physics-time-step",
+      "node": "frame-timing",
+      "name": "Physics step used by the player",
+      "summary": "Player physics inherits the game frame length, but prefers the millisecond delta carried by the user command when that delta looks sane.",
+      "behavior": "Every entity is stepped with the difference between the current and previous game clock values. The player overrides that with the millisecond delta in its command, which keeps world speed correct when the client samples input at a different rate than the server simulates. The commanded delta is trusted only inside a narrow window: below one millisecond or above twenty milliseconds it is treated as corrupt, which is what happens after a pause or a clock jump, and the ordinary frame delta is used instead. The accepted step is converted to seconds once per move and then reused unchanged by friction, acceleration, gravity and velocity integration, so a doubled step doubles both the distance travelled and the drag applied in that pass. The lockout also bounds the worst case a single step can move the player, which keeps collision resolution stable when a frame is late.",
+      "constants": [
+        {
+          "name": "Minimum trusted command delta",
+          "value": 1,
+          "unit": "milliseconds of game time; command deltas below this are rejected for the player physics step",
+          "source": "neo/d3xp/Player.cpp:7255"
+        },
+        {
+          "name": "Maximum trusted command delta",
+          "value": 20,
+          "unit": "milliseconds of game time; command deltas above this are rejected, so a nominal 16.67 ms step passes and a dropped frame does not",
+          "source": "neo/d3xp/Player.cpp:7255"
+        },
+        {
+          "name": "Milliseconds to seconds",
+          "value": 0.001,
+          "unit": "seconds per millisecond; converts the step once per move into the frame time used by all player integration at that step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1329"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 7251
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1317
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1329
+        },
+        {
+          "path": "neo/d3xp/Entity.cpp",
+          "line": 2957
+        }
+      ],
+      "capabilities": [
+        "command derived step",
+        "sanity clamp on the step",
+        "seconds conversion per move"
+      ],
+      "tags": [
+        "timing",
+        "physics",
+        "player"
+      ]
+    },
+    {
+      "id": "mouse-look-scaling",
+      "node": "input-usercmd",
+      "name": "Mouse look scaling",
+      "summary": "Mouse counts become view degrees through a sample average, a sensitivity multiplier and per-axis scale factors.",
+      "behavior": "Relative mouse motion is stored in a small ring of recent samples. The requested smoothing count is clamped to the range one through eight and the stored deltas are averaged, trading latency for a steadier view. An averaged sample larger than a thousand counts is discarded as a bad packet and replaced with zero. The averaged count is multiplied by the user sensitivity, then horizontal motion is multiplied by the yaw scale and vertical motion by the pitch scale to give degrees per sample; yaw is subtracted because a rightward movement must turn the view clockwise, and the pitch sign flips when inverted look is enabled. Nothing is scaled by elapsed time, so the result is per input sample rather than per second: the same physical mouse travel produces the same rotation regardless of poll rate, and doubling the sample rate halves the rotation per event while keeping the total the same.",
+      "constants": [
+        {
+          "name": "Mouse sensitivity",
+          "value": 5,
+          "unit": "multiplier per averaged mouse count, applied per input sample, rate unverified",
+          "source": "neo/framework/UsercmdGen.cpp:304"
+        },
+        {
+          "name": "Yaw degrees per count",
+          "value": 0.022,
+          "unit": "degrees of yaw per mouse count after the sensitivity multiplier, applied per input sample, rate unverified",
+          "source": "neo/framework/UsercmdGen.cpp:306"
+        },
+        {
+          "name": "Pitch degrees per count",
+          "value": 0.022,
+          "unit": "degrees of pitch per mouse count after the sensitivity multiplier, applied per input sample, rate unverified",
+          "source": "neo/framework/UsercmdGen.cpp:305"
+        },
+        {
+          "name": "Smoothing samples",
+          "value": 1,
+          "unit": "mouse samples averaged per input sample, clamped to the range 1 through 8, applied per input sample",
+          "source": "neo/framework/UsercmdGen.cpp:307"
+        },
+        {
+          "name": "Mouse speed scale",
+          "value": 1,
+          "unit": "extra multiplier on the final angle delta, adjustable from 0.25 to 4, applied per input sample, rate unverified",
+          "source": "neo/framework/UsercmdGen.cpp:46"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 441
+        },
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 464
+        },
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 469
+        },
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 484
+        }
+      ],
+      "capabilities": [
+        "sample averaging",
+        "count to degree scaling",
+        "invertible pitch",
+        "junk input rejection"
+      ],
+      "tags": [
+        "input",
+        "mouse",
+        "camera"
+      ]
+    },
+    {
+      "id": "movement-axis-mapping",
+      "node": "input-usercmd",
+      "name": "Movement axes and keyboard turning",
+      "summary": "Movement intent is quantized to a signed byte per axis and normalized so diagonal input is no faster than straight input.",
+      "behavior": "Keyboard and stick intent are packed into two signed bytes, forward and right, each clamped to the fixed axis magnitude. Stick deflection is first remapped from a circle to a square so that full diagonal deflection still reaches the maximum byte value, then added to the keyboard contribution. The player physics recomputes a scale from the largest axis magnitude and the length of the three-component intent vector, which divides out the square-root-of-two overshoot of a diagonal; because the scale is derived per command, world speed equals the configured walk speed in every direction. View turning from the look keys is separate: it multiplies a degrees-per-second rate by a fixed sixteen millisecond assumption rather than by the measured frame time, so the applied angle per call is constant, and holding run multiplies that step further. Stick look instead multiplies its rate by the real poll delta, so the two input paths age differently when the frame rate drops.",
+      "constants": [
+        {
+          "name": "Axis byte magnitude",
+          "value": 127,
+          "unit": "signed command units, full deflection on one movement axis, applied per input sample",
+          "source": "neo/framework/UsercmdGen.cpp:109"
+        },
+        {
+          "name": "Axis normalization divisor",
+          "value": 127,
+          "unit": "command units; the applied scale is the walk speed times the largest axis magnitude divided by this value times the intent length, recomputed every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:109"
+        },
+        {
+          "name": "Keyboard yaw rate",
+          "value": 140,
+          "unit": "degrees per second of view yaw while a look key is held; multiplied by a fixed sixteen millisecond assumption so the applied step is about 2.2 degrees per call, rate unverified",
+          "source": "neo/framework/UsercmdGen.cpp:298"
+        },
+        {
+          "name": "Run angular scale",
+          "value": 1.5,
+          "unit": "dimensionless multiplier on the per-call keyboard look step while run is held, applied per input sample",
+          "source": "neo/framework/UsercmdGen.cpp:300"
+        },
+        {
+          "name": "Assumed key turn interval",
+          "value": 16,
+          "unit": "milliseconds per keyboard look call, hard coded as the time basis for key turning, applied per input sample",
+          "source": "neo/framework/UsercmdGen.cpp:402"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 401
+        },
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 422
+        },
+        {
+          "path": "neo/framework/UsercmdGen.cpp",
+          "line": 493
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 81
+        }
+      ],
+      "capabilities": [
+        "signed byte axes",
+        "circular to square stick mapping",
+        "diagonal speed normalization",
+        "fixed interval keyboard turning"
+      ],
+      "tags": [
+        "input",
+        "movement",
+        "axes"
+      ]
+    },
+    {
+      "id": "ground-friction-acceleration",
+      "node": "player-physics",
+      "name": "Ground friction and acceleration",
+      "summary": "Ground movement reaches walk speed within about a tenth of a second and coasts to a stop, while airborne steering is ten times weaker.",
+      "behavior": "Each step runs in a fixed order: mode selection, friction, intent scaling, direction projection and acceleration. Friction builds a drop term from the current horizontal speed and subtracts it as a fractional scale, so speed decays geometrically rather than linearly; the control speed used for the drop is floored at the stop speed, which makes the final part of a stop quick instead of asymptotic. When residual speed falls under one unit the velocity is zeroed, and if the player is not on the ground only the gravity-parallel component survives, which is what lets a swimmer keep sinking. Acceleration uses the shortfall form: it measures how much of the wish velocity along the wish direction is missing and adds a proportion of it, capped so the target is never overshot. Because the proportion mixes the acceleration coefficient, the step length and the wish speed itself, the time to reach full speed is roughly one over the coefficient. Air control calls the same routine with a much smaller coefficient and no friction, and a slick floor or a recent hit swaps the ground coefficient for the air one so control degrades exactly as it would in flight. Walking also restores speed after the velocity is projected onto the ground plane, so climbing a slope does not bleed speed.",
+      "constants": [
+        {
+          "name": "Ground acceleration",
+          "value": 10,
+          "unit": "per second coefficient; added speed per step is coefficient times step in seconds times wish speed, capped by the shortfall, applied every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:43"
+        },
+        {
+          "name": "Ground friction",
+          "value": 6,
+          "unit": "per second coefficient; removed speed per step is coefficient times the friction control speed times step in seconds, applied every walking physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:48"
+        },
+        {
+          "name": "Friction stop speed",
+          "value": 100,
+          "unit": "units per second floor on the friction control speed, so a slow player is braked at least as hard as if moving 100 units per second, evaluated every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:38"
+        },
+        {
+          "name": "Air acceleration",
+          "value": 1,
+          "unit": "per second coefficient used while airborne, on slick ground or during knockback, one tenth of the ground coefficient, applied every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:44"
+        },
+        {
+          "name": "Air friction",
+          "value": 0,
+          "unit": "per second coefficient; airborne friction is disabled entirely, applied every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:49"
+        },
+        {
+          "name": "Swim speed fraction",
+          "value": 0.5,
+          "unit": "dimensionless fraction of walk speed used as the swim ceiling and as the deepest wading ceiling, evaluated every physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 438
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 121
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 644
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 604
+        }
+      ],
+      "capabilities": [
+        "geometric friction",
+        "stop speed floor",
+        "shortfall capped acceleration",
+        "reduced air control",
+        "ground plane projection"
+      ],
+      "tags": [
+        "movement",
+        "friction",
+        "acceleration",
+        "ground"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "player-physics",
+      "name": "Jump impulse",
+      "summary": "A jump converts a configured jump height into a one-shot vertical velocity, gated on key release and blocked shortly after a hard landing.",
+      "behavior": "The jump is edge triggered: the button bit must be down and the internal held flag must be clear, so holding the key yields exactly one jump and the flag only clears when the button is released. Crouching also blocks the impulse, which prevents hopping out of a duck. Instead of a fixed velocity the code solves the ballistic relation between apex height and launch speed against the current gravity vector: the direction opposing gravity is scaled by twice the desired height, normalized, and multiplied by the square root of its own length, giving a speed whose apex is the configured height. The result is added to the existing velocity rather than assigned, so a running jump keeps all horizontal momentum, and a plausibly applied impulse also clears the walking state so the following step takes the airborne path. On landing, a descent faster than a threshold arms a short lockout on the game clock, and that lockout is what stops a player chaining jumps the instant a fall ends. Water entries are handled by a separate probe of the ledge in front of the swimmer.",
+      "constants": [
+        {
+          "name": "Jump height",
+          "value": 48,
+          "unit": "world units of apex height for a standing jump, converted to a launch speed each time a jump starts, default of the networked jump-height setting and overridable by the player definition",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:233"
+        },
+        {
+          "name": "Ballistic height factor",
+          "value": 2,
+          "unit": "dimensionless factor in the height to speed conversion; the anti-gravity direction is scaled by twice the jump height before the square root, applied once per jump",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1201"
+        },
+        {
+          "name": "Hard landing descent speed",
+          "value": -200,
+          "unit": "units per second along gravity, the descent rate at touchdown beyond which the jump lockout is armed, checked once per landing",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1044"
+        },
+        {
+          "name": "Landing lockout",
+          "value": 250,
+          "unit": "milliseconds, game clock duration during which no jump is allowed after a fast landing; set once per fast landing and counted down by the physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1047"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1179
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1201
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1202
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1213
+        }
+      ],
+      "capabilities": [
+        "edge triggered jump",
+        "height to velocity conversion",
+        "momentum preserving impulse",
+        "post landing lockout",
+        "water ledge jump"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "gravity"
+      ]
+    },
+    {
+      "id": "step-and-slide-clip",
+      "node": "player-physics",
+      "name": "Slide move, step up and clip planes",
+      "summary": "One movement step resolves up to four surface contacts, and a blocked walk move first tries a lift, advance and drop over the step height.",
+      "behavior": "A slide move clips the intended displacement against the world in up to four bumps. Each bump advances to the first contact, removes the velocity component going into the surface, and records the contact normal so later bumps do not re-enter surfaces already resolved; the plane list is capped, and a move that accumulates that many distinct planes is stopped outright. Two planes form a crease and the velocity is projected onto their intersection, a third interacting plane stops the entity dead, and re-hitting an almost identical plane nudges the velocity along that plane to escape an epsilon trap. The clip keeps a hair of velocity into the plane instead of exactly along it, which keeps the entity from being classified as touching on the next bump. When a walk move is blocked the code retries as a step: it traces down a step height for the floor, traces forward along the remaining displacement, traces back down, and accepts the result only if the landing surface is flat enough to stand on and the step travels farther than the plain slide. Ground checks also clamp slide speed on surfaces too steep to walk, so a player cannot accelerate down a chute instead of falling.",
+      "constants": [
+        {
+          "name": "Step height",
+          "value": 16,
+          "unit": "world units of vertical lift and drop allowed per blocked walk move, applied once per attempt, default of the networked step-size setting",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:234"
+        },
+        {
+          "name": "Minimum walkable normal",
+          "value": 0.7,
+          "unit": "dimensionless vertical component of a surface normal, the shallowest slope counted as ground and the flattest surface a step may land on, tested on every ground check and step attempt",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:54"
+        },
+        {
+          "name": "Overclip factor",
+          "value": 1.001,
+          "unit": "dimensionless multiplier leaving a slight inward velocity when projecting onto a plane, applied on every plane clip",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:55"
+        },
+        {
+          "name": "Slide bumps per move",
+          "value": 4,
+          "unit": "surface contacts resolved inside a single slide move, per physics step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:175"
+        },
+        {
+          "name": "Clip plane capacity",
+          "value": 5,
+          "unit": "distinct planes recorded per slide move; reaching the cap stops the velocity, checked per bump",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:164"
+        },
+        {
+          "name": "Steep slope speed clamp",
+          "value": 150,
+          "unit": "units per second along gravity, maximum slide speed on a surface too steep to walk, applied every ground check",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1022"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 166
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 236
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 959
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 233
+        }
+      ],
+      "capabilities": [
+        "swept collision",
+        "multi plane sliding",
+        "crease and corner handling",
+        "step up",
+        "step down snap"
+      ],
+      "tags": [
+        "collision",
+        "stairs",
+        "physics",
+        "movement"
+      ]
+    },
+    {
+      "id": "water-and-ladder-move",
+      "node": "player-physics",
+      "name": "Water, swimming and ladders",
+      "summary": "Water depth picks a movement mode with its own ceiling and drag, a wall probe can launch the player onto a ledge, and ladders replace gravity with a capped climb.",
+      "behavior": "Water depth is sampled at three heights of the player body, at the feet, the waist and the head, and the count selects the mode. With only the feet wet the player still walks, but the speed ceiling is interpolated from full speed down towards the swim fraction as depth rises, so wading slows with depth. At waist depth or deeper, intent comes from the view axes plus the jump and crouch bits as vertical input, the wish speed is capped at the swim fraction of walk speed, and acceleration uses the water coefficient. With no intent the wish velocity points down gravity at a fixed rate, so an idle swimmer sinks. Drag in water is multiplied by the water level number, which makes deeper water brake harder than shallow wading. Before any of that, a player at waist depth probes 30 units ahead along the flattened view direction, then twice more along the anti-gravity direction, 4 units out and 16 units further: solid at the near probe with clear space at the far probe triggers a one-shot water jump that replaces velocity with a forward and upward push and starts a timer, and the player falls with no control until the timer expires or the descent begins. Ladders drop velocity onto the ladder plane, scale climb speed by how far the view points up or down, cap the vertical component, and fall back to gravity when no vertical intent is given.",
+      "constants": [
+        {
+          "name": "Swim speed fraction",
+          "value": 0.5,
+          "unit": "dimensionless; the swim wish speed ceiling is walk speed times this value, applied every swim step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:39"
+        },
+        {
+          "name": "Water acceleration",
+          "value": 4,
+          "unit": "per second coefficient used by the swim accelerator, applied every swim step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:45"
+        },
+        {
+          "name": "Water friction",
+          "value": 1,
+          "unit": "per second coefficient multiplied by the water level number and the step in seconds, so deeper water brakes harder, applied every physics step in water",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:50"
+        },
+        {
+          "name": "Idle sink speed",
+          "value": 60,
+          "unit": "units per second of downward wish velocity with no movement key held in water, applied every swim step before the swim ceiling is enforced",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:540"
+        },
+        {
+          "name": "Water jump forward speed",
+          "value": 200,
+          "unit": "units per second of forward velocity set once when the water jump triggers",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1244"
+        },
+        {
+          "name": "Water jump lift speed",
+          "value": 350,
+          "unit": "units per second of velocity away from gravity set once when the water jump triggers, assigned together with the forward speed",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1244"
+        },
+        {
+          "name": "Water jump control loss",
+          "value": 2000,
+          "unit": "milliseconds of the no-control water jump window, cleared early if the player starts falling again",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:1246"
+        },
+        {
+          "name": "Ladder speed cap",
+          "value": 100,
+          "unit": "units per second cap on climb velocity in both directions along the ladder axis, applied every ladder step",
+          "source": "neo/d3xp/physics/Physics_Player.cpp:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 522
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 852
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1213
+        },
+        {
+          "path": "neo/d3xp/physics/Physics_Player.cpp",
+          "line": 1256
+        }
+      ],
+      "capabilities": [
+        "depth based movement modes",
+        "wading slowdown",
+        "idle sinking",
+        "ledge water jump",
+        "capped ladder climb"
+      ],
+      "tags": [
+        "movement",
+        "water",
+        "swimming",
+        "ladder"
+      ]
+    },
+    {
+      "id": "run-stamina-speed",
+      "node": "player-state",
+      "name": "Gait speed and stamina",
+      "summary": "Holding run blends speed from a walk value toward a run value as stamina drains, then fades back while stamina recovers.",
+      "behavior": "Gait selection happens once per frame before physics runs. When run is held with movement input, without crouch and away from ladders, stamina drains by the frame time in single player. The blend fraction is stamina divided by a threshold, so speed interpolates between the walk and run values and degrades smoothly as the pool empties instead of dropping in a single step; above the threshold the player stays at full run speed. When not running, stamina regenerates at a fixed rate per second, faster while no movement input is held, and is clamped at a maximum, so a fully drained pool refills in roughly the maximum divided by the rate. The selected speed is then multiplied by any speed power-up and is heavily reduced during a slow-motion set piece, and it is handed to the player physics as a walk speed together with a separate crouch speed.",
+      "constants": [
+        {
+          "name": "Walk speed",
+          "value": 140,
+          "unit": "units per second of world movement at full intent on the ground, default of the networked walk-speed setting",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:236"
+        },
+        {
+          "name": "Run speed",
+          "value": 220,
+          "unit": "units per second at a full stamina blend, default of the networked run-speed setting",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:237"
+        },
+        {
+          "name": "Crouch speed",
+          "value": 80,
+          "unit": "units per second ceiling while crouched, passed to the player physics beside the walk speed, default of the networked crouch-speed setting",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:235"
+        },
+        {
+          "name": "Stamina maximum",
+          "value": 24,
+          "unit": "seconds of running at the full drain rate, default of the networked stamina setting, applied per frame while running",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:244"
+        },
+        {
+          "name": "Stamina slowdown threshold",
+          "value": 45,
+          "unit": "seconds of remaining stamina above which run speed is unaffected; below it the blend fraction is stamina divided by this value, evaluated per frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:245"
+        },
+        {
+          "name": "Stamina recovery rate",
+          "value": 0.75,
+          "unit": "seconds of stamina regained per second of game time, multiplied by the frame time each frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:246"
+        },
+        {
+          "name": "Idle recovery bonus",
+          "value": 1.25,
+          "unit": "dimensionless multiplier on the recovery rate while no movement input is held, applied per frame",
+          "source": "neo/d3xp/Player.cpp:6684"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 6654
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 6678
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 6701
+        }
+      ],
+      "capabilities": [
+        "gait blending",
+        "stamina drain and recovery",
+        "faster recovery while idle",
+        "power-up speed scaling"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "stamina"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "player-state",
+      "name": "Landing impact and fall damage",
+      "summary": "Landing severity is estimated from the arrival speed, softened by water, and then sorted into four impact bands.",
+      "behavior": "At touchdown the code solves the ballistic equation for the time to fall from the recorded height with the recorded velocity, evaluates the arrival speed, and squares it. Squaring makes the quantity proportional to kinetic energy per unit mass, and a small fixed factor brings it into the range of the band thresholds. Water reduces the estimate, by half when only the feet are wet and to a quarter at waist depth, so a plunge into shallow water is far more forgiving than a landing on solid ground. An estimate below one is treated as an ordinary step and ignored entirely. Above that, four bands apply: the highest inflicts a fatal fall damage definition, the next two apply a hard and a soft fall damage definition, and the lowest only plays a landing animation and a view dip with no damage at all. The same quantity also picks the depth of the camera dip, so a heavier landing looks heavier. Multiplayer raises both the fatal and the intermediate thresholds so a fall that hurts in single player is harmless with other players present.",
+      "constants": [
+        {
+          "name": "Impact scale",
+          "value": 0.0001,
+          "unit": "per (units per second) squared; converts the squared arrival speed into the comparison quantity, applied once per landing",
+          "source": "neo/d3xp/Player.cpp:5827"
+        },
+        {
+          "name": "Waist deep water reduction",
+          "value": 0.25,
+          "unit": "dimensionless multiplier on the impact quantity when water reaches the waist, applied once per landing",
+          "source": "neo/d3xp/Player.cpp:5831"
+        },
+        {
+          "name": "Feet deep water reduction",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on the impact quantity when only the feet are wet, applied once per landing",
+          "source": "neo/d3xp/Player.cpp:5834"
+        },
+        {
+          "name": "Fatal fall threshold",
+          "value": 65,
+          "unit": "impact quantity in single player above which the fatal fall damage definition is applied and the deepest view dip is set, evaluated once per landing",
+          "source": "neo/d3xp/Player.cpp:5847"
+        },
+        {
+          "name": "Hard fall threshold",
+          "value": 45,
+          "unit": "impact quantity in single player above which the hard fall damage definition is applied, evaluated once per landing",
+          "source": "neo/d3xp/Player.cpp:5848"
+        },
+        {
+          "name": "Soft fall threshold",
+          "value": 30,
+          "unit": "impact quantity in single player above which the soft fall damage definition is applied, evaluated once per landing",
+          "source": "neo/d3xp/Player.cpp:5849"
+        },
+        {
+          "name": "Multiplayer fatal threshold",
+          "value": 75,
+          "unit": "impact quantity in multiplayer above which the fatal fall damage definition is applied; the multiplayer hard and soft thresholds are 50 and 45, evaluated once per landing",
+          "source": "neo/d3xp/Player.cpp:5843"
+        },
+        {
+          "name": "Fatal landing dip",
+          "value": -32,
+          "unit": "world units of downward view offset chosen for the heaviest landing band, applied once per fatal landing",
+          "source": "neo/d3xp/Player.cpp:5854"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5763
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5827
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5854
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5878
+        }
+      ],
+      "capabilities": [
+        "ballistic landing estimate",
+        "water softening",
+        "banded fall damage",
+        "landing view dip"
+      ],
+      "tags": [
+        "physics",
+        "damage",
+        "falling",
+        "feel"
+      ]
+    },
+    {
+      "id": "view-bob-and-landing",
+      "node": "player-state",
+      "name": "View bob, step smoothing and landing dip",
+      "summary": "Walking drives a wrapped cyclic bob, step-ups are smoothed over a short window, and landings push the eye down and let it recover.",
+      "behavior": "Each frame the horizontal speed is measured from linear velocity with the gravity direction removed, and a bob phase advances by a per-frame rate blended between walk and run values and wrapped to a byte. The high bit of the phase selects the planted foot; the low seven bits drive a sine that shapes both angular sway and vertical rise. Angular sway scales with horizontal speed and adds pitch, roll and a velocity-driven pitch, tripled while crouched, and it is mirrored on the other foot so the sway alternates. Vertical rise is that sine times horizontal speed times a small height coefficient, clamped at a few units so high speed cannot push the eye far from the head. The bob is suppressed entirely when airborne, during a level 2 influence, or when horizontal speed is under a few units, in which case the phase resets. Step-ups are smoothed separately: the physics reports how far the player was lifted, the offset accumulates through a time-weighted blend over a short window, is clamped to twice the step height, and decays so the camera rises over a fraction of a second instead of snapping. Landing dips apply the downward offset chosen by the fall band, interpolated in and back out over two windows.",
+      "constants": [
+        {
+          "name": "Bob minimum speed",
+          "value": 5,
+          "unit": "units per second of horizontal speed below which the bob phase resets instead of advancing, tested every frame",
+          "source": "neo/d3xp/Player.cpp:88"
+        },
+        {
+          "name": "Step smoothing window",
+          "value": 200,
+          "unit": "milliseconds over which a step-up offset is blended and decayed, evaluated every frame",
+          "source": "neo/d3xp/Player.cpp:155"
+        },
+        {
+          "name": "Walk bob rate",
+          "value": 0.3,
+          "unit": "bob phase units per millisecond of game time while walking, blended with the run rate by the stamina fraction, applied every frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:256"
+        },
+        {
+          "name": "Run bob rate",
+          "value": 0.4,
+          "unit": "bob phase units per millisecond of game time at full run blend, applied every frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:257"
+        },
+        {
+          "name": "Crouch bob rate",
+          "value": 0.5,
+          "unit": "bob phase units per millisecond of game time while crouched, replacing the walk and run blend, applied every frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:255"
+        },
+        {
+          "name": "Vertical bob coefficient",
+          "value": 0.005,
+          "unit": "world units of eye rise per unit of horizontal speed per unit of sine, applied every frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:260"
+        },
+        {
+          "name": "Vertical bob clamp",
+          "value": 6,
+          "unit": "world units, maximum upward bob offset after speed scaling, applied every frame",
+          "source": "neo/d3xp/Player.cpp:6002"
+        },
+        {
+          "name": "Landing dip ramp in",
+          "value": 150,
+          "unit": "milliseconds after touchdown over which the dip reaches full depth, evaluated every frame",
+          "source": "neo/d3xp/Player.h:57"
+        },
+        {
+          "name": "Landing dip ramp out",
+          "value": 300,
+          "unit": "milliseconds after the ramp-in over which the dip returns to zero, evaluated every frame",
+          "source": "neo/d3xp/Player.h:58"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5887
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5995
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 6002
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 7081
+        }
+      ],
+      "capabilities": [
+        "speed driven bob",
+        "alternating foot sway",
+        "step-up smoothing",
+        "landing dip"
+      ],
+      "tags": [
+        "camera",
+        "bob",
+        "feel",
+        "movement"
+      ]
+    },
+    {
+      "id": "damage-view-kick",
+      "node": "player-view",
+      "name": "Damage view kick",
+      "summary": "A hit rotates the view along the hit direction with a quadratic decay, and consecutive hits are throttled.",
+      "behavior": "When damage arrives the view composes a kick from the hit direction expressed in the view frame: the forward component pitches the view, the side component rolls it and yaws it at half strength, and the vertical component pitches as well, so a hit from above pushes the view down. The composed angle is scaled by an amplitude taken from the damage definition, and its duration is scaled by a global time factor. The kick then decays quadratically: the remaining offset is the stored angle times the square of the remaining time times a global amplitude, so the view returns slowly at first and quickly at the end. Every axis is clamped to a symmetric limit so a big hit cannot spin the view past vertical. A new kick is ignored while the previous one is inside a short throttle window, which stops a burst of small hits from stacking, and weapon fire can inject its own kick through the same channel without shortening a damage kick already running.",
+      "constants": [
+        {
+          "name": "Kick throttle window",
+          "value": 150,
+          "unit": "milliseconds after a damage event during which further view kicks are ignored, checked per damage event",
+          "source": "neo/d3xp/PlayerView.cpp:36"
+        },
+        {
+          "name": "Kick amplitude",
+          "value": 0.0001,
+          "unit": "degrees per stored angle per squared millisecond of remaining kick time, giving the quadratic decay, evaluated every frame",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:154"
+        },
+        {
+          "name": "Kick axis clamp",
+          "value": 70,
+          "unit": "degrees, symmetric limit on each kick axis after decay, applied every frame",
+          "source": "neo/d3xp/PlayerView.cpp:382"
+        },
+        {
+          "name": "Side kick fraction",
+          "value": 0.5,
+          "unit": "dimensionless fraction of the sideways hit component used for the yaw kick, set once per damage event",
+          "source": "neo/d3xp/PlayerView.cpp:273"
+        },
+        {
+          "name": "Kick duration scale",
+          "value": 1,
+          "unit": "dimensionless multiplier on the kick duration taken from the damage definition, set once per damage event",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:153"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/PlayerView.cpp",
+          "line": 241
+        },
+        {
+          "path": "neo/d3xp/PlayerView.cpp",
+          "line": 373
+        },
+        {
+          "path": "neo/d3xp/PlayerView.cpp",
+          "line": 326
+        },
+        {
+          "path": "neo/d3xp/PlayerView.cpp",
+          "line": 397
+        }
+      ],
+      "capabilities": [
+        "directional view kick",
+        "quadratic kick decay",
+        "axis clamping",
+        "hit throttling"
+      ],
+      "tags": [
+        "camera",
+        "damage",
+        "feedback"
+      ]
+    },
+    {
+      "id": "flashlight-battery",
+      "node": "player-state",
+      "name": "Flashlight battery",
+      "summary": "The flashlight drains a battery pool in single player and recharges it much faster when switched off.",
+      "behavior": "The battery is stored as milliseconds of remaining light. While the light is on and the configured drain time is positive, the pool loses exactly the frame time each frame, so a full pool lasts the configured continuous duration. While the light is off the pool gains the frame time multiplied by the integer ratio of the drain time to the charge time, which here yields ten, so recharging runs ten times faster than draining and an empty pool refills in about three seconds. Switching on is refused while the pool is below a fraction of full capacity, which prevents strobing a nearly dead light. Once the pool drops below half the recharge time the lit light has a fixed chance per frame of skipping its emission and muzzle light, producing the flicker that warns of a low battery. Multiplayer skips the drain entirely, so the light is unlimited there.",
+      "constants": [
+        {
+          "name": "Battery capacity",
+          "value": 30000,
+          "unit": "milliseconds of continuous light from a full battery; the pool is decremented by the frame time per frame",
+          "source": "neo/d3xp/Player.cpp:36"
+        },
+        {
+          "name": "Recharge time",
+          "value": 3000,
+          "unit": "milliseconds to refill a fully empty battery; recharging runs at the integer ratio of capacity to this value, ten times the drain rate, applied per frame",
+          "source": "neo/d3xp/Player.cpp:37"
+        },
+        {
+          "name": "Minimum activation fraction",
+          "value": ".25",
+          "unit": "dimensionless fraction of capacity required before the light may be switched on, checked on each activation request",
+          "source": "neo/d3xp/Player.cpp:38"
+        },
+        {
+          "name": "Low battery flicker chance",
+          "value": ".1",
+          "unit": "probability per frame of skipping the lit light while the pool is below half the recharge time, evaluated every frame",
+          "source": "neo/d3xp/Player.cpp:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5096
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5121
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5176
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 5201
+        }
+      ],
+      "capabilities": [
+        "timed battery drain",
+        "fast recharge",
+        "activation threshold",
+        "low battery flicker"
+      ],
+      "tags": [
+        "gameplay",
+        "flashlight",
+        "resource"
+      ]
+    },
+    {
+      "id": "damage-and-armor",
+      "node": "player-state",
+      "name": "Incoming damage and armor absorption",
+      "summary": "Difficulty scales incoming damage before armor absorbs a fixed share, and self-inflicted splash damage is handled by a separate factor.",
+      "behavior": "Damage starts from the value in the damage definition, is multiplied by a per-location scale when the hit location has one, and is then multiplied by a difficulty factor. That difficulty factor applies only in single player and only when the inflictor is a real entity, so falling and other world damage are not scaled by difficulty. Self-inflicted damage then multiplies by a definition factor: in multiplayer the default halves splash self-damage, while in single player the default leaves it at full strength, which is why close range explosions are far more dangerous in the campaign. Immunity checks run after that, so god mode and the invulnerability effect zero the result. Armor then converts a fixed share of the remaining damage into armor points and reduces the health damage by the same amount, but never below one point of health and never more armor than the player has, so a fully armored player is slowed rather than made immortal. Team damage rules are evaluated last and can drop the result to zero.",
+      "constants": [
+        {
+          "name": "Armor absorption",
+          "value": 0.3,
+          "unit": "dimensionless fraction of incoming damage converted into armor loss in single player, applied per damage event",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:97"
+        },
+        {
+          "name": "Armor absorption multiplayer",
+          "value": 0.6,
+          "unit": "dimensionless fraction of incoming damage converted into armor loss in multiplayer, applied per damage event",
+          "source": "neo/d3xp/gamesys/SysCvar.cpp:98"
+        },
+        {
+          "name": "Easiest difficulty scale",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on incoming damage at the lowest difficulty, with a floor of one point, applied per damage event",
+          "source": "neo/d3xp/Player.cpp:8178"
+        },
+        {
+          "name": "Second hardest difficulty scale",
+          "value": 1.7,
+          "unit": "dimensionless multiplier on incoming damage at the second highest difficulty, applied per damage event",
+          "source": "neo/d3xp/Player.cpp:8184"
+        },
+        {
+          "name": "Hardest difficulty scale",
+          "value": 3.5,
+          "unit": "dimensionless multiplier on incoming damage at the highest difficulty, applied per damage event",
+          "source": "neo/d3xp/Player.cpp:8187"
+        },
+        {
+          "name": "Multiplayer self damage scale",
+          "value": 0.5,
+          "unit": "dimensionless default multiplier on self-inflicted damage in multiplayer, applied per damage event",
+          "source": "neo/d3xp/Player.cpp:8201"
+        },
+        {
+          "name": "Single player self damage scale",
+          "value": 1,
+          "unit": "dimensionless default multiplier on self-inflicted damage in single player, applied per damage event",
+          "source": "neo/d3xp/Player.cpp:8203"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8165
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8176
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8226
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8236
+        },
+        {
+          "path": "neo/d3xp/Actor.cpp",
+          "line": 2512
+        }
+      ],
+      "capabilities": [
+        "per-location damage scaling",
+        "difficulty scaling",
+        "immunity checks",
+        "armor absorption",
+        "self-damage scaling"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "armor"
+      ]
+    },
+    {
+      "id": "weapon-sway-and-recoil",
+      "node": "weapons",
+      "name": "Weapon sway and muzzle rise",
+      "summary": "The first-person weapon lags behind view rotation and acceleration, and muzzle kick decays linearly from a stored pose.",
+      "behavior": "The view model does not follow the camera exactly. A turning offset comes from the difference between the current view angles and the average of the last several logged view angles, scaled down, wrapped across the yaw discontinuity and clamped per axis, so a fast turn swings the weapon opposite the rotation and the offset settles as the average catches up. A positional offset comes from a short log of recorded accelerations, including the upward impulse recorded when the player jumps: every entry inside a time window contributes a cosine-eased weight times the acceleration direction, so the weapon lags on starts, stops and landings. Muzzle rise sits on top of both: the remaining kick time divided by the stored maximum gives a linear factor that scales a stored angle and positional offset, and the offset is subtracted along the weapon axis so the muzzle climbs while the model pulls back. Timers written in seconds in the entity definition are converted to milliseconds once at load, so the runtime works entirely in game milliseconds.",
+      "constants": [
+        {
+          "name": "Turn offset averaging window",
+          "value": 10,
+          "unit": "frames of logged view angles averaged for the sway, default of the weapon definition key, applied every frame",
+          "source": "neo/d3xp/Weapon.cpp:1178"
+        },
+        {
+          "name": "Turn offset gain",
+          "value": 0.25,
+          "unit": "dimensionless fraction of the average-minus-current angle applied as sway, applied every frame",
+          "source": "neo/d3xp/Weapon.cpp:1179"
+        },
+        {
+          "name": "Turn offset clamp",
+          "value": 10,
+          "unit": "degrees, symmetric per-axis limit on the turning sway, applied every frame",
+          "source": "neo/d3xp/Weapon.cpp:1180"
+        },
+        {
+          "name": "Acceleration offset window",
+          "value": 400,
+          "unit": "milliseconds of game time; recorded accelerations older than this stop contributing, evaluated every frame",
+          "source": "neo/d3xp/Weapon.cpp:1182"
+        },
+        {
+          "name": "Acceleration offset gain",
+          "value": 0.005,
+          "unit": "world units of weapon offset per unit of recorded acceleration before the cosine weighting, applied every frame",
+          "source": "neo/d3xp/Weapon.cpp:1183"
+        },
+        {
+          "name": "Default hide time",
+          "value": 0.3,
+          "unit": "seconds, converted to milliseconds at weapon load, over which the view model is lowered or raised, default of the definition key",
+          "source": "neo/d3xp/Weapon.cpp:990"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Weapon.cpp",
+          "line": 2091
+        },
+        {
+          "path": "neo/d3xp/Weapon.cpp",
+          "line": 2656
+        },
+        {
+          "path": "neo/d3xp/Weapon.cpp",
+          "line": 2667
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8701
+        },
+        {
+          "path": "neo/d3xp/Player.cpp",
+          "line": 8756
+        }
+      ],
+      "capabilities": [
+        "view lag sway",
+        "acceleration lag",
+        "muzzle rise decay",
+        "definition driven timers"
+      ],
+      "tags": [
+        "combat",
+        "weapon",
+        "camera",
+        "feel"
+      ]
+    },
+    {
+      "id": "guided-projectile-steering",
+      "node": "projectiles",
+      "name": "Guided projectile steering",
+      "summary": "A guided projectile re-aims at its target every frame under a turn cap expressed per frame, and stops steering once it closes in.",
+      "behavior": "Guided projectiles keep the speed they were launched with and only steer. Each frame a seek position taken from the target is turned into a direction measured from a point slightly ahead of the projectile, converted to angles, and compared with the current flight angles; a random jitter scaled by the distance fraction is added, so the flight wobbles and tightens as the target closes, and the jitter is resampled on a timer rather than every frame. The angular difference is normalized to the shortest direction and clamped per axis by a turn limit that is written in degrees per second in the definition but divided by the engine tick rate at spawn, which converts it to a per-frame angle. The projectile is then pointed along the corrected direction and its velocity rewritten, so the effective turn radius depends on speed and tick rate rather than on elapsed time. In burst mode steering stops inside a short distance and the velocity is multiplied for a final acceleration. A projectile without a fuse is removed after a default lifetime, which bounds the number of live guided missiles.",
+      "constants": [
+        {
+          "name": "Maximum turn rate",
+          "value": 180,
+          "unit": "degrees per second, divided by the engine tick rate at spawn into a per-frame angle of about 3 degrees at 60 Hz, applied per frame",
+          "source": "neo/d3xp/Projectile.cpp:1752"
+        },
+        {
+          "name": "Clamp distance",
+          "value": 256,
+          "unit": "world units; distance at which aim jitter is fully applied, interpolating from none at contact to full at this range, evaluated per frame",
+          "source": "neo/d3xp/Projectile.cpp:1753"
+        },
+        {
+          "name": "Aim jitter",
+          "value": 15,
+          "unit": "degrees of random angle per axis on the horizontal and vertical axes, resampled on a timer",
+          "source": "neo/d3xp/Projectile.cpp:1751"
+        },
+        {
+          "name": "Jitter resample interval",
+          "value": 200,
+          "unit": "milliseconds of game time between jitter resamples, counted on the game clock",
+          "source": "neo/d3xp/Projectile.cpp:1672"
+        },
+        {
+          "name": "Burst distance",
+          "value": 64,
+          "unit": "world units at which a burst-mode projectile stops steering, evaluated per frame",
+          "source": "neo/d3xp/Projectile.cpp:1756"
+        },
+        {
+          "name": "Burst velocity multiplier",
+          "value": 1.25,
+          "unit": "dimensionless multiplier on speed once the burst distance is crossed, applied once per projectile",
+          "source": "neo/d3xp/Projectile.cpp:1757"
+        },
+        {
+          "name": "Default removal time",
+          "value": 1500,
+          "unit": "milliseconds of game time after launch before a projectile with no fuse is removed",
+          "source": "neo/d3xp/Projectile.cpp:428"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Projectile.cpp",
+          "line": 1728
+        },
+        {
+          "path": "neo/d3xp/Projectile.cpp",
+          "line": 1651
+        },
+        {
+          "path": "neo/d3xp/Projectile.cpp",
+          "line": 1675
+        },
+        {
+          "path": "neo/d3xp/Projectile.cpp",
+          "line": 306
+        }
+      ],
+      "capabilities": [
+        "per-frame turn cap",
+        "distance scaled accuracy",
+        "jittered flight",
+        "burst acceleration",
+        "timed removal"
+      ],
+      "tags": [
+        "combat",
+        "projectile",
+        "ai"
+      ]
+    },
+    {
+      "id": "monster-turning",
+      "node": "ai",
+      "name": "Monster turning",
+      "summary": "Monsters accelerate their turn toward a target yaw, cap the angular rate, and snap the last fraction of a degree.",
+      "behavior": "Turning is a second-order system. The error between the desired yaw and the current yaw is normalized to the shortest direction, and a turn velocity grows by an acceleration term proportional to that error; the velocity is then clamped to the maximum rate and the yaw advances by the clamped velocity times the frame time. Because the acceleration is large relative to the rate cap, most turns reach the cap almost immediately and settle into constant-rate rotation, which keeps enemies from snapping to new headings. When the remaining error drops under a small tolerance the yaw is written exactly, avoiding the endless micro-corrections of an asymptote. Some animations carry their own turning: while a turning animation plays the code reads the rotation baked into the animation and applies it directly, blending between a non-turning and a turning pose, and ignores the rate limit. Movement is separate from turning and comes from the animation itself, so the enemy advances with the animated stride instead of a constant speed, and the same frame-time delta feeds both.",
+      "constants": [
+        {
+          "name": "Turn acceleration",
+          "value": 60,
+          "unit": "degrees per second squared; the turn velocity gains this times the yaw error times the frame time, applied every frame",
+          "source": "neo/d3xp/ai/AI.h:42"
+        },
+        {
+          "name": "Maximum turn rate",
+          "value": 360,
+          "unit": "degrees per second cap on the turn velocity, overridable per entity, applied every frame",
+          "source": "neo/d3xp/ai/AI.cpp:294"
+        },
+        {
+          "name": "Turn prediction",
+          "value": 0.2,
+          "unit": "seconds of look-ahead used when predicting a target position for turning decisions, evaluated per decision",
+          "source": "neo/d3xp/ai/AI.h:41"
+        },
+        {
+          "name": "Hearing range",
+          "value": 2048,
+          "unit": "world units; sounds spawned closer than this can alert the monster, checked per sound event",
+          "source": "neo/d3xp/ai/AI.h:45"
+        },
+        {
+          "name": "Alignment snap",
+          "value": 0.1,
+          "unit": "degrees of remaining yaw error below which the yaw is assigned exactly, tested every frame",
+          "source": "neo/d3xp/ai/AI.cpp:2483"
+        },
+        {
+          "name": "Blocked move hold time",
+          "value": 750,
+          "unit": "milliseconds of game time a monster keeps trying a blocked move before giving up, default per entity",
+          "source": "neo/d3xp/ai/AI.cpp:292"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/ai/AI.cpp",
+          "line": 2431
+        },
+        {
+          "path": "neo/d3xp/ai/AI.cpp",
+          "line": 2483
+        },
+        {
+          "path": "neo/d3xp/ai/AI.cpp",
+          "line": 2578
+        },
+        {
+          "path": "neo/d3xp/ai/AI.cpp",
+          "line": 2713
+        }
+      ],
+      "capabilities": [
+        "accelerated turning",
+        "rate capped rotation",
+        "animation driven turning",
+        "root motion locomotion"
+      ],
+      "tags": [
+        "ai",
+        "turning",
+        "movement"
+      ]
+    },
+    {
+      "id": "area-path-lookahead",
+      "node": "nav-aas",
+      "name": "Area path lookahead",
+      "summary": "Path following re-plans in short segments and only keeps the first reachable stretch of each route.",
+      "behavior": "Routing returns the next reachability link from the current area toward the goal area. The walk path builder does not convert the whole route into one destination: it follows links forward and, for each candidate, tests a straight walk from the caller to the far end of the link. When that straight move is valid the candidate far end becomes the immediate move goal, so an enemy cuts corners across open floor instead of walking link center to link center. The loop is capped, and a link whose near end is farther than a fixed distance from the caller ends the refinement immediately, so the cost per query stays bounded and every query produces a fresh short lookahead. Revisiting one of the last few areas indicates a routing minimum and aborts with a warning, which prevents oscillation between two areas. Links that are not plain walking become special path types such as a jump, a barrier jump or a walk off a ledge, with the link end recorded as a secondary goal for the movement code to execute.",
+      "constants": [
+        {
+          "name": "Walk path iterations",
+          "value": 10,
+          "unit": "routing links examined per walk path query, per call",
+          "source": "neo/d3xp/ai/AAS_pathing.cpp:38"
+        },
+        {
+          "name": "Walk path lookahead distance",
+          "value": 500,
+          "unit": "world units from the caller; links beyond this stop refinement and are returned as the goal, evaluated per path query",
+          "source": "neo/d3xp/ai/AAS_pathing.cpp:39"
+        },
+        {
+          "name": "Fly path iterations",
+          "value": 10,
+          "unit": "routing links examined per flying path query, per call",
+          "source": "neo/d3xp/ai/AAS_pathing.cpp:42"
+        },
+        {
+          "name": "Area history depth",
+          "value": 4,
+          "unit": "recent areas remembered for the routing minimum check, per path query",
+          "source": "neo/d3xp/ai/AAS_pathing.cpp:283"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "line": 282
+        },
+        {
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "line": 140
+        },
+        {
+          "path": "neo/d3xp/ai/AAS_pathing.cpp",
+          "line": 316
+        },
+        {
+          "path": "neo/d3xp/ai/AI_pathing.cpp",
+          "line": 934
+        }
+      ],
+      "capabilities": [
+        "incremental routing",
+        "straight path validation",
+        "bounded lookahead",
+        "special link types"
+      ],
+      "tags": [
+        "ai",
+        "navigation",
+        "pathing"
+      ]
+    },
+    {
+      "id": "animation-frame-sampling",
+      "node": "animation",
+      "name": "Animation frame sampling and root motion",
+      "summary": "Keys are sampled from a frame rate declared in the clip, blended linearly between them, and the root translation becomes enemy movement.",
+      "behavior": "A clip declares its own frame rate, and a fixed default applies before a clip has been parsed. Conversion from game time to keys multiplies elapsed time by the frame rate and divides by a thousand to get a key index plus a cycle count; the remainder of that division, scaled by a thousandth, becomes the blend factor towards the next key, so playback is linear between keys whatever the render rate. Because the index wraps at the last key, a looping clip restarts without a pause, and wrapped cycles contribute a fixed translation delta so root motion accumulates across loops. Clip length is computed from the key count and the frame rate and rounds up, so the final millisecond is not lost and the ending pose is reached. Root motion is then exposed as a translation and rotation delta between two times, blended across every active channel of the model with their weights, and the movement code multiplies that delta by the entity axis to move the entity. That is why an enemy's walking speed comes from its animation rather than from a speed variable.",
+      "constants": [
+        {
+          "name": "Default clip frame rate",
+          "value": 24,
+          "unit": "keys per second, used before a clip frame-rate keyword is parsed; the effective rate comes from the clip itself, applied per time to key conversion",
+          "source": "neo/d3xp/anim/Anim.cpp:59"
+        },
+        {
+          "name": "Clip length rounding",
+          "value": 1000,
+          "unit": "milliseconds per second in the clip length computation, which adds frame rate minus one before dividing so the duration rounds up, computed once per clip load",
+          "source": "neo/d3xp/anim/Anim.cpp:351"
+        },
+        {
+          "name": "Time to key divisor",
+          "value": 1000,
+          "unit": "milliseconds per second; elapsed time times frame rate is divided by this to get the key index, recomputed on every sample",
+          "source": "neo/d3xp/anim/Anim.cpp:578"
+        },
+        {
+          "name": "Blend fraction scale",
+          "value": 0.001,
+          "unit": "fraction per millisecond of remainder; the leftover after the key division is multiplied by this to blend toward the next key, computed on every sample",
+          "source": "neo/d3xp/anim/Anim.cpp:596"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/anim/Anim.cpp",
+          "line": 555
+        },
+        {
+          "path": "neo/d3xp/anim/Anim.cpp",
+          "line": 577
+        },
+        {
+          "path": "neo/d3xp/anim/Anim_Blend.cpp",
+          "line": 3790
+        },
+        {
+          "path": "neo/d3xp/anim/Anim_Blend.cpp",
+          "line": 4164
+        }
+      ],
+      "capabilities": [
+        "clip declared frame rate",
+        "cyclic key wrapping",
+        "linear key blending",
+        "root motion extraction"
+      ],
+      "tags": [
+        "animation",
+        "timing",
+        "ai"
+      ]
+    },
+    {
+      "id": "cutscene-camera-sampling",
+      "node": "player-view",
+      "name": "Cutscene camera keyframe sampling",
+      "summary": "Scripted camera paths are played back by converting elapsed game time into a keyframe index and a linear blend between two stored camera poses.",
+      "behavior": "A camera path file lists a frame rate, a sequence of poses with position, orientation and horizontal field of view, and optionally the indices where the shot cuts between separate setups. Playback converts the time since the camera started into a key index by multiplying elapsed milliseconds by the frame rate and dividing by a thousand, and the remainder of that division becomes the blend fraction towards the next key. When the fraction is zero the stored pose is used directly, which avoids interpolation error on exact key boundaries. Otherwise orientation is blended with a spherical interpolation, position and field of view linearly, so a camera move stays smooth even when the render rate does not divide the key rate. Cuts are handled by skipping one key per cut below the current index, so the cut poses are never interpolated across. Running past the last key either advances the start time by the exact duration of one loop and restarts sampling, or stops the camera, in which case the final pose is held. The resulting viewpoint also seeds the visibility areas, so portal traversal is computed from the camera position for that frame.",
+      "constants": [
+        {
+          "name": "Rejected frame rate",
+          "value": 0,
+          "unit": "keyframes per second; a declared rate of zero or less is refused when the path file is parsed, checked once per camera file load",
+          "source": "neo/d3xp/Camera.cpp:370"
+        },
+        {
+          "name": "Blend fraction scale",
+          "value": 0.001,
+          "unit": "fraction of a key interval per millisecond of remainder; converts the leftover after the key division into the blend towards the next key, computed every frame while the camera plays",
+          "source": "neo/d3xp/Camera.cpp:490"
+        },
+        {
+          "name": "Loop advance divisor",
+          "value": 1000,
+          "unit": "milliseconds per second in the loop restart computation, so the start time advances by the exact on-screen duration of one pass, applied once per loop",
+          "source": "neo/d3xp/Camera.cpp:535"
+        }
+      ],
+      "sources": [
+        {
+          "path": "neo/d3xp/Camera.cpp",
+          "line": 464
+        },
+        {
+          "path": "neo/d3xp/Camera.cpp",
+          "line": 488
+        },
+        {
+          "path": "neo/d3xp/Camera.cpp",
+          "line": 489
+        },
+        {
+          "path": "neo/d3xp/Camera.cpp",
+          "line": 535
+        }
+      ],
+      "capabilities": [
+        "time to key conversion",
+        "linear position and field of view blend",
+        "spherical orientation blend",
+        "cut index skipping",
+        "looping or holding the last pose"
+      ],
+      "tags": [
+        "camera",
+        "cutscene",
+        "timing"
+      ]
+    }
+  ]
+}
