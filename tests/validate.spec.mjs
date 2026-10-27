@@ -40,6 +40,9 @@ test('the disk-loaded catalog schema refuses unknown fields, missing fields and 
     [{...sm64Row, rating: 6}, tier2Row],
     [{...sm64Row, rating: '5'}, tier2Row],
     [{...sm64Row, rating: 3.5}, tier2Row],
+    [{...sm64Row, genre: 'platforming'}, tier2Row],
+    [{...sm64Row, genre: 'Platformer'}, tier2Row],
+    [{...sm64Row, subgenre: '3D Platformer'}, tier2Row],
     [{...sm64Row, id: 'Not_Kebab'}, tier2Row],
     [{...sm64Row, title: '```fenced```'}, tier2Row],
     [{...sm64Row, platform: '~~~'}, tier2Row],
@@ -55,6 +58,7 @@ test('the tracked catalog passes the schema and the tier relationships', () => {
   assert.doesNotThrow(() => validateCatalog([sm64Row, tier2Row], [{id: 'sm64'}]));
   assert.throws(() => validateCatalog([tier2Row], [{id: 'demo-tier2'}]));
   assert.throws(() => validateCatalog([without(sm64Row, 'rating'), tier2Row], [{id: 'sm64'}]), /rating/);
+  assert.throws(() => validateCatalog([without(sm64Row, 'genre'), tier2Row], [{id: 'sm64'}]), /genre/);
   assert.throws(() => validateCatalog([sm64Row], []));
   assert.throws(() => validateCatalog(catalog, tier1, [{game: 'ghost'}]));
 });

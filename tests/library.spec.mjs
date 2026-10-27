@@ -32,11 +32,14 @@ test('the tracked library keeps the canonical layout and no legacy root files', 
   ]) assert.ok(tracked.includes(name), name);
 });
 
-test('every mapped game carries a 1-5 rating on its catalog row', () => {
+test('every mapped game carries a 1-5 rating and a genre on its catalog row', () => {
   const catalog = JSON.parse(readFileSync(path.join(root, 'data', 'catalog.json'), 'utf8'));
   const mapped = catalog.filter(row => row.tier === 1);
   assert.ok(mapped.length > 0);
-  for (const row of mapped) assert.ok([1, 2, 3, 4, 5].includes(row.rating), `${row.id} has no rating`);
+  for (const row of mapped) {
+    assert.ok([1, 2, 3, 4, 5].includes(row.rating), `${row.id} has no rating`);
+    assert.ok(row.genre, `${row.id} has no genre`);
+  }
 });
 
 test('check:data accepts the tracked dataset offline', t => {

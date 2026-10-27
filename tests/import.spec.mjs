@@ -25,7 +25,7 @@ const readme = `# List
 - **Arx Libertatis** — [arx/ArxLibertatis](https://github.com/arx/ArxLibertatis) — *Source port, PC / DOS. Inactive or archived.*
 - **Quake (QuakeSpasm)** — [sezero/quakespasm](https://github.com/sezero/quakespasm) — *Source port, PC / DOS.*
 `;
-const existing = [{ id: 'sm64', title: 'Super Mario 64', platform: 'Nintendo 64', repo: 'https://github.com/n64decomp/sm64', tier: 1, rating: 5 }];
+const existing = [{ id: 'sm64', title: 'Super Mario 64', platform: 'Nintendo 64', repo: 'https://github.com/n64decomp/sm64', tier: 1, rating: 5, genre: 'platformer' }];
 
 test('one tier-2 row per list project, platform from the section or the port note', () => {
   const rows = importList(readme, existing);
@@ -48,7 +48,7 @@ test('a second import keeps every existing id and tier', () => {
 });
 
 test('existing rows the list does not hold are kept', () => {
-  const quake = { id: 'quake', title: 'Quake', platform: 'PC', repo: 'https://github.com/id-Software/Quake', tier: 1, rating: 5 };
+  const quake = { id: 'quake', title: 'Quake', platform: 'PC', repo: 'https://github.com/id-Software/Quake', tier: 1, rating: 5, genre: 'shooter' };
   assert.ok(importList(readme, [...existing, quake]).some(row => row.id === 'quake'));
 });
 

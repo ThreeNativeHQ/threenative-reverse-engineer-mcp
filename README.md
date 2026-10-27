@@ -36,6 +36,15 @@ owned by the reviewing lane and kept on the catalog row only, so a game file and
 disagree. Tier-2 rows stay unrated until someone maps the game; `npm run check:data` fails when a
 mapped game has no rating.
 
+## Genres
+
+Mapped catalog rows also carry a `genre` from a closed vocabulary (platformer, action-adventure,
+rpg, shooter, racing, fighting, strategy, simulation, puzzle, sports, rhythm, horror, stealth,
+party) plus an optional lowercase `subgenre` label such as `rts`, `fps` or `metroidvania`.
+`genre` is the stable filter key; `subgenre` is editorial nuance and may be omitted. Both live on
+the catalog row only and are required for mapped games, so `npm run check:data` fails when a mapped
+game is unclassified. Tier-2 rows stay unclassified until someone reviews the game.
+
 Release assets in `.release/` are `index.json.gz` (catalog plus searchable stubs)
 and one lazy `game-<id>.json` per mapped game. Tag `v0.1` after review; the single
 workflow validates every source citation before publishing.
