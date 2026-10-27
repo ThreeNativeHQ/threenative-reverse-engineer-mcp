@@ -1,0 +1,2093 @@
+{
+  "version": 1,
+  "id": "the-elder-scrolls-iii-morrowind-openmw",
+  "title": "The Elder Scrolls III: Morrowind (OpenMW)",
+  "repo": "https://github.com/OpenMW/openmw",
+  "sha": "4e718b500ffee6657db90297d7b8a08a57d439bc",
+  "nodes": [
+    {
+      "id": "frame-loop",
+      "name": "Frame pacing and per-frame stage order",
+      "purpose": "Top-level render loop: measures the frame gap, clamps it, applies the world time scale, and runs every subsystem in a fixed order from input handling to the world update and GUI.",
+      "paths": [
+        "apps/openmw/engine.cpp"
+      ],
+      "functions": [
+        {
+          "name": "OMW::Engine::frame",
+          "path": "apps/openmw/engine.cpp",
+          "lines": [
+            213,
+            395
+          ]
+        },
+        {
+          "name": "OMW::Engine::go",
+          "path": "apps/openmw/engine.cpp",
+          "lines": [
+            974,
+            1120
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "physics-stepping",
+      "name": "Fixed-step physics scheduling",
+      "purpose": "Accumulator-driven scheduler that turns the frame delta into whole collision steps at a nominal 1/60 s, adapts how many steps a frame may run from the measured cost, and interpolates actor positions for rendering.",
+      "paths": [
+        "apps/openmw/mwphysics/physicssystem.cpp",
+        "apps/openmw/mwphysics/physicssystem.hpp",
+        "apps/openmw/mwphysics/mtphysics.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PhysicsSystem::PhysicsSystem",
+          "path": "apps/openmw/mwphysics/physicssystem.cpp",
+          "lines": [
+            90,
+            129
+          ]
+        },
+        {
+          "name": "PhysicsSystem::prepareSimulation",
+          "path": "apps/openmw/mwphysics/physicssystem.cpp",
+          "lines": [
+            638,
+            687
+          ]
+        },
+        {
+          "name": "PhysicsSystem::stepSimulation",
+          "path": "apps/openmw/mwphysics/physicssystem.cpp",
+          "lines": [
+            689,
+            725
+          ]
+        },
+        {
+          "name": "PhysicsTaskScheduler::calculateStepConfig",
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "lines": [
+            451,
+            495
+          ]
+        },
+        {
+          "name": "PhysicsTaskScheduler::applyQueuedMovements",
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "lines": [
+            497,
+            506
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    },
+    {
+      "id": "actor-collision",
+      "name": "Actor collision movement",
+      "purpose": "Solves one actor step against the static world: ground probing, stair climbing, wall sliding with seam handling, penetration recovery and gravity with a terminal fall speed.",
+      "paths": [
+        "apps/openmw/mwphysics/movementsolver.cpp",
+        "apps/openmw/mwphysics/stepper.cpp",
+        "apps/openmw/mwphysics/constants.hpp",
+        "components/misc/constants.hpp"
+      ],
+      "functions": [
+        {
+          "name": "MovementSolver::traceDown",
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "lines": [
+            89,
+            127
+          ]
+        },
+        {
+          "name": "MovementSolver::move",
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "lines": [
+            129,
+            451
+          ]
+        },
+        {
+          "name": "MovementSolver::unstuck",
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "lines": [
+            486,
+            585
+          ]
+        },
+        {
+          "name": "Stepper::step",
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "lines": [
+            31,
+            185
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-stepping"
+      ]
+    },
+    {
+      "id": "actor-motion",
+      "name": "Locomotion, jump and body animation state",
+      "purpose": "Turns a per-actor movement request into a signed speed, resolves jump, air control and fall state, derives walk, run and jump magnitudes from attributes and skills, and drives the animation state machine.",
+      "paths": [
+        "apps/openmw/mwmechanics/character.cpp",
+        "apps/openmw/mwclass/npc.cpp"
+      ],
+      "functions": [
+        {
+          "name": "getFallDamage",
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "lines": [
+            282,
+            313
+          ]
+        },
+        {
+          "name": "CharacterController::update",
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "lines": [
+            1969,
+            2545
+          ]
+        },
+        {
+          "name": "Npc::getMaxSpeed",
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "lines": [
+            864,
+            905
+          ]
+        },
+        {
+          "name": "Npc::getJump",
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "lines": [
+            907,
+            943
+          ]
+        },
+        {
+          "name": "Npc::getWalkSpeed",
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "lines": [
+            1370,
+            1386
+          ]
+        },
+        {
+          "name": "Npc::getRunSpeed",
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "lines": [
+            1388,
+            1394
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-collision"
+      ]
+    },
+    {
+      "id": "input-controls",
+      "name": "Input bindings, Lua control surface and mouse look",
+      "purpose": "Maps devices to named actions, lets the built-in Lua player script convert held actions into the actor control record, and applies mouse and stick look deltas to the player rotation request.",
+      "paths": [
+        "apps/openmw/mwinput/inputmanagerimp.cpp",
+        "apps/openmw/mwinput/actionmanager.cpp",
+        "apps/openmw/mwinput/mousemanager.cpp",
+        "apps/openmw/mwinput/controllermanager.cpp",
+        "files/data/scripts/omw/input/playercontrols.lua",
+        "files/data/scripts/omw/input/smoothmovement.lua",
+        "apps/openmw/mwmechanics/actors.cpp"
+      ],
+      "functions": [
+        {
+          "name": "InputManager::update",
+          "path": "apps/openmw/mwinput/inputmanagerimp.cpp",
+          "lines": [
+            55,
+            87
+          ]
+        },
+        {
+          "name": "ActionManager::update",
+          "path": "apps/openmw/mwinput/actionmanager.cpp",
+          "lines": [
+            37,
+            49
+          ]
+        },
+        {
+          "name": "ActionManager::activate",
+          "path": "apps/openmw/mwinput/actionmanager.cpp",
+          "lines": [
+            250,
+            262
+          ]
+        },
+        {
+          "name": "MouseManager::mouseMoved",
+          "path": "apps/openmw/mwinput/mousemanager.cpp",
+          "lines": [
+            50,
+            118
+          ]
+        },
+        {
+          "name": "processMovement",
+          "path": "files/data/scripts/omw/input/playercontrols.lua",
+          "lines": [
+            88,
+            107
+          ]
+        },
+        {
+          "name": "remapToWalkRun",
+          "path": "files/data/scripts/omw/input/smoothmovement.lua",
+          "lines": [
+            34,
+            47
+          ]
+        },
+        {
+          "name": "updateLuaControls",
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "lines": [
+            365,
+            412
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Third-person camera and collision",
+      "purpose": "Derives the camera pivot from the tracked node or skeletal camera, offsets the focal point, casts against the world to keep both the pivot and the camera out of geometry, and eases offset and preview rotation over time.",
+      "paths": [
+        "apps/openmw/mwrender/camera.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Camera::calculateTrackedPosition",
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "lines": [
+            87,
+            99
+          ]
+        },
+        {
+          "name": "Camera::update",
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "lines": [
+            132,
+            147
+          ]
+        },
+        {
+          "name": "Camera::updatePosition",
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "lines": [
+            160,
+            209
+          ]
+        },
+        {
+          "name": "Camera::updateFocalPointOffset",
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "lines": [
+            254,
+            294
+          ]
+        },
+        {
+          "name": "Camera::applyDeferredPreviewRotationToPlayer",
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "lines": [
+            382,
+            413
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    },
+    {
+      "id": "ai-behaviour",
+      "name": "AI scheduling, combat and actor avoidance",
+      "purpose": "Decides which actors think each frame, throttles expensive perception and cosmetic subsystems with accumulators, runs the AI package stack (combat, pursue, travel), and predicts actor-vs-actor collisions so NPCs sidestep each other.",
+      "paths": [
+        "apps/openmw/mwmechanics/actors.cpp",
+        "apps/openmw/mwmechanics/aisequence.cpp",
+        "apps/openmw/mwmechanics/aicombat.cpp",
+        "apps/openmw/mwmechanics/aipursue.cpp",
+        "components/settings/categories/game.hpp",
+        "files/settings-default.cfg"
+      ],
+      "functions": [
+        {
+          "name": "Actors::update",
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "lines": [
+            1523,
+            1785
+          ]
+        },
+        {
+          "name": "Actors::predictAndAvoidCollisions",
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "lines": [
+            1350,
+            1521
+          ]
+        },
+        {
+          "name": "AiSequence::execute",
+          "path": "apps/openmw/mwmechanics/aisequence.cpp",
+          "lines": [
+            249,
+            377
+          ]
+        },
+        {
+          "name": "AiCombat::execute",
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "lines": [
+            113,
+            211
+          ]
+        },
+        {
+          "name": "AiPursue::execute",
+          "path": "apps/openmw/mwmechanics/aipursue.cpp",
+          "lines": [
+            30,
+            79
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-motion"
+      ]
+    },
+    {
+      "id": "cell-streaming",
+      "name": "Exterior grid streaming and cell transitions",
+      "purpose": "Keeps a square grid of exterior cells around the player, unloads and loads rings when the grid centre moves, preloads one ring further out and for teleport destinations, and resets a player who fell out of an interior.",
+      "paths": [
+        "apps/openmw/mwworld/scene.cpp",
+        "apps/openmw/mwworld/worldimp.cpp",
+        "components/misc/constants.hpp"
+      ],
+      "functions": [
+        {
+          "name": "Scene::getNewGridCenter",
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "lines": [
+            557,
+            573
+          ]
+        },
+        {
+          "name": "Scene::playerMoved",
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "lines": [
+            575,
+            610
+          ]
+        },
+        {
+          "name": "Scene::changeCellGrid",
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "lines": [
+            618,
+            703
+          ]
+        },
+        {
+          "name": "Scene::preloadExteriorGrid",
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "lines": [
+            1204,
+            1239
+          ]
+        },
+        {
+          "name": "World::update",
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "lines": [
+            1566,
+            1607
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    },
+    {
+      "id": "activation",
+      "name": "Crosshair focus and activation reach",
+      "purpose": "Resolves the reference under the crosshair with a camera ray, bounds the search by the activation setting plus telekinesis, and forwards the focused object to the activation event when the player uses it.",
+      "paths": [
+        "apps/openmw/mwworld/worldimp.cpp",
+        "apps/openmw/mwworld/player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "World::getMaxActivationDistance",
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "lines": [
+            902,
+            910
+          ]
+        },
+        {
+          "name": "World::getFocusObject",
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "lines": [
+            912,
+            944
+          ]
+        },
+        {
+          "name": "World::getFocusObject",
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "lines": [
+            1711,
+            1739
+          ]
+        },
+        {
+          "name": "Player::activate",
+          "path": "apps/openmw/mwworld/player.cpp",
+          "lines": [
+            188,
+            207
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera",
+        "input-controls"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "frame-delta-clamp",
+      "node": "frame-loop",
+      "name": "Frame delta clamping and time scaling",
+      "summary": "A rendered frame may contribute at most 200 ms of simulated time, scaled by the world time scale, so a long stall cannot teleport actors or fast-forward the clock.",
+      "behavior": "The loop asks the frame-rate limiter for the measured duration of the last frame, keeps the smaller of that value and a 200 ms steady-clock window, converts it to seconds and multiplies it by the simulation time scale; the result is passed to every stage of the frame and is the only time input the simulation sees. Because the clamp happens before the scale, a very large time scale still runs in one oversized step rather than being silently truncated twice. When the frame is skipped the loop sleeps 5 ms instead of running stages, so a renderer stall does not build a backlog that is later replayed in a single catch-up burst. The same delta drives the game clock: simulated seconds are multiplied by the game time scale and divided by 3600 to obtain elapsed game hours, which means the day/night rate stays proportional to real elapsed time independent of the frame rate.",
+      "constants": [
+        {
+          "name": "maximum simulation interval per frame",
+          "value": 200,
+          "unit": "milliseconds of wall clock, clamped once per rendered frame",
+          "source": "apps/openmw/engine.cpp:1072"
+        },
+        {
+          "name": "skipped-frame sleep",
+          "value": 5,
+          "unit": "milliseconds of real time slept per skipped frame",
+          "source": "apps/openmw/engine.cpp:1086"
+        },
+        {
+          "name": "seconds per game hour",
+          "value": 3600,
+          "unit": "seconds per game hour, applied per frame when converting simulated seconds",
+          "source": "apps/openmw/engine.cpp:294"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 1072
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 1078
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 1086
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 294
+        }
+      ],
+      "capabilities": [
+        "frame pacing",
+        "simulation time scaling",
+        "game clock advance"
+      ],
+      "tags": [
+        "timing",
+        "engine",
+        "determinism"
+      ]
+    },
+    {
+      "id": "frame-stage-order",
+      "node": "frame-loop",
+      "name": "Order of the per-frame stages",
+      "summary": "One frame always runs input, queued Lua world changes, scripting and time, game mechanics, physics submission, world and scene update, then GUI, in that order.",
+      "behavior": "The order matters because later stages consume the state written by earlier ones. Input runs first so a key press reaches the same frame. A synchronized Lua pass follows input and is the point where world changes queued by scripts from the previous frame are applied, which keeps script writes from racing input. Script execution and the game clock advance next, but only while the simulation is unpaused, together with item recharge and the game-hour conversion. Mechanics then run: actor AI, magic effects, movement requests and object updates are resolved into a movement record per actor. Physics submits the frame delta to the fixed-step scheduler, which may run zero, one or several collision steps and leaves an interpolated position. The world stage follows with weather, navigation mesh update, player update, scene and cell streaming, renderer update and a spell preload that re-arms a 0.1 s timer, then the GUI. When the game is paused the clock advance and item recharge are skipped, mechanics receive the paused flag and gate their simulation, physics zeroes its worker statistics instead of stepping, and the world and GUI stages keep updating so the frozen state can still be drawn. The pause is therefore a data-flow break per stage rather than a stopped loop.",
+      "constants": [
+        {
+          "name": "spell preload cadence",
+          "value": 0.1,
+          "unit": "seconds; timer re-armed once per world update",
+          "source": "apps/openmw/mwworld/worldimp.cpp:1597"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 235
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 262
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 294
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 307
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 324
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 334
+        },
+        {
+          "path": "apps/openmw/engine.cpp",
+          "line": 341
+        },
+        {
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "line": 1597
+        }
+      ],
+      "capabilities": [
+        "stage ordering",
+        "pause gating",
+        "script synchronization"
+      ],
+      "tags": [
+        "timing",
+        "engine",
+        "ordering"
+      ]
+    },
+    {
+      "id": "fixed-physics-step",
+      "node": "physics-stepping",
+      "name": "Fixed 60 Hz physics with an adaptive step budget",
+      "summary": "Collision runs at a nominal 60 steps per second; the per-frame step count is capped from the measured physics cost and leftover time is carried in an accumulator and interpolated away.",
+      "behavior": "The physics system starts with a step of one sixtieth of a second, which an environment override can replace with a custom rate. Every frame the frame delta is added to an accumulator and the scheduler computes how many whole steps fit; it then adapts the allowance: when the measured cost of one step plus the asynchronous budget reaches 0.95 of the target step the frame is limited to a single step, and when the cost is below 0.5 the allowance becomes the ceiling of the inverse cost, finally clamped to 10 steps. If the needed count exceeds the allowance the scheduler runs only the allowance and switches that frame to a variable delta derived from the accumulator so the simulation stops exactly at the render timestamp instead of running ahead, but never below the nominal step. The consumed time is subtracted from the accumulator and the remainder carries into the next frame. Rendering uses the remainder to blend previous and current simulation positions with a factor clamped to the unit interval, so a frame that runs no step still shows smooth motion. Two frame buffers of simulation payloads are reused in alternation to keep the worker thread from blocking on the main thread.",
+      "constants": [
+        {
+          "name": "nominal physics rate",
+          "value": 60,
+          "unit": "collision steps per simulated second (step size 1/60 s)",
+          "source": "apps/openmw/mwphysics/physicssystem.cpp:91"
+        },
+        {
+          "name": "initial per-frame step allowance",
+          "value": 2,
+          "unit": "collision steps per rendered frame",
+          "source": "apps/openmw/mwphysics/mtphysics.cpp:453"
+        },
+        {
+          "name": "step-budget saturation threshold",
+          "value": 0.95,
+          "unit": "fraction of one target step of measured cost, evaluated per frame",
+          "source": "apps/openmw/mwphysics/mtphysics.cpp:471"
+        },
+        {
+          "name": "step-budget cheap threshold",
+          "value": 0.5,
+          "unit": "fraction of one target step of measured cost, evaluated per frame",
+          "source": "apps/openmw/mwphysics/mtphysics.cpp:474"
+        },
+        {
+          "name": "hard step cap",
+          "value": 10,
+          "unit": "collision steps per rendered frame",
+          "source": "apps/openmw/mwphysics/mtphysics.cpp:477"
+        },
+        {
+          "name": "interpolation factor upper bound",
+          "value": 1,
+          "unit": "fraction of one step, clamped per rendered frame",
+          "source": "apps/openmw/mwphysics/mtphysics.cpp:133"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwphysics/physicssystem.cpp",
+          "line": 91
+        },
+        {
+          "path": "apps/openmw/mwphysics/physicssystem.cpp",
+          "line": 714
+        },
+        {
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "line": 453
+        },
+        {
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "line": 487
+        },
+        {
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "line": 529
+        },
+        {
+          "path": "apps/openmw/mwphysics/mtphysics.cpp",
+          "line": 133
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "accumulator",
+        "position interpolation",
+        "step budgeting"
+      ],
+      "tags": [
+        "physics",
+        "timing",
+        "determinism"
+      ]
+    },
+    {
+      "id": "actor-ground-contact",
+      "node": "actor-collision",
+      "name": "Ground probing and resting height",
+      "summary": "After the horizontal solve the actor is traced downward by twice a one-unit ground offset plus a full step-down when it was already standing, and its height is snapped so the base floats one unit above the surface.",
+      "behavior": "The solver first shifts the actor origin up by half its vertical extent because the trace does not account for the interior collision-hull translation, which reproduces the vanilla hull placement. Ground state is then decided from the velocity state: the drop trace reaches twice the ground offset, plus the full step-down distance when the actor was standing on the previous step, giving the downward probe enough reach to keep contact while walking down a shallow slope. A hit that is not an actor sets the grounded flag, marks the surface as unwalkable when its normal fails the slope test, and records what the actor stands on. If the traced distance is larger than the offset, the resting height becomes hit point plus offset; otherwise the actor is already close enough that it is snapped to the hit point and displaced halfway along a second upward probe of twice the offset, which smooths the correction instead of making it snap. Standing on another actor is handled separately and never pushes that actor off; a penetration counter overrides everything so actors stuck inside geometry are treated as if on flat ground. A similar offset-based tolerance guards spawn placement: when the thick trace lands more than 35 units away from a thin ray, or the thick trace surface is unwalkable, the thin-ray hit point plus one unit wins, which fixes broken teleport destinations that intersect other geometry.",
+      "constants": [
+        {
+          "name": "ground offset",
+          "value": 1,
+          "unit": "game units above the surface, applied per ground probe and per resting-height snap",
+          "source": "apps/openmw/mwphysics/constants.hpp:14"
+        },
+        {
+          "name": "step-down probe distance",
+          "value": 62,
+          "unit": "game units of downward trace, extended per ground probe while already grounded",
+          "source": "apps/openmw/mwphysics/constants.hpp:6"
+        },
+        {
+          "name": "spawn ground tolerance",
+          "value": 35,
+          "unit": "game units, compared squared between a thick and a thin ground trace",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:117"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 117
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 384
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 400
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 407
+        },
+        {
+          "path": "apps/openmw/mwphysics/constants.hpp",
+          "line": 14
+        }
+      ],
+      "capabilities": [
+        "ground detection",
+        "slope classification",
+        "spawn snapping"
+      ],
+      "tags": [
+        "physics",
+        "terrain",
+        "collision"
+      ]
+    },
+    {
+      "id": "stair-stepping",
+      "node": "actor-collision",
+      "name": "Stair climbing by lifting, advancing and dropping",
+      "summary": "A blocked horizontal move shorter than 34 units is resolved by rising up to 34 units, advancing horizontally and dropping back onto a walkable surface no steeper than 46 degrees.",
+      "behavior": "The solver only attempts a step when the obstacle height below the actor feet is smaller than the step-up distance of 34 units, and it never attempts one against another actor. The stepper traces upward by the full step-up distance, subtracts a collision margin from the free distance, and then tries up to three horizontal moves: the intended move, a fixed 10-unit move, and a fixed 20-unit move from the raised position. The two fixed attempts exist to walk around malformed stair geometry in the shipped assets and only run on the first solver iteration of a frame and when the extra-hack switch is enabled. Each attempt ends with a downward trace of the horizontal distance plus the lift plus the 62-unit step-down distance, and the attempt succeeds only if that trace lands on a surface whose normal is steeper than the cosine of the maximum walkable slope of 46 degrees and which is not an actor. The third attempt is forbidden from dropping below the original height, and a step that would end far above the take-off point while the actor is airborne is rejected so a jump cannot be turned into a climb. On success the velocity is projected onto the landing and blocking planes and the remaining time is scaled by the untravelled fraction of the horizontal move.",
+      "constants": [
+        {
+          "name": "step-up distance",
+          "value": 34,
+          "unit": "game units of vertical lift, tested per step attempt",
+          "source": "components/misc/constants.hpp:48"
+        },
+        {
+          "name": "maximum walkable slope",
+          "value": 46,
+          "unit": "degrees from horizontal, constant per surface test",
+          "source": "components/misc/constants.hpp:49"
+        },
+        {
+          "name": "step-down distance",
+          "value": 62,
+          "unit": "game units added to each step-attempt drop trace",
+          "source": "apps/openmw/mwphysics/constants.hpp:6"
+        },
+        {
+          "name": "fallback stair advance",
+          "value": 10,
+          "unit": "game units of fixed horizontal advance on the second attempt",
+          "source": "apps/openmw/mwphysics/constants.hpp:8"
+        },
+        {
+          "name": "wider fallback stair advance",
+          "value": 20,
+          "unit": "game units of fixed horizontal advance on the third attempt",
+          "source": "apps/openmw/mwphysics/constants.hpp:9"
+        },
+        {
+          "name": "collision margin",
+          "value": 0.2,
+          "unit": "game units of back-off distance, applied per trace and per ejection probe",
+          "source": "apps/openmw/mwphysics/constants.hpp:19"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "line": 41
+        },
+        {
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "line": 80
+        },
+        {
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "line": 124
+        },
+        {
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "line": 134
+        },
+        {
+          "path": "apps/openmw/mwphysics/stepper.cpp",
+          "line": 18
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 245
+        }
+      ],
+      "capabilities": [
+        "stair stepping",
+        "step-up detection",
+        "slope limit",
+        "substepping"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "movement"
+      ]
+    },
+    {
+      "id": "wall-sliding",
+      "node": "actor-collision",
+      "name": "Slide resolution, seams and iteration budget",
+      "summary": "Each block consumes the travelled fraction of the frame time and re-projects velocity onto the surface, with a special case for acute corners where the actor slides along the intersection line of the two planes.",
+      "behavior": "The solver loops at most eight times while the remaining time stays above 0.0001 s. When a trace is blocked it multiplies the remaining time by the untravelled fraction, so every iteration advances less time than the previous one and the loop terminates even against a corner. The actor is moved to the hit point minus a collision margin along the movement direction, then nudged out of the plane by half of a two-margin probe. Velocity is projected onto the hit normal unless it already points away. Seam handling compares the current plane normal with the previous and second-previous normals: when either dot product is zero or negative, the two planes form an acute angle and instead of projecting onto one normal the velocity is projected onto the normalized cross product of the two, and the position is advanced half of a two-margin probe along the averaged normal, which lets the actor pass through crevices it would otherwise catch on. If the actor is grounded and the new velocity reverses the original one with a near-vertical cross product above 0.7071, the loop stops immediately to avoid jitter. On unwalkable slopes the new vertical component is prevented from exceeding the incoming one, which blocks air control from climbing steep walls while still allowing seam slides.",
+      "constants": [
+        {
+          "name": "solver iteration cap",
+          "value": 8,
+          "unit": "iterations per collision step",
+          "source": "apps/openmw/mwphysics/constants.hpp:17"
+        },
+        {
+          "name": "remaining-time epsilon",
+          "value": 0.0001,
+          "unit": "seconds of unconsumed step time, tested once per solver iteration",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:203"
+        },
+        {
+          "name": "seam reversal threshold",
+          "value": 0.7071,
+          "unit": "unitless vertical component of a normalized cross product, tested per solver iteration",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:358"
+        },
+        {
+          "name": "ejection probe factor",
+          "value": 2,
+          "unit": "multiples of the collision margin used as the outward probe length, per slide",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:347"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 203
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 331
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 347
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 358
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 275
+        }
+      ],
+      "capabilities": [
+        "wall sliding",
+        "corner handling",
+        "velocity projection",
+        "iteration budget"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "movement"
+      ]
+    },
+    {
+      "id": "unstuck-recovery",
+      "node": "actor-collision",
+      "name": "Penetration detection and escape",
+      "summary": "Before moving, each actor is contact-tested against the world and pushed out along the summed contact normals, with upward-only and fixed-height fallbacks and a cooldown against repeated attempts.",
+      "behavior": "The test is skipped for actors with collision detection off and for actors with no movement request, because an untouched actor is assumed to be where it should be. Otherwise the collision box is temporarily placed at the contact position and every contact is collected, ignoring projectile contacts and actor-to-actor pairs and ignoring overlaps whose normal points along the intended velocity. Penetration deeper than the allowed penetration of zero marks the actor as stuck and increments a counter. The escape tries the summed contact offsets first, scaling the sum down so no axis exceeds the largest single per-axis rejection, then an upward-only version of that offset, and finally a fixed 10-unit upward move; the first attempt that reduces the deepest penetration is kept and the original transform is restored afterwards. After ten consecutive stuck frames an actor is only reconsidered once it has moved at least ten units from where it was last flagged, which stops the solver from oscillating against the same corner. The stuck counter also forces the ground test to report a flat surface, because being inside geometry breaks ground detection.",
+      "constants": [
+        {
+          "name": "allowed penetration",
+          "value": 0,
+          "unit": "game units of permitted overlap, evaluated per physics step",
+          "source": "apps/openmw/mwphysics/constants.hpp:23"
+        },
+        {
+          "name": "stuck frame limit",
+          "value": 10,
+          "unit": "physics steps before the retry guard applies",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:496"
+        },
+        {
+          "name": "stuck position window",
+          "value": 100,
+          "unit": "squared game units of movement needed to retry after the stuck limit",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:498"
+        },
+        {
+          "name": "fixed upward escape",
+          "value": 10,
+          "unit": "game units of vertical lift in the final fallback, per stuck physics step",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:570"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 487
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 496
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 498
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 570
+        }
+      ],
+      "capabilities": [
+        "penetration recovery",
+        "contact filtering",
+        "anti-jitter cooldown"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "robustness"
+      ]
+    },
+    {
+      "id": "gravity-and-fall",
+      "node": "actor-collision",
+      "name": "Gravity, inertial fall and terminal speed",
+      "summary": "Airborne actors integrate gravity as 9.8 yards per second squared on a 64-unit yard, apply the slow-fall factor, and clamp downward speed at 4005.5 units per second.",
+      "behavior": "Inertia is a separate velocity component that only applies while the actor is airborne or standing on an unwalkable slope; landing on flat ground, swimming or flying clears it. Each collision step subtracts the step duration multiplied by the gravity acceleration from the vertical inertia, where the acceleration is the metric 9.8 multiplied by 64 units per yard, so the engine keeps the vanilla feel of applying a metre-based constant to a yard-based world. A downward inertia is then multiplied by the slow-fall factor and finally clamped from below at the terminal fall speed of 4005.5 units per second downward; when the slow-fall factor is below one it also damps the horizontal inertia, which is how slow-fall spells brake sideways drift. A jump re-seeds the vertical inertia only when the actor is grounded and either not on a slope or already descending faster than the requested rise; otherwise the request is simply added to the existing inertia, which is what makes air control behave differently on slopes. Actors that tell the solver they are inert and underwater rise at a fixed 25 units per second instead of using gravity.",
+      "constants": [
+        {
+          "name": "gravity constant",
+          "value": 9.8,
+          "unit": "yards per second squared, integrated once per collision step",
+          "source": "components/misc/constants.hpp:23"
+        },
+        {
+          "name": "units per yard",
+          "value": 64,
+          "unit": "game units per yard, dividing the world scale used by the gravity constant",
+          "source": "components/misc/constants.hpp:10"
+        },
+        {
+          "name": "terminal fall speed",
+          "value": -4005.5,
+          "unit": "game units per second downward, clamped once per collision step",
+          "source": "components/misc/constants.hpp:27"
+        },
+        {
+          "name": "inert body rise speed",
+          "value": 25,
+          "unit": "game units per second upward, per collision step while inert and submerged",
+          "source": "apps/openmw/mwphysics/movementsolver.cpp:160"
+        }
+      ],
+      "sources": [
+        {
+          "path": "components/misc/constants.hpp",
+          "line": 23
+        },
+        {
+          "path": "components/misc/constants.hpp",
+          "line": 24
+        },
+        {
+          "path": "components/misc/constants.hpp",
+          "line": 27
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 160
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 434
+        },
+        {
+          "path": "apps/openmw/mwphysics/movementsolver.cpp",
+          "line": 436
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "terminal velocity",
+        "slow fall",
+        "jump inertia"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "feel"
+      ]
+    },
+    {
+      "id": "input-to-controls",
+      "node": "input-controls",
+      "name": "Held input becoming the actor control record",
+      "summary": "The built-in Lua player script converts held range actions into a forward and a lateral request plus run, sneak, jump and use flags, and the engine copies that record into the movement settings.",
+      "behavior": "Four range actions (forward, backward, right, left) default to zero and are combined by subtraction, so opposite keys cancel; run and sneak are boolean actions with an always-run inversion for run and an optional toggle for sneak. The jump trigger does not set the jump flag directly: it sets a one-shot attempt variable that the frame handler writes into the control record and then clears, so a single tap produces exactly one jump request instead of repeating while the key is held. Movement input is suppressed when the world is paused, when the player controls switch is off, when any UI mode is open, or when a paralysis effect has a magnitude above zero, with god mode exempt from the paralysis check. The engine side copies the record every frame: lateral input becomes the first movement axis, forward input the second, a jump request raises the third axis to one, pitch and yaw changes replace the rotation axes, the speed factor becomes the input vector length, and run, sneak and attack type are written to the stats. Casting a spell is special: the use flag is raised for a single frame so a held button does not attempt a spell on every frame, while a drawn weapon keeps the use flag raised while the button is held.",
+      "constants": [
+        {
+          "name": "range action default",
+          "value": 0,
+          "unit": "unitless axis value reported while a movement key is not held, sampled per frame",
+          "source": "files/data/scripts/omw/input/playercontrols.lua:29"
+        },
+        {
+          "name": "paralysis magnitude gate",
+          "value": 0,
+          "unit": "effect magnitude; values above it disable movement input, checked per frame",
+          "source": "files/data/scripts/omw/input/playercontrols.lua:115"
+        },
+        {
+          "name": "jump request encoding",
+          "value": 1,
+          "unit": "unitless third-axis value meaning a jump request, consumed once per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:382"
+        }
+      ],
+      "sources": [
+        {
+          "path": "files/data/scripts/omw/input/playercontrols.lua",
+          "line": 88
+        },
+        {
+          "path": "files/data/scripts/omw/input/playercontrols.lua",
+          "line": 99
+        },
+        {
+          "path": "files/data/scripts/omw/input/playercontrols.lua",
+          "line": 115
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 373
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 379
+        },
+        {
+          "path": "apps/openmw/mwinput/actionmanager.cpp",
+          "line": 39
+        }
+      ],
+      "capabilities": [
+        "input mapping",
+        "control gating",
+        "action edges"
+      ],
+      "tags": [
+        "input",
+        "controls",
+        "lua"
+      ]
+    },
+    {
+      "id": "analog-move-remap",
+      "node": "input-controls",
+      "name": "Analog stick walk and run remap",
+      "summary": "Below half stick deflection the analog movement is doubled and treated as walking; above it the magnitude is rescaled so full deflection always means running at the character current speed ratio.",
+      "behavior": "The smooth movement script normalizes the two-axis stick vector and branches on its length at a switch point of one half. Under the switch point the result is flagged as walking and the vector is scaled by two, which maps the lower half of the stick onto a normalized speed while the character walks. Above it the vector stays normalized but the magnitude is interpolated between the character walk-to-run speed ratio and one, so the transition is continuous when the ratio happens to be one and otherwise jumps only by the ratio gap at the switch point. Sneaking, being airborne or swimming bypasses the remap entirely and always reports running, because those states cannot walk. The remapped value is returned from a bound action so it overrides the standard binding only when non-zero, and the run flag is recomputed from the same sample so speed and locomotion animation stay consistent. The character controller then smooths the resulting speed factor over several frames rather than applying it instantly.",
+      "constants": [
+        {
+          "name": "analog switch point",
+          "value": 0.5,
+          "unit": "normalized stick magnitude from 0 to 1, evaluated per input sample",
+          "source": "files/data/scripts/omw/input/smoothmovement.lua:39"
+        },
+        {
+          "name": "walk band scale",
+          "value": 2,
+          "unit": "multiplier applied to stick magnitude below the switch point, per input sample",
+          "source": "files/data/scripts/omw/input/smoothmovement.lua:41"
+        },
+        {
+          "name": "run band span factor",
+          "value": 2,
+          "unit": "multiplier over the remaining stick travel above the switch point, per input sample",
+          "source": "files/data/scripts/omw/input/smoothmovement.lua:44"
+        }
+      ],
+      "sources": [
+        {
+          "path": "files/data/scripts/omw/input/smoothmovement.lua",
+          "line": 34
+        },
+        {
+          "path": "files/data/scripts/omw/input/smoothmovement.lua",
+          "line": 39
+        },
+        {
+          "path": "files/data/scripts/omw/input/smoothmovement.lua",
+          "line": 44
+        },
+        {
+          "path": "files/data/scripts/omw/input/smoothmovement.lua",
+          "line": 63
+        }
+      ],
+      "capabilities": [
+        "analog movement",
+        "walk and run blending",
+        "input remap"
+      ],
+      "tags": [
+        "input",
+        "movement",
+        "gamepad"
+      ]
+    },
+    {
+      "id": "look-scaling",
+      "node": "input-controls",
+      "name": "Mouse and stick look scaling",
+      "summary": "Mouse motion is converted to yaw and pitch per event with a fixed 256-unit divisor, while stick look uses a per-second rate, so only the stick path is frame-rate independent.",
+      "behavior": "A mouse motion event contributes horizontal motion times the sensitivity divided by 256, and vertical motion times the sensitivity, a vertical multiplier and the same divisor; the sign is flipped by the invert settings and the result is added to the player yaw and pitch requests, which the character controller later folds into the rotation passed to the world. Because the divisor is applied to a per-event delta, look speed scales with mouse event rate rather than with time, which is why the same travel produces different rotation at different polling rates. The stick path multiplies the analog axis by the frame delta and by 1000 before dividing by 256, so it is expressed per second and stays stable across frame rates. Mouse motion is ignored while the player looking switch is off or while vanity mode consumes the rotation, and the gamepad cursor path uses the frame delta times 1500 divided by the UI scale for GUI movement. Pitch is clamped by the camera to just under a quarter turn with a one-micro-radian margin, so the view can never reach the degenerate straight-up or straight-down orientation.",
+      "constants": [
+        {
+          "name": "mouse look divisor",
+          "value": 256,
+          "unit": "event counts per unit of look, applied per input event",
+          "source": "apps/openmw/mwinput/mousemanager.cpp:99"
+        },
+        {
+          "name": "stick look rate",
+          "value": 1000,
+          "unit": "look units per second at full axis deflection, scaled once per frame",
+          "source": "apps/openmw/mwinput/mousemanager.cpp:236"
+        },
+        {
+          "name": "cursor move rate",
+          "value": 1500,
+          "unit": "pixels per second at full axis deflection, scaled per frame",
+          "source": "apps/openmw/mwinput/controllermanager.cpp:102"
+        },
+        {
+          "name": "pitch clamp margin",
+          "value": 0.000001,
+          "unit": "radians subtracted from a quarter turn, applied whenever pitch is clamped",
+          "source": "apps/openmw/mwrender/camera.cpp:325"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwinput/mousemanager.cpp",
+          "line": 99
+        },
+        {
+          "path": "apps/openmw/mwinput/mousemanager.cpp",
+          "line": 236
+        },
+        {
+          "path": "apps/openmw/mwinput/controllermanager.cpp",
+          "line": 102
+        },
+        {
+          "path": "apps/openmw/mwworld/player.cpp",
+          "line": 166
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 325
+        }
+      ],
+      "capabilities": [
+        "look sensitivity",
+        "mouse and stick scaling",
+        "pitch clamp"
+      ],
+      "tags": [
+        "input",
+        "camera",
+        "feel"
+      ]
+    },
+    {
+      "id": "walk-run-speed",
+      "node": "actor-motion",
+      "name": "Walk and run speed from attributes and skills",
+      "summary": "Walk speed blends between two configured endpoints with one percent per point of Speed, and run speed multiplies that blend by a skill-driven factor, so both are recomputed every frame rather than cached.",
+      "behavior": "Walk speed is computed as the low endpoint plus one percent of the Speed attribute times the span between the low and high endpoints, so the attribute acts as a percentage over a linear ramp. The result is then reduced by the encumbrance effect times the normalized encumbrance, floored at zero, and multiplied by a sneak multiplier when the actor is sneaking. Run speed is the walk speed times a factor that starts at a base multiplier and grows by one percent of the Athletics skill times an athletics bonus, so a weak athlete runs only slightly faster than walking while a strong one approaches the configured ceiling. The maximum speed selector decides which of these applies: over-encumbered actors get zero, levitating actors get a flight speed derived from Speed plus the levitation magnitude, swimming actors get the aquatic formula, running non-sneaking actors get run speed, everyone else walks. Werewolves get an extra multiplier while running with nothing drawn. Movement animation speed is scaled from the same number, so raising Athletics visibly speeds up the walk cycle too.",
+      "constants": [
+        {
+          "name": "walk speed attribute weight",
+          "value": 0.01,
+          "unit": "fraction of the walk speed span per point of Speed, recomputed per frame",
+          "source": "apps/openmw/mwclass/npc.cpp:1378"
+        },
+        {
+          "name": "run speed skill weight",
+          "value": 0.01,
+          "unit": "fraction of the athletics run bonus per skill point, recomputed per frame",
+          "source": "apps/openmw/mwclass/npc.cpp:1392"
+        },
+        {
+          "name": "over-encumbrance gate",
+          "value": 1,
+          "unit": "normalized encumbrance ratio above which speed is zero, evaluated per frame",
+          "source": "apps/openmw/mwclass/npc.cpp:910"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 864
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 1370
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 1378
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 1388
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 1392
+        }
+      ],
+      "capabilities": [
+        "locomotion speed",
+        "attribute scaling",
+        "skill scaling",
+        "sneak speed"
+      ],
+      "tags": [
+        "movement",
+        "stats",
+        "feel"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "actor-motion",
+      "name": "Jump impulse from acrobatics",
+      "summary": "Jump velocity comes from a piecewise acrobatics curve, an encumbrance term, the run multiplier and the fatigue term, with gravity added back and the whole result divided by three.",
+      "behavior": "The skill is split at fifty: the portion above fifty is stored separately and the lower portion enters a power law with a divisor of fifteen and an exponent taken from a game setting. The above-fifty portion contributes three times the skill times that same exponent setting, so it grows linearly while the low portion grows as a power curve, which is what makes the early skill points feel weak and the later ones explosive. A jump magic effect adds 64 units of velocity per point of magnitude. The sum is multiplied by an encumbrance term that shrinks with load, by the run multiplier when the run stance is active, by the fatigue term, and then the gravity acceleration is added back and the result divided by three, which normalises the number into the velocity domain the controller expects. The controller applies it to the vertical axis: a standing jump gets the full value, while a moving jump builds a vector from the normalized lateral direction plus one unit upward and scales by the jump height times 0.707, splitting the impulse so the horizontal and vertical magnitudes stay balanced. Jumps are refused when sneaking, swimming, flying, collision-disabled, paralysed or over-encumbered. While airborne the horizontal request is scaled by the base plus the acrobatics-weighted multiplier capped at one and the vertical request is zeroed, so air control can slow but never accelerate the jump.",
+      "constants": [
+        {
+          "name": "acrobatics split point",
+          "value": 50,
+          "unit": "skill points; the portion above this uses a linear term, checked per jump",
+          "source": "apps/openmw/mwclass/npc.cpp:924"
+        },
+        {
+          "name": "power curve divisor",
+          "value": 15,
+          "unit": "skill points per unit base of the acrobatics power term, evaluated per jump",
+          "source": "apps/openmw/mwclass/npc.cpp:931"
+        },
+        {
+          "name": "above-split weight",
+          "value": 3,
+          "unit": "multiplier on above-split skill points, per jump calculation",
+          "source": "apps/openmw/mwclass/npc.cpp:932"
+        },
+        {
+          "name": "jump effect scale",
+          "value": 64,
+          "unit": "game units of velocity per point of jump effect magnitude, per jump calculation",
+          "source": "apps/openmw/mwclass/npc.cpp:933"
+        },
+        {
+          "name": "gravity normalisation divisor",
+          "value": 3,
+          "unit": "divisor applied to the final jump velocity, per jump calculation",
+          "source": "apps/openmw/mwclass/npc.cpp:940"
+        },
+        {
+          "name": "moving jump lateral factor",
+          "value": 0.707,
+          "unit": "unitless split factor applied to the jump velocity, per jump request",
+          "source": "apps/openmw/mwmechanics/character.cpp:2236"
+        },
+        {
+          "name": "air control cap",
+          "value": 1,
+          "unit": "maximum fraction of airborne horizontal speed retained, applied per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2221"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 907
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 931
+        },
+        {
+          "path": "apps/openmw/mwclass/npc.cpp",
+          "line": 940
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2211
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2229
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2236
+        }
+      ],
+      "capabilities": [
+        "jump height",
+        "jump gating",
+        "air control"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "stats"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "actor-motion",
+      "name": "Falling distance to damage",
+      "summary": "Damage starts above a minimum fall height, discounts 1.5 units per acrobatics point plus any jump effect, then scales the remainder by an acrobatics term and a fatigue mitigation.",
+      "behavior": "The controller accumulates the height fallen while airborne and asks for damage only when landing. Below the configured minimum distance the result is zero. Otherwise the effective distance is the fall height minus the minimum, minus 1.5 game units per point of acrobatics and minus the magnitude of any jump effect, floored at zero, so a skilled acrobat can absorb a real height before anything is left over. The remainder is mapped into damage space with a base plus multiplier pair from the settings and then multiplied by an acrobatics term expressed against a skill scale of one hundred, which means both the discounted height and the multiplier shrink as the skill rises, giving a steep non-linear reduction. The final damage is applied at one minus a quarter of the fatigue term, so being exhausted increases damage by up to twenty five percent, and god mode skips the health subtraction entirely.",
+      "constants": [
+        {
+          "name": "acrobatics fall discount",
+          "value": 1.5,
+          "unit": "game units of discounted fall height per acrobatics point, applied once per landing",
+          "source": "apps/openmw/mwmechanics/character.cpp:303"
+        },
+        {
+          "name": "skill percentage scale",
+          "value": 100,
+          "unit": "skill points in the acrobatics damage term, evaluated once per landing",
+          "source": "apps/openmw/mwmechanics/character.cpp:306"
+        },
+        {
+          "name": "fatigue damage mitigation",
+          "value": 0.25,
+          "unit": "fraction of damage offset at a full fatigue term, applied once per landing",
+          "source": "apps/openmw/mwmechanics/character.cpp:2258"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 282
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 289
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 303
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2245
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2258
+        }
+      ],
+      "capabilities": [
+        "fall damage",
+        "skill mitigation",
+        "fatigue scaling"
+      ],
+      "tags": [
+        "damage",
+        "jump",
+        "stats"
+      ]
+    },
+    {
+      "id": "turn-and-smoothing",
+      "node": "actor-motion",
+      "name": "Turn-to-movement and input smoothing",
+      "summary": "Bipeds in third person rotate their body toward the input direction at a rate bounded by a cosine-scaled turn budget, while the analog speed factor chases the target over several frames.",
+      "behavior": "When turn-to-movement is enabled and the actor is a biped that is not the first-person player, the target body angle is derived from the input vector and the side movement angle chases it. Strafing is declared when a weapon or spell is drawn or the actor is swimming and the angle exceeds sixty degrees, in which case the target angle collapses to zero so the body faces forward and the legs play a strafe cycle. If the input reverses while the angle is still large, the speed factor is multiplied by the cosine of the angle floored at zero plus 0.3 capped at one, so reversing direction briefly slows the actor. The angle may change by at most pi times the frame duration times the quantity 2.5 minus the cosine of the residual angle, which allows fast turns when the body is far from the target and slow ones when it is nearly aligned. The analog speed factor chases its target with a maximum change of three times the frame duration for general acceleration, six times for NPCs, and one divided by the configured turning delay for a player turn, with values under 0.001 snapped to zero to stop drift. Upper body yaw is half of the leg yaw when unarmed or swimming and a quarter otherwise.",
+      "constants": [
+        {
+          "name": "strafe angle threshold",
+          "value": 60,
+          "unit": "degrees of movement direction offset that switches to a strafe cycle, per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2096"
+        },
+        {
+          "name": "reverse speed floor",
+          "value": 0.3,
+          "unit": "unitless additive floor on the cosine term, applied per frame while turning",
+          "source": "apps/openmw/mwmechanics/character.cpp:2104"
+        },
+        {
+          "name": "backward hysteresis angle",
+          "value": 20,
+          "unit": "degrees below which the backward-facing flag is latched, per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2105"
+        },
+        {
+          "name": "turn budget base",
+          "value": 2.5,
+          "unit": "radians per second factor in the turn budget, scaled by frame duration",
+          "source": "apps/openmw/mwmechanics/character.cpp:2108"
+        },
+        {
+          "name": "npc input chase rate",
+          "value": 6,
+          "unit": "speed factor change per second, applied per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2050"
+        },
+        {
+          "name": "input chase rate",
+          "value": 3,
+          "unit": "speed factor change per second, applied per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2056"
+        },
+        {
+          "name": "speed snap epsilon",
+          "value": 0.001,
+          "unit": "unitless speed factor below which input is zeroed, per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2067"
+        },
+        {
+          "name": "default player turning delay",
+          "value": 0.333,
+          "unit": "seconds used as the inverse turn rate for player input, read once per frame",
+          "source": "files/settings-default.cfg:349"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2050
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2056
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2082
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2104
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2108
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2111
+        },
+        {
+          "path": "files/settings-default.cfg",
+          "line": 349
+        }
+      ],
+      "capabilities": [
+        "turn to movement",
+        "strafing detection",
+        "input smoothing",
+        "body yaw"
+      ],
+      "tags": [
+        "movement",
+        "animation",
+        "feel"
+      ]
+    },
+    {
+      "id": "movement-animation-rate",
+      "node": "actor-motion",
+      "name": "Matching animation playback to actual motion",
+      "summary": "Locomotion clips are speed-scaled against the character speed with a ten-times ceiling, turning clips are scaled by the yaw rate with a 1.5 ceiling, and short turns keep their turn clip for a fade window.",
+      "behavior": "When the actor is turning, the movement clip rate is the minimum of 1.5 and the absolute yaw change divided by the frame duration and by pi, so a half turn per second plays at its natural rate and only very fast spins saturate. When the actor is moving instead, the clip rate is the character speed divided by the speed the clip was authored for, clamped to 10, and if the animation controls the movement distance then the actor scale is multiplied by at least one and by the ratio over the ceiling, which keeps the travelled distance faithful even when the clip cannot play fast enough. Turning has a persistence window of 0.05 s: while it is counting down and no other movement state applies, the previous movement state is kept, which stops a one frame turn from flickering into idle. Swimming pitch chases the camera pitch with a maximum change of three radians per second so the body does not snap when the view moves.",
+      "constants": [
+        {
+          "name": "turn animation rate cap",
+          "value": 1.5,
+          "unit": "clip playback multiplier for turning, computed per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2399"
+        },
+        {
+          "name": "movement animation rate cap",
+          "value": 10,
+          "unit": "clip playback multiplier for locomotion, computed per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2406"
+        },
+        {
+          "name": "turn animation persistence",
+          "value": 0.05,
+          "unit": "seconds the turn clip is kept after turning stops, counted down per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2364"
+        },
+        {
+          "name": "swim pitch rate",
+          "value": 3,
+          "unit": "radians per second of body pitch change, applied per frame",
+          "source": "apps/openmw/mwmechanics/character.cpp:2342"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2342
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2364
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2399
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2406
+        },
+        {
+          "path": "apps/openmw/mwmechanics/character.cpp",
+          "line": 2408
+        }
+      ],
+      "capabilities": [
+        "animation speed",
+        "motion matching",
+        "state persistence"
+      ],
+      "tags": [
+        "animation",
+        "movement",
+        "feel"
+      ]
+    },
+    {
+      "id": "third-person-camera",
+      "node": "camera",
+      "name": "Third-person pivot, focal point and collision",
+      "summary": "The pivot sits 124 units above the tracked node, the focal point is lifted ten units to clear ceilings, and two sphere casts of five and ten units keep the camera out of geometry.",
+      "behavior": "In first person the camera position is the tracked node position plus an offset that is rotated by yaw and refreshed during the cull traversal so the view does not lag the skeletal neck by a frame. In third person the pivot is the tracking node world translation raised by the pivot height scaled by the node z scale, so a scaled actor keeps the camera at the same relative height. The focal point adds the current focal offset rotated into world space and then a further ten units of vertical lift, which compensates for the head being slightly above the collision hull. A sphere cast of radius ten from the focal point back toward the offset shortens the offset when something is hit, producing an adjustment coefficient clamped at minus one so the focal point never moves further than the full offset. The camera is then placed along the negated forward axis at the preferred distance, and a second sphere cast of radius five pulls the distance in to the hit point plus five units along the hit normal, which prevents the third-person camera from entering walls while keeping a fixed clearance. The render camera also recomputes the first-person position during culling because animations are evaluated there and reading the stored position would be one frame stale.",
+      "constants": [
+        {
+          "name": "third-person pivot height",
+          "value": 124,
+          "unit": "game units above the tracked node, scaled by node scale, applied per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:63"
+        },
+        {
+          "name": "focal obstacle cast radius",
+          "value": 10,
+          "unit": "game units of sphere radius for the focal point cast, per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:173"
+        },
+        {
+          "name": "focal vertical lift",
+          "value": 10,
+          "unit": "game units added to the focal offset height, per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:180"
+        },
+        {
+          "name": "camera obstacle cast radius",
+          "value": 5,
+          "unit": "game units of sphere radius for the camera distance cast, per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:172"
+        },
+        {
+          "name": "focal adjustment clamp",
+          "value": -1,
+          "unit": "fraction of the focal offset, lower bound applied per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:191"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 87
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 101
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 160
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 172
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 180
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 201
+        }
+      ],
+      "capabilities": [
+        "third-person camera",
+        "camera collision",
+        "first-person offset"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "render"
+      ]
+    },
+    {
+      "id": "camera-easing",
+      "node": "camera",
+      "name": "Focal easing and deferred preview rotation",
+      "summary": "Focal offsets ease in with a coefficient that grows as the offset shrinks, and an unsent preview rotation is decayed with a rate proportional to its own length.",
+      "behavior": "The focal point target offset is approached once per camera update by a coefficient equal to the frame duration times one plus five divided by the remaining offset length, times the transition speed coefficient and times one minus the previous transition influence, clamped to one. Dividing by the remaining length makes the first update of a large move fast and the tail slow, so the view settles instead of overshooting. When the target changes mid-transition the previous transition speed and offset are preserved and replayed with a decaying influence, which removes the velocity discontinuity. A non-positive frame duration skips the update entirely, so paused frames never advance the easing. In third person an unsent preview rotation is scaled each frame by the minimum of its own length and that length plus one times three times the frame duration, an exponential decay that leaves only a small residual before the rotation is marked finished below one ten-thousandth of a radian. The first-person pitch limit subtracts a one-micro-radian margin from a quarter turn so the orientation quaternion never degenerates.",
+      "constants": [
+        {
+          "name": "focal ease length term",
+          "value": 5,
+          "unit": "game units in the ease coefficient, evaluated per camera update",
+          "source": "apps/openmw/mwrender/camera.cpp:283"
+        },
+        {
+          "name": "focal ease time cap",
+          "value": 1,
+          "unit": "maximum fraction of the remaining offset applied per update",
+          "source": "apps/openmw/mwrender/camera.cpp:285"
+        },
+        {
+          "name": "deferred rotation decay factor",
+          "value": 3,
+          "unit": "multiplier on frame duration in the rotation decay, applied per frame",
+          "source": "apps/openmw/mwrender/camera.cpp:389"
+        },
+        {
+          "name": "deferred rotation completion threshold",
+          "value": 0.0001,
+          "unit": "radians, tested per frame to mark the rotation finished",
+          "source": "apps/openmw/mwrender/camera.cpp:395"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 254
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 283
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 293
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 389
+        },
+        {
+          "path": "apps/openmw/mwrender/camera.cpp",
+          "line": 395
+        }
+      ],
+      "capabilities": [
+        "camera easing",
+        "transition velocity",
+        "preview rotation decay"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "render"
+      ]
+    },
+    {
+      "id": "ai-processing-gate",
+      "node": "ai-behaviour",
+      "name": "Distance gating and per-actor timers",
+      "summary": "Actors only think and animate within a configurable range around the player, and perception, greeting, corpse and light updates are throttled by per-actor accumulators.",
+      "behavior": "Each frame the actor manager measures the squared distance from every actor to the player and compares it with the processing range, whose default of 7168 units is clamped between 3584 and 7168 in the settings layer to keep quests completable. Actors inside the range run the full package stack, engage combat checks, head tracking, crime pursuit and greeting evaluation. Actors outside it only run packages explicitly flagged as always active, which is how escorts and summons keep following at distance, and their character controllers are deactivated and their scene nodes masked out in the second pass over actors. Cheap but visible subsystems use accumulators that add the frame duration and reset when they pass their interval: head tracking at 0.3 s, greeting state at 0.25 s, corpse and summon disposal at 0.2 s, and equipped light update at one second. The player is updated last in the frame, after all non-player actors, so a cell transition triggered by the player cannot invalidate the iteration. AI state is also suppressed for actors that are unconscious, dead or have had AI disabled from a script.",
+      "constants": [
+        {
+          "name": "processing range default",
+          "value": 7168,
+          "unit": "game units from the player, evaluated per frame",
+          "source": "files/settings-default.cfg:276"
+        },
+        {
+          "name": "processing range clamp",
+          "value": 7168,
+          "unit": "game units, upper clamp applied whenever the setting is read",
+          "source": "components/settings/categories/game.hpp:31"
+        },
+        {
+          "name": "head tracking interval",
+          "value": 0.3,
+          "unit": "seconds between head tracking updates, accumulated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1529"
+        },
+        {
+          "name": "greeting interval",
+          "value": 0.25,
+          "unit": "seconds between greeting state updates, accumulated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:241"
+        },
+        {
+          "name": "summons and corpse disposal interval",
+          "value": 0.2,
+          "unit": "seconds between disposal passes, accumulated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1535"
+        },
+        {
+          "name": "equipped light interval",
+          "value": 1,
+          "unit": "seconds between equipped light updates, accumulated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1527"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 241
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1527
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1529
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1535
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1562
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1701
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aisequence.cpp",
+          "line": 271
+        }
+      ],
+      "capabilities": [
+        "ai activation",
+        "update throttling",
+        "distance culling"
+      ],
+      "tags": [
+        "ai",
+        "performance",
+        "timing"
+      ]
+    },
+    {
+      "id": "melee-combat-loop",
+      "node": "ai-behaviour",
+      "name": "Melee engagement, aiming and attack cadence",
+      "summary": "Combat aims the body at the target, refuses to attack until the residual aim error is under three degrees for melee or half a degree for ranged, and gates each attack on action cooldown plus a reaction timer.",
+      "behavior": "Combat first verifies that the actor can fight the target; if not, it stops attacking and either ends the package or falls back to fleeing when the target is the player or a player ally that has already been hit. Otherwise it holds the run flag, decrements the current action cooldown by the frame duration, and only prepares a new action when the cooldown has elapsed and the character controller reports it is ready. The reaction timer is then advanced and the frame returns without attacking while it is still waiting, which staggers the first blow after acquiring a target. When the target is within the current action range and line of sight is clear, the body pitch and yaw are aimed at the aim point and the actor returns early whenever the smooth turn step is not finished; the tolerance is three degrees for melee and half a degree for ranged, so archers need to be nearly perfectly aligned. Fleeing picks a destination away from the target, and when line of sight is lost the actor simply runs for one second before settling to idle, which prevents direction flipping. Pursuit walks toward the target and accepts arrival within a path tolerance of 100 units on both the horizontal and vertical axes.",
+      "constants": [
+        {
+          "name": "melee aim tolerance",
+          "value": 3,
+          "unit": "degrees of residual aim error before a melee attack may start, checked per frame",
+          "source": "apps/openmw/mwmechanics/aicombat.cpp:506"
+        },
+        {
+          "name": "ranged aim tolerance",
+          "value": 0.5,
+          "unit": "degrees of residual aim error before a ranged attack may start, checked per frame",
+          "source": "apps/openmw/mwmechanics/aicombat.cpp:506"
+        },
+        {
+          "name": "blind flee duration",
+          "value": 1,
+          "unit": "seconds of blind running after losing sight, accumulated per frame",
+          "source": "apps/openmw/mwmechanics/aicombat.cpp:381"
+        },
+        {
+          "name": "pursuit path tolerance",
+          "value": 100,
+          "unit": "game units of horizontal and vertical distance treated as arrival, checked per frame",
+          "source": "apps/openmw/mwmechanics/aipursue.cpp:59"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "line": 113
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "line": 203
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "line": 207
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "line": 381
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aicombat.cpp",
+          "line": 506
+        },
+        {
+          "path": "apps/openmw/mwmechanics/aipursue.cpp",
+          "line": 59
+        }
+      ],
+      "capabilities": [
+        "combat ai",
+        "aim tolerance",
+        "attack cooldown",
+        "fleeing"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "timing"
+      ]
+    },
+    {
+      "id": "npc-avoidance",
+      "node": "ai-behaviour",
+      "name": "Predictive actor-vs-actor avoidance",
+      "summary": "A two-second collision prediction widens the personal space of moving NPCs to 200 units and applies a sideways correction that fades to nothing at the outer edge of that band.",
+      "behavior": "Once per frame, if AI is active, the manager builds a cache of nearby actor positions and half extents, then for each actor that is moving or giving way it computes a look-ahead horizon of two seconds, shortened when the active AI package can report a shorter time to its own destination. Every other actor that is in front and within the band is tested with relative velocity to find a time to collision; the contact distance is a ten-unit minimum gap plus both horizontal half extents, capped by the current separation. The correction is proportional to the predicted position at the collision time and scaled by a coefficient that ramps from one at the strict distance of 100 units down to zero at the partial distance of 200 units, so distant actors are corrected mildly and close ones fully. The correction is added to the requested movement, then the forward component is clamped to be non-negative so the NPC sidesteps rather than backing away, and the result is renormalized while keeping the original speed. Corpses still get half of the correction because stepping around bodies looks natural. When the correction is significant and the actor should acknowledge it, the body is turned toward the approaching actor as well.",
+      "constants": [
+        {
+          "name": "minimum contact gap",
+          "value": 10,
+          "unit": "game units added to both half extents, evaluated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1355"
+        },
+        {
+          "name": "partial avoidance distance",
+          "value": 200,
+          "unit": "game units beyond which no correction is applied, evaluated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1356"
+        },
+        {
+          "name": "strict avoidance distance",
+          "value": 100,
+          "unit": "game units inside which the correction is full, evaluated per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1357"
+        },
+        {
+          "name": "collision prediction horizon",
+          "value": 2,
+          "unit": "seconds of look-ahead motion, recomputed per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1358"
+        },
+        {
+          "name": "corpse correction factor",
+          "value": 0.5,
+          "unit": "fraction of the sideways correction applied for a dead actor, per frame",
+          "source": "apps/openmw/mwmechanics/actors.cpp:1502"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1355
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1358
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1435
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1497
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1502
+        },
+        {
+          "path": "apps/openmw/mwmechanics/actors.cpp",
+          "line": 1511
+        }
+      ],
+      "capabilities": [
+        "actor avoidance",
+        "collision prediction",
+        "give way",
+        "steering"
+      ],
+      "tags": [
+        "ai",
+        "steering",
+        "crowds"
+      ]
+    },
+    {
+      "id": "cell-streaming",
+      "node": "cell-streaming",
+      "name": "Exterior grid streaming with hysteresis",
+      "summary": "Exteriors are 8192-unit cells kept in a three-by-three grid that only shifts once the player is more than half a cell plus 1024 units from the grid centre, with a preloaded ring beyond it.",
+      "behavior": "An exterior cell is 8192 units square and the active grid is a square of twice the grid radius plus one cells, which with a radius of one gives nine loaded cells; newly supported worldspaces with 4096-unit cells use a radius of two so the same world area stays loaded. The grid centre is sticky: it is kept while the player stays within half a cell plus the 1024-unit loading threshold, measured as the larger of the two axis distances, and only then is the new centre computed from the player position. On a centre change the loader unloads every cell outside the new radius in one pass and then loads or keeps the cells inside it, so a diagonal crossing does not thrash neighbours. Preloading looks one ring further out, at radius plus one, and starts a cell as soon as its axis distance falls below half a cell plus a full cell minus the loading threshold plus the preload distance, taking the minimum distance over the current and predicted player positions. Teleport doors preload their destination when the player is within the preload distance, so a door transition does not show load stalls. For interiors, a player falling more than 90 units below the lowest reference in the cell is teleported to the cell anchor, but only when actor collision is enabled.",
+      "constants": [
+        {
+          "name": "exterior cell size",
+          "value": 8192,
+          "unit": "game units per exterior cell edge, fixed world scale",
+          "source": "components/misc/constants.hpp:30"
+        },
+        {
+          "name": "active grid radius",
+          "value": 1,
+          "unit": "cells on each side of the centre cell, evaluated on every grid change",
+          "source": "components/misc/constants.hpp:34"
+        },
+        {
+          "name": "esm4 cell size",
+          "value": 4096,
+          "unit": "game units per exterior cell edge for the newer worldspace format, fixed world scale",
+          "source": "components/misc/constants.hpp:31"
+        },
+        {
+          "name": "esm4 grid radius multiplier",
+          "value": 2,
+          "unit": "multiple of the active grid radius used for smaller cells, applied per grid change",
+          "source": "components/misc/constants.hpp:37"
+        },
+        {
+          "name": "grid loading threshold",
+          "value": 1024,
+          "unit": "game units of hysteresis around the half-cell boundary, evaluated per player move",
+          "source": "apps/openmw/mwworld/scene.cpp:896"
+        },
+        {
+          "name": "void fall reset depth",
+          "value": -90,
+          "unit": "game units below the lowest reference bound, evaluated per player move in interiors",
+          "source": "apps/openmw/mwworld/scene.cpp:581"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "line": 566
+        },
+        {
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "line": 581
+        },
+        {
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "line": 621
+        },
+        {
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "line": 896
+        },
+        {
+          "path": "apps/openmw/mwworld/scene.cpp",
+          "line": 1233
+        },
+        {
+          "path": "components/misc/constants.hpp",
+          "line": 30
+        }
+      ],
+      "capabilities": [
+        "cell streaming",
+        "grid hysteresis",
+        "preloading",
+        "void recovery"
+      ],
+      "tags": [
+        "world",
+        "streaming",
+        "performance"
+      ]
+    },
+    {
+      "id": "activation-reach",
+      "node": "activation",
+      "name": "Crosshair focus and activation reach",
+      "summary": "The focused reference comes from a ray through the screen centre limited by the activation distance setting plus telekinesis, and the console widens that reach fifty times.",
+      "behavior": "The activation distance is a game setting unless a command line override is supplied, in which case the override wins and the setting is never read. In game mode the focus ray is cast from the camera through the centre of the viewport, with the reach plus the camera distance so that a third-person camera does not shorten the effective reach, and with telekinesis magnitude converted from feet to game units by multiplying by the units-per-foot constant rounded up, because the original engine rounds sizes upward. A hit beyond the plain reach is only kept when the object class allows telekinesis; otherwise the focus is cleared. In GUI mode the reach switches to the information distance so tooltips work at a different range, and in console mode it is the activation distance times fifty so distant references can be addressed. Activation itself is a separate step: the player checks that no GUI mode is open and that the character is not paralysed, knocked down or dead, then forwards the focused object to the activation event if the object offers a tooltip. Because focus is recomputed every frame from the current camera, looking away or moving out of reach drops the target immediately.",
+      "constants": [
+        {
+          "name": "console reach multiplier",
+          "value": 50,
+          "unit": "multiple of the activation distance, evaluated per focus query in console mode",
+          "source": "apps/openmw/mwworld/worldimp.cpp:922"
+        },
+        {
+          "name": "screen centre ray coordinate",
+          "value": 0.5,
+          "unit": "normalized viewport coordinate, applied per focus ray cast",
+          "source": "apps/openmw/mwworld/worldimp.cpp:1728"
+        },
+        {
+          "name": "units per foot",
+          "value": 21.33333333,
+          "unit": "game units per foot, multiplied by telekinesis magnitude per focus query",
+          "source": "components/misc/constants.hpp:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "line": 902
+        },
+        {
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "line": 922
+        },
+        {
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "line": 1713
+        },
+        {
+          "path": "apps/openmw/mwworld/worldimp.cpp",
+          "line": 1728
+        },
+        {
+          "path": "apps/openmw/mwworld/player.cpp",
+          "line": 188
+        },
+        {
+          "path": "components/misc/constants.hpp",
+          "line": 12
+        }
+      ],
+      "capabilities": [
+        "interaction",
+        "focus ray",
+        "telekinesis reach"
+      ],
+      "tags": [
+        "interaction",
+        "camera",
+        "traversal"
+      ]
+    }
+  ]
+}

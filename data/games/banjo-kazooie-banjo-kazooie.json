@@ -1,0 +1,1868 @@
+{
+  "version": 1,
+  "id": "banjo-kazooie-banjo-kazooie",
+  "title": "Banjo-Kazooie",
+  "repo": "https://github.com/n64decomp/banjo-kazooie",
+  "sha": "e8d31fa53645616fcac6e051543222b973a2edb0",
+  "nodes": [
+    {
+      "id": "player-physics",
+      "name": "Player physics integrator",
+      "purpose": "Delta-time velocity integration, gravity and terminal-velocity clamping, and the per-action acceleration blend that turns a target speed into world-space motion",
+      "paths": [
+        "src/core2/ba/physics.c"
+      ],
+      "functions": [
+        {
+          "name": "baphysics_update",
+          "path": "src/core2/ba/physics.c",
+          "lines": [
+            244,
+            291
+          ]
+        },
+        {
+          "name": "__baphysics_update_normal",
+          "path": "src/core2/ba/physics.c",
+          "lines": [
+            38,
+            107
+          ]
+        },
+        {
+          "name": "__baphysics_update_no_gravity",
+          "path": "src/core2/ba/physics.c",
+          "lines": [
+            110,
+            133
+          ]
+        },
+        {
+          "name": "baphysics_set_type",
+          "path": "src/core2/ba/physics.c",
+          "lines": [
+            298,
+            307
+          ]
+        },
+        {
+          "name": "baphysics_reset_gravity",
+          "path": "src/core2/ba/physics.c",
+          "lines": [
+            397,
+            399
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-locomotion",
+      "name": "Ground locomotion and facing",
+      "purpose": "Stick-zone ground speed bands, the skid and pivot action, and the rate-limited facing that separates the drawn heading from the wanted heading",
+      "paths": [
+        "src/core2/bs/walk.c",
+        "src/core2/bs/turn.c",
+        "src/core2/playerutils.c",
+        "src/core2/yaw.c"
+      ],
+      "functions": [
+        {
+          "name": "func_802B6D00",
+          "path": "src/core2/bs/walk.c",
+          "lines": [
+            41,
+            79
+          ]
+        },
+        {
+          "name": "bswalk_update",
+          "path": "src/core2/bs/walk.c",
+          "lines": [
+            289,
+            337
+          ]
+        },
+        {
+          "name": "bsturn_update",
+          "path": "src/core2/bs/turn.c",
+          "lines": [
+            32,
+            66
+          ]
+        },
+        {
+          "name": "yaw_update",
+          "path": "src/core2/yaw.c",
+          "lines": [
+            76,
+            88
+          ]
+        },
+        {
+          "name": "func_8028B4C4",
+          "path": "src/core2/playerutils.c",
+          "lines": [
+            266,
+            268
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-airborne",
+      "name": "Jumps and air actions",
+      "purpose": "Jump, high flip and fall actions with their own launch speeds, gravity overrides and exit conditions, plus the shared helper that picks which air action a jump press means",
+      "paths": [
+        "src/core2/bs/jump.c",
+        "src/core2/bs/bFlip.c",
+        "src/core2/code_14420.c"
+      ],
+      "functions": [
+        {
+          "name": "bsjump_init",
+          "path": "src/core2/bs/jump.c",
+          "lines": [
+            37,
+            84
+          ]
+        },
+        {
+          "name": "bsjump_update",
+          "path": "src/core2/bs/jump.c",
+          "lines": [
+            86,
+            164
+          ]
+        },
+        {
+          "name": "bsbflip_init",
+          "path": "src/core2/bs/bFlip.c",
+          "lines": [
+            47,
+            63
+          ]
+        },
+        {
+          "name": "bsbflip_update",
+          "path": "src/core2/bs/bFlip.c",
+          "lines": [
+            65,
+            163
+          ]
+        },
+        {
+          "name": "bs_getTypeOfJump",
+          "path": "src/core2/code_14420.c",
+          "lines": [
+            772,
+            782
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics",
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "player-flight",
+      "name": "Flight and wing beats",
+      "purpose": "Take-off, pitch-driven cruise speeds and the interruptible wing-beat queue that supplies extra lift",
+      "paths": [
+        "src/core2/bs/bFly.c",
+        "src/core2/ba/flap.c"
+      ],
+      "functions": [
+        {
+          "name": "bsbfly_enter_update",
+          "path": "src/core2/bs/bFly.c",
+          "lines": [
+            157,
+            178
+          ]
+        },
+        {
+          "name": "bsbfly_init",
+          "path": "src/core2/bs/bFly.c",
+          "lines": [
+            185,
+            204
+          ]
+        },
+        {
+          "name": "bsbfly_update",
+          "path": "src/core2/bs/bFly.c",
+          "lines": [
+            206,
+            315
+          ]
+        },
+        {
+          "name": "baflap_add",
+          "path": "src/core2/ba/flap.c",
+          "lines": [
+            37,
+            59
+          ]
+        },
+        {
+          "name": "baflap_update",
+          "path": "src/core2/ba/flap.c",
+          "lines": [
+            87,
+            100
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics",
+        "player-airborne"
+      ]
+    },
+    {
+      "id": "player-swim",
+      "name": "Surface swimming and diving",
+      "purpose": "Buoyant surface paddling, the dive entry impulse and the underwater velocity-approach states that replace gravity",
+      "paths": [
+        "src/core2/bs/swim.c",
+        "src/core2/bs/bSwim.c"
+      ],
+      "functions": [
+        {
+          "name": "__bsswim_enteredWater",
+          "path": "src/core2/bs/swim.c",
+          "lines": [
+            77,
+            86
+          ]
+        },
+        {
+          "name": "bsswim_swim_init",
+          "path": "src/core2/bs/swim.c",
+          "lines": [
+            194,
+            219
+          ]
+        },
+        {
+          "name": "bsswim_swim_update",
+          "path": "src/core2/bs/swim.c",
+          "lines": [
+            221,
+            265
+          ]
+        },
+        {
+          "name": "bsbdive_surfacing",
+          "path": "src/core2/bs/bSwim.c",
+          "lines": [
+            65,
+            68
+          ]
+        },
+        {
+          "name": "bsSwim_dive_update",
+          "path": "src/core2/bs/bSwim.c",
+          "lines": [
+            345,
+            374
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "player-trot",
+      "name": "Four-legged sprint mode",
+      "purpose": "The carried-partner gait with a wider speed band, a timed turbo extension, a reduced ceiling on harmful ground and its own jump arc",
+      "paths": [
+        "src/core2/bs/bTrot.c"
+      ],
+      "functions": [
+        {
+          "name": "bsbtrot_walkUpdateTargetVelocity",
+          "path": "src/core2/bs/bTrot.c",
+          "lines": [
+            92,
+            100
+          ]
+        },
+        {
+          "name": "bsbtrot_walk_update",
+          "path": "src/core2/bs/bTrot.c",
+          "lines": [
+            292,
+            337
+          ]
+        },
+        {
+          "name": "bsbtrot_jump_init",
+          "path": "src/core2/bs/bTrot.c",
+          "lines": [
+            345,
+            371
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics",
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "player-attack",
+      "name": "Beak strike",
+      "purpose": "The airborne forward strike: its hover impulse, forward reach and the short window in which the hit is live",
+      "paths": [
+        "src/core2/bs/bPeck.c"
+      ],
+      "functions": [
+        {
+          "name": "bsbpeck_init",
+          "path": "src/core2/bs/bPeck.c",
+          "lines": [
+            29,
+            75
+          ]
+        },
+        {
+          "name": "bsbpeck_update",
+          "path": "src/core2/bs/bPeck.c",
+          "lines": [
+            77,
+            116
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-airborne"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Follow camera",
+      "purpose": "Third-person orbit around a raised focus point, distance and height smoothing, occlusion probing and the pitch envelope used to frame the body",
+      "paths": [
+        "src/core2/nc/dynamicCamera.c",
+        "src/core2/nc/dynamicCam1.c"
+      ],
+      "functions": [
+        {
+          "name": "func_802BC640",
+          "path": "src/core2/nc/dynamicCamera.c",
+          "lines": [
+            91,
+            133
+          ]
+        },
+        {
+          "name": "func_802BCA58",
+          "path": "src/core2/nc/dynamicCamera.c",
+          "lines": [
+            200,
+            221
+          ]
+        },
+        {
+          "name": "func_802BCBD4",
+          "path": "src/core2/nc/dynamicCamera.c",
+          "lines": [
+            224,
+            250
+          ]
+        },
+        {
+          "name": "ncDynamicCamera_update",
+          "path": "src/core2/nc/dynamicCamera.c",
+          "lines": [
+            299,
+            391
+          ]
+        },
+        {
+          "name": "func_802BD51C",
+          "path": "src/core2/nc/dynamicCamera.c",
+          "lines": [
+            575,
+            595
+          ]
+        },
+        {
+          "name": "ncDynamicCam1_update",
+          "path": "src/core2/nc/dynamicCam1.c",
+          "lines": [
+            15,
+            49
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "hazards",
+      "name": "Environmental damage",
+      "purpose": "Timed damage ticks from hot, freezing and swamp surfaces, the fall-distance damage ladder and the temporary invulnerability window that gates both",
+      "paths": [
+        "src/core2/hazards.c",
+        "src/core2/ba/iFrame.c",
+        "src/core2/ba/falldamage.c"
+      ],
+      "functions": [
+        {
+          "name": "isPlayerInHazard",
+          "path": "src/core2/hazards.c",
+          "lines": [
+            190,
+            217
+          ]
+        },
+        {
+          "name": "canTakeGroundDamage",
+          "path": "src/core2/hazards.c",
+          "lines": [
+            219,
+            254
+          ]
+        },
+        {
+          "name": "hazards_update",
+          "path": "src/core2/hazards.c",
+          "lines": [
+            256,
+            348
+          ]
+        },
+        {
+          "name": "baiFrame_update",
+          "path": "src/core2/ba/iFrame.c",
+          "lines": [
+            34,
+            38
+          ]
+        },
+        {
+          "name": "__bafalldamage_lookup",
+          "path": "src/core2/ba/falldamage.c",
+          "lines": [
+            45,
+            54
+          ]
+        },
+        {
+          "name": "bafalldamage_update",
+          "path": "src/core2/ba/falldamage.c",
+          "lines": [
+            124,
+            131
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "level-transition",
+      "name": "Loading-zone handover",
+      "purpose": "The single-shot transition flag that freezes the body, hides it and holds a timed blackout before the world swap completes",
+      "paths": [
+        "src/core2/code_A960.c"
+      ],
+      "functions": [
+        {
+          "name": "codeA960_forceLoadzone",
+          "path": "src/core2/code_A960.c",
+          "lines": [
+            17,
+            29
+          ]
+        },
+        {
+          "name": "func_802919A0",
+          "path": "src/core2/code_A960.c",
+          "lines": [
+            31,
+            36
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-speed-bands",
+      "node": "player-locomotion",
+      "name": "Ground speed bands",
+      "summary": "Stick magnitude is bucketed into five zones and mapped onto fixed ground-speed bands, with a separate band for harmful ground",
+      "behavior": "The stick magnitude is quantised into zones zero through four. Zone zero targets zero horizontal speed; zones one to four interpolate the wanted speed across 30 to 80, 80 to 150, 150 to 225 and 225 to 500 world units per second. The same band limits drive the walk cycle length, so a faster band plays a shorter loop: the creep band stretches between 1.8 and 1.2 seconds and the full run band between 0.92 and 0.58 seconds. On a surface that damages the body the wanted speed is instead interpolated between 30 and 150 units per second regardless of how far the stick is pushed, which is what makes harmful ground feel heavy. Speed is approached rather than set: the state writes a target, and the physics integrator blends the current velocity toward it using an action-specific acceleration factor over one thirtieth of a second, so direction changes have weight.",
+      "constants": [
+        {
+          "name": "creepMinSpeed",
+          "value": 30,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:18"
+        },
+        {
+          "name": "creepToSlowWalkSpeed",
+          "value": 80,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:19"
+        },
+        {
+          "name": "slowWalkToWalkSpeed",
+          "value": 150,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:20"
+        },
+        {
+          "name": "walkToFastWalkSpeed",
+          "value": 225,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:21"
+        },
+        {
+          "name": "maxFastWalkSpeed",
+          "value": 500,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:22"
+        },
+        {
+          "name": "harmfulGroundMinSpeed",
+          "value": 30,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:23"
+        },
+        {
+          "name": "harmfulGroundMaxSpeed",
+          "value": 150,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:24"
+        },
+        {
+          "name": "creepCycleSlowest",
+          "value": 1.8,
+          "unit": "seconds",
+          "source": "src/core2/bs/walk.c:28"
+        },
+        {
+          "name": "creepCycleFastest",
+          "value": 1.2,
+          "unit": "seconds",
+          "source": "src/core2/bs/walk.c:29"
+        },
+        {
+          "name": "runCycleSlowest",
+          "value": 0.92,
+          "unit": "seconds",
+          "source": "src/core2/bs/walk.c:30"
+        },
+        {
+          "name": "runCycleFastest",
+          "value": 0.58,
+          "unit": "seconds",
+          "source": "src/core2/bs/walk.c:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/walk.c",
+          "line": 41
+        },
+        {
+          "path": "src/core2/bs/walk.c",
+          "line": 263
+        },
+        {
+          "path": "src/core2/bs/walk.c",
+          "line": 289
+        },
+        {
+          "path": "src/core2/bs/walk.c",
+          "line": 444
+        }
+      ],
+      "capabilities": [
+        "analog speed bands",
+        "speed-matched walk cycle"
+      ],
+      "tags": [
+        "movement",
+        "run",
+        "walk",
+        "analog input",
+        "ground speed"
+      ]
+    },
+    {
+      "id": "skid-and-pivot",
+      "node": "player-locomotion",
+      "name": "Skid and pivot",
+      "summary": "Reversing at speed hands control to a braking action, while facing is steered toward the wanted angle through a rate-limited tracker",
+      "behavior": "The drawn facing and the wanted facing are separate values. By default the facing is dragged toward the wanted angle at no more than 700 degrees per second and no more than 7.5 percent of the remaining error per second, whichever is the tighter limit, so slow small corrections stay readable and fast inputs still catch up. A reversal only routes into the skid action when the wanted facing is more than 135 degrees away from the current facing and the horizontal speed is above 125 units per second. The pivot action itself lasts 0.3 seconds and decays the retained horizontal speed from its value at entry down to zero across the animation, and it nudges the wanted heading by ten degrees either side on alternating updates so the turn reads as a shoulder-first plant rather than a clean rotation.",
+      "constants": [
+        {
+          "name": "turnActionDuration",
+          "value": 0.3,
+          "unit": "seconds",
+          "source": "src/core2/bs/turn.c:18"
+        },
+        {
+          "name": "turnSpeedDecayStart",
+          "value": 0.18,
+          "unit": "fraction of the turn animation",
+          "source": "src/core2/bs/turn.c:35"
+        },
+        {
+          "name": "pivotHeadingSway",
+          "value": 10,
+          "unit": "degrees",
+          "source": "src/core2/bs/turn.c:43"
+        },
+        {
+          "name": "pivotSwaySpeedRetain",
+          "value": 0.88,
+          "unit": "multiplier",
+          "source": "src/core2/bs/turn.c:43"
+        },
+        {
+          "name": "defaultFacingRateLimit",
+          "value": 700,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/yaw.c:70"
+        },
+        {
+          "name": "defaultFacingApproach",
+          "value": 7.5,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/yaw.c:70"
+        },
+        {
+          "name": "skidSpeed",
+          "value": 125,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/walk.c:25"
+        },
+        {
+          "name": "skidFacingThreshold",
+          "value": 135,
+          "unit": "degrees",
+          "source": "src/core2/playerutils.c:267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/turn.c",
+          "line": 12
+        },
+        {
+          "path": "src/core2/bs/turn.c",
+          "line": 32
+        },
+        {
+          "path": "src/core2/yaw.c",
+          "line": 76
+        },
+        {
+          "path": "src/core2/playerutils.c",
+          "line": 266
+        },
+        {
+          "path": "src/core2/bs/walk.c",
+          "line": 310
+        }
+      ],
+      "capabilities": [
+        "braking action on reversal",
+        "separate wanted and drawn heading"
+      ],
+      "tags": [
+        "movement",
+        "turn",
+        "skid",
+        "facing",
+        "steering"
+      ]
+    },
+    {
+      "id": "gravity-and-velocity-integration",
+      "node": "player-physics",
+      "name": "Gravity and velocity integration",
+      "summary": "One integrator adds gravity, clamps to a terminal speed, blends horizontal velocity toward its target and advances position by real delta time",
+      "behavior": "Every update recomputes the body position from a velocity vector. Vertical velocity gains gravity multiplied by the real frame delta and is then clamped so it never passes a terminal speed, which is negative because the vertical axis points up. Horizontal velocity is not set directly: the difference between the wanted velocity and the current one is scaled by an action-specific acceleration factor and by the real delta divided by a one thirtieth of a second reference step, so the same target speed reaches different velocities in different actions and the feel stays frame-rate independent. Horizontal velocity components below a tiny epsilon are snapped to exactly zero to stop drift. Tricky ground pushes the wanted horizontal vector along the surface normal: an uphill-facing normal scales the target up by a fraction of the dot product and a downhill-facing one scales it down, so slopes add or remove speed. A separate no-gravity variant ignores gravity entirely and snaps to the target once the remaining correction is small enough.",
+      "constants": [
+        {
+          "name": "defaultGravity",
+          "value": -2700,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/ba/physics.c:10"
+        },
+        {
+          "name": "defaultTerminalVelocity",
+          "value": -4000,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/ba/physics.c:11"
+        },
+        {
+          "name": "accelerationReferenceStep",
+          "value": 0.0333333,
+          "unit": "seconds",
+          "source": "src/core2/ba/physics.c:83"
+        },
+        {
+          "name": "horizontalRestEpsilon",
+          "value": 0.0001,
+          "unit": "units/second",
+          "source": "src/core2/ba/physics.c:91"
+        },
+        {
+          "name": "targetSnapThreshold",
+          "value": 0.02,
+          "unit": "squared units/second²",
+          "source": "src/core2/ba/physics.c:116"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/ba/physics.c",
+          "line": 38
+        },
+        {
+          "path": "src/core2/ba/physics.c",
+          "line": 110
+        },
+        {
+          "path": "src/core2/ba/physics.c",
+          "line": 244
+        },
+        {
+          "path": "src/core2/ba/physics.c",
+          "line": 397
+        }
+      ],
+      "capabilities": [
+        "delta-time integration",
+        "terminal velocity clamp",
+        "slope velocity modulation"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "velocity",
+        "integration",
+        "slope"
+      ]
+    },
+    {
+      "id": "jump-arc",
+      "node": "player-airborne",
+      "name": "Jump arc",
+      "summary": "A grounded jump writes a fixed launch speed and a temporary heavier gravity, and releasing the button early shortens the arc",
+      "behavior": "A jump press on the ground writes 710 world units per second upward and installs a temporary gravity of minus 1350 units per second squared, which is about half the default pull, so the rise is slow and readable. Releasing the jump button while still climbing restores default gravity immediately and the arc collapses; holding it keeps the lighter pull until the action ends, so one button gives both a full and a short hop. A jump taken from the water surface uses a lower launch of 610 units per second because the body starts already raised. The state abandons the arc for the falling action once the body is more than 500 units above the surface beneath it, or once the descent has begun and the body is close to that surface, which is what produces a clean landing rather than a snap. The same press chooses a flip when the crouch button is held and the partner flip is known, a take-off when standing on a flight pad, and a plain jump when standing on a spring pad.",
+      "constants": [
+        {
+          "name": "launchSpeed",
+          "value": 710,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/jump.c:20"
+        },
+        {
+          "name": "launchGravity",
+          "value": -1350,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/jump.c:21"
+        },
+        {
+          "name": "waterLaunchSpeed",
+          "value": 610,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/jump.c:25"
+        },
+        {
+          "name": "fallHandoverHeight",
+          "value": 500,
+          "unit": "units above the surface",
+          "source": "src/core2/bs/jump.c:122"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/jump.c",
+          "line": 37
+        },
+        {
+          "path": "src/core2/bs/jump.c",
+          "line": 86
+        },
+        {
+          "path": "src/core2/code_14420.c",
+          "line": 772
+        }
+      ],
+      "capabilities": [
+        "variable jump height",
+        "context-sensitive jump selection"
+      ],
+      "tags": [
+        "jump",
+        "airborne",
+        "variable height",
+        "launch"
+      ]
+    },
+    {
+      "id": "high-flip",
+      "node": "player-airborne",
+      "name": "High flip",
+      "summary": "The crouch-jump flip trades a much higher launch and longer hang time for a mandatory forward drift",
+      "behavior": "Holding the crouch button and pressing jump enters a flip instead of a plain jump, provided the flip has been learned and the body is grounded. The lift happens part way through the entry animation rather than on the first update: when the animation reaches about 18 percent, the state writes 920 units per second upward and switches to an airborne integrator with gravity of minus 1200 units per second squared and a terminal fall of minus 533.3 units per second. Those numbers make the arc taller and noticeably floatier than a plain jump, because both the pull is weaker and the fall speed is capped. Horizontal control during the flip is interpolated between 80 and 200 units per second from the stick magnitude, so the flip cannot be hovered in place once the stick is off centre, and pushing the stick at the lift moment writes 200 units per second immediately. The flip keeps its own heading and hands back to the slow walk on landing.",
+      "constants": [
+        {
+          "name": "flipLaunchSpeed",
+          "value": 920,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:10"
+        },
+        {
+          "name": "flipGravity",
+          "value": -1200,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:11"
+        },
+        {
+          "name": "flipTerminalFallSpeed",
+          "value": -533.3,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:12"
+        },
+        {
+          "name": "flipMinDriftSpeed",
+          "value": 80,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:13"
+        },
+        {
+          "name": "flipMaxDriftSpeed",
+          "value": 200,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:14"
+        },
+        {
+          "name": "liftAnimationFraction",
+          "value": 0.1837,
+          "unit": "fraction of the entry animation",
+          "source": "src/core2/bs/bFlip.c:78"
+        },
+        {
+          "name": "driftAtLift",
+          "value": 200,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFlip.c:88"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/bFlip.c",
+          "line": 47
+        },
+        {
+          "path": "src/core2/bs/bFlip.c",
+          "line": 65
+        },
+        {
+          "path": "src/core2/code_14420.c",
+          "line": 772
+        }
+      ],
+      "capabilities": [
+        "high launch with reduced gravity",
+        "animation-timed lift",
+        "forced forward drift"
+      ],
+      "tags": [
+        "flip",
+        "jump",
+        "airborne",
+        "crouch",
+        "hang time"
+      ]
+    },
+    {
+      "id": "flight-cruise",
+      "node": "player-flight",
+      "name": "Flight cruise",
+      "summary": "Take-off gives one strong upward impulse, then nose pitch drives both cruise speed and how fast an unpowered glide sinks",
+      "behavior": "Take-off is a scripted entry that holds the body with gravity of minus 1200 and then, at about 24 percent of the entry animation, writes 1600 units per second upward and hands over to the cruise action. Cruise runs with gravity of minus 300 units per second squared and a terminal descent of minus 99.9 units per second, so with no wing beats the body drifts down very slowly and reads as a glide. Pitch is the throttle. At or below 80 degrees the wanted forward speed falls from 600 down to 60 units per second while the terminal descent deepens toward minus 1000.33 and the pull stiffens toward minus 700, so a nose-down dive trades altitude for speed and converts back into a climb as the nose lifts. Above 300 degrees the mapping reverses: the terminal descent relaxes to minus 99.9 and the wanted forward speed climbs from zero back to 600. Holding the jump button spends a feather on every third global timer tick, and the same button drives the wing-beat lift.",
+      "constants": [
+        {
+          "name": "cruiseForwardSpeed",
+          "value": 600,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:191"
+        },
+        {
+          "name": "cruiseGravity",
+          "value": -300,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:197"
+        },
+        {
+          "name": "cruiseTerminalFallSpeed",
+          "value": -99.9,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:198"
+        },
+        {
+          "name": "takeoffImpulse",
+          "value": 1600,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:165"
+        },
+        {
+          "name": "takeoffGravity",
+          "value": -1200,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:150"
+        },
+        {
+          "name": "takeoffImpulseFraction",
+          "value": 0.2416,
+          "unit": "fraction of the take-off animation",
+          "source": "src/core2/bs/bFly.c:163"
+        },
+        {
+          "name": "shallowPitchMinForwardSpeed",
+          "value": 60,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:277"
+        },
+        {
+          "name": "shallowPitchWorstTerminalFall",
+          "value": -1000.33,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:275"
+        },
+        {
+          "name": "steepPitchMaxForwardSpeed",
+          "value": 600,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:281"
+        },
+        {
+          "name": "featherSpendInterval",
+          "value": 3,
+          "unit": "global timer ticks",
+          "source": "src/core2/bs/bFly.c:225"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/bFly.c",
+          "line": 157
+        },
+        {
+          "path": "src/core2/bs/bFly.c",
+          "line": 185
+        },
+        {
+          "path": "src/core2/bs/bFly.c",
+          "line": 206
+        }
+      ],
+      "capabilities": [
+        "pitch-driven throttle",
+        "slow-sink glide",
+        "feather resource drain"
+      ],
+      "tags": [
+        "flight",
+        "glide",
+        "pitch",
+        "airborne",
+        "speed"
+      ]
+    },
+    {
+      "id": "wing-beat-lift",
+      "node": "player-flight",
+      "name": "Wing-beat lift",
+      "summary": "Wing beats queue on up to five independent timers, and each live timer contributes one fixed step of climb speed",
+      "behavior": "Wing beats are not a single cooldown but a queue of five timers. A new beat is only accepted when it would not land within 0.25 seconds of an existing timer, so tapping faster than that simply refreshes the queued beat instead of stacking. Every update decrements the live timers by real delta time, and the number still running is the beat count. While beats are live the target vertical speed is written as the beat count times 400 units per second, so a full queue of five produces a far stronger climb than a single beat and the climb decays in steps as timers expire rather than cutting off. A fresh tap queues a full one-second timer, while continuing to tap after a short gap queues a shorter 0.35 second top-up. Losing all beats returns the body to the ordinary cruise glide.",
+      "constants": [
+        {
+          "name": "beatQueueSize",
+          "value": 5,
+          "unit": "timers",
+          "source": "src/core2/ba/flap.c:8"
+        },
+        {
+          "name": "beatSpacingGuard",
+          "value": 0.25,
+          "unit": "seconds",
+          "source": "src/core2/ba/flap.c:42"
+        },
+        {
+          "name": "climbPerLiveBeat",
+          "value": 400,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bFly.c:256"
+        },
+        {
+          "name": "fullBeatDuration",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/core2/bs/bFly.c:239"
+        },
+        {
+          "name": "toppedUpBeatDuration",
+          "value": 0.35,
+          "unit": "seconds",
+          "source": "src/core2/bs/bFly.c:237"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/ba/flap.c",
+          "line": 17
+        },
+        {
+          "path": "src/core2/ba/flap.c",
+          "line": 37
+        },
+        {
+          "path": "src/core2/ba/flap.c",
+          "line": 87
+        },
+        {
+          "path": "src/core2/bs/bFly.c",
+          "line": 206
+        }
+      ],
+      "capabilities": [
+        "queued beat budgeting",
+        "stepped climb decay"
+      ],
+      "tags": [
+        "flight",
+        "wing beat",
+        "climb",
+        "stamina",
+        "airborne"
+      ]
+    },
+    {
+      "id": "surface-swim",
+      "node": "player-swim",
+      "name": "Surface swim",
+      "summary": "Water replaces gravity with a gentle upward push capped at a slow rise, and paddling speed is mapped from the stick over a narrower turning range",
+      "behavior": "Entering water flips the vertical signs: gravity becomes plus 100 units per second squared and the terminal speed becomes plus 133.33 units per second, so the body rises slowly and settles instead of sinking. Paddle speed is interpolated between 30 and 300 units per second from stick magnitude, a much tighter range than on land, and facing is bounded to 500 degrees per second with a 5 percent per second approach, which makes turns in water feel heavier than a running pivot. The swim cycle stretches between 1.2 and 0.7 seconds as speed rises so the stroke rate tracks the water. A dive is only offered when two conditions hold together: the aim vector points more than 0.7 below horizontal and the floor is more than 90 units below the body, so shallow pools cannot be dived into. Surfacing or leaving the water restores default gravity and default terminal velocity.",
+      "constants": [
+        {
+          "name": "minPaddleSpeed",
+          "value": 30,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:14"
+        },
+        {
+          "name": "maxPaddleSpeed",
+          "value": 300,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:15"
+        },
+        {
+          "name": "swimCycleSlowest",
+          "value": 1.2,
+          "unit": "seconds",
+          "source": "src/core2/bs/swim.c:16"
+        },
+        {
+          "name": "swimCycleFastest",
+          "value": 0.7,
+          "unit": "seconds",
+          "source": "src/core2/bs/swim.c:17"
+        },
+        {
+          "name": "waterGravity",
+          "value": 100,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:83"
+        },
+        {
+          "name": "waterRiseSpeedCap",
+          "value": 133.33,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:84"
+        },
+        {
+          "name": "waterFacingRateLimit",
+          "value": 500,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:144"
+        },
+        {
+          "name": "waterFacingApproach",
+          "value": 5,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/bs/swim.c:144"
+        },
+        {
+          "name": "diveAimThreshold",
+          "value": -0.7,
+          "unit": "normalised vertical aim component",
+          "source": "src/core2/bs/swim.c:249"
+        },
+        {
+          "name": "diveDepthGate",
+          "value": 90,
+          "unit": "units",
+          "source": "src/core2/bs/swim.c:250"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/swim.c",
+          "line": 77
+        },
+        {
+          "path": "src/core2/bs/swim.c",
+          "line": 194
+        },
+        {
+          "path": "src/core2/bs/swim.c",
+          "line": 221
+        }
+      ],
+      "capabilities": [
+        "buoyant vertical push",
+        "depth-gated diving",
+        "narrow turning range"
+      ],
+      "tags": [
+        "swimming",
+        "water",
+        "buoyancy",
+        "movement"
+      ]
+    },
+    {
+      "id": "dive-descent",
+      "node": "player-swim",
+      "name": "Dive descent",
+      "summary": "A dive pitches the body down, fires one fixed impulse along that pitch, then blends velocity toward repeated stroke impulses with gravity switched off",
+      "behavior": "The dive entry aims the body 50 degrees down and, at about 72 percent of the entry animation, writes a velocity of 800 units per second along the current pitch and heading, then holds for 0.8 seconds before settling into the dive idle. Underwater the integrator is reconfigured: gravity is set to zero and the terminal speed to minus 399.99 units per second, so nothing falls and all motion comes from the velocity approach. That approach uses a per-state acceleration factor, 0.4 while idling, 1.0 during one stroke and 2.0 during the stronger stroke, which is the difference between coasting and driving. Each stroke rewrites the along-body velocity, 120 units per second for the light stroke and 600 for the heavy one, and the residual boost decays by 10 units per second every update so the push fades instead of stopping dead. A surfacing check ends the dive when the body rises to within 130 units of the water floor, or within 90 units in the cold-water maps.",
+      "constants": [
+        {
+          "name": "entryPitch",
+          "value": 50,
+          "unit": "degrees below horizontal",
+          "source": "src/core2/bs/bSwim.c:356"
+        },
+        {
+          "name": "entryImpulse",
+          "value": 800,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bSwim.c:360"
+        },
+        {
+          "name": "entryHold",
+          "value": 0.8,
+          "unit": "seconds",
+          "source": "src/core2/bs/bSwim.c:362"
+        },
+        {
+          "name": "underwaterGravity",
+          "value": 0,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bSwim.c:75"
+        },
+        {
+          "name": "underwaterTerminalSpeed",
+          "value": -399.99,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bSwim.c:76"
+        },
+        {
+          "name": "strokeAcceleration",
+          "value": 2,
+          "unit": "velocity approach factor per update",
+          "source": "src/core2/bs/bSwim.c:82"
+        },
+        {
+          "name": "idleAcceleration",
+          "value": 0.4,
+          "unit": "velocity approach factor per update",
+          "source": "src/core2/bs/bSwim.c:120"
+        },
+        {
+          "name": "lightStrokeImpulse",
+          "value": 120,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bSwim.c:240"
+        },
+        {
+          "name": "heavyStrokeImpulse",
+          "value": 600,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bSwim.c:197"
+        },
+        {
+          "name": "impulseDecay",
+          "value": 10,
+          "unit": "units/second per update",
+          "source": "src/core2/bs/bSwim.c:193"
+        },
+        {
+          "name": "surfaceBandDepth",
+          "value": 130,
+          "unit": "units",
+          "source": "src/core2/bs/bSwim.c:66"
+        },
+        {
+          "name": "coldWaterSurfaceBandDepth",
+          "value": 90,
+          "unit": "units",
+          "source": "src/core2/bs/bSwim.c:66"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/bSwim.c",
+          "line": 65
+        },
+        {
+          "path": "src/core2/bs/bSwim.c",
+          "line": 70
+        },
+        {
+          "path": "src/core2/bs/bSwim.c",
+          "line": 332
+        },
+        {
+          "path": "src/core2/bs/bSwim.c",
+          "line": 345
+        }
+      ],
+      "capabilities": [
+        "gravity-free underwater motion",
+        "stroke-based propulsion",
+        "surface detection band"
+      ],
+      "tags": [
+        "swimming",
+        "dive",
+        "underwater",
+        "impulse",
+        "water"
+      ]
+    },
+    {
+      "id": "sprint-gait",
+      "node": "player-trot",
+      "name": "Four-legged sprint",
+      "summary": "A carried-partner gait with a much wider speed band, a timed turbo extension, a lower ceiling on harmful ground and its own jump arc",
+      "behavior": "The sprint gait replaces the bipedal walk with a four-legged cycle and a much larger speed range: the stick maps onto 30 to 700 units per second normally, and a turbo timer raises the band to 80 to 1000 units per second while it is live. On a damaging surface the ceiling drops to 300 units per second, which is a hard cap rather than a suggestion. The cycle length is mapped inside each band so the legs match the speed, running from 0.56 down to 0.34 seconds on the normal band, 0.51 down to 0.29 on the turbo band and 0.8 down to 0.7 on harmful ground, and the state also pitches and rolls the model at 1000 degrees with a 12 unit approach so the gait leans into turns. Jumping out of the sprint uses a higher launch than a standing jump, 693.5 units per second with gravity of minus 1200, and the press routes straight into a take-off instead of a jump when standing on a flight pad. Exiting the gait clears the turbo timer unless the exit is a loading-zone handover, which preserves it across the world swap.",
+      "constants": [
+        {
+          "name": "sprintMinSpeed",
+          "value": 30,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:12"
+        },
+        {
+          "name": "sprintMaxSpeed",
+          "value": 700,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:13"
+        },
+        {
+          "name": "turboMinSpeed",
+          "value": 80,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:14"
+        },
+        {
+          "name": "turboMaxSpeed",
+          "value": 1000,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:15"
+        },
+        {
+          "name": "harmfulGroundMaxSpeed",
+          "value": 300,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:16"
+        },
+        {
+          "name": "sprintCycleSlowest",
+          "value": 0.56,
+          "unit": "seconds",
+          "source": "src/core2/bs/bTrot.c:17"
+        },
+        {
+          "name": "sprintCycleFastest",
+          "value": 0.34,
+          "unit": "seconds",
+          "source": "src/core2/bs/bTrot.c:18"
+        },
+        {
+          "name": "turboCycleSlowest",
+          "value": 0.51,
+          "unit": "seconds",
+          "source": "src/core2/bs/bTrot.c:19"
+        },
+        {
+          "name": "turboCycleFastest",
+          "value": 0.29,
+          "unit": "seconds",
+          "source": "src/core2/bs/bTrot.c:20"
+        },
+        {
+          "name": "sprintJumpSpeed",
+          "value": 693.5,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:23"
+        },
+        {
+          "name": "sprintJumpGravity",
+          "value": -1200,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bTrot.c:24"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/bTrot.c",
+          "line": 92
+        },
+        {
+          "path": "src/core2/bs/bTrot.c",
+          "line": 292
+        },
+        {
+          "path": "src/core2/bs/bTrot.c",
+          "line": 345
+        }
+      ],
+      "capabilities": [
+        "wide analog speed range",
+        "timed turbo extension",
+        "dedicated jump arc"
+      ],
+      "tags": [
+        "movement",
+        "sprint",
+        "turbo",
+        "ground speed",
+        "jump"
+      ]
+    },
+    {
+      "id": "beak-strike",
+      "node": "player-attack",
+      "name": "Airborne beak strike",
+      "summary": "A forward strike that hovers by repeatedly rewriting a small upward speed, with a fixed forward reach and a short live hit window",
+      "behavior": "The strike is an airborne action: it installs gravity of minus 1400 units per second squared and an upward speed of 120 units per second, so the first frame pops the body up. Each of the two strike cues rewrites that same 120 unit rise, so the motion reads as a paced bob rather than a continuous climb, and the body never gains net height. Facing is bounded to 1200 degrees per second with a ten percent approach during the strikes, which lets the player aim the hit late. The model is offset 38 units vertically and pushed 105 units forward of the body's centre, with a matching 7 unit rear offset, so the strike volume sits ahead of the collision capsule instead of on it. The hit is live from entry until the state ends, and the state ends 0.5 seconds after the looping strike animation begins. Entering the strike from a lethal fall converts that fall into a tumble instead of a landing.",
+      "constants": [
+        {
+          "name": "strikeGravity",
+          "value": -1400,
+          "unit": "units/second², delta-time scaled each update",
+          "source": "src/core2/bs/bPeck.c:14"
+        },
+        {
+          "name": "strikeRiseSpeed",
+          "value": 120,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/bs/bPeck.c:15"
+        },
+        {
+          "name": "strikeFacingRateLimit",
+          "value": 1200,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/bs/bPeck.c:46"
+        },
+        {
+          "name": "strikeFacingApproach",
+          "value": 10,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/bs/bPeck.c:46"
+        },
+        {
+          "name": "strikeVerticalOffset",
+          "value": -38,
+          "unit": "units",
+          "source": "src/core2/bs/bPeck.c:50"
+        },
+        {
+          "name": "strikeForwardReach",
+          "value": 105,
+          "unit": "units",
+          "source": "src/core2/bs/bPeck.c:50"
+        },
+        {
+          "name": "strikeRearOffset",
+          "value": -7,
+          "unit": "units",
+          "source": "src/core2/bs/bPeck.c:51"
+        },
+        {
+          "name": "strikeWindow",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/core2/bs/bPeck.c:94"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bs/bPeck.c",
+          "line": 25
+        },
+        {
+          "path": "src/core2/bs/bPeck.c",
+          "line": 29
+        },
+        {
+          "path": "src/core2/bs/bPeck.c",
+          "line": 77
+        }
+      ],
+      "capabilities": [
+        "bob-hover attack",
+        "offset hit volume",
+        "fall-to-tumble conversion"
+      ],
+      "tags": [
+        "attack",
+        "combat",
+        "airborne",
+        "hitbox"
+      ]
+    },
+    {
+      "id": "camera-framing",
+      "node": "camera",
+      "name": "Camera framing",
+      "summary": "The orbit target sits a fixed height above the surface under the body, at a default distance and height, and fans sideways when the view is blocked",
+      "behavior": "The third-person camera orbits a focus point derived from the body, not from the body's centre: the focus is placed 80 units above the surface under it, with a 500 unit blend while the body is over deep water so the pitch of the view eases as the body descends. When the body is more than 130 units above that surface the height target is biased by the same 130 unit band, which keeps the body in the lower half of the frame during long falls. Default orbit distance is 550 units, with a second wider limit of 620 units for open areas, and the default height offset is 150 units. When the straight line from the body to the camera is blocked, the camera hunts through a fan of heading offsets of plus and minus 25, 50, 80, 120 and 140 degrees, accepting the first unobstructed position that is at least 150 units away, so a wall produces a sideways slide rather than a pull-in. The vertical pitch envelope opens from 110 to 180 degrees as the camera swings away from directly behind the body.",
+      "constants": [
+        {
+          "name": "focusHeightAboveSurface",
+          "value": 80,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:558"
+        },
+        {
+          "name": "deepWaterFocusBlendDepth",
+          "value": 500,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:557"
+        },
+        {
+          "name": "baseOrbitDistance",
+          "value": 550,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:242"
+        },
+        {
+          "name": "wideOrbitDistance",
+          "value": 620,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:243"
+        },
+        {
+          "name": "baseHeightOffset",
+          "value": 150,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:244"
+        },
+        {
+          "name": "initialFocusOffset",
+          "value": 130,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:227"
+        },
+        {
+          "name": "highAirHeightBand",
+          "value": 130,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:586"
+        },
+        {
+          "name": "minimumUnobstructedDistance",
+          "value": 150,
+          "unit": "units",
+          "source": "src/core2/nc/dynamicCamera.c:100"
+        },
+        {
+          "name": "occlusionProbeStep",
+          "value": 25,
+          "unit": "degrees",
+          "source": "src/core2/nc/dynamicCamera.c:30"
+        },
+        {
+          "name": "occlusionProbeMaxStep",
+          "value": 140,
+          "unit": "degrees",
+          "source": "src/core2/nc/dynamicCamera.c:30"
+        },
+        {
+          "name": "nearPitchEnvelope",
+          "value": 110,
+          "unit": "degrees",
+          "source": "src/core2/nc/dynamicCamera.c:636"
+        },
+        {
+          "name": "farPitchEnvelope",
+          "value": 180,
+          "unit": "degrees",
+          "source": "src/core2/nc/dynamicCamera.c:636"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 91
+        },
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 224
+        },
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 575
+        },
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 635
+        }
+      ],
+      "capabilities": [
+        "body-relative focus point",
+        "sideways occlusion resolution",
+        "distance-adaptive pitch envelope"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "framing",
+        "occlusion",
+        "third person"
+      ]
+    },
+    {
+      "id": "camera-orbit-smoothing",
+      "node": "camera",
+      "name": "Camera orbit smoothing",
+      "summary": "Distance, height and rotation all chase their targets through rate-limited approaches run in sub-steps, so the camera trails the body instead of locking to it",
+      "behavior": "Orbit distance chases its target by twice the remaining error, clamped to 120 units per second, so a change of state slides the camera instead of snapping it. The horizontal angle is pulled toward the direction opposite the body's facing by up to 50 degrees per second, which is what makes the camera trail through a turn rather than rotating with the body. Height chases its target at twice the remaining error with no separate cap. Orbit rotation runs through a proportional approach on pitch and yaw with independent percent-per-second gains of 10 and 10 and independent rate caps of 120 degrees per second, applied five times per real frame so the smoothing does not depend on the frame budget; the standard follow state raises the pitch gain to 12. A further 0.08 scale applies to the small look-ahead offset that pushes the frame in the direction of travel, and the whole rotation path collapses to an instant snap when the camera is pinned for a scripted shot.",
+      "constants": [
+        {
+          "name": "standardPitchApproach",
+          "value": 12,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCam1.c:10"
+        },
+        {
+          "name": "standardYawApproach",
+          "value": 10,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCam1.c:10"
+        },
+        {
+          "name": "standardRotationRateLimit",
+          "value": 120,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCam1.c:10"
+        },
+        {
+          "name": "defaultPitchApproach",
+          "value": 10,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCamera.c:228"
+        },
+        {
+          "name": "defaultYawApproach",
+          "value": 10,
+          "unit": "percent of remaining error per second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCamera.c:228"
+        },
+        {
+          "name": "defaultRotationRateLimit",
+          "value": 120,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCamera.c:228"
+        },
+        {
+          "name": "distanceErrorGain",
+          "value": 2,
+          "unit": "velocity approach factor per update",
+          "source": "src/core2/nc/dynamicCam1.c:34"
+        },
+        {
+          "name": "distanceRateLimit",
+          "value": 120,
+          "unit": "units/second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCam1.c:34"
+        },
+        {
+          "name": "trailingYawRate",
+          "value": 50,
+          "unit": "degrees/second, delta-time scaled each update",
+          "source": "src/core2/nc/dynamicCam1.c:36"
+        },
+        {
+          "name": "heightErrorGain",
+          "value": 2,
+          "unit": "velocity approach factor per update",
+          "source": "src/core2/nc/dynamicCam1.c:40"
+        },
+        {
+          "name": "lookAheadLag",
+          "value": 0.08,
+          "unit": "multiplier",
+          "source": "src/core2/nc/dynamicCamera.c:218"
+        },
+        {
+          "name": "rotationSubSteps",
+          "value": 5,
+          "unit": "sub-steps per real frame",
+          "source": "src/core2/nc/dynamicCamera.c:624"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/nc/dynamicCam1.c",
+          "line": 9
+        },
+        {
+          "path": "src/core2/nc/dynamicCam1.c",
+          "line": 15
+        },
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 200
+        },
+        {
+          "path": "src/core2/nc/dynamicCamera.c",
+          "line": 299
+        }
+      ],
+      "capabilities": [
+        "rate-limited orbit",
+        "trailing yaw",
+        "frame-rate independent sub-stepping"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "orbit",
+        "third person",
+        "framerate independence"
+      ]
+    },
+    {
+      "id": "surface-hazard-ticks",
+      "node": "hazards",
+      "name": "Surface hazard ticks",
+      "summary": "Standing on a harmful surface drains health on a four second timer instead of every frame, with per-family audio feedback",
+      "behavior": "Contact with a harmful surface or an unbreathable fluid raises a contact flag, and that flag is what the locomotion states read when they cap movement. Damage itself is paced: a hazard timer is reloaded to 4 seconds and one hit is applied, so the drain is one hit per four seconds rather than per frame, and the timer is decremented every update. Each hazard family has its own feedback loop. Hot surfaces decay a looping sizzle sample rate by 30000 units per second until it stops. Freezing surfaces alternate a 1.0 second and a 1.5 second shiver cue on a self-rescheduling timer. Swamp water plays a bite rattle every 0.12 to 0.22 seconds, randomly chosen each cycle. Damage is suppressed while invulnerable, while the long-leg or spin-guard forms are active, while under water, while tumbling from a fall and while a prior hit's timer is still running, so wading and recovery windows are both safe.",
+      "constants": [
+        {
+          "name": "hazardTickInterval",
+          "value": 4,
+          "unit": "seconds",
+          "source": "src/core2/hazards.c:297"
+        },
+        {
+          "name": "hotDecayRate",
+          "value": 30000,
+          "unit": "sample-rate units per second",
+          "source": "src/core2/hazards.c:139"
+        },
+        {
+          "name": "freezeCueFirst",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/core2/hazards.c:43"
+        },
+        {
+          "name": "freezeCueRepeat",
+          "value": 1.5,
+          "unit": "seconds",
+          "source": "src/core2/hazards.c:126"
+        },
+        {
+          "name": "swampRattleMin",
+          "value": 0.12,
+          "unit": "seconds",
+          "source": "src/core2/hazards.c:163"
+        },
+        {
+          "name": "swampRattleMax",
+          "value": 0.22,
+          "unit": "seconds",
+          "source": "src/core2/hazards.c:163"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/hazards.c",
+          "line": 77
+        },
+        {
+          "path": "src/core2/hazards.c",
+          "line": 190
+        },
+        {
+          "path": "src/core2/hazards.c",
+          "line": 219
+        },
+        {
+          "path": "src/core2/hazards.c",
+          "line": 256
+        }
+      ],
+      "capabilities": [
+        "paced contact damage",
+        "per-surface feedback",
+        "invulnerability and form exemptions"
+      ],
+      "tags": [
+        "hazard",
+        "damage",
+        "lava",
+        "water",
+        "environment"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "hazards",
+      "name": "Fall damage",
+      "summary": "Drop height is measured from the last grounded position and resolved through a ladder that also decides whether the landing becomes a tumble",
+      "behavior": "Fall damage is a function of vertical drop, not of impact speed. The landing start position is refreshed whenever the body becomes grounded, enters water or is flying, and the drop is the difference between that stored height and the current height. The ladder is walked from its most severe entry downward and returns the first entry whose stored height plus 1000 units is still below the drop, so a drop of just over 1000 units returns one point, a drop over 2000 returns two, and each further 1000 units adds one point up to eight. The most severe entry also carries a distinct landing state, which is what turns a very long fall into a tumble animation instead of a landing and hands the fall over to the tumble state. Because the drop is recomputed from the stored position every update while airborne, a fall that is caught by a climb or a glide resets cleanly on contact.",
+      "constants": [
+        {
+          "name": "damageThresholdOffset",
+          "value": 1000,
+          "unit": "units",
+          "source": "src/core2/ba/falldamage.c:48"
+        },
+        {
+          "name": "firstDamageStep",
+          "value": 0,
+          "unit": "units of stored drop height",
+          "source": "src/core2/ba/falldamage.c:35"
+        },
+        {
+          "name": "secondDamageStep",
+          "value": 1000,
+          "unit": "units of stored drop height",
+          "source": "src/core2/ba/falldamage.c:34"
+        },
+        {
+          "name": "fourthDamageStep",
+          "value": 3000,
+          "unit": "units of stored drop height",
+          "source": "src/core2/ba/falldamage.c:32"
+        },
+        {
+          "name": "maxDamageStep",
+          "value": 7000,
+          "unit": "units of stored drop height",
+          "source": "src/core2/ba/falldamage.c:28"
+        },
+        {
+          "name": "maxDamage",
+          "value": 8,
+          "unit": "health points",
+          "source": "src/core2/ba/falldamage.c:28"
+        },
+        {
+          "name": "tumbleLandingState",
+          "value": 2,
+          "unit": "landing state index",
+          "source": "src/core2/ba/falldamage.c:28"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/ba/falldamage.c",
+          "line": 45
+        },
+        {
+          "path": "src/core2/ba/falldamage.c",
+          "line": 56
+        },
+        {
+          "path": "src/core2/ba/falldamage.c",
+          "line": 124
+        },
+        {
+          "path": "src/core2/ba/falldamage.c",
+          "line": 134
+        }
+      ],
+      "capabilities": [
+        "drop-height damage ladder",
+        "tumble conversion on hard landings",
+        "safe reset on water or flight"
+      ],
+      "tags": [
+        "damage",
+        "fall",
+        "vertical",
+        "landing",
+        "health"
+      ]
+    },
+    {
+      "id": "loading-zone-handover",
+      "node": "level-transition",
+      "name": "Loading-zone handover",
+      "summary": "One flag guards the world swap, and the transition freezes the body, hides it and holds a timed blackout before handing over",
+      "behavior": "Crossing into a loading volume does not swap the world immediately. The request first tests a single transition flag so that overlapping volumes, or a second request during the same handover, are ignored rather than queued. When the request carries the transition argument, the player action switches to a loading-zone state, the model is hidden, the physics type is set to a frozen mode that leaves the last position untouched, and a two second timer starts; the music player is prepared to stop its track at the same moment. The handover completes when that timer expires, which clears the flag and passes control to the loader. The counterpart path used when tearing down a level sets the same state before releasing the player subsystems, so the body is already inert when the model, animation and particle owners are freed.",
+      "constants": [
+        {
+          "name": "transitionHold",
+          "value": 2,
+          "unit": "seconds",
+          "source": "src/core2/code_A960.c:21"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/code_A960.c",
+          "line": 9
+        },
+        {
+          "path": "src/core2/code_A960.c",
+          "line": 17
+        },
+        {
+          "path": "src/core2/code_A960.c",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "single-shot transition guard",
+        "frozen physics during handover",
+        "timed blackout"
+      ],
+      "tags": [
+        "loading",
+        "transition",
+        "state",
+        "streaming"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2075 @@
+{
+  "version": 1,
+  "id": "jak-and-daxter-the-precursor-legacy-opengoal",
+  "title": "Jak and Daxter: The Precursor Legacy (OpenGOAL)",
+  "repo": "https://github.com/open-goal/jak-project",
+  "sha": "e4aa2b260c06b61f9bf42ad80fc64b51978158a8",
+  "nodes": [
+    {
+      "id": "frame-timing",
+      "name": "Frame clock and time scaling",
+      "purpose": "Owns the simulated clock: how much real time a frame took, how that becomes a simulation speed, how many fixed control steps run per rendered frame, and the unit macros that turn metres, durations and rotations into engine integers.",
+      "paths": [
+        "goal_src/jak1/engine/gfx/hw/display.gc",
+        "goal_src/jak1/engine/gfx/hw/display-h.gc",
+        "goal_src/jak1/engine/draw/drawable.gc",
+        "goal_src/jak1/engine/util/types-h.gc",
+        "goal_src/jak1/engine/target/logic-target.gc"
+      ],
+      "functions": [
+        {
+          "name": "set-time-ratios",
+          "path": "goal_src/jak1/engine/gfx/hw/display.gc",
+          "lines": [
+            35,
+            63
+          ]
+        },
+        {
+          "name": "display-frame-start",
+          "path": "goal_src/jak1/engine/draw/drawable.gc",
+          "lines": [
+            969,
+            1010
+          ]
+        },
+        {
+          "name": "meters",
+          "path": "goal_src/jak1/engine/util/types-h.gc",
+          "lines": [
+            25,
+            34
+          ]
+        },
+        {
+          "name": "seconds",
+          "path": "goal_src/jak1/engine/util/types-h.gc",
+          "lines": [
+            57,
+            63
+          ]
+        },
+        {
+          "name": "target-real-post",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            910,
+            967
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input-reading",
+      "name": "Controller input and action gating",
+      "purpose": "Samples the pad once per control step, normalises stick axes, keeps a short history of button edges, and answers whether a pressed action is legal right now given surface, timers and cooldowns.",
+      "paths": [
+        "goal_src/jak1/engine/ps2/pad.gc",
+        "goal_src/jak1/engine/target/logic-target.gc",
+        "goal_src/jak1/engine/target/target-util.gc"
+      ],
+      "functions": [
+        {
+          "name": "analog-input",
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "lines": [
+            199,
+            210
+          ]
+        },
+        {
+          "name": "service-cpads",
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "lines": [
+            272,
+            385
+          ]
+        },
+        {
+          "name": "recently-pressed?",
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "lines": [
+            405,
+            407
+          ]
+        },
+        {
+          "name": "read-pad",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            271,
+            282
+          ]
+        },
+        {
+          "name": "can-jump?",
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "lines": [
+            562,
+            571
+          ]
+        },
+        {
+          "name": "can-feet?",
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "lines": [
+            656,
+            666
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "player-control",
+      "name": "Ground and air control pipeline",
+      "purpose": "The per-step locomotion loop: converts pad heading into a target velocity, accelerates toward it through a swappable surface parameter table, accumulates gravity, integrates against collision, and rotates the body toward its travel direction.",
+      "paths": [
+        "goal_src/jak1/engine/target/logic-target.gc",
+        "goal_src/jak1/engine/collide/surface-h.gc",
+        "goal_src/jak1/engine/target/target-util.gc"
+      ],
+      "functions": [
+        {
+          "name": "turn-to-vector",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            351,
+            377
+          ]
+        },
+        {
+          "name": "add-thrust",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            379,
+            490
+          ]
+        },
+        {
+          "name": "add-gravity",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            492,
+            510
+          ]
+        },
+        {
+          "name": "do-rotations2",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            530,
+            578
+          ]
+        },
+        {
+          "name": "surface-interp!",
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "lines": [
+            103,
+            120
+          ]
+        },
+        {
+          "name": "fall-test",
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "lines": [
+            578,
+            590
+          ]
+        }
+      ],
+      "dependsOn": [
+        "input-reading",
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "jump-physics",
+      "name": "Jump arcs and vertical state changes",
+      "purpose": "Expresses a jump as an apex height, derives the vertical speed for it, re-solves that speed while the button stays held, and gates the transitions between ground, jump, double jump and dive states.",
+      "paths": [
+        "goal_src/jak1/engine/target/target.gc",
+        "goal_src/jak1/engine/target/target-util.gc",
+        "goal_src/jak1/engine/physics/gravity-h.gc",
+        "goal_src/jak1/engine/physics/dynamics-h.gc",
+        "goal_src/jak1/engine/collide/surface-h.gc"
+      ],
+      "functions": [
+        {
+          "name": "init-var-jump",
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "lines": [
+            659,
+            693
+          ]
+        },
+        {
+          "name": "mod-var-jump",
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "lines": [
+            694,
+            728
+          ]
+        },
+        {
+          "name": "target-falling-trans",
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "lines": [
+            83,
+            102
+          ]
+        },
+        {
+          "name": "target-jump",
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "lines": [
+            832,
+            912
+          ]
+        },
+        {
+          "name": "time-to-apex",
+          "path": "goal_src/jak1/engine/physics/dynamics-h.gc",
+          "lines": [
+            19,
+            21
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control"
+      ]
+    },
+    {
+      "id": "collision",
+      "name": "Shape collision and reaction",
+      "purpose": "Sweeps the moving shape through the collision cache in substeps, resolves the first blocking triangle, and decides about ground continuation, wall contact and safe landing positions.",
+      "paths": [
+        "goal_src/jak1/engine/collide/collide-shape.gc",
+        "goal_src/jak1/engine/target/collide-reaction-target.gc",
+        "goal_src/jak1/engine/target/logic-target.gc"
+      ],
+      "functions": [
+        {
+          "name": "step-collison!",
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "lines": [
+            777,
+            852
+          ]
+        },
+        {
+          "name": "integrate-and-collide!",
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "lines": [
+            872,
+            909
+          ]
+        },
+        {
+          "name": "find-ground-point",
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "lines": [
+            524,
+            616
+          ]
+        },
+        {
+          "name": "target-collision-low-coverage",
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "lines": [
+            17,
+            120
+          ]
+        },
+        {
+          "name": "target-collision-reaction",
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "lines": [
+            122,
+            239
+          ]
+        },
+        {
+          "name": "init-target",
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "lines": [
+            1164,
+            1272
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control",
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Third-person camera",
+      "purpose": "Tracks an animated bone through a smoothed path, maintains a spring-like distance to the target, turns stick input into a rate-limited orbit with automatic recentring, and shortens the distance when geometry occludes the target.",
+      "paths": [
+        "goal_src/jak1/engine/camera/cam-master.gc",
+        "goal_src/jak1/engine/camera/cam-states.gc",
+        "goal_src/jak1/engine/camera/camera-h.gc",
+        "goal_src/jak1/engine/camera/camera.gc"
+      ],
+      "functions": [
+        {
+          "name": "master-track-target",
+          "path": "goal_src/jak1/engine/camera/cam-master.gc",
+          "lines": [
+            160,
+            340
+          ]
+        },
+        {
+          "name": "cam-dist-analog-input",
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "lines": [
+            1337,
+            1345
+          ]
+        },
+        {
+          "name": "cam-string-joystick",
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "lines": [
+            1346,
+            1426
+          ]
+        },
+        {
+          "name": "cam-string-find-hidden",
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "lines": [
+            1427,
+            1457
+          ]
+        },
+        {
+          "name": "update!",
+          "path": "goal_src/jak1/engine/camera/camera-h.gc",
+          "lines": [
+            181,
+            192
+          ]
+        },
+        {
+          "name": "init-cam-float-seeker",
+          "path": "goal_src/jak1/engine/camera/camera-h.gc",
+          "lines": [
+            161,
+            171
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control",
+        "collision"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Melee combat and damage response",
+      "purpose": "Turns attack volumes into hits, dispatches attack events to the touched process, and on the receiving side applies a shove impulse, an invulnerability window and a front or back classification.",
+      "paths": [
+        "goal_src/jak1/engine/target/target.gc",
+        "goal_src/jak1/engine/target/target-handler.gc",
+        "goal_src/jak1/engine/target/target-death.gc",
+        "goal_src/jak1/engine/target/target-util.gc"
+      ],
+      "functions": [
+        {
+          "name": "target-danger-set!",
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "lines": [
+            222,
+            320
+          ]
+        },
+        {
+          "name": "target-send-attack",
+          "path": "goal_src/jak1/engine/target/target-handler.gc",
+          "lines": [
+            238,
+            368
+          ]
+        },
+        {
+          "name": "target-hit",
+          "path": "goal_src/jak1/engine/target/target-death.gc",
+          "lines": [
+            526,
+            635
+          ]
+        },
+        {
+          "name": "target-attack",
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "lines": [
+            1200,
+            1236
+          ]
+        },
+        {
+          "name": "can-feet?",
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "lines": [
+            656,
+            666
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision",
+        "player-control"
+      ]
+    },
+    {
+      "id": "enemy-ai",
+      "name": "Navigation-based enemy behaviour",
+      "purpose": "Distance bands and timers drive an enemy state machine for noticing, chasing and giving up, while a yaw-rate controller steers the body and a navigation mesh answers whether a point is reachable.",
+      "paths": [
+        "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+        "goal_src/jak1/engine/common-obs/nav-enemy-h.gc",
+        "goal_src/jak1/engine/nav/navigate.gc",
+        "goal_src/jak1/engine/common-obs/babak.gc",
+        "goal_src/jak1/engine/math/transformq.gc"
+      ],
+      "functions": [
+        {
+          "name": "target-in-range?",
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "lines": [
+            324,
+            331
+          ]
+        },
+        {
+          "name": "nav-enemy-notice-player?",
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "lines": [
+            332,
+            348
+          ]
+        },
+        {
+          "name": "nav-enemy-turn-to-face-dir",
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "lines": [
+            449,
+            462
+          ]
+        },
+        {
+          "name": "nav-enemy-chase",
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "lines": [
+            649,
+            687
+          ]
+        },
+        {
+          "name": "circle-triangle-intersection?",
+          "path": "goal_src/jak1/engine/nav/navigate.gc",
+          "lines": [
+            475,
+            521
+          ]
+        },
+        {
+          "name": "seek-toward-heading-vec!",
+          "path": "goal_src/jak1/engine/math/transformq.gc",
+          "lines": [
+            35,
+            59
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision",
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "animation",
+      "name": "Joint animation and cycle timing",
+      "purpose": "Owns joint control channels: how a frame number advances, how several channels blend into one pose, and how locomotion cycles are driven by the distance the body actually covers rather than by wall-clock time.",
+      "paths": [
+        "goal_src/jak1/engine/anim/joint.gc",
+        "goal_src/jak1/engine/anim/joint-h.gc",
+        "goal_src/jak1/engine/common-obs/process-drawable.gc",
+        "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+        "goal_src/jak1/engine/target/target.gc",
+        "goal_src/jak1/engine/target/target-util.gc"
+      ],
+      "functions": [
+        {
+          "name": "ja",
+          "path": "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+          "lines": [
+            117,
+            203
+          ]
+        },
+        {
+          "name": "num-func-loop!",
+          "path": "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+          "lines": [
+            46,
+            56
+          ]
+        },
+        {
+          "name": "num-func-seek!",
+          "path": "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+          "lines": [
+            57,
+            68
+          ]
+        },
+        {
+          "name": "current-cycle-distance",
+          "path": "goal_src/jak1/engine/common-obs/process-drawable.gc",
+          "lines": [
+            647,
+            661
+          ]
+        },
+        {
+          "name": "joint-control-channel-group-eval!",
+          "path": "goal_src/jak1/engine/anim/joint.gc",
+          "lines": [
+            768,
+            780
+          ]
+        },
+        {
+          "name": "ja-post",
+          "path": "goal_src/jak1/engine/common-obs/process-drawable.gc",
+          "lines": [
+            631,
+            645
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control"
+      ]
+    },
+    {
+      "id": "streaming",
+      "name": "Level and texture streaming",
+      "purpose": "Keeps the small set of levels that may be resident at once and manages the graphics memory budget those levels share, including the split between permanently resident and per-frame re-uploaded texture data.",
+      "paths": [
+        "goal_src/jak1/engine/level/level.gc",
+        "goal_src/jak1/engine/level/load-boundary.gc",
+        "goal_src/jak1/engine/gfx/texture/texture.gc"
+      ],
+      "functions": [
+        {
+          "name": "update!",
+          "path": "goal_src/jak1/engine/level/level.gc",
+          "lines": [
+            1083,
+            1187
+          ]
+        },
+        {
+          "name": "level-update",
+          "path": "goal_src/jak1/engine/level/level.gc",
+          "lines": [
+            1188,
+            1370
+          ]
+        },
+        {
+          "name": "load-continue",
+          "path": "goal_src/jak1/engine/level/level.gc",
+          "lines": [
+            317,
+            374
+          ]
+        },
+        {
+          "name": "allocate-defaults!",
+          "path": "goal_src/jak1/engine/gfx/texture/texture.gc",
+          "lines": [
+            738,
+            761
+          ]
+        },
+        {
+          "name": "point-in-polygon",
+          "path": "goal_src/jak1/engine/level/load-boundary.gc",
+          "lines": [
+            911,
+            932
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-step-control-iteration",
+      "node": "frame-timing",
+      "name": "Fixed control steps inside a variable frame",
+      "summary": "Player control advances in whole steps of one sixtieth of a second; a slow frame repeats those steps instead of taking a larger one.",
+      "behavior": "At the start of every rendered frame the engine divides the measured frame duration by the nominal frame duration and rounds up, producing a speed ratio. The post-update of the player takes the integer part of that ratio, temporarily pins the global time scale to exactly 1.0, and runs the complete control pipeline that many times: pad read, heading turn, thrust, gravity, rotation, collision integration, gravity bending, flag cleanup. The time scale is restored afterwards, so every nested system observes a normal one-step frame. Because the ratio is clamped before use, a long stall becomes at most four steps and simply loses wall-clock progress rather than letting a body move four steps worth of distance in one sweep. Nothing in the pipeline reads the render rate, which is why the feel is identical at any refresh rate; the only visible consequence of a slow frame is that the animation and camera see fewer updates per second.",
+      "constants": [
+        {
+          "name": "slowdown cap",
+          "value": 4,
+          "unit": "multiplier on the nominal frame duration; also the maximum control steps per rendered frame",
+          "source": "goal_src/jak1/engine/gfx/hw/display.gc:40"
+        },
+        {
+          "name": "NTSC seconds per frame",
+          "value": 0.016666668,
+          "unit": "seconds per update at the 60 Hz base step",
+          "source": "goal_src/jak1/engine/gfx/hw/display.gc:51"
+        },
+        {
+          "name": "PAL seconds per frame",
+          "value": 0.02,
+          "unit": "seconds per update at the 50 Hz base step",
+          "source": "goal_src/jak1/engine/gfx/hw/display.gc:45"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 911
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 912
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 913
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 957
+        },
+        {
+          "path": "goal_src/jak1/engine/gfx/hw/display.gc",
+          "line": 40
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "frame-rate independent physics",
+        "simulation substeps"
+      ],
+      "tags": [
+        "timing",
+        "determinism",
+        "frame-rate"
+      ]
+    },
+    {
+      "id": "distance-time-and-angle-units",
+      "node": "frame-timing",
+      "name": "Distance, duration and rotation units",
+      "summary": "Three integer-friendly unit systems carry all gameplay quantities: 4096 distance units per metre, 300 time units per second, 65536 rotation units per turn.",
+      "behavior": "Distance literals are metres multiplied by 4096 before the compiler sees them, so a stored velocity divided by 4096 is metres per second, and positions are advanced with an explicit Euler step of velocity times seconds per frame. Durations are stored as 300ths of a second, a rate chosen so that it splits evenly into both frame rates: five units per frame at 60 Hz and six at 50 Hz, which lets timer comparisons stay exact in integer arithmetic at either rate. Rotations are 1/65536 of a turn, so wrapping is a mask and every trigonometric routine can share one range. The units are the usual source of scale errors: a value copied from a metre field into a velocity field is off by a factor of the frame time, and a duration compared against a frame counter is off by the tick ratio. Converted values worth remembering: a full-speed ground velocity of 40960 units per second is 10 m/s, and a yaw limit of 131072 rotation units per second is 720 degrees per second.",
+      "constants": [
+        {
+          "name": "METER_LENGTH",
+          "value": 4096,
+          "unit": "distance units per metre (unitless scale factor)",
+          "source": "goal_src/jak1/engine/util/types-h.gc:23"
+        },
+        {
+          "name": "DEGREES_PER_ROT",
+          "value": 65536,
+          "unit": "rotation units per full turn",
+          "source": "goal_src/jak1/engine/util/types-h.gc:40"
+        },
+        {
+          "name": "TICKS_PER_SECOND",
+          "value": 300,
+          "unit": "time units per second (integer ticks)",
+          "source": "goal_src/jak1/engine/util/types-h.gc:54"
+        },
+        {
+          "name": "NTSC time factor",
+          "value": 5,
+          "unit": "time units per frame at 60 Hz",
+          "source": "goal_src/jak1/engine/gfx/hw/display.gc:54"
+        },
+        {
+          "name": "ground yaw rate limit",
+          "value": 131072,
+          "unit": "rotation units per second (720 degrees per second) used as the per-update yaw step bound",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:153"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/util/types-h.gc",
+          "line": 23
+        },
+        {
+          "path": "goal_src/jak1/engine/util/types-h.gc",
+          "line": 40
+        },
+        {
+          "path": "goal_src/jak1/engine/util/types-h.gc",
+          "line": 54
+        },
+        {
+          "path": "goal_src/jak1/engine/gfx/hw/display.gc",
+          "line": 48
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 153
+        }
+      ],
+      "capabilities": [
+        "fixed point units",
+        "unit conversion",
+        "timer arithmetic"
+      ],
+      "tags": [
+        "units",
+        "timing",
+        "conventions"
+      ]
+    },
+    {
+      "id": "stick-normalisation",
+      "node": "input-reading",
+      "name": "Stick normalisation with dead zone",
+      "summary": "Left-stick axes become a unit-length direction plus a magnitude in 0..1, with a hard dead zone and no diagonal speed bonus.",
+      "behavior": "Each axis arrives as an unsigned byte centred near 128. The pair is rescaled by 1/128 into roughly -1..1, then interpreted as a planar vector: its length is clamped to 1 so a diagonal push is not faster than an axis-aligned one, and its angle is taken with atan2 to give a heading in rotation units. Magnitudes below the dead-zone threshold are forced to exactly zero, which makes a resting stick produce no motion at all rather than a slow crawl; above the threshold the measured magnitude passes through unchanged, so acceleration ramps see a continuous 0..1 signal and the character walks when the stick is only partly pushed. The heading is later rotated through the camera basis into world space, so \"forward\" always means away from the current view and camera-relative movement needs no separate mapping table.",
+      "constants": [
+        {
+          "name": "axis scale",
+          "value": 0.0078125,
+          "unit": "fraction of stick range per axis count (1/128, unitless)",
+          "source": "goal_src/jak1/engine/ps2/pad.gc:363"
+        },
+        {
+          "name": "stick dead zone",
+          "value": 0.3,
+          "unit": "fraction of full stick magnitude",
+          "source": "goal_src/jak1/engine/ps2/pad.gc:270"
+        },
+        {
+          "name": "magnitude clamp",
+          "value": 1,
+          "unit": "fraction of full stick magnitude",
+          "source": "goal_src/jak1/engine/ps2/pad.gc:366"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "line": 363
+        },
+        {
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "line": 366
+        },
+        {
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "line": 367
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 272
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 279
+        }
+      ],
+      "capabilities": [
+        "analog dead zone",
+        "camera relative input",
+        "stick magnitude"
+      ],
+      "tags": [
+        "input",
+        "control",
+        "feel"
+      ]
+    },
+    {
+      "id": "action-acceptance-windows",
+      "node": "input-reading",
+      "name": "Action acceptance windows",
+      "summary": "Movement actions are allowed inside deliberate time windows: a press buffer, a short grace period after leaving the ground, an angle limit, and per-action cooldowns.",
+      "behavior": "A button is \"pressed\" only on the frame its held mask gains a bit, which is current mask minus previous mask, so holding cannot retrigger; a ring of the last fifteen frames of both masks lets gameplay ask whether a button went down recently, which absorbs presses that arrive during a short state change. On top of that, conditions decide whether the press is legal. Jumping accepts a press while the body is on the ground, or while the time since the last ground contact is still inside the grace window; a third clause additionally accepts ground contact with a surface normal within the angle limit, which the first clause already covers, so the angle limit documents intent rather than adding a case. The grace window is what lets a jump taken just after running off a ledge still fire. Attacks are gated by a cooldown since the previous attack ended, with a shorter cooldown while the enhanced attack resource is active. A separate shaping rule discards stick flicks: if the stick magnitude lies between the low and high thresholds and its direction reversed relative to the previous sample, the magnitude is zeroed for that step so quick re-centring cannot spin the character.",
+      "constants": [
+        {
+          "name": "press history length",
+          "value": 15,
+          "unit": "frames of button history at 60 Hz update (about 250 ms)",
+          "source": "goal_src/jak1/engine/ps2/pad.gc:405"
+        },
+        {
+          "name": "ground grace window",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/target/target-util.gc:158"
+        },
+        {
+          "name": "attack cooldown",
+          "value": 0.3,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/target/target-util.gc:157"
+        },
+        {
+          "name": "enhanced attack cooldown",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/target/target-util.gc:214"
+        },
+        {
+          "name": "jump surface angle limit",
+          "value": 0.866,
+          "unit": "cosine of the surface tilt allowed for the ground-grace jump (about 30 degrees)",
+          "source": "goal_src/jak1/engine/target/target-util.gc:565"
+        },
+        {
+          "name": "stick flick low threshold",
+          "value": 0.3,
+          "unit": "fraction of full stick magnitude",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:924"
+        },
+        {
+          "name": "stick flick high threshold",
+          "value": 0.7,
+          "unit": "fraction of full stick magnitude",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:926"
+        },
+        {
+          "name": "direction reversal threshold",
+          "value": 0.2,
+          "unit": "dot product between the current and previous stick directions (unitless)",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:925"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "line": 346
+        },
+        {
+          "path": "goal_src/jak1/engine/ps2/pad.gc",
+          "line": 405
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "line": 562
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "line": 656
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 924
+        }
+      ],
+      "capabilities": [
+        "input buffering",
+        "coyote time",
+        "cooldowns",
+        "input shaping"
+      ],
+      "tags": [
+        "input",
+        "jump",
+        "combat",
+        "responsiveness"
+      ]
+    },
+    {
+      "id": "thrust-toward-target-velocity",
+      "node": "player-control",
+      "name": "Thrust toward a surface-defined target velocity",
+      "summary": "Horizontal motion is a velocity that chases a target built from the stick direction and the surface top speed, with a per-step budget that makes acceleration exponential.",
+      "behavior": "The pad heading is rotated into the surface plane and scaled by the surface target speed, giving a target velocity in world space. The controller does not assign that velocity: it moves the current planar velocity toward it by at most a budget, converted from the surface friction value through the frame duration. Once the current speed exceeds the surface nonlinear distance, the budget grows in proportion to the ratio of speed to that distance, which turns the approach into a first-order lag with a fixed time constant instead of a fixed acceleration; below that distance the budget is the flat friction value, so low-speed nudges stay gentle. The budget is additionally scaled by one of three surface coefficients chosen from the angle between the requested direction and the body facing, aligned, perpendicular or reversed, so a row can make a turn cost more than a straight-line correction; on the default ground row all three are equal and the weighting is inert. When the blocked factor exceeds its threshold, the blocked velocity vector is seeked toward the target at a much higher fixed rate so the body slides along a wall instead of being pinned. The final clamp is the surface top speed, which is also the value the animation system later assumes.",
+      "constants": [
+        {
+          "name": "ground top speed",
+          "value": 40960,
+          "unit": "distance units per second (10 m/s)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:157"
+        },
+        {
+          "name": "ground target speed",
+          "value": 40960,
+          "unit": "distance units per second (10 m/s)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:158"
+        },
+        {
+          "name": "ground friction coefficient",
+          "value": 1,
+          "unit": "inverse seconds (velocity budget per second, scaled by the nonlinear distance)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:162"
+        },
+        {
+          "name": "nonlinear friction distance",
+          "value": 1,
+          "unit": "distance units per second threshold where the budget starts scaling with speed",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:163"
+        },
+        {
+          "name": "aligned direction coefficient",
+          "value": 1,
+          "unit": "multiplier on the surface friction for a small heading correction (unitless)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:159"
+        },
+        {
+          "name": "reversed direction coefficient",
+          "value": 1,
+          "unit": "multiplier on the surface friction for a 180 degree reversal (unitless)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:161"
+        },
+        {
+          "name": "blocked lateral seek rate",
+          "value": 122880,
+          "unit": "distance units per second, applied when the blocked factor is engaged",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:441"
+        },
+        {
+          "name": "blocked factor threshold",
+          "value": 0.2,
+          "unit": "fraction, unitless",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:441"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 398
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 441
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 446
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 149
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 157
+        }
+      ],
+      "capabilities": [
+        "acceleration model",
+        "surface parameters",
+        "wall sliding",
+        "speed clamp"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "air-control-surface",
+      "node": "player-control",
+      "name": "Air control through a swapped surface table",
+      "summary": "Leaving the ground swaps in a surface row with the same top speed but much weaker steering, which is what limits mid-air corrections.",
+      "behavior": "The movement parameters live in a table of surfaces, and states simply point the controller at a different row; there is no branch anywhere that asks whether the body is airborne. The jump rows keep the top speed and target speed identical to the ground row, so a running jump keeps its momentum, but they cut the three heading coefficients to 0.3 and the friction coefficient to 0.2. The effect is that the velocity budget per step shrinks and the requested direction is blended in only partially, so a held stick bends the arc slightly while a reversal is nearly impossible before landing. Because the same code path is reused, landing restores full responsiveness by pointing back at the ground row, and special jumps can define their own intermediate rows for a stronger or weaker pull without touching the controller.",
+      "constants": [
+        {
+          "name": "air aligned direction coefficient",
+          "value": 0.3,
+          "unit": "multiplier on the surface friction for a small heading correction (unitless)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:291"
+        },
+        {
+          "name": "air perpendicular direction coefficient",
+          "value": 0.3,
+          "unit": "multiplier for a sideways correction (unitless)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:292"
+        },
+        {
+          "name": "air reversed direction coefficient",
+          "value": 0.3,
+          "unit": "multiplier for a reversal (unitless)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:293"
+        },
+        {
+          "name": "air friction coefficient",
+          "value": 0.2,
+          "unit": "inverse seconds (velocity budget per second)",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:294"
+        },
+        {
+          "name": "air top speed",
+          "value": 40960,
+          "unit": "distance units per second (10 m/s), unchanged from the ground row",
+          "source": "goal_src/jak1/engine/collide/surface-h.gc:289"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 281
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 291
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 856
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/surface-h.gc",
+          "line": 103
+        }
+      ],
+      "capabilities": [
+        "air control",
+        "parameter tables",
+        "momentum preservation"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "feel"
+      ]
+    },
+    {
+      "id": "jump-velocity-from-height",
+      "node": "jump-physics",
+      "name": "Jump height converted to vertical speed",
+      "summary": "A jump is requested as an apex height and converted to an initial vertical speed, then re-solved every step while the button is held.",
+      "behavior": "The entry point receives a minimum and a maximum height. It first adds any residual upward motion inherited from a moving platform to both heights, then computes the vertical speed that reaches the requested height under the current gravity: the square root of twice gravity times the height, minus one hundred and twentieth of gravity. That correction exists because the integrator adds acceleration over whole steps and would otherwise overshoot the analytic apex by half a step of gravity; at the sixty hertz base step, one hundred and twentieth of gravity is exactly that half step, so the arc lands on the requested height. Because the correction is a fixed constant rather than a function of the frame duration, a mode that advances control at a different rate keeps a small residual error. While the button stays held, a second pass measures the fraction of a half second elapsed since takeoff, interpolates the requested height between the minimum and maximum by that fraction, and re-solves a fresh vertical speed from the remaining height. Holding therefore raises the arc above the minimum value that was already applied at takeoff, and releasing freezes the arc at whatever height budget had accumulated. The fraction is clamped after half a second, so a longer hold adds nothing.",
+      "constants": [
+        {
+          "name": "gravity acceleration",
+          "value": 60,
+          "unit": "metres per second squared (source literal in metres)",
+          "source": "goal_src/jak1/engine/physics/gravity-h.gc:7"
+        },
+        {
+          "name": "terminal fall speed",
+          "value": 40,
+          "unit": "metres per second (source literal in metres)",
+          "source": "goal_src/jak1/engine/physics/gravity-h.gc:9"
+        },
+        {
+          "name": "minimum jump height",
+          "value": 1.01,
+          "unit": "metres (apex height above takeoff)",
+          "source": "goal_src/jak1/engine/target/target-util.gc:126"
+        },
+        {
+          "name": "maximum jump height",
+          "value": 3.5,
+          "unit": "metres (apex height above takeoff)",
+          "source": "goal_src/jak1/engine/target/target-util.gc:127"
+        },
+        {
+          "name": "arc solve correction",
+          "value": 0.008333334,
+          "unit": "fraction of gravity per step subtracted from the solved speed (1/120)",
+          "source": "goal_src/jak1/engine/target/target.gc:688"
+        },
+        {
+          "name": "hold fraction per step",
+          "value": 0.033333335,
+          "unit": "fraction of the hold window per 60 Hz step (1/30, so a full window is 0.5 s)",
+          "source": "goal_src/jak1/engine/target/target.gc:696"
+        },
+        {
+          "name": "squared-velocity factor",
+          "value": 2,
+          "unit": "multiplier in the speed-from-height solve (unitless)",
+          "source": "goal_src/jak1/engine/target/target.gc:687"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 659
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 687
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 696
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 713
+        },
+        {
+          "path": "goal_src/jak1/engine/physics/dynamics-h.gc",
+          "line": 19
+        }
+      ],
+      "capabilities": [
+        "variable jump height",
+        "ballistic arc",
+        "discrete integration correction"
+      ],
+      "tags": [
+        "jump",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "air-jump-velocity-windows",
+      "node": "jump-physics",
+      "name": "Vertical speed windows for air jumps",
+      "summary": "Second jumps and dive attacks are only legal while the vertical speed is inside a band, which turns them into timing decisions.",
+      "behavior": "A second jump is accepted only if the vertical component of velocity is below three metres per second upward and above fifteen metres per second downward. The upper bound prevents spending both jumps in the same instant at takeoff, and the lower bound stops the input from being consumed long after the useful part of the arc has passed. The dive attack has its own, wider upper bound of six and a half metres per second and the same lower bound, so the dive can be started earlier than the second jump but still not at maximum rise. Both transitions additionally require that the body is not touching water, that the state does not forbid the action, that the surface does not forbid it, and that the stuck timeout has elapsed since the last time the body was flagged as stuck. Because the checks run in the transition block, they are evaluated every step against the live velocity rather than against a timer, so the accepted window widens or narrows with gravity and with any external upward impulse.",
+      "constants": [
+        {
+          "name": "second jump upward limit",
+          "value": 12288,
+          "unit": "distance units per second upward (3 m/s)",
+          "source": "goal_src/jak1/engine/target/target.gc:870"
+        },
+        {
+          "name": "air action downward limit",
+          "value": -61440,
+          "unit": "distance units per second (negative is falling, so 15 m/s downward)",
+          "source": "goal_src/jak1/engine/target/target.gc:871"
+        },
+        {
+          "name": "dive attack upward limit",
+          "value": 26624,
+          "unit": "distance units per second upward (6.5 m/s)",
+          "source": "goal_src/jak1/engine/target/target.gc:876"
+        },
+        {
+          "name": "minimum second jump height",
+          "value": 1,
+          "unit": "metres (apex height above the jump point)",
+          "source": "goal_src/jak1/engine/target/target-util.gc:128"
+        },
+        {
+          "name": "maximum second jump height",
+          "value": 2.5,
+          "unit": "metres (apex height above the jump point)",
+          "source": "goal_src/jak1/engine/target/target-util.gc:129"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 869
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 870
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 876
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 877
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "line": 128
+        }
+      ],
+      "capabilities": [
+        "double jump",
+        "dive attack",
+        "state transition gates"
+      ],
+      "tags": [
+        "jump",
+        "combat",
+        "feel"
+      ]
+    },
+    {
+      "id": "collision-substepping",
+      "node": "collision",
+      "name": "Substepped swept collision",
+      "summary": "A step is swept against the collide cache, and whatever fraction of the move was blocked is swept again, bounded by an iteration count and a remainder threshold.",
+      "behavior": "The moving shape turns its velocity into a displacement for the whole step and asks the collision cache for the earliest blocking triangle. If nothing blocks, the shape is moved the full displacement and the velocity passes through unchanged. If something blocks at a fraction of the sweep, the reaction callback rewrites the velocity and the shape is moved only to the contact point; the loop then sweeps the remaining fraction, which is what produces a slide along a wall or a step over a low edge in a single control step. The loop stops when fewer than five percent of the step remains or when eight sweeps have been performed, so a corner where several surfaces meet costs a bounded amount of work and leaves at most a small unconsumed remainder. Before any of this, a speed above four hundred metres per second is treated as corrupt and zeroed, which prevents a bad reaction from launching a body across the level in one step.",
+      "constants": [
+        {
+          "name": "remaining fraction cutoff",
+          "value": 0.05,
+          "unit": "fraction of the step, unitless",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:897"
+        },
+        {
+          "name": "sweeps per step",
+          "value": 8,
+          "unit": "iterations per control step (integer)",
+          "source": "goal_src/jak1/engine/target/logic-target.gc:1176"
+        },
+        {
+          "name": "velocity sanity limit",
+          "value": 1638400,
+          "unit": "distance units per second (400 m/s); larger velocities are zeroed",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:915"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 777
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 897
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 898
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 915
+        },
+        {
+          "path": "goal_src/jak1/engine/target/logic-target.gc",
+          "line": 1176
+        }
+      ],
+      "capabilities": [
+        "swept collision",
+        "wall sliding",
+        "iteration bounds"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "robustness"
+      ]
+    },
+    {
+      "id": "ledge-coverage-probes",
+      "node": "collision",
+      "name": "Ledge coverage probes",
+      "summary": "Two short probes past the contact point decide whether ground continues beyond an edge and whether the edge should be grabable.",
+      "behavior": "After a reaction has a triangle and a contact point, the code builds a tangent along the surface, derives an overhang plane normal from it, and fires two line-sphere probes with a ten centimetre radius. The first probe starts seven tenths of a metre beyond the contact point along the tangent and sweeps five metres in a direction that is mostly down but tilted one metre along the tangent, so it reports the gap to whatever surface follows the step. The second probe starts two tenths of a metre above the contact point and two tenths of a metre back along the tangent, and measures the distance down to the next surface. The two results are compared with multiples of the body sphere radius: when the first is farther than one and a quarter radii and the second is closer than two radii, the shape is marked as having low coverage and the current time is stamped. A separate alignment test, the absolute dot product between the gravity normal and the derived plane normal reaching 0.866 (the plane within about thirty degrees of horizontal), sets a flag that suppresses the marking entirely. Edge grabbing is decided separately: with coverage below 0.95 and the tangent pointing forward, or coverage below 0.3 while the surface allows jumps, and the contact point more than a quarter of the body radius below the body centre, the movement surface is switched to the edge surface and the grab flag is raised, which is what lets a falling body catch the lip instead of sliding off.",
+      "constants": [
+        {
+          "name": "overhang plane limit",
+          "value": 0.866,
+          "unit": "absolute cosine between the gravity normal and the derived plane normal (about 30 degrees from horizontal)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:33"
+        },
+        {
+          "name": "forward probe offset",
+          "value": 2867.2,
+          "unit": "distance units along the tangent (0.7 m)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:43"
+        },
+        {
+          "name": "probe length",
+          "value": -20480,
+          "unit": "distance units along the negative gravity normal (5 m down)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:44"
+        },
+        {
+          "name": "probe sphere radius",
+          "value": 409.6,
+          "unit": "distance units (0.1 m)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:49"
+        },
+        {
+          "name": "second probe drop",
+          "value": 819.2,
+          "unit": "distance units along the gravity normal (0.2 m)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:60"
+        },
+        {
+          "name": "near gap multiplier",
+          "value": 1.25,
+          "unit": "multiplier on the body sphere radius (unitless)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:77"
+        },
+        {
+          "name": "far gap multiplier",
+          "value": 2,
+          "unit": "multiplier on the body sphere radius (unitless)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:79"
+        },
+        {
+          "name": "coverage fraction for grab",
+          "value": 0.95,
+          "unit": "fraction of full coverage below which the ledge may be grabbed (unitless)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:90"
+        },
+        {
+          "name": "jump surface grab coverage",
+          "value": 0.3,
+          "unit": "fraction of full coverage below which a jump surface may still grab (unitless)",
+          "source": "goal_src/jak1/engine/target/collide-reaction-target.gc:91"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "line": 17
+        },
+        {
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "line": 33
+        },
+        {
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "line": 43
+        },
+        {
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "line": 60
+        },
+        {
+          "path": "goal_src/jak1/engine/target/collide-reaction-target.gc",
+          "line": 90
+        }
+      ],
+      "capabilities": [
+        "edge detection",
+        "ledge grab",
+        "coverage flags"
+      ],
+      "tags": [
+        "collision",
+        "edge grab",
+        "feel"
+      ]
+    },
+    {
+      "id": "safe-landing-search",
+      "node": "collision",
+      "name": "Safe landing search",
+      "summary": "To recover from a hazard fall, the engine searches eight radial directions in one metre steps for a flat, safe patch and requires two confirming probes.",
+      "behavior": "The search first picks a heading: the direction of travel if the body is moving horizontally faster than a small threshold, otherwise the facing direction. It fills a collision cache from a box extended ten metres down and five metres up around the current position, then walks eight directions in 45 degree increments, starting with the heading and alternating left and right so the most plausible direction is tested first. Along each direction it steps outward one metre at a time from the start distance up to the maximum, and at each sample casts a downward probe from five metres above with a two and a half metre radius sphere. A sample only counts when it hits ground, the surface has no dangerous event, and the vertical component of the surface normal is above 0.7; two such samples are required before the position is accepted, which filters out single lucky hits and narrow slivers. A first fast probe along the whole ray shortens the search when a wall would be hit mid-flight, giving up one and a half metres of margin.",
+      "constants": [
+        {
+          "name": "radial step",
+          "value": 4096,
+          "unit": "distance units per search sample (1 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:613"
+        },
+        {
+          "name": "direction step",
+          "value": 8192,
+          "unit": "rotation units between search directions (45 degrees)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:559"
+        },
+        {
+          "name": "minimum flatness",
+          "value": 0.7,
+          "unit": "minimum vertical component of the candidate surface normal (unitless)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:602"
+        },
+        {
+          "name": "probe start height",
+          "value": 20480,
+          "unit": "distance units above the candidate point (5 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:589"
+        },
+        {
+          "name": "downward probe radius",
+          "value": 10240,
+          "unit": "distance units sphere radius for the vertical probe (2.5 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:594"
+        },
+        {
+          "name": "wall clearance",
+          "value": -6144,
+          "unit": "distance units subtracted from the reachable distance when a wall is found (1.5 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:579"
+        },
+        {
+          "name": "cache vertical extent down",
+          "value": -40960,
+          "unit": "distance units below the current position (10 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:545"
+        },
+        {
+          "name": "cache vertical extent up",
+          "value": 20480,
+          "unit": "distance units above the current position (5 m)",
+          "source": "goal_src/jak1/engine/collide/collide-shape.gc:546"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 524
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 559
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 602
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 613
+        },
+        {
+          "path": "goal_src/jak1/engine/collide/collide-shape.gc",
+          "line": 621
+        }
+      ],
+      "capabilities": [
+        "hazard recovery",
+        "ground probes",
+        "radial search"
+      ],
+      "tags": [
+        "collision",
+        "recovery",
+        "spawn safety"
+      ]
+    },
+    {
+      "id": "camera-aim-tracking",
+      "node": "camera",
+      "name": "Camera aim point and tracking spline",
+      "summary": "The camera aims at a bone position dropped by a fixed height and smoothed through a path that limits how fast the aim may move.",
+      "behavior": "The master camera reads the transform of a chosen bone from the target skeleton, converts it to a world point, and subtracts a fixed target height along the camera local down axis so the view frames the body rather than the bone. The vertical component of the accumulated aim offset is then rescaled by a ratio that differs between ground and air, which damps how much of a jump is inherited by the aim point and keeps the framing stable while the body rises. The resulting point is offered to a tracking path that only accepts it once it has moved at least half a metre from the previous recorded point, so per-frame jitter never creates path points, and the retained path is truncated to the most recent ten metres of travel, which bounds how far the smoothed aim can lag behind the body. The camera then samples that path instead of the raw bone, which turns fast lateral motion into a rounded trail.",
+      "constants": [
+        {
+          "name": "target height",
+          "value": 2.15,
+          "unit": "metres below the tracked bone along camera down",
+          "source": "goal_src/jak1/engine/camera/cam-master.gc:34"
+        },
+        {
+          "name": "ground aim rescale ratio",
+          "value": 0.9,
+          "unit": "fraction of the vertical aim offset kept per update on the ground (unitless)",
+          "source": "goal_src/jak1/engine/camera/cam-master.gc:37"
+        },
+        {
+          "name": "path point spacing",
+          "value": 2048,
+          "unit": "distance units of aim travel before a new path point is accepted (0.5 m)",
+          "source": "goal_src/jak1/engine/camera/cam-master.gc:218"
+        },
+        {
+          "name": "retained path length",
+          "value": 40960,
+          "unit": "distance units of aim travel retained in the path (10 m); older points are discarded",
+          "source": "goal_src/jak1/engine/camera/cam-master.gc:219"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/camera/cam-master.gc",
+          "line": 160
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-master.gc",
+          "line": 218
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-master.gc",
+          "line": 219
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-master.gc",
+          "line": 32
+        }
+      ],
+      "capabilities": [
+        "bone tracking",
+        "aim smoothing",
+        "path resampling"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-string-distance",
+      "node": "camera",
+      "name": "Camera distance string",
+      "summary": "The third-person distance is pulled between a minimum and a maximum by the vertical stick and shortened when geometry blocks the view.",
+      "behavior": "The camera sits on an imaginary string from the aim point. The vertical stick produces a signed rate that is scaled by the frame duration and accumulated into a normalized distance parameter, which is then mapped onto the interval between the minimum and maximum distance, so the same deflection produces the same change in metres at any frame rate. The vertical component of the viewpoint is derived from the same parameter, which means pulling the camera back also raises the aim height, and it is clamped so a wall or cliff behind the camera cannot sink the view underground. A horizontal drag analogously rotates the rig and shortens the string faster when it is already close, avoiding a long swing out of a shallow angle. Occlusion is handled separately: a sphere is swept along the string and, if it hits level geometry, the camera either jumps to a searched free position immediately or waits out a short timer, so a brief occlusion does not make the camera stutter.",
+      "constants": [
+        {
+          "name": "maximum string length",
+          "value": 12.5,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/camera/camera-h.gc:92"
+        },
+        {
+          "name": "minimum string length",
+          "value": 5,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/camera/camera-h.gc:93"
+        },
+        {
+          "name": "default push distance",
+          "value": 10,
+          "unit": "metres, length the string relaxes to when nothing blocks it",
+          "source": "goal_src/jak1/engine/camera/camera-h.gc:94"
+        },
+        {
+          "name": "maximum aim height offset",
+          "value": 3,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/camera/camera-h.gc:90"
+        },
+        {
+          "name": "vertical stick scale",
+          "value": 0.083333336,
+          "unit": "fraction of the distance range per unit of stick deflection below centre (1/12, unitless)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1340"
+        },
+        {
+          "name": "vertical stick scale (down)",
+          "value": 0.0125,
+          "unit": "fraction of the distance range per unit of stick deflection above centre (1/80, unitless)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1341"
+        },
+        {
+          "name": "occlusion wait",
+          "value": 600,
+          "unit": "updates before the camera re-searches while still blocked",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1445"
+        },
+        {
+          "name": "occlusion probe radius",
+          "value": 40.96,
+          "unit": "distance units (0.01 m)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1437"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1346
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1427
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1445
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/camera-h.gc",
+          "line": 92
+        }
+      ],
+      "capabilities": [
+        "camera distance",
+        "occlusion handling",
+        "analog response curve"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-orbit-and-recentre",
+      "node": "camera",
+      "name": "Orbit rate and automatic recentring",
+      "summary": "Horizontal stick deflection rotates the rig at a fixed angular rate per second, and the camera slowly swings behind the travel direction when the player moves.",
+      "behavior": "The horizontal axis is passed through a response curve with a flat centre: stick counts between the low and high thresholds produce exactly zero rotation, and outside that band the output grows linearly with how far the stick is from the near edge, saturating at a fixed out-range. The result is multiplied by the frame duration before being applied as a rotation about the camera up axis, and the same conversion is applied to the automatic recentring limit, which is why both stay frame-rate independent. Recentring rotates the rig toward the horizontal travel direction by a small fraction of the remaining angle each update, but never by more than a fixed angular limit per update, and it is skipped when the line of sight to the target is currently blocked, when the target is not moving, or when the player is actively pushing the stick. The net effect is a camera that returns to a useful angle during sustained running but never fights a deliberate look, and never swings at all for small stick wobble.",
+      "constants": [
+        {
+          "name": "orbit rate",
+          "value": 21845.334,
+          "unit": "rotation units per second (about 120 degrees per second)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1395"
+        },
+        {
+          "name": "recentre rate",
+          "value": 10922.667,
+          "unit": "rotation units per second (about 60 degrees per second)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1416"
+        },
+        {
+          "name": "recentre partial fraction",
+          "value": 0.05,
+          "unit": "fraction of the remaining rotation applied per recentre update (unitless)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1416"
+        },
+        {
+          "name": "closest-string slowdown factor",
+          "value": 0.1,
+          "unit": "fraction added to the distance ratio when the camera is at its short limit (unitless)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1403"
+        },
+        {
+          "name": "horizontal dead band (low)",
+          "value": 28,
+          "unit": "stick counts below centre; the band between the two thresholds produces no rotation (0-255 axis range)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1340"
+        },
+        {
+          "name": "horizontal dead band (high)",
+          "value": 160,
+          "unit": "stick counts above centre; the band between the two thresholds produces no rotation (0-255 axis range)",
+          "source": "goal_src/jak1/engine/camera/cam-states.gc:1341"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1395
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1403
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1416
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/cam-states.gc",
+          "line": 1340
+        }
+      ],
+      "capabilities": [
+        "camera orbit",
+        "automatic recentre",
+        "analog dead band"
+      ],
+      "tags": [
+        "camera",
+        "input",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-seeker-smoothing",
+      "node": "camera",
+      "name": "Velocity limited scalar smoothing",
+      "summary": "Small camera scalars such as tilt and blends are smoothed by a spring whose velocity is capped both absolutely and proportionally to the remaining error.",
+      "behavior": "The seeker keeps a target, a value and a velocity. Each update it computes the error, adds an acceleration proportional to the error scaled by the frame time adjustment, then limits the velocity to the smaller of an absolute maximum and a fraction of the remaining error. The proportional limit is what makes the motion settle without overshoot: far from the target the velocity saturates at the absolute cap, and close to it the velocity falls off with the error so the value eases in. The value is then advanced by the velocity times the same time adjustment, which keeps the response identical when the game runs slower and the time adjustment rises. The same structure is instantiated several times with different gains: the tilt adjustment uses an acceleration of about 9.1 units per second squared, a maximum velocity of about 91 units per second and a partial limit of a quarter, so that a large tilt error is corrected quickly but a small one is smoothed.",
+      "constants": [
+        {
+          "name": "tilt acceleration gain",
+          "value": 9.102222,
+          "unit": "units per second squared per unit of error",
+          "source": "goal_src/jak1/engine/camera/camera.gc:557"
+        },
+        {
+          "name": "tilt maximum velocity",
+          "value": 91.022224,
+          "unit": "units per second",
+          "source": "goal_src/jak1/engine/camera/camera.gc:557"
+        },
+        {
+          "name": "tilt partial limit",
+          "value": 0.25,
+          "unit": "fraction of the remaining error allowed as velocity (unitless)",
+          "source": "goal_src/jak1/engine/camera/camera.gc:557"
+        },
+        {
+          "name": "blend acceleration gain",
+          "value": 0.005,
+          "unit": "units per second squared per unit of error",
+          "source": "goal_src/jak1/engine/camera/camera.gc:561"
+        },
+        {
+          "name": "blend maximum velocity",
+          "value": 0.02,
+          "unit": "units per second",
+          "source": "goal_src/jak1/engine/camera/camera.gc:561"
+        },
+        {
+          "name": "default tilt adjustment",
+          "value": -6.5000005,
+          "unit": "degrees, negative meaning tilted down",
+          "source": "goal_src/jak1/engine/camera/camera-h.gc:95"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/camera/camera-h.gc",
+          "line": 181
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/camera-h.gc",
+          "line": 185
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/camera.gc",
+          "line": 557
+        },
+        {
+          "path": "goal_src/jak1/engine/camera/camera.gc",
+          "line": 561
+        }
+      ],
+      "capabilities": [
+        "spring smoothing",
+        "overshoot free damping",
+        "time scaled motion"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "math"
+      ]
+    },
+    {
+      "id": "melee-volumes-and-damage",
+      "node": "combat",
+      "name": "Melee volumes, shove impulse and invulnerability",
+      "summary": "Attacks re-purpose the body sphere set as hit volumes; a landed hit is an event with a mode, and the receiver gets a shove impulse plus a timed invulnerability.",
+      "behavior": "Entering an attack state selects a danger mode and re-points a small set of collision spheres to radii and local offsets that represent the attack: a wide spin volume centred above the root, a punch volume offset upward from the root, and paired volumes at two heights for the upward and downward attacks. Only those spheres carry the attack offense bits, so the same collision cache that resolves movement also answers whether an enemy was struck. When a target is struck, an attack event is sent with the volume entry, the mode, an attack identifier and a hit count, and the attacker spawns the impact effect and haptics at the recorded intersection point. On the receiving side the hit is turned into an impulse: a backward component and an upward component, with the horizontal speed after the hit clamped so repeated hits cannot accumulate unbounded knockback, and an invulnerability timer is set to three seconds. The hit is classified as front or back by the sign of the dot product between the impulse direction and the body facing, which selects the reaction animation. Melee availability is separate from the hit volumes: the attack cooldown must have expired before a new swing can start.",
+      "constants": [
+        {
+          "name": "punch volume radius",
+          "value": 1.3,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/target/target-util.gc:196"
+        },
+        {
+          "name": "spin volume radius",
+          "value": 2.2,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/target/target-util.gc:190"
+        },
+        {
+          "name": "invulnerability after a hit",
+          "value": 3,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/target/target-util.gc:163"
+        },
+        {
+          "name": "default shove back speed",
+          "value": 6144,
+          "unit": "distance units per second (1.5 m/s)",
+          "source": "goal_src/jak1/engine/target/target-death.gc:557"
+        },
+        {
+          "name": "default shove up speed",
+          "value": 4915.2,
+          "unit": "distance units per second (1.2 m/s)",
+          "source": "goal_src/jak1/engine/target/target-death.gc:558"
+        },
+        {
+          "name": "post hit horizontal clamp",
+          "value": 40960,
+          "unit": "distance units per second (10 m/s)",
+          "source": "goal_src/jak1/engine/target/target-death.gc:536"
+        },
+        {
+          "name": "attack cooldown",
+          "value": 0.3,
+          "unit": "seconds between finishing an attack and starting the next",
+          "source": "goal_src/jak1/engine/target/target-util.gc:157"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 1200
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-handler.gc",
+          "line": 238
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-death.gc",
+          "line": 526
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-death.gc",
+          "line": 536
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target-util.gc",
+          "line": 190
+        }
+      ],
+      "capabilities": [
+        "hit volumes",
+        "knockback impulse",
+        "invulnerability window"
+      ],
+      "tags": [
+        "combat",
+        "collision",
+        "feel"
+      ]
+    },
+    {
+      "id": "enemy-notice-and-chase",
+      "node": "enemy-ai",
+      "name": "Notice, chase and give up",
+      "summary": "Enemies notice through a distance band, commit to a chase after a short reaction delay, and abandon it on distance or on a frustration timer.",
+      "behavior": "Perception is a single test: the distance to the player is below the notice distance, or below a shorter proximity distance that applies regardless of facing, and the player is standing near the navigation mesh. Noticing sets a flag and starts a timer, and the state machine may only leave idle after that timer expires, which gives the enemy a visible wind-up before it moves. Chasing copies the run parameters into the controller: a travel speed, an acceleration, a maximum rotation rate and a turn time constant. Steering goes through a yaw limiter that takes the smaller of the maximum rate times the frame duration and five times the angular error divided by the turn time, so the constant that shapes the approach is the table entry rather than a hardcoded gain, and a direction reversal is suppressed for a fifth of a second to stop oscillation. Abandoning the chase has two independent triggers: leaving the larger stop-chase radius, or staying away from the last known position longer than the frustration time.",
+      "constants": [
+        {
+          "name": "notice distance",
+          "value": 30,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:166"
+        },
+        {
+          "name": "proximity notice distance",
+          "value": 20,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:167"
+        },
+        {
+          "name": "stop chase distance",
+          "value": 40,
+          "unit": "metres",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:168"
+        },
+        {
+          "name": "frustration distance",
+          "value": 8,
+          "unit": "metres from the remembered point",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:169"
+        },
+        {
+          "name": "frustration time",
+          "value": 4,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:170"
+        },
+        {
+          "name": "run travel speed",
+          "value": 6,
+          "unit": "metres per second",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:153"
+        },
+        {
+          "name": "run rotation limit",
+          "value": 2880,
+          "unit": "degrees per second (source literal in degrees, stored as rotation units)",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:154"
+        },
+        {
+          "name": "turn proportional gain",
+          "value": 5,
+          "unit": "multiplier on angular error divided by the turn time (unitless)",
+          "source": "goal_src/jak1/engine/math/transformq.gc:42"
+        },
+        {
+          "name": "direction reversal hold",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "goal_src/jak1/engine/math/transformq.gc:52"
+        },
+        {
+          "name": "run turn time constant",
+          "value": 0.1,
+          "unit": "seconds, used as the divisor of the proportional yaw term",
+          "source": "goal_src/jak1/engine/common-obs/babak.gc:156"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "line": 332
+        },
+        {
+          "path": "goal_src/jak1/engine/common-obs/nav-enemy.gc",
+          "line": 649
+        },
+        {
+          "path": "goal_src/jak1/engine/math/transformq.gc",
+          "line": 35
+        },
+        {
+          "path": "goal_src/jak1/engine/common-obs/babak.gc",
+          "line": 166
+        },
+        {
+          "path": "goal_src/jak1/engine/nav/navigate.gc",
+          "line": 475
+        }
+      ],
+      "capabilities": [
+        "perception bands",
+        "chase state machine",
+        "yaw rate limiter"
+      ],
+      "tags": [
+        "ai",
+        "enemy",
+        "steering"
+      ]
+    },
+    {
+      "id": "distance-matched-animation-speed",
+      "node": "animation",
+      "name": "Distance matched locomotion animation",
+      "summary": "Locomotion cycles advance by distance rather than time, so feet do not slide when speed changes.",
+      "behavior": "Each locomotion animation is tagged with the ground distance one cycle covers, and the playback increment per update is the body horizontal speed divided by sixty times that distance divided by the reference cycle length in frames. Rearranged, the update rate is speed times cycle length over sixty times cycle distance, so a speed of ten metres per second with a six and a quarter metre cycle referenced to sixty frames advances 1.6 frames per update, which is exactly one cycle per six and a quarter metres. Because the distance comes from the animation table and not from a fixed playback rate, walking, running, strafing, wading and the directional blends can all be mixed with weighting while every one of them stays synchronized to the ground. The frame advance is then multiplied inside the playback function by the animation own speed field and by the display time adjustment, so one update advances a distance rather than a frame count and slow frames do not desynchronize the pose from the movement. Seeking and blending use the same time adjustment, which lets a transition of a fixed duration in seconds complete in the same number of simulated steps rather than the same number of rendered frames.",
+      "constants": [
+        {
+          "name": "run cycle distance",
+          "value": 6.25,
+          "unit": "metres of ground travel per animation cycle",
+          "source": "goal_src/jak1/engine/target/target-util.gc:169"
+        },
+        {
+          "name": "run cycle length",
+          "value": 60,
+          "unit": "frames per cycle at the nominal 60 Hz rate",
+          "source": "goal_src/jak1/engine/target/target-util.gc:164"
+        },
+        {
+          "name": "walk cycle distance",
+          "value": 2.8,
+          "unit": "metres of ground travel per animation cycle",
+          "source": "goal_src/jak1/engine/target/target-util.gc:165"
+        },
+        {
+          "name": "frame rate divisor",
+          "value": 60,
+          "unit": "nominal updates per second used to convert speed into frames per update",
+          "source": "goal_src/jak1/engine/target/target.gc:579"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 578
+        },
+        {
+          "path": "goal_src/jak1/engine/target/target.gc",
+          "line": 579
+        },
+        {
+          "path": "goal_src/jak1/engine/common-obs/process-drawable.gc",
+          "line": 647
+        },
+        {
+          "path": "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+          "line": 46
+        },
+        {
+          "path": "goal_src/jak1/engine/common-obs/process-drawable-h.gc",
+          "line": 54
+        }
+      ],
+      "capabilities": [
+        "distance driven animation",
+        "foot sliding prevention",
+        "blend weighting"
+      ],
+      "tags": [
+        "animation",
+        "movement",
+        "feel"
+      ]
+    },
+    {
+      "id": "texture-vram-budget",
+      "node": "streaming",
+      "name": "Texture memory budget for two resident levels",
+      "summary": "Graphics memory is split into a permanently resident pool plus a near pool carved into a private block per resident level and a shared block re-uploaded every frame.",
+      "behavior": "At startup the texture pool hands out three fixed segments: a common segment for data shared by everything, a near segment for the pair of levels that can be resident at once, and a small special segment reserved for the sky, character eyes, the ocean surface and the depth-cue effect. The near segment is then subdivided into a private region per resident level and a shared region. Private data is uploaded once when a level loads and stays put; shared data is re-uploaded for whichever level is currently being drawn, on every frame, which is the trade that keeps two levels of textures affordable in a few megabytes of memory. Allocation returns offsets in VRAM words, and the allocator also relocates texture pages so their three segment destinations can be spread across the pools. Because the per-frame cost scales with the shared block only, a level designer controls streaming cost by how much of its texture set is declared shared rather than by total level texture size.",
+      "constants": [
+        {
+          "name": "COMMON_SEGMENT_WORDS",
+          "value": "#x1c000",
+          "unit": "VRAM words (32-bit) allocated once at startup; 114688 words, 448 KiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:729"
+        },
+        {
+          "name": "NEAR_SEGMENT_WORDS",
+          "value": "#x62000",
+          "unit": "VRAM words for the near pool; 401408 words, 1.53 MiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:731"
+        },
+        {
+          "name": "SPECIAL_VRAM_WORDS",
+          "value": "#x7000",
+          "unit": "VRAM words reserved for sky, eyes, ocean and depth cue; 28672 words, 112 KiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:736"
+        },
+        {
+          "name": "NEAR_PRIVATE_WORDS",
+          "value": "#x24000",
+          "unit": "VRAM words of private near data per resident level; 147456 words, 576 KiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:1080"
+        },
+        {
+          "name": "NEAR_SHARED_WORDS",
+          "value": "#x1a000",
+          "unit": "VRAM words of near data re-uploaded each frame; 106496 words, 416 KiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:1082"
+        },
+        {
+          "name": "NEAR_PER_LEV_WORDS",
+          "value": "#x3e000",
+          "unit": "VRAM words addressable by one resident level (private plus shared); 253952 words, 992 KiB",
+          "source": "goal_src/jak1/engine/gfx/texture/texture.gc:1084"
+        }
+      ],
+      "sources": [
+        {
+          "path": "goal_src/jak1/engine/gfx/texture/texture.gc",
+          "line": 738
+        },
+        {
+          "path": "goal_src/jak1/engine/gfx/texture/texture.gc",
+          "line": 729
+        },
+        {
+          "path": "goal_src/jak1/engine/gfx/texture/texture.gc",
+          "line": 1080
+        },
+        {
+          "path": "goal_src/jak1/engine/level/level.gc",
+          "line": 1083
+        },
+        {
+          "path": "goal_src/jak1/engine/level/level.gc",
+          "line": 1188
+        }
+      ],
+      "capabilities": [
+        "texture streaming",
+        "memory budgeting",
+        "level residency"
+      ],
+      "tags": [
+        "streaming",
+        "memory",
+        "rendering"
+      ]
+    }
+  ]
+}

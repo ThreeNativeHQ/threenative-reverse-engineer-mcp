@@ -1,0 +1,1293 @@
+{
+  "version": 1,
+  "id": "1080-snowboarding",
+  "title": "1080° Snowboarding",
+  "repo": "https://github.com/bigyoshi51/1080-decomp",
+  "sha": "744f9119c9807e4824ac428645ac9f61ed074bac",
+  "nodes": [
+    {
+      "id": "boarder-steering",
+      "name": "Rider steering integration",
+      "purpose": "Turn-input accumulators and the per-update heading solve that turns a measured yaw into a stored turn rate, including the speed terms and the small flags handed to the movement handler",
+      "paths": [
+        "src/game_uso/game_uso.c",
+        "src/game_uso/game_uso_ncc_6A30.cpp",
+        "src/game_uso/game_uso_ncc_71E0.cpp"
+      ],
+      "functions": [
+        {
+          "name": "game_uso_func_0000EAF4",
+          "path": "src/game_uso/game_uso.c",
+          "lines": [
+            9098,
+            9172
+          ]
+        },
+        {
+          "name": "game_uso_func_00006A30",
+          "path": "src/game_uso/game_uso_ncc_6A30.cpp",
+          "lines": [
+            71,
+            108
+          ]
+        },
+        {
+          "name": "game_uso_func_000071E0",
+          "path": "src/game_uso/game_uso_ncc_71E0.cpp",
+          "lines": [
+            71,
+            103
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "boarder-sweep",
+      "name": "Rider closest-approach sweep",
+      "purpose": "Ground-plane sweep that expands a rider-relative segment, halves it while walking the collider chain, and returns a direction that clears every collider",
+      "paths": [
+        "src/game_uso/game_uso.c"
+      ],
+      "functions": [
+        {
+          "name": "game_uso_func_00007C1C",
+          "path": "src/game_uso/game_uso.c",
+          "lines": [
+            5105,
+            5511
+          ]
+        }
+      ],
+      "dependsOn": [
+        "boarder-steering"
+      ]
+    },
+    {
+      "id": "boarder-contact",
+      "name": "Contact and lean classification",
+      "purpose": "Per-update discrete handling branch chosen from stored speed, a body-relative offset triple and per-rider limit tables, plus the probe sweep and rival corridor test that drive contact effects",
+      "paths": [
+        "src/game_uso/game_uso_ncc_D9CC.cpp",
+        "src/game_uso/game_uso_ncc_BB8C.cpp",
+        "src/game_uso/game_uso_ncc_97EC.cpp"
+      ],
+      "functions": [
+        {
+          "name": "game_uso_func_0000D9CC",
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "lines": [
+            40,
+            250
+          ]
+        },
+        {
+          "name": "game_uso_func_0000BB8C",
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "lines": [
+            64,
+            114
+          ]
+        },
+        {
+          "name": "game_uso_func_000097EC",
+          "path": "src/game_uso/game_uso_ncc_97EC.cpp",
+          "lines": [
+            41,
+            60
+          ]
+        }
+      ],
+      "dependsOn": [
+        "boarder-steering"
+      ]
+    },
+    {
+      "id": "surface-probe",
+      "name": "Terrain probes",
+      "purpose": "Shared-library grid lookup, triangle-plane projection and nearest-hit reduction that give a rider a ground height, a surface reference and a material verdict",
+      "paths": [
+        "src/game_libs/game_libs_post0b.c"
+      ],
+      "functions": [
+        {
+          "name": "gl_func_0003BE1C",
+          "path": "src/game_libs/game_libs_post0b.c",
+          "lines": [
+            6254,
+            6382
+          ]
+        },
+        {
+          "name": "gl_func_0003C43C",
+          "path": "src/game_libs/game_libs_post0b.c",
+          "lines": [
+            6419,
+            6470
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera-rig",
+      "name": "Camera rig",
+      "purpose": "Follow-point placement behind a body, view-parameter blending by target distance, and the clamped view-angle ramp used while a scene object is armed",
+      "paths": [
+        "src/game_uso/game_uso_ncc_24BC.cpp",
+        "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+        "src/bootup_uso/bootup_uso.c"
+      ],
+      "functions": [
+        {
+          "name": "game_uso_func_000024BC",
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "lines": [
+            51,
+            79
+          ]
+        },
+        {
+          "name": "func_00004948",
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "lines": [
+            40,
+            97
+          ]
+        },
+        {
+          "name": "func_000024B8",
+          "path": "src/bootup_uso/bootup_uso.c",
+          "lines": [
+            1348,
+            1429
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "geometry-primitives",
+      "name": "Geometry primitives",
+      "purpose": "Ground-plane rotation basis built from a ratio and its complementary factor, and the uniform cubic spline weights used to blend path control points",
+      "paths": [
+        "src/game_uso/game_uso.c",
+        "src/game_uso/game_uso_ncc_0000.cpp"
+      ],
+      "functions": [
+        {
+          "name": "game_uso_func_00003FAC",
+          "path": "src/game_uso/game_uso.c",
+          "lines": [
+            2328,
+            2340
+          ]
+        },
+        {
+          "name": "game_uso_func_00000000",
+          "path": "src/game_uso/game_uso_ncc_0000.cpp",
+          "lines": [
+            14,
+            22
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "timing-records",
+      "name": "Run timing and records",
+      "purpose": "Millisecond-to-minute, second and hundredth split, and the fixed three-slot record table that keeps short runs in order",
+      "paths": [
+        "src/game_libs/game_libs_tail.c"
+      ],
+      "functions": [
+        {
+          "name": "game_libs_func_0000A1B0",
+          "path": "src/game_libs/game_libs_tail.c",
+          "lines": [
+            658,
+            676
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "steer-step-clamp",
+      "node": "boarder-steering",
+      "name": "Steering step clamp",
+      "summary": "Turn input reaches the rider model through a bounded per-update step and a short derivative accumulator instead of snapping straight to the requested lean",
+      "behavior": "A steering request becomes a delta between the target held by the input layer and the value the rider currently carries. That delta is reflected before it is applied: a large positive request folds back through the fast ceiling, a large negative request mirrors the same fold, and whatever survives outside the narrow slow window collapses to nothing. The accepted delta is added into a small signed accumulator that lives for as long as one request does. When the raw delta is exactly zero the per-rider flag word supplies the request instead, with two flag bits nudging the step by one unit and two other bits presetting the derivative field to small fixed values. A hold counter advances on every update in which the accumulator was already live, and once it saturates the mirrored accumulator is bucketed into one of five small results the movement handler reads. If the target itself is zero the accumulator is cleared and the bucket reported is zero.",
+      "constants": [
+        {
+          "name": "fastStepCeiling",
+          "value": 7,
+          "unit": "steering units per update, rate unverified",
+          "source": "src/game_uso/game_uso.c:9114"
+        },
+        {
+          "name": "reflectionBound",
+          "value": 8,
+          "unit": "steering units per update, rate unverified",
+          "source": "src/game_uso/game_uso.c:9114"
+        },
+        {
+          "name": "slowWindowUpper",
+          "value": 3,
+          "unit": "steering units per update, rate unverified",
+          "source": "src/game_uso/game_uso.c:9116"
+        },
+        {
+          "name": "slowWindowLower",
+          "value": -2,
+          "unit": "steering units per update, rate unverified",
+          "source": "src/game_uso/game_uso.c:9116"
+        },
+        {
+          "name": "holdSaturation",
+          "value": 6,
+          "unit": "updates, rate unverified",
+          "source": "src/game_uso/game_uso.c:9143"
+        },
+        {
+          "name": "bucketUpperBound",
+          "value": 3,
+          "unit": "accumulated steering units, rate unverified",
+          "source": "src/game_uso/game_uso.c:9159"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9107
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9114
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9116
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9131
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9143
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 9159
+        }
+      ],
+      "capabilities": [
+        "bounded per-update steering integration",
+        "reflection clamp instead of a hard cut",
+        "five-level derivative bucket export"
+      ],
+      "tags": [
+        "steering",
+        "lean",
+        "input",
+        "clamp",
+        "rider"
+      ]
+    },
+    {
+      "id": "turn-rate-with-speed",
+      "node": "boarder-steering",
+      "name": "Turn rate scaled by speed",
+      "summary": "The stored turn rate is the measured surface yaw scaled by a term that grows with stored speed, so a fast rider turns the board harder per degree of surface change",
+      "behavior": "Each update advances the board position by one scaled velocity step and asks the collider chain for the surface under that point. The horizontal part of the board's stored alignment vector and the returned surface direction together give a signed yaw. That yaw is negated, then multiplied by one plus the stored speed divided by a per-rider reference value, then multiplied again by a per-rider gain and divided by the board's limit field. The same pass exports two small flags to the movement handler: an idle flag when no surface was found, and a speed flag once the stored speed passes a higher gate. A sound timer tied to the same speed gate is started, advanced one tick per update, or consumed when it reaches its limit.",
+      "constants": [
+        {
+          "name": "speedRatioBase",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_6A30.cpp:83"
+        },
+        {
+          "name": "speedFlagGate",
+          "value": 80,
+          "unit": "stored speed units, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_6A30.cpp:86"
+        },
+        {
+          "name": "speedFlagBit",
+          "value": 8,
+          "unit": "movement flag bit, static (no timestep)",
+          "source": "src/game_uso/game_uso_ncc_6A30.cpp:86"
+        },
+        {
+          "name": "soundTimerLimit",
+          "value": 60,
+          "unit": "updates, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_6A30.cpp:93"
+        },
+        {
+          "name": "soundSpeedGate",
+          "value": 30,
+          "unit": "stored speed units, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_6A30.cpp:95"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_6A30.cpp",
+          "line": 81
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_6A30.cpp",
+          "line": 83
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_6A30.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_6A30.cpp",
+          "line": 93
+        }
+      ],
+      "capabilities": [
+        "speed-dependent turn gain",
+        "surface yaw measurement from the collider chain",
+        "idle and speed flag export"
+      ],
+      "tags": [
+        "steering",
+        "turn rate",
+        "speed",
+        "surface",
+        "rider"
+      ]
+    },
+    {
+      "id": "speed-gated-steer",
+      "node": "boarder-steering",
+      "name": "Speed-gated steering stage",
+      "summary": "A second steering stage runs only above a speed gate and in one handling state, and applies a fixed heading gain to the measured yaw",
+      "behavior": "If a per-rider flag asks for the projected-segment update, that helper runs on its own and the rest of the stage is skipped. Otherwise a counter advances on every update in which stored speed is at or above the gate, and resets whenever the rider drops below it. The stage body itself only runs in one named handling state. Inside it the board position is advanced by one scaled velocity step, the collider chain is queried, and a signed yaw is measured between the stored alignment vector projected on the ground plane and the returned surface direction. That yaw is negated and multiplied by a fixed gain to become the stored turn rate. A contact flag is exported when the board reports contact and the rider is not already flagged.",
+      "constants": [
+        {
+          "name": "stageSpeedGate",
+          "value": 30,
+          "unit": "stored speed units, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_71E0.cpp:76"
+        },
+        {
+          "name": "requiredHandlingState",
+          "value": 3,
+          "unit": "state index, static",
+          "source": "src/game_uso/game_uso_ncc_71E0.cpp:81"
+        },
+        {
+          "name": "headingGain",
+          "value": 6,
+          "unit": "turn-rate units per unit of measured yaw per update, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_71E0.cpp:94"
+        },
+        {
+          "name": "contactFlag",
+          "value": 256,
+          "unit": "movement flag bit, static (no timestep)",
+          "source": "src/game_uso/game_uso_ncc_71E0.cpp:99"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_71E0.cpp",
+          "line": 76
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_71E0.cpp",
+          "line": 81
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_71E0.cpp",
+          "line": 92
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_71E0.cpp",
+          "line": 96
+        }
+      ],
+      "capabilities": [
+        "state-gated steering overlay",
+        "speed-gated counter with reset",
+        "contact flag export"
+      ],
+      "tags": [
+        "steering",
+        "state machine",
+        "speed gate",
+        "contact"
+      ]
+    },
+    {
+      "id": "closest-approach-sweep",
+      "node": "boarder-sweep",
+      "name": "Closest-approach sweep",
+      "summary": "A ground-plane sweep expands a rider-relative segment by a fixed length, halves it around each collider, and returns a direction that clears the whole chain",
+      "behavior": "The sweep begins from the rider's horizontal position and the corresponding position on the other body, forms a segment direction from their difference, and extends that direction by a fixed length so the test accounts for collider growth. The extended segment is compared against a threshold built from the collider radius times the same fixed length; when the extension exceeds the threshold a ground-plane rotation of the direction is produced and the sweep reports a hit. Halves of the extended segment are accumulated into the running result at two stages, so the reported vector is shorter than the full extension. The same procedure then repeats down each collider in the chain, re-testing with that collider's own radius and again accumulating midpoint shares. At the end the result is re-expressed relative to the body's own translation so the caller receives a rider-local vector rather than a world one.",
+      "constants": [
+        {
+          "name": "segmentExtension",
+          "value": 250,
+          "unit": "world units, static",
+          "source": "src/game_uso/game_uso.c:5302"
+        },
+        {
+          "name": "radiusToExtensionRatio",
+          "value": 250,
+          "unit": "world units per unit of collider radius, static",
+          "source": "src/game_uso/game_uso.c:5345"
+        },
+        {
+          "name": "midpointShare",
+          "value": 0.5,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso.c:5313"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 5302
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 5313
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 5343
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 5345
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 5461
+        }
+      ],
+      "capabilities": [
+        "collider-chain sweep with radius growth",
+        "ground-plane direction rotation",
+        "rider-local result vector"
+      ],
+      "tags": [
+        "collision",
+        "sweep",
+        "ground plane",
+        "collider chain"
+      ]
+    },
+    {
+      "id": "contact-state-thresholds",
+      "node": "boarder-contact",
+      "name": "Contact state thresholds",
+      "summary": "The handling branch is chosen from stored speed, a body-axis offset and per-rider limit fields, then announced with a posted event code",
+      "behavior": "The classifier first demands that stored speed exceed a low gate and that the rider's contact group bits are set. It then takes the absolute value of one body-axis offset and compares it with the rider's own limit for that axis, and failing that compares a second stored magnitude with a second limit. A third, larger magnitude gate covers the slow case, where an undershoot forces the leaning frame back to a reset value and emits its own event code. Per-rider limit fields are multiplied by a shared scale before the tilt comparison so each rider can carry its own numbers. When any branch fires the animation scale is reloaded to full, the reaction record is cleared, and one event code is posted; a drained counter afterwards posts a second code and forces that counter to a fixed value.",
+      "constants": [
+        {
+          "name": "entrySpeedGate",
+          "value": 30,
+          "unit": "stored speed units, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:63"
+        },
+        {
+          "name": "secondaryMagnitudeGate",
+          "value": 500,
+          "unit": "stored world units, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:121"
+        },
+        {
+          "name": "counterReload",
+          "value": "0x64",
+          "unit": "counter ticks, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:247"
+        },
+        {
+          "name": "animationScaleReset",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:224"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 63
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 121
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 222
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 224
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 247
+        }
+      ],
+      "capabilities": [
+        "multi-stage magnitude gating",
+        "per-rider limit tables",
+        "event code posting with reaction reset"
+      ],
+      "tags": [
+        "handling state",
+        "speed gate",
+        "thresholds",
+        "event"
+      ]
+    },
+    {
+      "id": "lean-limit-cascade",
+      "node": "boarder-contact",
+      "name": "Lean limit cascade",
+      "summary": "Two perpendicular lean components are compared against per-rider limit tables to select one of a long run of discrete outcomes",
+      "behavior": "The rider's body-axis triple is scaled by a single per-update factor, and unless a profile bit is set the scaled triple is zeroed so every later comparison falls into the neutral arm. The horizontal component is compared with four successive per-rider limits and the vertical component with three more, with mirrored negative arms for both. Each match posts its own event code and picks a reaction index together with a side selector, and the movements are exported for the animation layer. A final arm looks for a near-zero horizontal component together with a full scale, a neutral handling state and a clear table id, and fires a code with a small payload when all of that holds. A guard at the end clears the event code entirely when the rider is idle and no reaction index was chosen.",
+      "constants": [
+        {
+          "name": "contactGroupMask",
+          "value": "0x1F0",
+          "unit": "bit flags, static (no timestep)",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:63"
+        },
+        {
+          "name": "profileKeepBit",
+          "value": "0x4000",
+          "unit": "bit flag, static (no timestep)",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:141"
+        },
+        {
+          "name": "zeroedLeanComponent",
+          "value": 0,
+          "unit": "world units of lean per update, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:142"
+        },
+        {
+          "name": "fullScaleThreshold",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_D9CC.cpp:210"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 70
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 90
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 141
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 146
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 210
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_D9CC.cpp",
+          "line": 219
+        }
+      ],
+      "capabilities": [
+        "seven-step lean limit cascade",
+        "mirrored side selectors",
+        "event code and reaction index export"
+      ],
+      "tags": [
+        "lean",
+        "edge",
+        "limits",
+        "handling state"
+      ]
+    },
+    {
+      "id": "contact-response-ramp",
+      "node": "boarder-contact",
+      "name": "Contact response ramp",
+      "summary": "A downward probe ray rotated into the body frame yields two clamped ramp values that scale contact effects on each child body",
+      "behavior": "The response copies the sub-body matrix translation as a probe origin and aims the probe straight down the negative depth axis, then rotates the whole probe by the source body's own frame. The rotated direction is multiplied by a fixed reach and offset per component by the body translation scaled against the shared size table, and the difference between that far point and the probe origin is normalised so one dot product against the rotated direction gives a signed clearance. Clearance beyond the rider's low threshold opens a ramp that is normalised into the zero-to-one band, clamped at the ceiling and scaled by a per-rider value; if that ramp stays under a shared floor the whole response is dropped. A second, higher threshold opens a squared ramp with the same clamp, and only above a second shared floor does it push a weighted basis record and a child reaction record. Every child body then receives either the coarse or the fine ramp according to its own size bit, with the per-child limit field acting as the gate.",
+      "constants": [
+        {
+          "name": "probeDepthDirection",
+          "value": -1,
+          "unit": "world units along the depth axis, static",
+          "source": "src/game_uso/game_uso_ncc_BB8C.cpp:73"
+        },
+        {
+          "name": "probeReach",
+          "value": 1000,
+          "unit": "world units, static",
+          "source": "src/game_uso/game_uso_ncc_BB8C.cpp:75"
+        },
+        {
+          "name": "rampNormaliser",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_BB8C.cpp:84"
+        },
+        {
+          "name": "rampCeiling",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_BB8C.cpp:85"
+        },
+        {
+          "name": "childSizeBit",
+          "value": 1,
+          "unit": "bit flag, static (no timestep)",
+          "source": "src/game_uso/game_uso_ncc_BB8C.cpp:106"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "line": 82
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_BB8C.cpp",
+          "line": 106
+        }
+      ],
+      "capabilities": [
+        "body-frame probe ray",
+        "two-stage clamped response ramp",
+        "per-child effect scaling"
+      ],
+      "tags": [
+        "collision",
+        "probe",
+        "contact",
+        "ramp",
+        "body frame"
+      ]
+    },
+    {
+      "id": "approach-corridor",
+      "node": "boarder-contact",
+      "name": "Approach corridor test",
+      "summary": "Two riders are tested for closure inside a thin corridor on the ground plane so contact effects appear only on a near head-on approach",
+      "behavior": "The test runs only when the rider has a paired body. Both stored velocity vectors are projected onto the ground plane, and the local one must have a non-zero squared length before anything else happens. The projected velocity difference is scaled by a per-rider value to give the corridor vector, while the partner's position minus the local position gives the separation vector, again flattened onto the plane. The corridor length and a perpendicular cross product of the two vectors are formed; a hit needs the separation's projection along the corridor to sit between the corridor start and end parameters, and the perpendicular distance divided by the corridor length to fall under the rider's own limit. A successful hit returns a single set flag and anything else returns zero.",
+      "constants": [
+        {
+          "name": "minimumClosureSpeedSquared",
+          "value": 0,
+          "unit": "squared world units per squared update, rate unverified",
+          "source": "src/game_uso/game_uso_ncc_97EC.cpp:46"
+        },
+        {
+          "name": "corridorStart",
+          "value": 0,
+          "unit": "normalised segment parameter, static",
+          "source": "src/game_uso/game_uso_ncc_97EC.cpp:55"
+        },
+        {
+          "name": "corridorEnd",
+          "value": 1,
+          "unit": "normalised segment parameter, static",
+          "source": "src/game_uso/game_uso_ncc_97EC.cpp:55"
+        },
+        {
+          "name": "hitFlag",
+          "value": 1,
+          "unit": "return code, static",
+          "source": "src/game_uso/game_uso_ncc_97EC.cpp:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_97EC.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_97EC.cpp",
+          "line": 46
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_97EC.cpp",
+          "line": 50
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_97EC.cpp",
+          "line": 55
+        }
+      ],
+      "capabilities": [
+        "ground-plane closure test",
+        "perpendicular distance limit",
+        "paired-body presence check"
+      ],
+      "tags": [
+        "collision",
+        "proximity",
+        "rival",
+        "ground plane"
+      ]
+    },
+    {
+      "id": "ground-hit-pick",
+      "node": "surface-probe",
+      "name": "Ground hit pick",
+      "summary": "A buffer of downward probes is reduced to the smallest in-range hit, giving the rider one ground point, one surface reference and one distance",
+      "behavior": "The picker calls the shared query with a fixed number of result slots and a trailing zero argument, then starts its search from the library's own distance limit so the first acceptable hit takes over the search. A hit only qualifies when its absolute distance is smaller than the running limit, when it lies within a bounded reach below the rider, and when it is no deeper than the caller-supplied search depth. On success the vertex row is reached by a fixed stride, accumulated into a zeroed point and copied out together with the hit's own distance, index, surface flags and a second per-hit value. If nothing qualifies the returned count is reset so the caller sees no ground at all.",
+      "constants": [
+        {
+          "name": "probeSlots",
+          "value": 8,
+          "unit": "queries per update, rate unverified",
+          "source": "src/game_libs/game_libs_post0b.c:6434"
+        },
+        {
+          "name": "downwardReach",
+          "value": -600,
+          "unit": "world units, static",
+          "source": "src/game_libs/game_libs_post0b.c:6440"
+        },
+        {
+          "name": "vertexStride",
+          "value": 12,
+          "unit": "bytes, static",
+          "source": "src/game_libs/game_libs_post0b.c:6446"
+        },
+        {
+          "name": "surfaceStride",
+          "value": 8,
+          "unit": "bytes, static",
+          "source": "src/game_libs/game_libs_post0b.c:6458"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6434
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6440
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6446
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6458
+        }
+      ],
+      "capabilities": [
+        "multi-hit reduction to nearest ground",
+        "bounded vertical search",
+        "ground point and surface reference export"
+      ],
+      "tags": [
+        "ground",
+        "collision",
+        "height",
+        "surface"
+      ]
+    },
+    {
+      "id": "triangle-plane-filter",
+      "node": "surface-probe",
+      "name": "Triangle plane filter",
+      "summary": "A grid cell's triangle list is filtered by material bits, then reduced either to an axis range test or to a three-edge side test before a projected distance is reported",
+      "behavior": "The query scales the incoming point, converts it into a grid cell using the cell origin and cell size, and rejects out-of-range cells and empty lists before touching any geometry. For each candidate triangle it resolves the face through an optional remap, asks the material flags, and requires the solid bit to be set. The point is projected onto the triangle plane using the stored plane normal and plane offset, and that projection is then validated in one of two ways. With the range bit set, the dropped axis is chosen by a stored selector and the projection's component on that axis must fall between the triangle's minimum and maximum extents; without it, a sign-corrected cross product must stay under a small threshold on all three edges. Surviving hits are stored with the projected distance scaled by the library's distance factor until the caller's buffer is full.",
+      "constants": [
+        {
+          "name": "cellMissSentinel",
+          "value": -1,
+          "unit": "cell index, static",
+          "source": "src/game_libs/game_libs_post0b.c:6302"
+        },
+        {
+          "name": "solidMaterialBit",
+          "value": "0x100",
+          "unit": "bit flag, static (no timestep)",
+          "source": "src/game_libs/game_libs_post0b.c:6327"
+        },
+        {
+          "name": "axisRangeBit",
+          "value": "0x200",
+          "unit": "bit flag, static (no timestep)",
+          "source": "src/game_libs/game_libs_post0b.c:6338"
+        },
+        {
+          "name": "droppedAxisSelector",
+          "value": 2,
+          "unit": "axis index, static",
+          "source": "src/game_libs/game_libs_post0b.c:6342"
+        },
+        {
+          "name": "edgeSideThreshold",
+          "value": 10,
+          "unit": "squared world units, static",
+          "source": "src/game_libs/game_libs_post0b.c:6367"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6297
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6327
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6330
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6367
+        },
+        {
+          "path": "src/game_libs/game_libs_post0b.c",
+          "line": 6373
+        }
+      ],
+      "capabilities": [
+        "grid cell lookup with bounds rejection",
+        "planar projection onto triangles",
+        "material-bit and edge-side filtering"
+      ],
+      "tags": [
+        "collision",
+        "terrain",
+        "triangles",
+        "grid",
+        "material"
+      ]
+    },
+    {
+      "id": "camera-follow-offset",
+      "node": "camera-rig",
+      "name": "Camera follow offset",
+      "summary": "The follow point is the body translation plus a body-rotated local offset, pushed back along the horizontal direction of travel and lifted by a height offset",
+      "behavior": "A mode key selects the behaviour. The idle key returns without touching the rig at all. The snap key copies the source body's matrix translation straight into both the goal and the live position. Every other key takes the body matrix translation, adds the body-rotated local offset, subtracts the horizontal direction of the incoming vector normalised and scaled by a per-rider speed, lifts the result by one of two height offsets chosen by the mode key, and finally subtracts the incoming vector divided component-wise by the rig's own gain. The goal and the live position both receive the same point, so an unsnapped update is an immediate placement rather than a spring, and any residual smoothing has to come from the incoming vector changing between updates.",
+      "constants": [
+        {
+          "name": "flattenedDirectionHeight",
+          "value": 0,
+          "unit": "world units of height, static",
+          "source": "src/game_uso/game_uso_ncc_24BC.cpp:69"
+        },
+        {
+          "name": "highOffsetModeKey",
+          "value": 2,
+          "unit": "mode index, static",
+          "source": "src/game_uso/game_uso_ncc_24BC.cpp:73"
+        },
+        {
+          "name": "snapModeKey",
+          "value": 3,
+          "unit": "mode index, static",
+          "source": "src/game_uso/game_uso_ncc_24BC.cpp:54"
+        },
+        {
+          "name": "idleModeKey",
+          "value": 0,
+          "unit": "mode index, static",
+          "source": "src/game_uso/game_uso_ncc_24BC.cpp:53"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "line": 53
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "line": 69
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_24BC.cpp",
+          "line": 76
+        }
+      ],
+      "capabilities": [
+        "mode-keyed follow placement",
+        "body-rotated local offset",
+        "mode-keyed camera snap"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "offset",
+        "snap"
+      ]
+    },
+    {
+      "id": "camera-distance-view-blend",
+      "node": "camera-rig",
+      "name": "Camera distance view blend",
+      "summary": "A view parameter is derived from the distance between rig and target, either interpolated across three distance bands or converted into an angle estimate",
+      "behavior": "The tick branches on the rig's state word. One state lays down the synthesised point and clears a timer. Two further state bands measure the straight-line distance between the tracked object and the rig itself, then pick a table row from the state word. In the first band a row supplies a low distance, a high distance and two endpoint values: below the low distance the parameter jumps to one endpoint, above the high distance it jumps to the other, and in between it is linearly interpolated. The second band converts the distance into an angle instead, dividing the row's half angle by a fixed degree basis, forming a radius from that angle and the row's radius factor, taking a distance over a hypotenuse to produce an angle, doubling it, and re-expressing the result in degrees before clamping between a low and a high bound. Bands that end in a snap re-run the point synthesis so the rig does not lag through the change.",
+      "constants": [
+        {
+          "name": "halfAngleDivisor",
+          "value": 2,
+          "unit": "dimensionless ratio, static",
+          "source": "src/bootup_uso/bootup_uso_ncc_4948.cpp:86"
+        },
+        {
+          "name": "degreeBasis",
+          "value": 180,
+          "unit": "degrees, static",
+          "source": "src/bootup_uso/bootup_uso_ncc_4948.cpp:86"
+        },
+        {
+          "name": "angleDoubling",
+          "value": 2,
+          "unit": "dimensionless ratio, static",
+          "source": "src/bootup_uso/bootup_uso_ncc_4948.cpp:89"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "line": 42
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "line": 48
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso_ncc_4948.cpp",
+          "line": 89
+        }
+      ],
+      "capabilities": [
+        "distance-banded view interpolation",
+        "half-angle distance estimate",
+        "snap-triggering state bands"
+      ],
+      "tags": [
+        "camera",
+        "distance",
+        "angle",
+        "blend"
+      ]
+    },
+    {
+      "id": "camera-fov-ramp",
+      "node": "camera-rig",
+      "name": "Camera view angle ramp",
+      "summary": "The rig's view angle is slewed toward a clamped band with a fixed per-update step and reset to a resting value when it is armed",
+      "behavior": "While the scene object is active, an arming pass writes a resting view angle into the camera record and calls the delegate to place itself. If the configuration asks for a wider view and the current angle is below the upper bound, the angle rises by one fixed step per update; if it asks for a narrower view and the angle is above the lower bound, it falls by the same step. The configuration's two rate fields are also added, doubled, to the camera's pan and tilt records so the framing drifts while the object stays active. When the object is inactive it waits out a retry period, polling for a candidate and switching the delegate only when a genuinely new candidate appears, with per-object flags choosing between the in-range delegate and the default one.",
+      "constants": [
+        {
+          "name": "restingViewAngle",
+          "value": 85,
+          "unit": "degrees, static",
+          "source": "src/bootup_uso/bootup_uso.c:1378"
+        },
+        {
+          "name": "upperViewAngle",
+          "value": 120,
+          "unit": "degrees, static",
+          "source": "src/bootup_uso/bootup_uso.c:1383"
+        },
+        {
+          "name": "lowerViewAngle",
+          "value": 45,
+          "unit": "degrees, static",
+          "source": "src/bootup_uso/bootup_uso.c:1391"
+        },
+        {
+          "name": "angleStep",
+          "value": 2,
+          "unit": "degrees per update, rate unverified",
+          "source": "src/bootup_uso/bootup_uso.c:1372"
+        },
+        {
+          "name": "retryPeriod",
+          "value": "0x3C",
+          "unit": "updates, rate unverified",
+          "source": "src/bootup_uso/bootup_uso.c:1409"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bootup_uso/bootup_uso.c",
+          "line": 1372
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso.c",
+          "line": 1378
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso.c",
+          "line": 1383
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso.c",
+          "line": 1391
+        },
+        {
+          "path": "src/bootup_uso/bootup_uso.c",
+          "line": 1409
+        }
+      ],
+      "capabilities": [
+        "clamped view-angle slew",
+        "resting angle re-arm",
+        "delegate switching after a retry period"
+      ],
+      "tags": [
+        "camera",
+        "field of view",
+        "ramp",
+        "clamp"
+      ]
+    },
+    {
+      "id": "tilt-basis-rebuild",
+      "node": "geometry-primitives",
+      "name": "Ground-plane tilt basis",
+      "summary": "Two flat basis vectors are built from a ratio and its complementary factor so a lean can be applied without a full rotation matrix",
+      "behavior": "The builder divides one scalar by another to get a first scale, squares it to form a ratio, and feeds one minus that ratio into the shared root helper to get a second, complementary scale. It then writes two vectors whose vertical component is exactly zero: the first pairs the complementary scale on one horizontal axis with the first scale on the other and a negated cross term, and the second swaps those roles so the two vectors are related by a reflection. The result is a pair of ground-plane directions that can serve as a lean or slide basis without ever leaving the horizontal plane, which is why the vertical component can be written as a constant rather than computed.",
+      "constants": [
+        {
+          "name": "complementaryNumerator",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso.c:2332"
+        },
+        {
+          "name": "firstFlatComponent",
+          "value": 0,
+          "unit": "world units of height, static",
+          "source": "src/game_uso/game_uso.c:2335"
+        },
+        {
+          "name": "secondFlatComponent",
+          "value": 0,
+          "unit": "world units of height, static",
+          "source": "src/game_uso/game_uso.c:2338"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 2329
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 2332
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 2334
+        },
+        {
+          "path": "src/game_uso/game_uso.c",
+          "line": 2336
+        }
+      ],
+      "capabilities": [
+        "ground-plane basis construction",
+        "complementary scale from a squared ratio",
+        "reflected second direction"
+      ],
+      "tags": [
+        "geometry",
+        "tilt",
+        "basis",
+        "ground plane"
+      ]
+    },
+    {
+      "id": "spline-blend-weights",
+      "node": "geometry-primitives",
+      "name": "Uniform cubic spline weights",
+      "summary": "Four normalised uniform cubic weights blend control points from a single parameter, giving smooth paths in every dimension",
+      "behavior": "Given a parameter, the routine forms its complement together with the parameter's square and cube, then produces four weights. The first is the complement cubed. The second mixes a cubic term, twice the square and a constant. The third mixes the parameter, its cube and its square plus one. The fourth is the cube alone. Every weight carries the same normalising denominator, so the four sum to one and an interpolated point stays inside the control hull. Because the basis is uniform, the same four weights can be applied independently to each component of a control polygon, including the horizontal and vertical components, which is what makes it usable for a path that has to be smooth through depth as well as across the ground.",
+      "constants": [
+        {
+          "name": "normalisingDenominator",
+          "value": 6,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_0000.cpp:18"
+        },
+        {
+          "name": "firstWeightCoefficient",
+          "value": 1,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_0000.cpp:18"
+        },
+        {
+          "name": "cubicCoefficient",
+          "value": 3,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_0000.cpp:19"
+        },
+        {
+          "name": "squareCoefficient",
+          "value": 6,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_0000.cpp:19"
+        },
+        {
+          "name": "constantCoefficient",
+          "value": 4,
+          "unit": "dimensionless ratio, static",
+          "source": "src/game_uso/game_uso_ncc_0000.cpp:19"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_uso/game_uso_ncc_0000.cpp",
+          "line": 15
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_0000.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_0000.cpp",
+          "line": 19
+        },
+        {
+          "path": "src/game_uso/game_uso_ncc_0000.cpp",
+          "line": 21
+        }
+      ],
+      "capabilities": [
+        "four-weight uniform cubic basis",
+        "partition of unity",
+        "component-independent interpolation"
+      ],
+      "tags": [
+        "geometry",
+        "spline",
+        "interpolation",
+        "path"
+      ]
+    },
+    {
+      "id": "timer-ms-split",
+      "node": "timing-records",
+      "name": "Run time split and record match",
+      "summary": "An elapsed millisecond count is split into minute, second and hundredth fields and matched against a fixed short record table",
+      "behavior": "The splitter divides the elapsed milliseconds by the number of milliseconds in a minute, subtracts that back out of the original count, then divides the remainder by the number of milliseconds in a second and keeps the leftover as hundredths of a second. The three resulting fields are compared against each record slot in order, and the first slot that reports a match returns its index. If no slot matches, the routine reports an index one past the end of the table so the caller knows an insertion is needed. The table size and the slot size are both fixed, which keeps the record block a constant footprint rather than a growing list, and the same split feeds both the lookup and the insertion path.",
+      "constants": [
+        {
+          "name": "millisecondsPerMinute",
+          "value": 60000,
+          "unit": "milliseconds, static",
+          "source": "src/game_libs/game_libs_tail.c:663"
+        },
+        {
+          "name": "millisecondsPerSecond",
+          "value": 1000,
+          "unit": "milliseconds, static",
+          "source": "src/game_libs/game_libs_tail.c:666"
+        },
+        {
+          "name": "hundredthsDivisor",
+          "value": 10,
+          "unit": "milliseconds per hundredth, static",
+          "source": "src/game_libs/game_libs_tail.c:668"
+        },
+        {
+          "name": "recordSlots",
+          "value": 3,
+          "unit": "record slots, static",
+          "source": "src/game_libs/game_libs_tail.c:669"
+        },
+        {
+          "name": "recordStride",
+          "value": 8,
+          "unit": "bytes, static",
+          "source": "src/game_libs/game_libs_tail.c:673"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game_libs/game_libs_tail.c",
+          "line": 663
+        },
+        {
+          "path": "src/game_libs/game_libs_tail.c",
+          "line": 666
+        },
+        {
+          "path": "src/game_libs/game_libs_tail.c",
+          "line": 668
+        },
+        {
+          "path": "src/game_libs/game_libs_tail.c",
+          "line": 669
+        },
+        {
+          "path": "src/game_libs/game_libs_tail.c",
+          "line": 676
+        }
+      ],
+      "capabilities": [
+        "millisecond to clock-field split",
+        "ordered best-run record lookup",
+        "fixed-footprint record table"
+      ],
+      "tags": [
+        "timing",
+        "timer",
+        "records",
+        "race"
+      ]
+    }
+  ]
+}

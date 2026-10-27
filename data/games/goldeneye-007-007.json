@@ -1,0 +1,1866 @@
+{
+  "version": 1,
+  "id": "goldeneye-007-007",
+  "title": "GoldenEye 007",
+  "repo": "https://github.com/n64decomp/007",
+  "sha": "c4356466796c697dfd298010b9bed261f9ed8c6a",
+  "nodes": [
+    {
+      "id": "player-motion",
+      "name": "Player locomotion controller",
+      "purpose": "Per-update conversion of stick and button input into forward and lateral speed scalars, the stance ladder, and the walk-cycle playback that emits the displacement handed to collision",
+      "paths": [
+        "src/game/bondview2.c",
+        "src/game/bondview.c",
+        "src/game/lv.c"
+      ],
+      "functions": [
+        {
+          "name": "MoveBond",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            6322,
+            7629
+          ]
+        },
+        {
+          "name": "bondviewProcessInput",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            4708,
+            6079
+          ]
+        },
+        {
+          "name": "bondviewUpdateSpeedForwards",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            3941,
+            3968
+          ]
+        },
+        {
+          "name": "bondviewUpdateSpeedSideways",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            3907,
+            3935
+          ]
+        },
+        {
+          "name": "currentPlayerAdjustCrouchPos",
+          "path": "src/game/bondview.c",
+          "lines": [
+            1543,
+            1555
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-look",
+      "name": "Look rates and view",
+      "purpose": "Yaw and pitch rate acceleration scaled by the live field of view, the automatic look-ahead pitch used while running forward, and the projection settings of the first-person view",
+      "paths": [
+        "src/game/bondview2.c",
+        "src/fr.c",
+        "src/fr.h"
+      ],
+      "functions": [
+        {
+          "name": "bondviewCurrentPlayerUpdateSpeedTheta",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            4069,
+            4127
+          ]
+        },
+        {
+          "name": "bondviewCurrentPlayerUpdateSpeedVerta",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            3990,
+            4048
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motion"
+      ]
+    },
+    {
+      "id": "player-physics",
+      "name": "Player physics",
+      "purpose": "Vertical integration against floor height, landing response, and the collision-and-slide pipeline that resolves each submitted displacement",
+      "paths": [
+        "src/game/bondview2.c"
+      ],
+      "functions": [
+        {
+          "name": "bondviewUpdatePlayerY",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            4357,
+            4547
+          ]
+        },
+        {
+          "name": "bondviewCalcUpdatePlayerCollision",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            2497,
+            2697
+          ]
+        },
+        {
+          "name": "bondviewUpdatePlayerCollisionBounds",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            9587,
+            9605
+          ]
+        },
+        {
+          "name": "bondviewApplyVertaTheta",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            4664,
+            4700
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motion"
+      ]
+    },
+    {
+      "id": "player-aim",
+      "name": "Aim assist and crosshair",
+      "purpose": "Auto-aim target timing and aim-lock damping, plus the crosshair-to-ray conversion and the spread applied to the fired direction",
+      "paths": [
+        "src/game/bondview2.c",
+        "src/game/gunfire.c"
+      ],
+      "functions": [
+        {
+          "name": "bondviewUpdateXAutoAimTime",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            1712,
+            1734
+          ]
+        },
+        {
+          "name": "bondviewUpdateYAutoAimTime",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            1654,
+            1675
+          ]
+        },
+        {
+          "name": "caclulate_gun_crosshair_position_rotation",
+          "path": "src/game/gunfire.c",
+          "lines": [
+            4666,
+            4734
+          ]
+        },
+        {
+          "name": "sub_GAME_7F067F58",
+          "path": "src/game/gunfire.c",
+          "lines": [
+            4737,
+            4753
+          ]
+        },
+        {
+          "name": "sub_GAME_7F067FBC",
+          "path": "src/game/gunfire.c",
+          "lines": [
+            4756,
+            4776
+          ]
+        },
+        {
+          "name": "bullet_path_from_screen_center",
+          "path": "src/game/gunfire.c",
+          "lines": [
+            4847,
+            4879
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motion"
+      ]
+    },
+    {
+      "id": "weapon-handling",
+      "name": "Weapon handling",
+      "purpose": "Hand animation state machine that runs reloading, plus the entry points that start a reload and the zoom range of scoped items",
+      "paths": [
+        "src/game/gun.c",
+        "src/game/gunfire.c"
+      ],
+      "functions": [
+        {
+          "name": "attempt_reload_item_in_hand",
+          "path": "src/game/gun.c",
+          "lines": [
+            1143,
+            1150
+          ]
+        },
+        {
+          "name": "camera_sniper_zoom_in",
+          "path": "src/game/gun.c",
+          "lines": [
+            1275,
+            1292
+          ]
+        },
+        {
+          "name": "camera_sniper_zoom_out",
+          "path": "src/game/gun.c",
+          "lines": [
+            1256,
+            1273
+          ]
+        },
+        {
+          "name": "gunTickHandState",
+          "path": "src/game/gunfire.c",
+          "lines": [
+            2518,
+            4194
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-aim"
+      ]
+    },
+    {
+      "id": "guard-ai",
+      "name": "Guard perception and fire control",
+      "purpose": "Sight cone and occlusion tests, the accumulating shot chance, reaction timing seeded from the difficulty settings, and the alertness values the mission scripts drive",
+      "paths": [
+        "src/game/chraction.c",
+        "src/game/chraction.h",
+        "src/game/chrai.c",
+        "src/game/chr.c",
+        "src/game/lv.c",
+        "src/game/lv.h"
+      ],
+      "functions": [
+        {
+          "name": "chrCheckTargetInSight",
+          "path": "src/game/chraction.c",
+          "lines": [
+            4227,
+            4318
+          ]
+        },
+        {
+          "name": "chrCanSeeBond",
+          "path": "src/game/chraction.c",
+          "lines": [
+            3914,
+            3944
+          ]
+        },
+        {
+          "name": "chrlvInitActAttackWalk",
+          "path": "src/game/chraction.c",
+          "lines": [
+            1473,
+            1647
+          ]
+        },
+        {
+          "name": "chrlvGetAimLimitAngle",
+          "path": "src/game/chraction.c",
+          "lines": [
+            6272,
+            6295
+          ]
+        },
+        {
+          "name": "chrlvUpdateShotbondsum",
+          "path": "src/game/chraction.c",
+          "lines": [
+            6307,
+            6427
+          ]
+        },
+        {
+          "name": "lvlSetMultipliersForDifficulty",
+          "path": "src/game/lv.c",
+          "lines": [
+            846,
+            948
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    },
+    {
+      "id": "combat-damage",
+      "name": "Damage resolution",
+      "purpose": "Routing damage into the player's armour and health, and the hit-part and angle multipliers applied to damage dealt into characters",
+      "paths": [
+        "src/game/bondview2.c",
+        "src/game/chraction.c"
+      ],
+      "functions": [
+        {
+          "name": "record_damage_kills",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            9221,
+            9377
+          ]
+        },
+        {
+          "name": "handles_shot_actors",
+          "path": "src/game/chraction.c",
+          "lines": [
+            2463,
+            2667
+          ]
+        },
+        {
+          "name": "currentPlayerGetHealth",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            9636,
+            9639
+          ]
+        },
+        {
+          "name": "currentPlayerGetArmor",
+          "path": "src/game/bondview2.c",
+          "lines": [
+            9642,
+            9645
+          ]
+        }
+      ],
+      "dependsOn": [
+        "guard-ai",
+        "player-physics"
+      ]
+    },
+    {
+      "id": "level-doors",
+      "name": "Door state and blocking volumes",
+      "purpose": "Door open and close state machine, portal activation, swing-side choice, key gating and the rebuilt door collision volume",
+      "paths": [
+        "src/game/propobj.c"
+      ],
+      "functions": [
+        {
+          "name": "doorSetOpenState",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13168,
+            13199
+          ]
+        },
+        {
+          "name": "doorActivate",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13202,
+            13228
+          ]
+        },
+        {
+          "name": "updateDoorDisplacement",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13426,
+            13468
+          ]
+        },
+        {
+          "name": "doorUpdateBbox",
+          "path": "src/game/propobj.c",
+          "lines": [
+            12314,
+            12386
+          ]
+        },
+        {
+          "name": "doorActivateWrapper",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13847,
+            13873
+          ]
+        },
+        {
+          "name": "doorsChooseSwingDirection",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13916,
+            13951
+          ]
+        },
+        {
+          "name": "propdoorInteract",
+          "path": "src/game/propobj.c",
+          "lines": [
+            13954,
+            14029
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-physics"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "walk-and-run-speed",
+      "node": "player-motion",
+      "name": "Walk and run speed",
+      "summary": "Stick travel becomes a normalised speed scalar that drives the walk cycle and climbs into a faster run after sustained forward input",
+      "behavior": "Forward stick travel is divided by 70 into a normalised scalar and clamped to one unit in each direction, while a held digital direction ramps a separate scalar one unit per tick instead. The scalar is multiplied by a 1.08 grip gain and then by a run factor that rests at 1.0 and rises to 1.25 once the player has pushed past 60 units of forward travel for 180 consecutive ticks; the factor climbs by 0.01 per tick while that timer is full and falls back by the same step when it lapses. The scalar does not translate the player directly. It sets how fast the walk cycle plays and how much of the cycle's step offset is taken each update, and that step offset, rotated into the player's facing and multiplied by the elapsed tick count, becomes the displacement handed to collision. The tick clock accumulates whole logic ticks and the second counter divides by 60, which fixes the timestep for every frame-counted value in this file.",
+      "constants": [
+        {
+          "name": "inputDivisor",
+          "value": 70,
+          "unit": "stick units per unit of speed, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5634"
+        },
+        {
+          "name": "forwardClamp",
+          "value": 1,
+          "unit": "normalised speed, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5646"
+        },
+        {
+          "name": "forwardSpeedGain",
+          "value": 1.08,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5666"
+        },
+        {
+          "name": "runSpeedFloor",
+          "value": 1,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:150"
+        },
+        {
+          "name": "runSpeedCap",
+          "value": 1.25,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:151"
+        },
+        {
+          "name": "runRampPerTick",
+          "value": 0.01,
+          "unit": "multiplier per 60 Hz logic update",
+          "source": "src/game/bondview2.c:152"
+        },
+        {
+          "name": "runEngageTicks",
+          "value": 180,
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/bondview2.c:139"
+        },
+        {
+          "name": "runStickThreshold",
+          "value": 60,
+          "unit": "stick units, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5636"
+        },
+        {
+          "name": "ticksPerSecond",
+          "value": 60,
+          "unit": "logic ticks per second",
+          "source": "src/game/lv.c:1194"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5634
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5646
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5666
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5697
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 3941
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4305
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 7224
+        },
+        {
+          "path": "src/game/lv.c",
+          "line": 979
+        },
+        {
+          "path": "src/game/lv.c",
+          "line": 1194
+        }
+      ],
+      "capabilities": [
+        "analog walk speed",
+        "digital step ramp",
+        "sustained run boost"
+      ],
+      "tags": [
+        "movement",
+        "walk",
+        "run",
+        "speed",
+        "acceleration"
+      ]
+    },
+    {
+      "id": "sideways-strafe",
+      "node": "player-motion",
+      "name": "Sideways strafe and lean",
+      "summary": "Lateral stick travel becomes a strafe scalar that also leans the body and folds a sway offset into the submitted displacement",
+      "behavior": "Sideways stick travel is divided by 70 and clamped to one unit, and a held digital left or right ramps the value one unit per tick instead. The lateral scalar is submitted to collision at 0.8 of its magnitude rather than at full strength, which keeps a strafe slower than the equivalent forward run. Lean is part of the same pipeline: a lean target of 75 units is set from the shoulder buttons and the gap between that target and the current lean offset is added to the submitted displacement, scaled by 0.6 once the squared gap reaches 100 so a hard lean settles instead of oscillating. The lateral value is also passed into the walk-cycle blend as its side-to-side component, so a strafe plays a sideways gait while the facing stays fixed and the camera keeps looking where the player looks.",
+      "constants": [
+        {
+          "name": "inputDivisor",
+          "value": 70,
+          "unit": "stick units per unit of speed, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5615"
+        },
+        {
+          "name": "strafeClamp",
+          "value": 1,
+          "unit": "normalised speed, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5656"
+        },
+        {
+          "name": "lateralSpeedScale",
+          "value": 0.8,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:132"
+        },
+        {
+          "name": "leanTarget",
+          "value": 75,
+          "unit": "world units of lean offset",
+          "source": "src/game/bondview.c:1539"
+        },
+        {
+          "name": "leanSettleDistanceSquared",
+          "value": 100,
+          "unit": "squared world units, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:7157"
+        },
+        {
+          "name": "leanSettleScale",
+          "value": 0.6,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:7159"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5615
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5656
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 3907
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 7163
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 7237
+        },
+        {
+          "path": "src/game/bondview.c",
+          "line": 1539
+        }
+      ],
+      "capabilities": [
+        "strafe",
+        "body lean",
+        "lateral displacement"
+      ],
+      "tags": [
+        "movement",
+        "strafe",
+        "lean",
+        "sway"
+      ]
+    },
+    {
+      "id": "crouch-stance",
+      "node": "player-motion",
+      "name": "Crouch stance and speed penalty",
+      "summary": "Three-rung stance ladder that halves movement speed and lowers the eye and collision height through a damped offset",
+      "behavior": "The stance ladder has three rungs: squat, half crouch and standing. Each crouch press moves the position two rungs down and the release moves it two rungs up, clamped at both ends, so the stance always resolves to one of the three. While the resolved stance is full squat, forward and lateral speed are halved before any shot impulse is added, and the halving happens before the boost so a crouched slide still carries. The stance also drives a ducking offset used for eye height and collision height: full squat targets a 100-unit drop, half crouch targets 60, standing targets zero, and the offset travels toward its target with an acceleration factor of 0.5 and a cap of 5 units per tick, with the velocity zeroed once it arrives. Weapons flagged to disallow crouching suppress the crouch input entirely, so the stance stays standing while such an item is held.",
+      "constants": [
+        {
+          "name": "crouchStep",
+          "value": 2,
+          "unit": "stance rungs, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5693"
+        },
+        {
+          "name": "squatSpeedScale",
+          "value": 0.5,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:6382"
+        },
+        {
+          "name": "fullCrouchOffset",
+          "value": -100,
+          "unit": "world units of height offset",
+          "source": "src/game/bondview2.c:148"
+        },
+        {
+          "name": "halfCrouchOffset",
+          "value": -60,
+          "unit": "world units of height offset",
+          "source": "src/game/bondview2.c:6762"
+        },
+        {
+          "name": "crouchAccel",
+          "value": 0.5,
+          "unit": "acceleration factor, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:130"
+        },
+        {
+          "name": "crouchMaxSpeed",
+          "value": 5,
+          "unit": "world units per 60 Hz logic update",
+          "source": "src/game/bondview2.c:131"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6380
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5687
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6756
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6772
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5036
+        },
+        {
+          "path": "src/game/bondview.c",
+          "line": 1543
+        }
+      ],
+      "capabilities": [
+        "crouch",
+        "stance height",
+        "crouch speed penalty"
+      ],
+      "tags": [
+        "crouch",
+        "stance",
+        "stealth",
+        "movement",
+        "height"
+      ]
+    },
+    {
+      "id": "turn-and-pitch-rates",
+      "node": "player-look",
+      "name": "Turn and pitch rates",
+      "summary": "Stick yaw and pitch accelerate toward field-of-view scaled rates, with a slower ramp when the rate has to reverse",
+      "behavior": "Look input becomes a rate, not a direct angle. Stick travel is divided by 70, clamped to one unit, squared while keeping its sign, then scaled by the live vertical field of view over 60 degrees and by 0.7 to give the rate cap for the current tick, so a narrowed view turns more slowly at the same deflection. The yaw rate accelerates toward that cap by 0.05 per tick and accelerates by only 0.0125 per tick when it must pass back through zero, which is what makes a direction change feel heavier than a fresh turn. Pitch has its own copy of the same ramp and is then integrated at 3.5 times its rate per tick, so vertical look is deliberately faster per unit of rate than yaw. Both rates are held when the charge reaches the cap rather than overshooting, giving a linear ramp with a hard ceiling.",
+      "constants": [
+        {
+          "name": "rateGain",
+          "value": 0.7,
+          "unit": "multiplier applied to the field-of-view scaled rate cap",
+          "source": "src/game/bondview2.c:3980"
+        },
+        {
+          "name": "yawAccelPerTick",
+          "value": 0.05,
+          "unit": "rate units per 60 Hz logic update",
+          "source": "src/game/bondview2.c:4078"
+        },
+        {
+          "name": "yawReverseAccelPerTick",
+          "value": 0.0125,
+          "unit": "rate units per 60 Hz logic update",
+          "source": "src/game/bondview2.c:4082"
+        },
+        {
+          "name": "pitchIntegrationScale",
+          "value": 3.5,
+          "unit": "degrees per tick per unit of pitch rate",
+          "source": "src/game/bondview2.c:5928"
+        },
+        {
+          "name": "baseFieldOfView",
+          "value": 60,
+          "unit": "field-of-view degrees",
+          "source": "src/fr.h:137"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5960
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4078
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4082
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5928
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5951
+        },
+        {
+          "path": "src/fr.h",
+          "line": 137
+        }
+      ],
+      "capabilities": [
+        "yaw rate",
+        "pitch rate",
+        "field-of-view scaled sensitivity"
+      ],
+      "tags": [
+        "camera",
+        "look",
+        "turn",
+        "pitch",
+        "sensitivity"
+      ]
+    },
+    {
+      "id": "auto-aim-hold",
+      "node": "player-aim",
+      "name": "Auto-aim target hold",
+      "summary": "Hip fire locks a horizontal and vertical aim offset onto a candidate for a fixed tick budget instead of tracking it every frame",
+      "behavior": "Outside aim mode, hip fire can borrow an aim offset from a candidate target. The assist only engages when the held weapon carries the auto-aim flag and the assist has produced a candidate for that axis. Each axis keeps its own budget: when the candidate changes, the budget is re-armed to a fixed tick count and the stored offset is only refreshed after that budget has expired, so the aim sticks to one target rather than snapping between two that overlap. The stored offsets are then fed through the weapon's aim-lock damping, floored at the default maximum so a slow weapon still tracks. When no candidate exists the gun follows the turn rate at 0.3 for yaw and the pitch rate at 0.1. In aim mode the same crosshair is driven straight from the stick, scaled by 0.65 across an 80-unit input range, so the assist is bypassed entirely.",
+      "constants": [
+        {
+          "name": "autoAimHoldTicks",
+          "value": "0x1e",
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/bondview2.c:64"
+        },
+        {
+          "name": "defaultAimLockSpeed",
+          "value": 0.86,
+          "unit": "damping floor, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:137"
+        },
+        {
+          "name": "aimStickScale",
+          "value": 0.65,
+          "unit": "multiplier on raw stick travel in aim mode",
+          "source": "src/game/bondview2.c:6077"
+        },
+        {
+          "name": "aimStickRange",
+          "value": 80,
+          "unit": "raw stick units per axis in aim mode",
+          "source": "src/game/bondview2.c:6077"
+        },
+        {
+          "name": "yawFallbackScale",
+          "value": 0.3,
+          "unit": "multiplier on turn rate, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:6057"
+        },
+        {
+          "name": "pitchFallbackScale",
+          "value": 0.1,
+          "unit": "multiplier on pitch rate, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:6069"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 1654
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 1712
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6048
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6072
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 6077
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4737
+        }
+      ],
+      "capabilities": [
+        "auto-aim assist",
+        "aim lock damping",
+        "manual aim mode"
+      ],
+      "tags": [
+        "aim",
+        "auto-aim",
+        "assist",
+        "crosshair"
+      ]
+    },
+    {
+      "id": "crosshair-spread",
+      "node": "player-aim",
+      "name": "Crosshair ray and shot spread",
+      "summary": "The crosshair is a damped clamped screen point that becomes a world ray, and each shot offsets that ray by a weapon-specific random spread",
+      "behavior": "The crosshair is a damped screen-space point rather than the screen centre. It chases the requested aim each tick with per-weapon damping, is held at least 3 pixels from the left and top edges and 4 pixels from the right and bottom edges, and is then projected into the world as a ray 1000 units long that becomes the muzzle direction. Firing adds a random offset to that direction: inaccuracy is multiplied by 120 and divided by the live vertical field of view, then multiplied by a random factor built from two draws so that most shots land close to the crosshair and a few land wide, with the horizontal term additionally divided by the current aspect. Weapons flagged for first-shot accuracy quarter their inaccuracy on the first round of a volley, which makes tap firing more precise than holding the trigger.",
+      "constants": [
+        {
+          "name": "crosshairMinInset",
+          "value": 3,
+          "unit": "screen pixels from the left and top edges",
+          "source": "src/game/gunfire.c:4699"
+        },
+        {
+          "name": "crosshairMaxInset",
+          "value": 4,
+          "unit": "screen pixels from the right and bottom edges",
+          "source": "src/game/gunfire.c:4703"
+        },
+        {
+          "name": "aimRayLength",
+          "value": 1000,
+          "unit": "world units",
+          "source": "src/game/gunfire.c:4732"
+        },
+        {
+          "name": "spreadFieldOfViewScale",
+          "value": 120,
+          "unit": "spread degrees per unit of inaccuracy, scaled by field of view",
+          "source": "src/game/gunfire.c:4862"
+        },
+        {
+          "name": "firstShotSpreadScale",
+          "value": 0.25,
+          "unit": "multiplier on inaccuracy for the first round of a volley",
+          "source": "src/game/gunfire.c:4859"
+        },
+        {
+          "name": "spreadRandomHalfRange",
+          "value": 0.5,
+          "unit": "signed fraction of the spread radius",
+          "source": "src/game/gunfire.c:4864"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4666
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4699
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4732
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4847
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4862
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 4756
+        }
+      ],
+      "capabilities": [
+        "crosshair damping",
+        "hip-fire spread",
+        "first-shot accuracy"
+      ],
+      "tags": [
+        "aim",
+        "crosshair",
+        "spread",
+        "fire",
+        "accuracy"
+      ]
+    },
+    {
+      "id": "reload-cycle",
+      "node": "weapon-handling",
+      "name": "Reload cycle",
+      "summary": "Reload runs a three-phase hand animation whose phase budgets are counted in logic ticks and gated on magazine and reserve state",
+      "behavior": "Reload is a three-phase hand animation. Pressing the reload control while the hand animation is idle and the held item has an ammunition class starts the cycle. The first phase lowers the weapon and lasts 13 ticks, the second swaps the magazine and lasts 14 ticks, and the third raises the weapon and lasts 19 ticks, which sums to a little under a second at 60 Hz. Each phase counts the elapsed tick delta plus an entry counter, and the swap phase plays a mechanical sound on its first tick. The cycle drops straight back to idle without animating when the magazine is already full, when the item enforces a magazine clip limit, or when no reserve rounds are left, so a reload press on a full weapon costs nothing. The quoted phase budgets are the primary-build values; the alternate timing build uses 16, 17 and 23 ticks for the same three phases.",
+      "constants": [
+        {
+          "name": "lowerPhaseTicks",
+          "value": "0xd",
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/gunfire.c:2504"
+        },
+        {
+          "name": "swapPhaseTicks",
+          "value": "0xe",
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/gunfire.c:2505"
+        },
+        {
+          "name": "raisePhaseTicks",
+          "value": "0x13",
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/gunfire.c:2506"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/gun.c",
+          "line": 1143
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 3568
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 3584
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 3616
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 3730
+        },
+        {
+          "path": "src/game/gunfire.c",
+          "line": 2700
+        }
+      ],
+      "capabilities": [
+        "reload",
+        "magazine swap",
+        "hand animation state machine"
+      ],
+      "tags": [
+        "weapon",
+        "reload",
+        "animation",
+        "ammo"
+      ]
+    },
+    {
+      "id": "door-state-machine",
+      "node": "level-doors",
+      "name": "Door open, close and blocking volume",
+      "summary": "Doors are accelerated state machines that drive portals and rebuild a solid volume every frame, with key and swing-side rules",
+      "behavior": "A door holds an open fraction between zero and fully open and drives it with its own acceleration, deceleration and maximum speed toward the requested end, opening or closing according to the requested state. Opening plays one sound and activates the portal that joins the two rooms, so the room beyond becomes visible before the door is fully open, while closing deactivates that portal. Linked doors in a group all receive the state change, and a group can be configured so the first door closes before the second opens. From rest, a toggle opens a door that is less than half open and closes one that is further open than that. Doors carrying key flags need the matching keys held, and two-way doors pick which side to swing toward from the side of the door frame the activating body stands on. The blocking volume is rebuilt from the door model each frame: a fallaway type is given a floor far below and a ceiling well above, and the eye and iris types lose their upper half once they pass 40 percent open, leaving only a 50-unit gap at the bottom.",
+      "constants": [
+        {
+          "name": "halfOpenThreshold",
+          "value": 0.5,
+          "unit": "fraction of fully open",
+          "source": "src/game/propobj.c:13861"
+        },
+        {
+          "name": "specialDoorOpenFraction",
+          "value": 0.4,
+          "unit": "fraction of fully open",
+          "source": "src/game/propobj.c:12365"
+        },
+        {
+          "name": "specialDoorGap",
+          "value": 50,
+          "unit": "world units above the door volume floor",
+          "source": "src/game/propobj.c:12370"
+        },
+        {
+          "name": "fallawayFloorDrop",
+          "value": 10000,
+          "unit": "world units below the door position",
+          "source": "src/game/propobj.c:12353"
+        },
+        {
+          "name": "fallawayCeilingRise",
+          "value": 1000,
+          "unit": "world units above the door position",
+          "source": "src/game/propobj.c:12374"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/propobj.c",
+          "line": 13109
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13156
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13202
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13426
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13847
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13916
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 13966
+        },
+        {
+          "path": "src/game/propobj.c",
+          "line": 12314
+        }
+      ],
+      "capabilities": [
+        "door state machine",
+        "portal activation",
+        "key gating",
+        "swing side selection"
+      ],
+      "tags": [
+        "doors",
+        "interaction",
+        "collision",
+        "level"
+      ]
+    },
+    {
+      "id": "gravity-and-landing",
+      "node": "player-physics",
+      "name": "Gravity and landing response",
+      "summary": "Vertical velocity integrates under fixed gravity, snaps to floor height, and drops the view on hard landings",
+      "behavior": "Vertical motion is integrated separately from walking. While the feet are above the floor, downward velocity grows by 0.27777779 per tick and the height advances by the average of the old and the new velocity, which is a fixed-gravity step. If the step would carry the feet through the floor, the height is snapped to the floor and the velocity is recomputed from the remaining height difference, so a fall ends on the surface instead of bouncing. A landing faster than 13.333333 downward arms the full view dip, and a landing between 5 and 13.33 scales the impulse linearly, so only fast drops produce a hard camera jolt. The dip decays by 0.8 per tick, is folded into the view offset at 0.2 and releases at 4.5 per tick until it expires. A debug mode multiplies gravity to 1.388889 per tick for fast traversal testing.",
+      "constants": [
+        {
+          "name": "gravityPerTick",
+          "value": 0.27777779,
+          "unit": "world units per 60 Hz logic update squared",
+          "source": "src/game/bondview2.c:4467"
+        },
+        {
+          "name": "fastFallGravityPerTick",
+          "value": 1.388889,
+          "unit": "world units per 60 Hz logic update squared",
+          "source": "src/game/bondview2.c:4463"
+        },
+        {
+          "name": "hardLandingSpeed",
+          "value": -13.333333,
+          "unit": "world units per 60 Hz logic update, downward",
+          "source": "src/game/bondview2.c:4494"
+        },
+        {
+          "name": "softLandingSpeed",
+          "value": -5,
+          "unit": "world units per 60 Hz logic update, downward",
+          "source": "src/game/bondview2.c:4499"
+        },
+        {
+          "name": "landingImpulse",
+          "value": -90,
+          "unit": "view offset units per 60 Hz logic update",
+          "source": "src/game/bondview2.c:4497"
+        },
+        {
+          "name": "dipDecay",
+          "value": 0.8,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:142"
+        },
+        {
+          "name": "dipViewWeight",
+          "value": 0.19999999,
+          "unit": "multiplier, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:143"
+        },
+        {
+          "name": "dipReleasePerTick",
+          "value": -4.5,
+          "unit": "view offset units per 60 Hz logic update",
+          "source": "src/game/bondview2.c:145"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4357
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4467
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4477
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4494
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 4527
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 142
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "floor snapping",
+        "landing camera dip"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "falling",
+        "landing",
+        "vertical"
+      ]
+    },
+    {
+      "id": "collision-and-slide",
+      "node": "player-physics",
+      "name": "Collision and slide",
+      "summary": "Each displacement is fitted against walls with fractional cuts, edge pushes and a small step allowance, then re-homed if it lands off tile",
+      "behavior": "The player collides as a four-point diamond around the collision centre, sized from the collision radius, so a gap is passable only when the diamond fits through it. A move is submitted as a per-tick displacement and resolved in stages: try the direct move, then shorten the move to the blocked edge, then push along that edge, and finally apply a hop adjustment when sliding is allowed. Where the contact is close, the move is cut back to the contact distance and the left-over distance is redirected along the edge with a 0.25 allowance, which is what produces the small step-up around corners and door frames instead of a hard stop. The collision radius is probed at 1.16, 1.01 and 0.990099 times its size to pick the floor tile the player is really standing on, and a floor height check can lift the feet onto a step. If the resolved position falls outside every neighbouring tile, up to five random neighbouring tiles are tested to re-home the player before the room registration is refreshed.",
+      "constants": [
+        {
+          "name": "stepAllowance",
+          "value": 0.25,
+          "unit": "fraction of the remaining move length, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:7371"
+        },
+        {
+          "name": "wideProbeScale",
+          "value": 1.16,
+          "unit": "multiplier on the collision radius",
+          "source": "src/game/bondview2.c:7265"
+        },
+        {
+          "name": "nearProbeScale",
+          "value": 1.01,
+          "unit": "multiplier on the collision radius",
+          "source": "src/game/bondview2.c:7278"
+        },
+        {
+          "name": "tightProbeScale",
+          "value": 0.990099,
+          "unit": "multiplier on the collision radius",
+          "source": "src/game/bondview2.c:7301"
+        },
+        {
+          "name": "rehomeAttempts",
+          "value": 5,
+          "unit": "neighbouring floor tiles tested per update",
+          "source": "src/game/bondview2.c:2645"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9587
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 2497
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 2601
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 2622
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 7371
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 2645
+        }
+      ],
+      "capabilities": [
+        "collision and slide",
+        "step-up",
+        "corner avoidance",
+        "tile re-homing"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "walls",
+        "step",
+        "3d"
+      ]
+    },
+    {
+      "id": "look-ahead-camera",
+      "node": "player-look",
+      "name": "Look-ahead camera pitch",
+      "summary": "While running forward the view eases toward a pitch derived from the floor ahead, inside a band that ignores small differences",
+      "behavior": "The first-person view rests at a pitch of 4 degrees below the horizon rather than level, and while the player runs forward with more than 60 units of stick travel the game probes 300 units ahead along the current facing and reads the floor height there. If that probe is unobstructed and the height difference stays between 300 units below and 500 units above, the target pitch becomes the elevation of the probe minus those 4 degrees, softened by 0.8666667 when the target would look upward, so climbing terrain tilts the view less than falling terrain does. The view only starts easing toward the target when the current pitch is more than 5 degrees above or 10 degrees below it, which leaves a wide dead band so ordinary running does not wobble the camera, and the ease then moves at twice the pitch rate per tick until it reaches a band of half the squared rate over 0.05. Any manual pitch input cancels the effect immediately. The view is projected with a 60-degree vertical field of view, a near plane of 30 and a far plane of 10000 world units.",
+      "constants": [
+        {
+          "name": "restPitch",
+          "value": -4,
+          "unit": "degrees below the horizon",
+          "source": "src/game/bondview2.c:5725"
+        },
+        {
+          "name": "probeDistance",
+          "value": 300,
+          "unit": "world units ahead of the player",
+          "source": "src/game/bondview2.c:5731"
+        },
+        {
+          "name": "probeHeightBelow",
+          "value": -300,
+          "unit": "world units of height difference",
+          "source": "src/game/bondview2.c:5759"
+        },
+        {
+          "name": "probeHeightAbove",
+          "value": 500,
+          "unit": "world units of height difference",
+          "source": "src/game/bondview2.c:5759"
+        },
+        {
+          "name": "upwardPitchScale",
+          "value": 0.8666667,
+          "unit": "multiplier on an upward target pitch",
+          "source": "src/game/bondview2.c:5770"
+        },
+        {
+          "name": "engageMarginAbove",
+          "value": 5,
+          "unit": "degrees above the target pitch",
+          "source": "src/game/bondview2.c:5811"
+        },
+        {
+          "name": "engageMarginBelow",
+          "value": 10,
+          "unit": "degrees below the target pitch",
+          "source": "src/game/bondview2.c:156"
+        },
+        {
+          "name": "recentreDamping",
+          "value": 0.5,
+          "unit": "squared rate scale, per 60 Hz logic update",
+          "source": "src/game/bondview2.c:5840"
+        },
+        {
+          "name": "recentreStep",
+          "value": 2,
+          "unit": "degrees per tick per unit of pitch rate",
+          "source": "src/game/bondview2.c:5855"
+        },
+        {
+          "name": "nearPlane",
+          "value": 30,
+          "unit": "world units",
+          "source": "src/fr.c:60"
+        },
+        {
+          "name": "farPlane",
+          "value": 10000,
+          "unit": "world units",
+          "source": "src/fr.c:60"
+        },
+        {
+          "name": "baseFieldOfView",
+          "value": 60,
+          "unit": "field-of-view degrees",
+          "source": "src/fr.h:137"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5725
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5731
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5759
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5811
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5840
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 5928
+        },
+        {
+          "path": "src/fr.c",
+          "line": 60
+        },
+        {
+          "path": "src/fr.h",
+          "line": 137
+        }
+      ],
+      "capabilities": [
+        "look-ahead pitch",
+        "automatic camera levelling",
+        "view projection"
+      ],
+      "tags": [
+        "camera",
+        "pitch",
+        "look-ahead",
+        "field of view"
+      ]
+    },
+    {
+      "id": "guard-sight",
+      "node": "guard-ai",
+      "name": "Guard sight cone and occlusion",
+      "summary": "Guards notice the player through a forward cone, a distance-scaled random roll and a final unobstructed line test in the same room",
+      "behavior": "A guard notices the player through a cone and a per-tick roll rather than a plain distance check. The player must lie inside the guard's vision range multiplied by 100, or inside a 200-unit minimum sphere, and within 110 degrees either side of the guard's facing. The squared distance must also sit inside the fog limit for the current view, so a far room cannot reveal the player through the geometry. Inside those limits a notice value is built from the distance times 30 over 16000, multiplied further when the player stands more than 45 degrees off the facing, adjusted by the guard's difficulty speed rating and then incremented by one; the roll only succeeds when a random draw lands in the first of those slots, so a distant guard notices the player on a small fraction of ticks while a close guard in front notices almost at once. A final line test runs from chest height 20 units below the guard's own height across objects, doors, characters, path blockers and AI-opaque surfaces, and both bodies must share the same floor tile. Once seen, the guard stamps the current tick, and keeps treating the player as recently seen for 120 ticks.",
+      "constants": [
+        {
+          "name": "visionConeHalfAngle",
+          "value": 110,
+          "unit": "degrees either side of the guard's facing",
+          "source": "src/game/chraction.c:4272"
+        },
+        {
+          "name": "visionRangeScale",
+          "value": 100,
+          "unit": "multiplier applied to the guard's vision range",
+          "source": "src/game/chraction.c:4271"
+        },
+        {
+          "name": "defaultVisionRange",
+          "value": 250,
+          "unit": "vision range units, scaled by 100 into world units",
+          "source": "src/game/chr.c:1653"
+        },
+        {
+          "name": "minimumVisionDistance",
+          "value": 200,
+          "unit": "world units",
+          "source": "src/game/chraction.c:4277"
+        },
+        {
+          "name": "noticeDistanceScale",
+          "value": 30,
+          "unit": "notice slots per world unit of distance",
+          "source": "src/game/chraction.c:4284"
+        },
+        {
+          "name": "noticeDistanceDivisor",
+          "value": 16000,
+          "unit": "world units per notice slot",
+          "source": "src/game/chraction.c:4284"
+        },
+        {
+          "name": "facingPenaltyAngle",
+          "value": 45,
+          "unit": "degrees off the facing before the notice value is multiplied",
+          "source": "src/game/chraction.c:4287"
+        },
+        {
+          "name": "sightHeightInset",
+          "value": 20,
+          "unit": "world units below the guard's own height",
+          "source": "src/game/chraction.c:3926"
+        },
+        {
+          "name": "seenRecentTicks",
+          "value": 120,
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/chraction.h:30"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/chraction.c",
+          "line": 4227
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 4271
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 4284
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 4302
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 3933
+        },
+        {
+          "path": "src/game/chr.c",
+          "line": 1653
+        },
+        {
+          "path": "src/game/chraction.h",
+          "line": 30
+        }
+      ],
+      "capabilities": [
+        "field-of-view detection",
+        "line-of-sight occlusion",
+        "same-room check",
+        "detection probability"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "stealth",
+        "sight",
+        "detection"
+      ]
+    },
+    {
+      "id": "guard-fire-chance",
+      "node": "guard-ai",
+      "name": "Guard fire chance",
+      "summary": "Guards accumulate a shot chance per tick inside a distance-banded aim cone and convert it into damage when it fills",
+      "behavior": "Guard damage arrives as a probability that fills up rather than as one hitscan per trigger pull. The angular tolerance around the player is chosen from distance bands: the cone is widest within 200 units and narrows in four steps at 200, 400, 800 and 1600 units, so a guard across a large hall needs the player almost dead centre. Inside that cone, and while the player is not already inside a damage display window, a chance accumulates 0.16 per tick, scaled down by 300 over the actual distance once the player is beyond 300 units, then multiplied by the guard's accuracy rating over 10, by the difficulty accuracy setting and by the mission accuracy setting. Non-automatic weapons and shotgun-class weapons accumulate twice as fast. When the total reaches 1 the guard registers a hit worth 0.125 of the weapon's destruction value times the difficulty damage setting, tripled for shotgun-class weapons, and the accumulator resets to zero.",
+      "constants": [
+        {
+          "name": "baseChancePerTick",
+          "value": 0.16,
+          "unit": "accumulated chance per 60 Hz logic update",
+          "source": "src/game/chraction.c:6361"
+        },
+        {
+          "name": "distanceFalloffStart",
+          "value": 300,
+          "unit": "world units",
+          "source": "src/game/chraction.c:6364"
+        },
+        {
+          "name": "accuracyRatingDivisor",
+          "value": 10,
+          "unit": "rating points per unit of chance multiplier",
+          "source": "src/game/chraction.c:6371"
+        },
+        {
+          "name": "nonAutomaticBonus",
+          "value": 2,
+          "unit": "multiplier on accumulated chance per 60 Hz logic update",
+          "source": "src/game/chraction.c:6398"
+        },
+        {
+          "name": "shotgunBonus",
+          "value": 3,
+          "unit": "multiplier on registered damage",
+          "source": "src/game/chraction.c:6414"
+        },
+        {
+          "name": "shotDamageScale",
+          "value": 0.125,
+          "unit": "fraction of weapon destruction value per registered hit",
+          "source": "src/game/chraction.c:6410"
+        },
+        {
+          "name": "nearAimBand",
+          "value": 200,
+          "unit": "world units",
+          "source": "src/game/chraction.c:6289"
+        },
+        {
+          "name": "farAimBand",
+          "value": 1600,
+          "unit": "world units",
+          "source": "src/game/chraction.c:6274"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/chraction.c",
+          "line": 6307
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6272
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6361
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6394
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6406
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6410
+        }
+      ],
+      "capabilities": [
+        "aim cone by distance",
+        "accumulating fire chance",
+        "difficulty scaled damage"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "accuracy",
+        "damage",
+        "ranged"
+      ]
+    },
+    {
+      "id": "guard-reaction",
+      "node": "guard-ai",
+      "name": "Guard reaction and alertness",
+      "summary": "Reaction speed scales how long a guard waits before firing, and alertness is a byte the mission scripts push and branch on",
+      "behavior": "Reaction speed is a difficulty setting that scales how long a guard waits before opening fire. Entering the attack state seeds a countdown with a random value below 400 times the reaction setting plus the recently-seen window, so the easiest setting produces a delay five times shorter than the hardest. The three mission difficulties use 0.2, 0.5 and 1.0 for that setting. Alertness is a separate byte the scripts drive: it can be set outright, added to with a clamp at 255, or reduced with a clamp at 0, and the scripts branch on thresholds of it, which lets a guard react to a noise or a body without any sight test. Hearing scale is stored in thousandths and divided back on read, so a script can scale audible radius by a fractional amount. A guard keeps treating a target as seen or heard for 600 ticks, and a guard's base health is four times the difficulty health setting.",
+      "constants": [
+        {
+          "name": "reactionSeedBudget",
+          "value": 400,
+          "unit": "logic ticks at 60 Hz before the reaction setting is applied",
+          "source": "src/game/chraction.c:1631"
+        },
+        {
+          "name": "easiestReactionSpeed",
+          "value": 0.2,
+          "unit": "multiplier on the reaction delay",
+          "source": "src/game/lv.h:9"
+        },
+        {
+          "name": "middleReactionSpeed",
+          "value": 0.5,
+          "unit": "multiplier on the reaction delay",
+          "source": "src/game/lv.h:14"
+        },
+        {
+          "name": "hardestReactionSpeed",
+          "value": 1,
+          "unit": "multiplier on the reaction delay",
+          "source": "src/game/lv.h:19"
+        },
+        {
+          "name": "alertnessCeiling",
+          "value": 255,
+          "unit": "alertness points",
+          "source": "src/game/chrai.c:2890"
+        },
+        {
+          "name": "hearingScaleDivisor",
+          "value": 1000,
+          "unit": "stored thousandths per unit of hearing scale",
+          "source": "src/game/chrai.c:2944"
+        },
+        {
+          "name": "targetMemoryTicks",
+          "value": "0x258",
+          "unit": "logic ticks at 60 Hz",
+          "source": "src/game/chraction.h:40"
+        },
+        {
+          "name": "guardHealthBase",
+          "value": 4,
+          "unit": "health points before the difficulty health setting",
+          "source": "src/game/chr.c:1656"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/chraction.c",
+          "line": 1631
+        },
+        {
+          "path": "src/game/chrai.c",
+          "line": 2877
+        },
+        {
+          "path": "src/game/chrai.c",
+          "line": 2890
+        },
+        {
+          "path": "src/game/chraction.h",
+          "line": 40
+        },
+        {
+          "path": "src/game/lv.c",
+          "line": 946
+        },
+        {
+          "path": "src/game/chr.c",
+          "line": 1656
+        },
+        {
+          "path": "src/game/chrai.c",
+          "line": 2944
+        }
+      ],
+      "capabilities": [
+        "reaction delay",
+        "scripted alertness",
+        "difficulty scoped health"
+      ],
+      "tags": [
+        "ai",
+        "reaction",
+        "alertness",
+        "difficulty",
+        "hearing"
+      ]
+    },
+    {
+      "id": "player-damage-and-armour",
+      "node": "combat-damage",
+      "name": "Player damage, armour and health",
+      "summary": "Incoming damage is scaled by handicap, spent on armour first when flagged, then on health, and further hits wait for the display window to end",
+      "behavior": "Incoming damage is resolved against armour before health. The raw amount is multiplied by the player handicap, and damage taken while riding the tank is quartered. When the hit is flagged as armour-affecting and the whole amount fits inside the armour value scaled by the armour factor, only armour is reduced; otherwise armour is emptied first, its remaining fraction is subtracted from the damage, and the rest is divided by the health factor and taken from health. The first tick of a damage window clears the on-screen ammo, sight and timer display, and further hits are ignored until that window ends, so sustained fire cannot keep the player locked out of the display. In the one-hit multiplayer scenario the damage is overwritten with the exact combined health and armour so every hit kills. The game also records whether a shot arrived from behind, using a 270-degree comparison against the player's facing.",
+      "constants": [
+        {
+          "name": "tankDamageScale",
+          "value": 0.25,
+          "unit": "multiplier on incoming damage while riding the tank",
+          "source": "src/game/bondview2.c:9239"
+        },
+        {
+          "name": "behindArcDegrees",
+          "value": 270,
+          "unit": "degrees of facing used for the behind-hit counter",
+          "source": "src/game/bondview2.c:9277"
+        },
+        {
+          "name": "guardShotScale",
+          "value": 0.125,
+          "unit": "fraction of weapon destruction value per registered guard hit",
+          "source": "src/game/chraction.c:6410"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9221
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9239
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9256
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9260
+        },
+        {
+          "path": "src/game/bondview2.c",
+          "line": 9285
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 6410
+        }
+      ],
+      "capabilities": [
+        "armour absorption",
+        "health loss",
+        "damage display window",
+        "hit direction tracking"
+      ],
+      "tags": [
+        "damage",
+        "health",
+        "armour",
+        "player",
+        "combat"
+      ]
+    },
+    {
+      "id": "hit-zones",
+      "node": "combat-damage",
+      "name": "Hit zones, melee angle and flinch",
+      "summary": "Damage into characters multiplies by the body part hit and by the strike angle for melee, then interrupts the target into a flinch",
+      "behavior": "Damage into a character is a multiplication chain. A general hit is re-tagged as a chest hit and halved, or quartered when it arrives already flagged as half, so the chest multiplier produces the intended total. Head hits multiply by 4, chest hits by 2, and hits that only touch the weapon or the hat deal nothing at all, which makes precision worth aiming for. Melee is directional: a strike from the front is worth 0.125 of the base, from the side 0.25 and from behind 0.5, measured with 60-degree boundaries around the target's facing. Single-player also scales damage into characters by the difficulty health setting, and a viewer body forwards only 12.5 percent of its damage into the player. Every hit increments a flinch counter and sets a hit flag, and unless the hit touched only the hat the character is interrupted out of its current action into a pre-flinch action that stores the shot position, its angle and the weapon used.",
+      "constants": [
+        {
+          "name": "headMultiplier",
+          "value": 4,
+          "unit": "multiplier on base damage",
+          "source": "src/game/chraction.c:2596"
+        },
+        {
+          "name": "chestMultiplier",
+          "value": 2,
+          "unit": "multiplier on base damage",
+          "source": "src/game/chraction.c:2600"
+        },
+        {
+          "name": "generalHitScale",
+          "value": 0.5,
+          "unit": "multiplier before the chest multiplier",
+          "source": "src/game/chraction.c:2559"
+        },
+        {
+          "name": "generalHalfHitScale",
+          "value": 0.25,
+          "unit": "multiplier before the chest multiplier",
+          "source": "src/game/chraction.c:2565"
+        },
+        {
+          "name": "meleeFrontScale",
+          "value": 0.125,
+          "unit": "multiplier on base melee damage",
+          "source": "src/game/chraction.c:2579"
+        },
+        {
+          "name": "meleeSideScale",
+          "value": 0.25,
+          "unit": "multiplier on base melee damage",
+          "source": "src/game/chraction.c:2583"
+        },
+        {
+          "name": "meleeBackScale",
+          "value": 0.5,
+          "unit": "multiplier on base melee damage",
+          "source": "src/game/chraction.c:2587"
+        },
+        {
+          "name": "meleeFrontArc",
+          "value": 60,
+          "unit": "degrees either side of the target's facing",
+          "source": "src/game/chraction.c:2577"
+        },
+        {
+          "name": "viewerDamageScale",
+          "value": 0.125,
+          "unit": "fraction of damage forwarded into the player",
+          "source": "src/game/chraction.c:2615"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/chraction.c",
+          "line": 2463
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 2555
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 2577
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 2594
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 2625
+        },
+        {
+          "path": "src/game/chraction.c",
+          "line": 2650
+        }
+      ],
+      "capabilities": [
+        "hit zones",
+        "melee damage by angle",
+        "flinch reaction",
+        "damage counters"
+      ],
+      "tags": [
+        "damage",
+        "hitbox",
+        "melee",
+        "flinch",
+        "combat"
+      ]
+    }
+  ]
+}

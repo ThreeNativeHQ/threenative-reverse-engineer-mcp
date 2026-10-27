@@ -1,0 +1,1189 @@
+{
+  "version": 1,
+  "id": "neverball",
+  "title": "Neverball",
+  "repo": "https://github.com/Neverball/neverball",
+  "sha": "86bcdf5f8933de48adc997eb5c5ff860e71e4492",
+  "nodes": [
+    {
+      "id": "game-loop",
+      "name": "Game update loop",
+      "purpose": "Per-update driver: input clamping, tilt application, the teleporter hold, the clock and the outcome tests that end an attempt",
+      "paths": [
+        "ball/game_server.c",
+        "ball/game_server.h",
+        "ball/game_client.c"
+      ],
+      "functions": [
+        {
+          "name": "input_set_x",
+          "path": "ball/game_server.c",
+          "lines": [
+            107,
+            113
+          ]
+        },
+        {
+          "name": "game_server_init",
+          "path": "ball/game_server.c",
+          "lines": [
+            383,
+            470
+          ]
+        },
+        {
+          "name": "game_update_time",
+          "path": "ball/game_server.c",
+          "lines": [
+            659,
+            674
+          ]
+        },
+        {
+          "name": "game_update_state",
+          "path": "ball/game_server.c",
+          "lines": [
+            686,
+            797
+          ]
+        },
+        {
+          "name": "game_step",
+          "path": "ball/game_server.c",
+          "lines": [
+            799,
+            873
+          ]
+        },
+        {
+          "name": "game_server_iter",
+          "path": "ball/game_server.c",
+          "lines": [
+            875,
+            889
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-common",
+        "ball-physics"
+      ]
+    },
+    {
+      "id": "game-common",
+      "name": "Shared movement defaults",
+      "purpose": "Gravity vectors, the tilt-to-gravity transform, camera parameter accessors and the fixed-step accumulator",
+      "paths": [
+        "ball/game_common.c",
+        "ball/game_common.h"
+      ],
+      "functions": [
+        {
+          "name": "cam_speed",
+          "path": "ball/game_common.c",
+          "lines": [
+            61,
+            70
+          ]
+        },
+        {
+          "name": "game_tilt_init",
+          "path": "ball/game_common.c",
+          "lines": [
+            174,
+            187
+          ]
+        },
+        {
+          "name": "game_tilt_axes",
+          "path": "ball/game_common.c",
+          "lines": [
+            192,
+            196
+          ]
+        },
+        {
+          "name": "game_tilt_grav",
+          "path": "ball/game_common.c",
+          "lines": [
+            198,
+            210
+          ]
+        },
+        {
+          "name": "game_view_init",
+          "path": "ball/game_common.c",
+          "lines": [
+            214,
+            250
+          ]
+        },
+        {
+          "name": "lockstep_run",
+          "path": "ball/game_common.c",
+          "lines": [
+            318,
+            327
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ball-physics",
+      "name": "Ball collision solver",
+      "purpose": "Sphere sweeps against level solids, contact response and the per-step notion of resting contact",
+      "paths": [
+        "share/solid_sim_sol.c",
+        "share/solid_sim.h"
+      ],
+      "functions": [
+        {
+          "name": "v_sol",
+          "path": "share/solid_sim_sol.c",
+          "lines": [
+            54,
+            79
+          ]
+        },
+        {
+          "name": "sol_bounce",
+          "path": "share/solid_sim_sol.c",
+          "lines": [
+            251,
+            282
+          ]
+        },
+        {
+          "name": "sol_test_file",
+          "path": "share/solid_sim_sol.c",
+          "lines": [
+            605,
+            625
+          ]
+        },
+        {
+          "name": "sol_step",
+          "path": "share/solid_sim_sol.c",
+          "lines": [
+            740,
+            824
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ball-motion",
+      "name": "Ball roll and triggers",
+      "purpose": "Position and orientation integration plus the proximity tests for items, goals, switches and teleporter pads",
+      "paths": [
+        "share/solid_all.c",
+        "share/solid_all.h",
+        "share/geom.h"
+      ],
+      "functions": [
+        {
+          "name": "sol_rotate",
+          "path": "share/solid_all.c",
+          "lines": [
+            384,
+            411
+          ]
+        },
+        {
+          "name": "sol_pendulum",
+          "path": "share/solid_all.c",
+          "lines": [
+            419,
+            463
+          ]
+        },
+        {
+          "name": "sol_ball_step",
+          "path": "share/solid_all.c",
+          "lines": [
+            615,
+            627
+          ]
+        },
+        {
+          "name": "sol_item_test",
+          "path": "share/solid_all.c",
+          "lines": [
+            631,
+            653
+          ]
+        },
+        {
+          "name": "sol_goal_test",
+          "path": "share/solid_all.c",
+          "lines": [
+            655,
+            683
+          ]
+        },
+        {
+          "name": "sol_jump_test",
+          "path": "share/solid_all.c",
+          "lines": [
+            688,
+            735
+          ]
+        },
+        {
+          "name": "sol_swch_test",
+          "path": "share/solid_all.c",
+          "lines": [
+            740,
+            873
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ball-physics"
+      ]
+    },
+    {
+      "id": "level-data",
+      "name": "Level file loading",
+      "purpose": "Header and attribute pass for level metadata, the full geometry pass and the format version gate",
+      "paths": [
+        "share/solid_base.c",
+        "share/solid_base.h",
+        "share/solid_vary.h",
+        "ball/level.c"
+      ],
+      "functions": [
+        {
+          "name": "sol_load_base",
+          "path": "share/solid_base.c",
+          "lines": [
+            579,
+            595
+          ]
+        },
+        {
+          "name": "sol_load_meta",
+          "path": "share/solid_base.c",
+          "lines": [
+            597,
+            613
+          ]
+        },
+        {
+          "name": "level_load",
+          "path": "ball/level.c",
+          "lines": [
+            132,
+            157
+          ]
+        },
+        {
+          "name": "level_time",
+          "path": "ball/level.c",
+          "lines": [
+            186,
+            189
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "Chase camera",
+      "purpose": "Per-slot camera configuration defaults and the perspective used to draw the tilted stage",
+      "paths": [
+        "ball/game_draw.c",
+        "share/config.c"
+      ],
+      "functions": [
+        {
+          "name": "game_draw",
+          "path": "ball/game_draw.c",
+          "lines": [
+            474,
+            591
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-common",
+        "game-loop"
+      ]
+    },
+    {
+      "id": "play-session",
+      "name": "Play session flow",
+      "purpose": "Input routing during play, the camera hold request, outcome bookkeeping and the fail screen after a lost attempt",
+      "paths": [
+        "ball/st_play.c",
+        "ball/progress.c",
+        "ball/st_fail.c"
+      ],
+      "functions": [
+        {
+          "name": "progress_step",
+          "path": "ball/progress.c",
+          "lines": [
+            141,
+            155
+          ]
+        },
+        {
+          "name": "progress_stat",
+          "path": "ball/progress.c",
+          "lines": [
+            157,
+            242
+          ]
+        },
+        {
+          "name": "rot_get",
+          "path": "ball/st_play.c",
+          "lines": [
+            326,
+            345
+          ]
+        },
+        {
+          "name": "play_loop_timer",
+          "path": "ball/st_play.c",
+          "lines": [
+            424,
+            487
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-loop",
+        "level-data"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "tilt-input-response",
+      "node": "game-loop",
+      "name": "Floor tilt from pointer or stick",
+      "summary": "Player motion is converted into floor pitch and roll with a hard angular limit and a short eased response.",
+      "behavior": "The requested pitch and roll are clamped to twenty degrees before they reach the simulation, so no input speed can tip the floor past that limit. Each update moves the applied angles a fraction of the way towards the request, and that fraction is the step length divided by the larger of the step length and the response time, so a sudden request is spread over about fifty milliseconds instead of snapping. Each pointer delta is scaled by twice the limit divided by the mouse sensitivity and added to the current request, so the travel needed to reach the limit follows that setting, while key and stick input write the request directly and only differ by their own response time. Because the applied angle lags the request, quick flicks register as a brief slope rather than a step change.",
+      "constants": [
+        {
+          "name": "tilt-limit",
+          "value": 20,
+          "unit": "degrees of floor pitch and roll, clamped on every update at 90 Hz",
+          "source": "ball/game_server.h:7"
+        },
+        {
+          "name": "tilt-response-time",
+          "value": 0.05,
+          "unit": "seconds of smoothing, applied per update at 90 Hz",
+          "source": "ball/game_server.h:6"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_server.c",
+          "line": 807
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 109
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 937
+        },
+        {
+          "path": "ball/game_server.h",
+          "line": 7
+        },
+        {
+          "path": "ball/game_server.h",
+          "line": 6
+        }
+      ],
+      "capabilities": [
+        "tilt clamping",
+        "eased angle response",
+        "pointer and stick remapping"
+      ],
+      "tags": [
+        "input",
+        "tilt",
+        "feel"
+      ]
+    },
+    {
+      "id": "tilt-gravity-vector",
+      "node": "game-common",
+      "name": "Tilted gravity vector",
+      "summary": "Gravity is rotated by the tilt angles, so the ball always accelerates downhill in the tilted frame.",
+      "behavior": "A fixed world gravity of 9.8 along the negative vertical is rotated by the combined roll and pitch matrices built from the two tilt axes. Those axes are copied from the camera basis, so tilting forward always sends the ball away from the viewer no matter how the camera has been turned, which keeps the control frame consistent with what is on screen. The rotation preserves the magnitude of gravity, so a full twenty degree tilt only exposes the component that runs along the slope and the vertical component still presses the ball onto the surface. This single rotated vector replaces per-surface slope logic entirely.",
+      "constants": [
+        {
+          "name": "downward-gravity",
+          "value": -9.8,
+          "unit": "level units per second squared along the negative vertical, added once per update at 90 Hz",
+          "source": "ball/game_common.c:172"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_common.c",
+          "line": 172
+        },
+        {
+          "path": "ball/game_common.c",
+          "line": 192
+        },
+        {
+          "path": "ball/game_common.c",
+          "line": 198
+        }
+      ],
+      "capabilities": [
+        "rotate gravity by tilt",
+        "view-relative control frame"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "tilt"
+      ]
+    },
+    {
+      "id": "fixed-timestep",
+      "node": "game-common",
+      "name": "Fixed 90 Hz stepping",
+      "summary": "The simulation advances in fixed steps fed by an accumulator, and drawing blends the last two states.",
+      "behavior": "Frame time is scaled and added to an accumulator, and whole steps of one ninetieth of a second are consumed while the accumulator holds one, each step calling the game update with that fixed length. Whatever is left over becomes the blend fraction the client uses to interpolate ball position, ball basis and camera between the previous and current steps, so motion stays smooth on a fast display without changing the physics. Collisions, gravity, the clock and trigger tests all read the same fixed length, so tuning stays valid across machines and recorded replays stay in step.",
+      "constants": [
+        {
+          "name": "updates-per-second",
+          "value": 90,
+          "unit": "updates per second; the step length is its reciprocal, consumed per update at 90 Hz",
+          "source": "ball/game_common.h:114"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_common.h",
+          "line": 114
+        },
+        {
+          "path": "ball/game_common.c",
+          "line": 318
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 891
+        }
+      ],
+      "capabilities": [
+        "fixed step accumulator",
+        "render interpolation",
+        "machine-independent tuning"
+      ],
+      "tags": [
+        "timing",
+        "physics",
+        "determinism"
+      ]
+    },
+    {
+      "id": "ball-gravity-sweep",
+      "node": "ball-physics",
+      "name": "Gravity then swept collision",
+      "summary": "Inside one update the ball integrates gravity and then sweeps its sphere through the level, resolving the earliest contact first.",
+      "behavior": "The step begins by adding gravity multiplied by the step length to the ball velocity. A loop then asks the solids for the earliest time the moving sphere reaches any vertex, edge or face, up to sixteen contacts per update, and each contact consumes the part of the step it used, so a ball rolling into a corner can resolve several features within one update. When the budget is exhausted the remaining time is advanced without further testing, trading a possible missed contact for a guaranteed exit instead of stalling between two closing solids. Contact time comes from a quadratic solved for a sphere against a feature that may itself be moving.",
+      "constants": [
+        {
+          "name": "contact-budget",
+          "value": 16,
+          "unit": "sweep iterations per update at 90 Hz",
+          "source": "share/solid_sim_sol.c:794"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 790
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 794
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 54
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 740
+        }
+      ],
+      "capabilities": [
+        "swept sphere collision",
+        "multi-contact resolution",
+        "moving solids"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "gravity"
+      ]
+    },
+    {
+      "id": "contact-friction-gate",
+      "node": "ball-physics",
+      "name": "Contact damping and its gate",
+      "summary": "A resting-contact damping branch exists, but it only runs for callers that ask for a stop counter.",
+      "behavior": "The solver looks for a contact within a small time window ahead of the step, then compares the contact normal against the gravity direction; when the two are almost exactly opposed the surface is flat and the ball is resting on it. Only then is speed reduced, at one unit per second squared along the reversed surface-relative direction, and once the remaining speed is smaller than a single update of travel the ball is snapped to rest and a stop is counted. The whole branch is gated on the caller handing in a counter for those stops, and the ball mode hands in nothing, so in normal play the branch never runs and the ball coasts until a bounce, a slope or a wall changes its velocity. A second game in the same repository is the caller that enables it, which is why the routine looks dead when reading the ball mode alone.",
+      "constants": [
+        {
+          "name": "contact-window",
+          "value": 0.0005,
+          "unit": "seconds ahead of the step, tested once per update at 90 Hz",
+          "source": "share/solid_sim_sol.c:756"
+        },
+        {
+          "name": "flat-contact-alignment",
+          "value": 0.999,
+          "unit": "cosine between contact normal and gravity, tested per update at 90 Hz",
+          "source": "share/solid_sim_sol.c:761"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 756
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 761
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 769
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 785
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 851
+        }
+      ],
+      "capabilities": [
+        "resting contact detection",
+        "velocity damping on flat ground",
+        "explicit stop event"
+      ],
+      "tags": [
+        "physics",
+        "friction",
+        "feel"
+      ]
+    },
+    {
+      "id": "bounce-restitution",
+      "node": "ball-physics",
+      "name": "Bounce and restitution",
+      "summary": "Contact mirrors the relative normal velocity with a bounce coefficient of 0.7 and turns tangential slip into spin.",
+      "behavior": "At an impact the normal is taken from the contact point to the ball centre and the ball velocity is measured against the velocity of whatever it struck. The normal part of that relative velocity is added back with a factor of 1.7, which makes the coefficient of restitution 0.7 because one unit of the 1.7 simply cancels the incoming motion and the rest reverses it. The ball is then pushed out along the normal so it cannot sink into the surface. Tangential slip becomes angular velocity scaled by the inverse square of the radius, so a glancing hit visibly spins the ball, and the absolute normal speed is handed back as impact energy that the caller turns into the volume of the bounce sound.",
+      "constants": [
+        {
+          "name": "normal-response",
+          "value": 1.7,
+          "unit": "dimensionless multiplier on relative normal velocity, applied per contact at 90 Hz",
+          "source": "share/solid_sim_sol.c:275"
+        },
+        {
+          "name": "bounce-sound-threshold",
+          "value": 0.5,
+          "unit": "impact energy, dimensionless, compared once per update at 90 Hz",
+          "source": "ball/game_server.c:855"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 251
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 275
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 277
+        },
+        {
+          "path": "share/solid_sim_sol.c",
+          "line": 281
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 855
+        }
+      ],
+      "capabilities": [
+        "0.7 restitution",
+        "slip to spin conversion",
+        "impact energy for audio"
+      ],
+      "tags": [
+        "physics",
+        "bounce",
+        "feel"
+      ]
+    },
+    {
+      "id": "ball-spin-roll",
+      "node": "ball-motion",
+      "name": "Rolling spin from a pendulum",
+      "summary": "The visible roll comes from a weighted pendulum below the centre that is dragged by gravity and by the change in the ball velocity.",
+      "behavior": "A separate pendulum basis hangs under the ball centre. Each update the change in velocity is halved, gravity is folded in scaled by the step length, and the result is multiplied by a mass of five and divided by the step to give a force; the torque of that force about the low point of the pendulum is integrated into pendulum angular velocity, which is multiplied by 0.995 so the swing dies away instead of ringing. A second correction rotates the pendulum towards the direction of travel by twice the projected component, which is what makes the surface look like it is rolling rather than sliding. The visible ball basis is advanced by its own angular velocity and re-orthonormalised every step, and the position is advanced by velocity times the step.",
+      "constants": [
+        {
+          "name": "pendulum-mass",
+          "value": 5,
+          "unit": "dimensionless mass, applied per update at 90 Hz",
+          "source": "share/solid_all.c:425"
+        },
+        {
+          "name": "acceleration-weight",
+          "value": 0.5,
+          "unit": "dimensionless scale on the velocity change, applied per update at 90 Hz",
+          "source": "share/solid_all.c:426"
+        },
+        {
+          "name": "angular-damping",
+          "value": 0.995,
+          "unit": "multiplier on pendulum angular velocity per update at 90 Hz",
+          "source": "share/solid_all.c:427"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_all.c",
+          "line": 419
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 425
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 426
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 427
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 384
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 615
+        }
+      ],
+      "capabilities": [
+        "pendulum roll model",
+        "velocity-aligned spin",
+        "damped angular response"
+      ],
+      "tags": [
+        "physics",
+        "animation",
+        "feel"
+      ]
+    },
+    {
+      "id": "coin-pickup",
+      "node": "ball-motion",
+      "name": "Collectable pickup",
+      "summary": "Collectables are taken by a sphere overlap test run in the frame of the body they ride, and the ball radius sets the reach.",
+      "behavior": "Each item keeps its position in the frame of the body it rides, so the ball centre is transformed into that frame before the distance is measured; the item is collected when the distance is under the ball radius plus the item pickup radius. On pickup the item is cleared so it cannot be collected twice, a sound plays, and the stored type picks the effect: a coin adds its count to the running total, a clock item moves the clock, and a size item starts a radius change. Because the test adds the ball radius, a grown ball sweeps up collectables from further out, which is a side effect worth designing around.",
+      "constants": [
+        {
+          "name": "item-pickup-radius",
+          "value": 0.15,
+          "unit": "level units of extra reach, tested once per update at 90 Hz",
+          "source": "share/geom.h:16"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_all.c",
+          "line": 631
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 649
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 701
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 744
+        }
+      ],
+      "capabilities": [
+        "sphere overlap pickup",
+        "local-space item positions",
+        "pickup effects by item type"
+      ],
+      "tags": [
+        "collectables",
+        "collision",
+        "scoring"
+      ]
+    },
+    {
+      "id": "goal-detection",
+      "node": "ball-motion",
+      "name": "Goal cylinder",
+      "summary": "A goal is an upright cylinder that accepts the ball only while the coin requirement of the level is satisfied.",
+      "behavior": "The ball is transformed into goal space and the test keeps only the horizontal axes plus a height band: the horizontal distance from the goal axis plus the ball radius must stay inside the goal radius, and the ball must sit between the goal base and half of the three unit goal height, so a ball flying over the rim misses. The success test is skipped while the goal is locked. The coin requirement of the level keeps it locked until the collected count reaches the target, at which point the goal opens, and from then on dropping into the cylinder ends the attempt as a success.",
+      "constants": [
+        {
+          "name": "goal-height",
+          "value": 3,
+          "unit": "level units of cylinder height, sampled per update at 90 Hz",
+          "source": "share/geom.h:15"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_all.c",
+          "line": 655
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 675
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 677
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 774
+        },
+        {
+          "path": "ball/progress.c",
+          "line": 145
+        }
+      ],
+      "capabilities": [
+        "cylinder containment test",
+        "locked goals",
+        "coin-gated unlocking"
+      ],
+      "tags": [
+        "goal",
+        "collision",
+        "progression"
+      ]
+    },
+    {
+      "id": "switch-trigger",
+      "node": "ball-motion",
+      "name": "Switch trigger band",
+      "summary": "A switch fires when the ball centre arrives after crossing a touch band as wide as the ball diameter.",
+      "behavior": "The horizontal distance from the switch axis is compared with the switch radius offset by the ball radius; the ball counts as inside the band while that distance is under one diameter, which gives a readable approach zone before the trigger. The ball must also be within half of the two unit switch height above the base, so passing underneath or flying high over it does nothing. Toggle switches fire once as the ball centre enters and latch until the ball leaves the band again, while timed switches fire only once their own timer has run out and toggling restarts it, so the repeat rate comes from the switch delay rather than from player movement.",
+      "constants": [
+        {
+          "name": "switch-height",
+          "value": 2,
+          "unit": "level units of trigger height, sampled per update at 90 Hz",
+          "source": "share/geom.h:14"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_all.c",
+          "line": 740
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 761
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 771
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 773
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 775
+        }
+      ],
+      "capabilities": [
+        "entry band hysteresis",
+        "toggle and timed switches",
+        "height-gated triggers"
+      ],
+      "tags": [
+        "collision",
+        "triggers",
+        "level-mechanics"
+      ]
+    },
+    {
+      "id": "teleporter-hold",
+      "node": "game-loop",
+      "name": "Teleporter pad hold",
+      "summary": "The pads act as teleporters rather than jump impulses: the ball waits half a second on a pad, then is written to a paired pad and pinned there.",
+      "behavior": "A pad reads as touched while the ball is within one ball radius of its rim and as entered once the ball centre is inside it. On entry the paired destination is computed by keeping the ball offset from the entry pad in the frame of the paired pad, and a one second transfer starts during which the simulation is skipped, so gravity cannot pull the ball off the pad. For the first half second the ball stays on the entry pad. At the half second mark the ball is written to the destination and the camera is translated by the same delta, which stops the view from flying across the stage. The ball is then pinned to the destination until one second has passed and control returns. Throughout the transfer the field of view and the vertical offset of the look-at point are both scaled by twice the distance from the midpoint, so the picture collapses at the moment of the jump and reads as a lurch.",
+      "constants": [
+        {
+          "name": "transfer-delay",
+          "value": 0.5,
+          "unit": "seconds before the ball is written to the paired pad, counted per update at 90 Hz",
+          "source": "ball/game_server.c:825"
+        },
+        {
+          "name": "transfer-total",
+          "value": 1,
+          "unit": "seconds of held position before control returns, counted per update at 90 Hz",
+          "source": "ball/game_server.c:844"
+        },
+        {
+          "name": "pad-trigger-height",
+          "value": 2,
+          "unit": "level units of pad height, sampled per update at 90 Hz",
+          "source": "share/geom.h:13"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_server.c",
+          "line": 754
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 825
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 844
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 527
+        },
+        {
+          "path": "share/solid_all.c",
+          "line": 718
+        }
+      ],
+      "capabilities": [
+        "paired-pad teleport",
+        "timed hold with skipped simulation",
+        "camera and field-of-view lurch"
+      ],
+      "tags": [
+        "traversal",
+        "triggers",
+        "camera"
+      ]
+    },
+    {
+      "id": "clock-and-timeout",
+      "node": "game-loop",
+      "name": "Clock, time bonus and time-out",
+      "summary": "A level timer stored in hundredths becomes a countdown, clock pickups move it, and reaching zero ends the attempt.",
+      "behavior": "The time attribute of a level is stored in hundredths of a second and divided by a hundred to give the limit in seconds; an untimed level stores zero and never expires. Every active update adds the step length to elapsed time, clamps it at the limit, and derives the displayed clock from the absolute difference between limit and elapsed, which makes a timed level count down and an untimed one count up. Reaching the limit reports a time-out outcome. A clock pickup adds its stored value to the limit on a timed level, or subtracts it from elapsed time on an untimed level so the recorded time improves. The head-up layer multiplies the same value by a hundred to show hundredths.",
+      "constants": [
+        {
+          "name": "time-limit-scale",
+          "value": 100,
+          "unit": "hundredths of a second per second, converted once when the level starts",
+          "source": "ball/game_server.c:388"
+        },
+        {
+          "name": "clock-display-scale",
+          "value": 100,
+          "unit": "hundredths of a second per second, applied every displayed update",
+          "source": "ball/game_client.c:500"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_server.c",
+          "line": 388
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 670
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 714
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 782
+        },
+        {
+          "path": "ball/game_client.c",
+          "line": 500
+        }
+      ],
+      "capabilities": [
+        "timed and untimed levels",
+        "clock pickups",
+        "time-out outcome"
+      ],
+      "tags": [
+        "timer",
+        "scoring",
+        "level-flow"
+      ]
+    },
+    {
+      "id": "camera-chase-and-modes",
+      "node": "camera",
+      "name": "Chase camera and its modes",
+      "summary": "Three camera slots share one chase solver whose character comes from speed, torque, free rotation and a velocity-projected offset.",
+      "behavior": "The camera keeps a reference direction that is pulled towards the ball velocity each update. With the torque option the pull grows with the square of the speed, so fast travel lines up almost instantly while slow travel barely turns; without it the pull is linear in speed. A free-rotation option lets manual rotation win, and once the player stops turning the chase fades back in over a window set by how long the rotation lasted, capped at one second, so a short nudge barely disturbs the framing. The eye sits at the configured height above and distance behind the ball, scaled by a factor that grows as the ball travels away from the camera and is floored at one half so the boom never collapses. A slot speed of zero removes the velocity pull, leaving a lazy camera that keeps its framing and only follows the ball, and a negative speed pins the direction to the last chase angle for a fully manual camera that turns only on player input. The drawn perspective uses the configured field of view with a near plane close enough that the ball never clips.",
+      "constants": [
+        {
+          "name": "chase-speed",
+          "value": 250,
+          "unit": "configuration units, divided by 1000 into a chase fraction per update at 90 Hz",
+          "source": "share/config.c:251"
+        },
+        {
+          "name": "lazy-camera-speed",
+          "value": 0,
+          "unit": "configuration units, read once per update at 90 Hz; zero selects the lazy behaviour",
+          "source": "share/config.c:257"
+        },
+        {
+          "name": "manual-camera-speed",
+          "value": -1,
+          "unit": "configuration units, read once per update at 90 Hz; negative selects manual behaviour",
+          "source": "share/config.c:263"
+        },
+        {
+          "name": "boom-height",
+          "value": 75,
+          "unit": "configuration units, divided by 100 into level units of height per update at 90 Hz",
+          "source": "share/config.c:241"
+        },
+        {
+          "name": "boom-length",
+          "value": 200,
+          "unit": "configuration units, divided by 100 into level units of distance per update at 90 Hz",
+          "source": "share/config.c:243"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_server.c",
+          "line": 521
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 602
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 637
+        },
+        {
+          "path": "ball/game_server.c",
+          "line": 643
+        },
+        {
+          "path": "share/config.c",
+          "line": 257
+        },
+        {
+          "path": "share/config.c",
+          "line": 263
+        },
+        {
+          "path": "ball/game_draw.c",
+          "line": 476
+        }
+      ],
+      "capabilities": [
+        "velocity-chase camera",
+        "torque and linear response modes",
+        "lazy and manual slots",
+        "inactivity fade"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "control"
+      ]
+    },
+    {
+      "id": "camera-hold-rotation",
+      "node": "play-session",
+      "name": "Holding both rotation directions",
+      "summary": "Pressing both rotation inputs at once freezes camera rotation and hands control to the manual slot.",
+      "behavior": "Rotation input is tracked per direction and read back as one of three states: right only, left only, or both at once. Holding both is treated as a hold request, which writes a rotation rate of zero and selects the manual camera slot, so a player can stop the chase solver from turning without letting go of either button. Otherwise the rate is written from the configured slow or fast speed scaled by a hundredth, and the camera solver turns that into degrees per update against a bounded rotation input. The same path serves keyboard, mouse and shoulder-button rotation, which keeps the hold gesture identical across devices.",
+      "constants": [
+        {
+          "name": "rotate-slow",
+          "value": 150,
+          "unit": "configuration units, divided by 100 into a rotation multiplier per update at 90 Hz",
+          "source": "share/config.c:245"
+        },
+        {
+          "name": "rotation-input-bound",
+          "value": 10,
+          "unit": "rotation input units, multiplied by 90 to give degrees per second, clamped per update at 90 Hz",
+          "source": "ball/game_server.h:8"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/st_play.c",
+          "line": 326
+        },
+        {
+          "path": "ball/st_play.c",
+          "line": 443
+        },
+        {
+          "path": "ball/st_play.c",
+          "line": 449
+        },
+        {
+          "path": "ball/game_server.h",
+          "line": 8
+        },
+        {
+          "path": "share/config.c",
+          "line": 245
+        }
+      ],
+      "capabilities": [
+        "two-button rotation hold",
+        "manual camera override",
+        "slow and fast rotation rates"
+      ],
+      "tags": [
+        "camera",
+        "control",
+        "input"
+      ]
+    },
+    {
+      "id": "fall-out-retry",
+      "node": "play-session",
+      "name": "Falling out costs an attempt",
+      "summary": "Sinking below the lowest point of the level ends the attempt, spends a ball and returns to the fail screen.",
+      "behavior": "The fall test rejects the attempt when the level holds no vertices at all or when the vertical position of the ball drops below the vertical position of the first vertex, which stands in for the floor of the stage. The outcome is reported as a fall, and the play state routes it to the fail screen rather than resetting the ball in place. The shared progress bookkeeping adds the elapsed time to the run total and removes one ball from the pool, so a fall spends resources instead of re-spawning. From the fail screen a player retries the same stage, moves to the next opened stage, or abandons the set.",
+      "constants": [
+        {
+          "name": "balls-per-fall",
+          "value": 1,
+          "unit": "balls removed per failed attempt, applied once when the attempt ends",
+          "source": "ball/progress.c:233"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ball/game_server.c",
+          "line": 790
+        },
+        {
+          "path": "ball/st_play.c",
+          "line": 474
+        },
+        {
+          "path": "ball/progress.c",
+          "line": 233
+        },
+        {
+          "path": "ball/progress.c",
+          "line": 232
+        }
+      ],
+      "capabilities": [
+        "fall detection against the vertex floor",
+        "attempt cost",
+        "fail-screen routing"
+      ],
+      "tags": [
+        "level-flow",
+        "failure",
+        "progression"
+      ]
+    },
+    {
+      "id": "level-load",
+      "node": "level-data",
+      "name": "Two-pass level loading",
+      "summary": "Levels load header-only for their attributes and then in full for geometry, movers, items, goals and pads.",
+      "behavior": "The attribute pass reads only the magic number, the format version and the string dictionary, which is enough to obtain the goal count, the time limit, the bonus flag, the music and the author before play starts. The full pass then reads every table in the file and applies version-dependent field layouts, so the loader carries separate branches for each older revision it still accepts and can attach the newer optional fields only when the file provides them. A file is refused unless the magic matches and the version falls inside the accepted range, which tops out at the 2024.04 revision even though a later revision number already exists in the same enumeration. Score records start from a large placeholder so rankings always have something to replace.",
+      "constants": [
+        {
+          "name": "oldest-format-version",
+          "value": 6,
+          "unit": "format version number, a fixed file constant rather than a rate",
+          "source": "share/solid_base.c:28"
+        },
+        {
+          "name": "newest-format-version",
+          "value": 9,
+          "unit": "format version number, a fixed file constant rather than a rate",
+          "source": "share/solid_base.c:31"
+        },
+        {
+          "name": "record-placeholder",
+          "value": 59999,
+          "unit": "hundredths of a second and coin counts, written once when a level record is created",
+          "source": "ball/level.c:148"
+        }
+      ],
+      "sources": [
+        {
+          "path": "share/solid_base.c",
+          "line": 52
+        },
+        {
+          "path": "share/solid_base.c",
+          "line": 579
+        },
+        {
+          "path": "ball/level.c",
+          "line": 132
+        },
+        {
+          "path": "ball/level.c",
+          "line": 148
+        }
+      ],
+      "capabilities": [
+        "header-only attribute pass",
+        "version-gated full load",
+        "authoring metadata"
+      ],
+      "tags": [
+        "assets",
+        "loading",
+        "pipeline"
+      ]
+    }
+  ]
+}

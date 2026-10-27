@@ -1,0 +1,1586 @@
+{
+  "version": 1,
+  "id": "f-zero-x",
+  "title": "F-Zero X",
+  "repo": "https://github.com/inspectredc/fzerox",
+  "sha": "4b00f36ceeabfe657866a7d02f3411545b5f55eb",
+  "nodes": [
+    {
+      "id": "racer-controls",
+      "name": "Racer control update",
+      "purpose": "Per-update translation of stick and buttons into drive force, heading change, drift pull, attacks, boost, surface effects and lap progress",
+      "paths": [
+        "src/game/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "Racer_UpdateFromControls",
+          "path": "src/game/racer.c",
+          "lines": [
+            3345,
+            4868
+          ]
+        },
+        {
+          "name": "Racer_UpdateMovement",
+          "path": "src/game/racer.c",
+          "lines": [
+            4923,
+            4951
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "racer-physics",
+      "name": "Track surface resolution",
+      "purpose": "Ride height, local gravity, airborne detection, corridor walls and recoil for every track shape",
+      "paths": [
+        "src/game/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "Racer_HitWall",
+          "path": "src/game/racer.c",
+          "lines": [
+            2325,
+            2379
+          ]
+        },
+        {
+          "name": "func_8008E54C",
+          "path": "src/game/racer.c",
+          "lines": [
+            2406,
+            2565
+          ]
+        },
+        {
+          "name": "func_8008EC98",
+          "path": "src/game/racer.c",
+          "lines": [
+            2580,
+            2795
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-controls"
+      ]
+    },
+    {
+      "id": "racer-damage",
+      "name": "Damage and retirement",
+      "purpose": "Energy subtraction, spin-out, destruction of an already wrecked machine, fall-out retirement and life accounting",
+      "paths": [
+        "src/game/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "Racer_ReceiveDamage",
+          "path": "src/game/racer.c",
+          "lines": [
+            2227,
+            2324
+          ]
+        },
+        {
+          "name": "Racer_RetireRacer",
+          "path": "src/game/racer.c",
+          "lines": [
+            760,
+            790
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-physics"
+      ]
+    },
+    {
+      "id": "race-step",
+      "name": "Race frame order",
+      "purpose": "Order of the racing frame and the pairwise machine-to-machine contact pass that runs before any machine moves",
+      "paths": [
+        "src/game/racer.c",
+        "src/overlays/ovl_i2/race.c"
+      ],
+      "functions": [
+        {
+          "name": "Racer_Update",
+          "path": "src/game/racer.c",
+          "lines": [
+            4952,
+            5524
+          ]
+        },
+        {
+          "name": "Race_Update",
+          "path": "src/overlays/ovl_i2/race.c",
+          "lines": [
+            94,
+            104
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-controls",
+        "racer-physics"
+      ]
+    },
+    {
+      "id": "machine-stats",
+      "name": "Machine statistics",
+      "purpose": "Derivation of the energy pool, boost cost, turn rates, colliding strength and the handling constants from a machine's ratings",
+      "paths": [
+        "src/game/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "Racer_InitMachineStats",
+          "path": "src/game/racer.c",
+          "lines": [
+            1419,
+            1549
+          ]
+        },
+        {
+          "name": "Racer_InitRacer",
+          "path": "src/game/racer.c",
+          "lines": [
+            1550,
+            1682
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "course-geometry",
+      "name": "Course spline geometry",
+      "purpose": "Cubic segment chain that supplies centre position, forward tangent, up axis and width for every point of the track",
+      "paths": [
+        "src/game/course.c"
+      ],
+      "functions": [
+        {
+          "name": "Course_SplineGetBasis",
+          "path": "src/game/course.c",
+          "lines": [
+            886,
+            951
+          ]
+        },
+        {
+          "name": "func_8009EBEC",
+          "path": "src/game/course.c",
+          "lines": [
+            953,
+            1117
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "Chase camera",
+      "purpose": "Follow-smooth rig, camera presets, look-back yaw and the speed-driven field of view",
+      "paths": [
+        "src/game/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "Camera_SettingsUpdateFollowSmooth",
+          "path": "src/game/camera.c",
+          "lines": [
+            558,
+            676
+          ]
+        },
+        {
+          "name": "Camera_RaceSettingChanged",
+          "path": "src/game/camera.c",
+          "lines": [
+            892,
+            915
+          ]
+        },
+        {
+          "name": "Camera_UpdateRace",
+          "path": "src/game/camera.c",
+          "lines": [
+            2893,
+            2985
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-controls"
+      ]
+    },
+    {
+      "id": "rival-ai",
+      "name": "Rival driver",
+      "purpose": "CPU input generation, four-update decision rotation, difficulty speed tables and packed-field pacing",
+      "paths": [
+        "src/overlays/ovl_i3/cpu.c"
+      ],
+      "functions": [
+        {
+          "name": "Cpu_InitRacer",
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "lines": [
+            803,
+            1005
+          ]
+        },
+        {
+          "name": "Cpu_GenerateInputs",
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "lines": [
+            1186,
+            2244
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-controls",
+        "machine-stats"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "throttle-acceleration",
+      "node": "racer-controls",
+      "name": "Throttle force ramp",
+      "summary": "Accelerator input feeds a drive force that chases a target curve, with a per-machine speed ceiling and a global velocity clamp",
+      "behavior": "Holding the accelerator raises a drive force rather than a speed directly. Below the machine's break speed the target force blends the two branch values with a quadratic bump across the middle of the range; above the break speed the target settles on the higher branch value, and a separate catch-up term can lift it from there toward the boost ceiling of the boost-rating table. The drive force closes a fraction of the remaining gap each update, and the gap is trimmed first by half of the heading change accumulated that update and again by a share of any live drift force, so sharp steering and drifting both cost acceleration. Throttle is ignored as soon as speed passes the machine's own ceiling, which starts at 2000 kilometres per hour and is converted to internal units once at spawn. After integration a hard clamp scales all three velocity components by the same ratio so the magnitude never exceeds 138.9 world units per update; without that clamp the per-machine ceilings would let a heavy machine outrun the corridor tests. The velocity vector is then rebuilt from the machine basis, with the component along the machine's up axis kept at 0.94 of its previous value so the machine is pressed onto the surface instead of climbing away from it.",
+      "constants": [
+        {
+          "name": "speedClamp",
+          "value": 138.9,
+          "unit": "world units per update at 60 Hz",
+          "source": "src/game/racer.c:4214"
+        },
+        {
+          "name": "throttleSpeedCeiling",
+          "value": 2000,
+          "unit": "kilometres per hour, converted to internal units at spawn and compared every update",
+          "source": "src/game/racer.c:1635"
+        },
+        {
+          "name": "upAxisVelocityRetention",
+          "value": 0.94,
+          "unit": "fraction of the up-axis velocity component retained per update at 60 Hz",
+          "source": "src/game/racer.c:3588"
+        },
+        {
+          "name": "headingChangePenalty",
+          "value": 0.5,
+          "unit": "drive force units removed per unit of heading change, per update at 60 Hz",
+          "source": "src/game/racer.c:4123"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 4097
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4102
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4123
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4214
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4215
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3584
+        }
+      ],
+      "capabilities": [
+        "throttle ramp",
+        "per-machine speed ceiling",
+        "global velocity clamp",
+        "steering cost on acceleration"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "throttle",
+        "speed"
+      ]
+    },
+    {
+      "id": "braking-and-coast",
+      "node": "racer-controls",
+      "name": "Braking and coast drag",
+      "summary": "Velocity is split onto the machine basis and each axis is damped separately for coasting, braking, loose surface and crashes",
+      "behavior": "Every update the velocity is projected onto the machine's three axes and each projection is scaled on its own before the vector is rebuilt, which couples drag to the machine and to the track's frame instead of to world axes. Coasting keeps 0.997 of the forward component, 0.996 of the sideways component and 0.94 of the component along the up axis. Holding the brake multiplies the forward and sideways factors by 0.987, and by a further 0.9 in the post-race cinematic, so braking is a continuous scrub over many updates rather than a single cut of the velocity. Unboosted running on loose surface trims both factors by another 0.987, which is why leaving a smooth section costs speed without any input. A spinning machine keeps 0.997 on both axes and a crashed machine keeps 0.98305196, so a wreck bleeds speed several times faster than a healthy machine and settles long before the next corner.",
+      "constants": [
+        {
+          "name": "forwardRetention",
+          "value": 0.997,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3532"
+        },
+        {
+          "name": "sideRetention",
+          "value": 0.996,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3533"
+        },
+        {
+          "name": "brakeRetention",
+          "value": 0.987,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3559"
+        },
+        {
+          "name": "postRaceBrakeRetention",
+          "value": 0.9,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3562"
+        },
+        {
+          "name": "dirtRetention",
+          "value": 0.987,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3537"
+        },
+        {
+          "name": "crashedRetention",
+          "value": 0.98305196,
+          "unit": "fraction retained per update at 60 Hz",
+          "source": "src/game/racer.c:3530"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3527
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3535
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3558
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3584
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3591
+        }
+      ],
+      "capabilities": [
+        "braking",
+        "coast drag",
+        "surface scrub",
+        "crash drag",
+        "per-axis drag"
+      ],
+      "tags": [
+        "movement",
+        "braking",
+        "friction",
+        "physics"
+      ]
+    },
+    {
+      "id": "steering-turn-rate",
+      "node": "racer-controls",
+      "name": "Analog heading rate",
+      "summary": "Stick deflection over a fixed full-scale divisor rotates the heading at a mass-scaled rate with two reduced-rate blends",
+      "behavior": "The stick's horizontal axis is divided by 63 and clamped to plus or minus one, so the full analog range is used and there is no software dead zone. Steering rotates the forward axis around the up axis by the rate and then re-orthonormalizes the whole basis, so the machine still holds an orthonormal three-axis frame after many updates of continuous turning. The rate itself comes from machine mass: around a 780 pivot across a 1560 span a light machine turns at 0.054 while a heavy machine turns noticeably less. While a drift pull is active the rate blends 40% of the way toward the lower reduced rate, and a machine that has just spent a boost uses the reduced rate of 0.03 directly while the throttle is held. Pitch is handled separately from yaw: the requested pitch nudges the up axis by a fixed share per update instead of rotating the forward axis, and the heading is re-derived from the up axis afterwards.",
+      "constants": [
+        {
+          "name": "stickFullScale",
+          "value": 63,
+          "unit": "raw stick counts mapped to full deflection, read every update",
+          "source": "src/game/racer.c:3390"
+        },
+        {
+          "name": "baseTurnRate",
+          "value": 0.054,
+          "unit": "heading rotation per unit of full stick, per update at 60 Hz",
+          "source": "src/game/racer.c:1638"
+        },
+        {
+          "name": "reducedTurnRate",
+          "value": 0.03,
+          "unit": "heading rotation per unit of full stick, per update at 60 Hz",
+          "source": "src/game/racer.c:1639"
+        },
+        {
+          "name": "massPivot",
+          "value": 780,
+          "unit": "machine mass units where the base rate applies, evaluated at spawn",
+          "source": "src/game/racer.c:1638"
+        },
+        {
+          "name": "massSpan",
+          "value": 1560,
+          "unit": "machine mass units over which the turn rate falls, evaluated at spawn",
+          "source": "src/game/racer.c:1638"
+        },
+        {
+          "name": "driftTurnBlend",
+          "value": 0.4,
+          "unit": "share of the gap toward the reduced rate per update at 60 Hz",
+          "source": "src/game/racer.c:3485"
+        },
+        {
+          "name": "throttleTurnBlend",
+          "value": 0.125,
+          "unit": "share of the gap toward the reduced rate per update at 60 Hz",
+          "source": "src/game/racer.c:3493"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3383
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3390
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3475
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3499
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3501
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4392
+        }
+      ],
+      "capabilities": [
+        "analog steering",
+        "mass-scaled turn rate",
+        "reduced-rate blend",
+        "orthonormal basis rebuild"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "handling",
+        "tuning"
+      ]
+    },
+    {
+      "id": "drift-grip",
+      "node": "racer-controls",
+      "name": "Drift side pull",
+      "summary": "One attack button held without an attack turns the machine sideways with a pull that fades as lateral slide rises",
+      "behavior": "Holding one of the two attack buttons without opening an attack starts a drift in that direction. The drift adds acceleration along the machine's sideways axis, projected off the local gravity axis so the pull stays inside the riding surface even on a banked or near-vertical section. The pull starts at 1.0 and loses 0.125 for every world unit per update of sideways slide the machine already has, reaching zero at 8: a machine already sliding gets almost no extra help while a machine running straight gets the full sideways kick. On an ice surface the pull is cut to one fifth, so the same hold produces a much weaker slide and the corner has to be taken on the nose. Releasing both buttons zeroes the drift force immediately. A machine that is spinning out has its normal turn rate replaced by a fixed 0.2, so it keeps turning while it cannot grip at all.",
+      "constants": [
+        {
+          "name": "driftSideForce",
+          "value": 1,
+          "unit": "world units per update squared at 60 Hz",
+          "source": "src/game/racer.c:3859"
+        },
+        {
+          "name": "driftFadePerUnit",
+          "value": 0.125,
+          "unit": "drift force units removed per world unit per update of sideways slide",
+          "source": "src/game/racer.c:3861"
+        },
+        {
+          "name": "driftFadeSpeed",
+          "value": 8,
+          "unit": "world units per update of sideways slide at which the pull reaches zero",
+          "source": "src/game/racer.c:3860"
+        },
+        {
+          "name": "iceDriftScale",
+          "value": 0.2,
+          "unit": "multiplier on the drift force while on ice, per update at 60 Hz",
+          "source": "src/game/racer.c:3866"
+        },
+        {
+          "name": "spinOutTurnRate",
+          "value": 0.2,
+          "unit": "heading rotation per unit of full stick, per update at 60 Hz",
+          "source": "src/game/racer.c:3481"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3844
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3851
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3865
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3869
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3875
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3480
+        }
+      ],
+      "capabilities": [
+        "drift",
+        "lateral force in the track plane",
+        "ice handling",
+        "spin-out rotation"
+      ],
+      "tags": [
+        "movement",
+        "drift",
+        "handling",
+        "surface"
+      ]
+    },
+    {
+      "id": "side-and-spin-attack",
+      "node": "racer-controls",
+      "name": "Side and spin attacks",
+      "summary": "Two attack modes gated by a short press window, each rolling the body and shoving the machine sideways",
+      "behavior": "An attack is a double tap, not a single press: the roll opens only when the same attack button is pressed again within 15 updates of its previous press, and only when no roll is already running, so a slow or single press does nothing. One button starts a side attack that rolls the body from 128 angle units off centre and advances the roll by 256 units per update until it returns to centre; the other button starts from the mirrored offset and rolls the opposite way. Pressing both buttons at once enters the spin attack instead, which keeps stepping the body a full turn at a time, decays the step by two units at each wrap and ends once the step falls under 50 units, so the end of the spin visibly slows. The side attack also shoves the machine with a force of 5.0 that fades by 0.8333 for each unit of sideways speed and dies at 6, while the spin attack uses a gentler 0.5 that fades at 0.25 and dies at 2; both shoves are projected off the gravity axis so they stay in the track plane rather than lifting the machine. While an attack roll is live the same buttons cannot start a drift.",
+      "constants": [
+        {
+          "name": "attackWindow",
+          "value": 15,
+          "unit": "updates at 60 Hz between accepted presses",
+          "source": "src/game/racer.c:3747"
+        },
+        {
+          "name": "sideRollStart",
+          "value": "0x80",
+          "unit": "angle units of initial body offset, applied once at press",
+          "source": "src/game/racer.c:3748"
+        },
+        {
+          "name": "sideRollStep",
+          "value": "0x100",
+          "unit": "angle units of roll per update at 60 Hz",
+          "source": "src/game/racer.c:3749"
+        },
+        {
+          "name": "spinRollStart",
+          "value": "0xF80",
+          "unit": "angle units of initial body offset, applied once at press",
+          "source": "src/game/racer.c:3766"
+        },
+        {
+          "name": "spinRollDecay",
+          "value": 2,
+          "unit": "angle units removed from the roll step per wrap, per update at 60 Hz",
+          "source": "src/game/racer.c:4552"
+        },
+        {
+          "name": "sideAttackForce",
+          "value": 5,
+          "unit": "world units per update squared at 60 Hz",
+          "source": "src/game/racer.c:3796"
+        },
+        {
+          "name": "sideAttackFadeSpeed",
+          "value": 6,
+          "unit": "world units per update of sideways speed at which the shove reaches zero",
+          "source": "src/game/racer.c:3797"
+        },
+        {
+          "name": "spinAttackForce",
+          "value": 0.5,
+          "unit": "world units per update squared at 60 Hz",
+          "source": "src/game/racer.c:3825"
+        },
+        {
+          "name": "spinAttackFadeSpeed",
+          "value": 2,
+          "unit": "world units per update of sideways speed at which the shove reaches zero",
+          "source": "src/game/racer.c:3826"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3747
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3765
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3787
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3816
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4544
+        }
+      ],
+      "capabilities": [
+        "side attack",
+        "spin attack",
+        "press window",
+        "body roll",
+        "attack shove"
+      ],
+      "tags": [
+        "combat",
+        "attack",
+        "handling",
+        "input"
+      ]
+    },
+    {
+      "id": "boost-burn",
+      "node": "racer-controls",
+      "name": "Boost burn",
+      "summary": "A manual boost of fixed length that raises the acceleration ceiling and is paid for out of the energy pool",
+      "behavior": "Pressing the boost button with no boost running, a non-zero energy pool and the boost permission flag set starts a boost of 100 updates and lights the exhaust. While the boost runs, the target acceleration is floored at the machine's boost-rating ceiling instead of the normal speed curve, so the machine pulls near a constant maximum rather than tapering with speed. The price is paid every update: 0.15% of that machine's own maximum pool is subtracted, so a small pool drains in the same number of updates but leaves a shallower reserve behind. If a subtraction would push the pool below zero the boost is cut to a single remaining update and the pool is clamped to zero, which turns an over-committed boost into an immediate spin-out risk. The permission flag is granted when the machine crosses a lap line and cleared when the boost starts, so one boost is available per lap crossing rather than continuously. Boost strips built into the track grant the same 100-update boost without charging the pool, so they stack in value with a well-timed manual boost.",
+      "constants": [
+        {
+          "name": "boostDuration",
+          "value": 100,
+          "unit": "updates at 60 Hz",
+          "source": "src/game/racer.c:386"
+        },
+        {
+          "name": "boostEnergyShare",
+          "value": 0.0015,
+          "unit": "share of the machine's maximum pool per update at 60 Hz",
+          "source": "src/game/racer.c:1661"
+        },
+        {
+          "name": "boostAccelCeiling",
+          "value": 0.198,
+          "unit": "drive force units per update squared at 60 Hz for the weakest boost rating in the table",
+          "source": "src/game/racer.c:445"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3598
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3603
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4048
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4058
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4060
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4314
+        }
+      ],
+      "capabilities": [
+        "manual boost",
+        "energy cost per update",
+        "boost acceleration ceiling",
+        "once per lap crossing",
+        "bounded by energy"
+      ],
+      "tags": [
+        "boost",
+        "energy",
+        "speed",
+        "risk-reward"
+      ]
+    },
+    {
+      "id": "pit-refill",
+      "node": "racer-controls",
+      "name": "Pit strip refill",
+      "summary": "Recharge strips restore a fixed share of the pool every update and ramp a force field in and out",
+      "behavior": "Standing on a pit surface restores energy instead of draining it. The amount is 0.8% of that machine's own maximum pool per update, so a refill always takes the same number of updates whatever the pool size, and the pool is clamped at its maximum. The recharge is suppressed while the machine is crashed, airborne or spinning out, so a wreck cannot farm energy by resting on a strip and a machine that is launched over a strip gets nothing for the flight. A visible force field grows by 0.1 per update toward a full size of 1.0 while the machine is inside a strip and shrinks by the same step once it leaves, which gives a readable ramp instead of an instant switch, and the refill sound is armed at the first step so the audio matches the visual. The strip test runs on the same surface-effect pass as every other surface, evaluated against the projected position and the parameter range of the current segment.",
+      "constants": [
+        {
+          "name": "refillShare",
+          "value": 0.008,
+          "unit": "share of the machine's maximum pool per update at 60 Hz",
+          "source": "src/game/racer.c:387"
+        },
+        {
+          "name": "forceFieldStep",
+          "value": 0.1,
+          "unit": "share of full field size per update at 60 Hz",
+          "source": "src/game/racer.c:4490"
+        },
+        {
+          "name": "forceFieldFullSize",
+          "value": 1,
+          "unit": "normalized field size, clamped every update",
+          "source": "src/game/racer.c:4489"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 4482
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4484
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4486
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4489
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4502
+        }
+      ],
+      "capabilities": [
+        "energy refill",
+        "pit strip detection",
+        "force field ramp",
+        "suppression while crashed or airborne"
+      ],
+      "tags": [
+        "energy",
+        "pit",
+        "recovery",
+        "surface"
+      ]
+    },
+    {
+      "id": "lap-and-finish",
+      "node": "racer-controls",
+      "name": "Laps and finish",
+      "summary": "Lap lines derived from signed course distance, the update-count race clock and the finish state",
+      "behavior": "Progress is measured along the spline, and a lap line is crossed when the signed distance passes half the course length in either direction, so one test handles forward and backward crossings. A forward crossing adds one course length to the completed distance and advances the lap counter; a backward crossing removes one, which means reversing over the line cannot bank a lap. Reaching one lap beyond the configured total sets the finished state, hands the machine to the CPU driver, restores its energy pool to the maximum and stamps the final race time, while practice and death-race modes instead wrap the counter back to the first lap so the run continues. The race clock is not a free-running timer: it is the update count times 50 divided by 3 on the NTSC revision and times 20 on the PAL revision, which fixes the race update at 60 Hz on NTSC and 50 Hz on PAL. The default total is three laps, and the boost permission flag is granted on each lap crossing.",
+      "constants": [
+        {
+          "name": "totalLaps",
+          "value": 3,
+          "unit": "laps per race, read once at race setup",
+          "source": "src/game/game.c:25"
+        },
+        {
+          "name": "raceClockNumeratorNtsc",
+          "value": 50,
+          "unit": "milliseconds per update, divided by 3 on the 60 Hz NTSC race update",
+          "source": "src/game/racer.c:4305"
+        },
+        {
+          "name": "raceClockNumeratorPal",
+          "value": 20,
+          "unit": "milliseconds per update at 50 Hz on the PAL race update",
+          "source": "src/game/racer.c:4307"
+        },
+        {
+          "name": "halfCourseLengthShare",
+          "value": 0.5,
+          "unit": "share of the course length that defines the lap line, evaluated every update",
+          "source": "src/game/racer.c:1700"
+        },
+        {
+          "name": "finalLapOffset",
+          "value": 1,
+          "unit": "laps beyond the configured total, checked every lap crossing",
+          "source": "src/game/racer.c:4312"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 4298
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4309
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4312
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4341
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4343
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4344
+        }
+      ],
+      "capabilities": [
+        "bidirectional lap line",
+        "race clock from update count",
+        "finish state",
+        "boost granted per lap"
+      ],
+      "tags": [
+        "rules",
+        "race",
+        "timing",
+        "finish"
+      ]
+    },
+    {
+      "id": "hover-and-air",
+      "node": "racer-physics",
+      "name": "Hover height and airborne state",
+      "summary": "A surface-normal spring holds a short ride height, gravity follows the local up axis and clearance decides the airborne state",
+      "behavior": "The machine rides a short distance above the track instead of resting on it. A constant pull of one world unit per update squared is applied opposite whatever the current up axis is, so gravity follows banked, looped and inverted sections instead of always pointing down in world space. When the measured clearance is below the machine's ride height, a spring of 0.2 closes the gap, with any velocity already heading into the surface subtracted first, and the leftover lift is applied along the surface normal. Ride height is 7 in the main race, practice and death-race modes and 5 in the other modes. The machine is flagged airborne once clearance exceeds 15 world units, and while airborne the up axis is blended half-way back toward world up each update so the body settles instead of tumbling. Each track shape also has its own tolerance for how far above the surface still counts as grounded: 40 world units on a plain road, 145 on a walled road and 210 inside a tunnel, so a shallow tunnel hugs its machines far more tightly than a wide road.",
+      "constants": [
+        {
+          "name": "gravityPull",
+          "value": -1,
+          "unit": "signed world units per update squared at 60 Hz along the local up axis",
+          "source": "src/game/racer.c:3704"
+        },
+        {
+          "name": "hoverSpringGain",
+          "value": 0.2,
+          "unit": "share of the remaining gap closed per update at 60 Hz",
+          "source": "src/game/racer.c:3719"
+        },
+        {
+          "name": "rideHeightRace",
+          "value": 7,
+          "unit": "world units of target ride height, compared every update",
+          "source": "src/game/racer.c:1781"
+        },
+        {
+          "name": "rideHeightVersus",
+          "value": 5,
+          "unit": "world units of target ride height, compared every update",
+          "source": "src/game/racer.c:1783"
+        },
+        {
+          "name": "airborneHeight",
+          "value": 15,
+          "unit": "world units of clearance, tested every update",
+          "source": "src/game/racer.c:2491"
+        },
+        {
+          "name": "airborneUpBlend",
+          "value": 0.5,
+          "unit": "share of the gap to world up closed per update at 60 Hz while airborne",
+          "source": "src/game/racer.c:2401"
+        },
+        {
+          "name": "roadGroundRange",
+          "value": 40,
+          "unit": "world units above the surface that still count as grounded, tested every update",
+          "source": "src/game/racer.c:2567"
+        },
+        {
+          "name": "walledRoadGroundRange",
+          "value": 145,
+          "unit": "world units above the surface that still count as grounded, tested every update",
+          "source": "src/game/racer.c:2571"
+        },
+        {
+          "name": "tunnelGroundRange",
+          "value": 210,
+          "unit": "world units above the surface that still count as grounded, tested every update",
+          "source": "src/game/racer.c:2575"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 3704
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3713
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 3719
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2491
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2401
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2567
+        }
+      ],
+      "capabilities": [
+        "hover ride height",
+        "gravity along the local up axis",
+        "airborne detection",
+        "shape-specific ground tolerance"
+      ],
+      "tags": [
+        "physics",
+        "hover",
+        "gravity",
+        "airborne"
+      ]
+    },
+    {
+      "id": "wall-impact",
+      "node": "racer-physics",
+      "name": "Wall impact",
+      "summary": "Corridor contact repositions the machine, then returns damage, a reflected velocity and a recoil tilt",
+      "behavior": "On walled sections the machine is first pushed back inside the corridor by the distance it exceeded, and only then is the hit judged: if the outward lateral speed is above 0.01 world units per update the contact is real. A real hit subtracts energy equal to that lateral speed times 0.7, spawns sparks whose strength grows by 1.5 per unit of impact speed over a base of 18, and reflects the velocity by removing 1.7 times the lateral speed from all three components before damping the whole vector to 0.998, which leaves a small outward rebound. The recoil is not only linear: a signed tilt of 0.15 per unit of lateral speed is written onto the recoil axis so the body visibly kicks away from the wall, and a collision-recoil state is raised for the renderer and the audio layer. Walled and piped sections also probe 57.5 world units beyond their nominal radius before declaring the machine outside the track, which gives the corridor a little forgiveness at the edges so a machine scraping a wall is guided back rather than retired. Below the spark threshold the machine is only repositioned and nothing else happens, so light contact is free.",
+      "constants": [
+        {
+          "name": "wallDamageScale",
+          "value": 0.7,
+          "unit": "damage points per world unit per update of lateral impact speed",
+          "source": "src/game/racer.c:2365"
+        },
+        {
+          "name": "wallBounceFactor",
+          "value": 1.7,
+          "unit": "multiplier on the lateral speed removed per wall hit, reset at spawn to 1.7 and raised to 2.0 while spinning out",
+          "source": "src/game/racer.c:1658"
+        },
+        {
+          "name": "wallBounceRetention",
+          "value": 0.998,
+          "unit": "fraction of velocity retained per wall bounce",
+          "source": "src/game/racer.c:2368"
+        },
+        {
+          "name": "wallRecoilTiltScale",
+          "value": -0.15,
+          "unit": "signed recoil tilt per world unit per update of lateral impact speed",
+          "source": "src/game/racer.c:2374"
+        },
+        {
+          "name": "sparkSpeedThreshold",
+          "value": 0.01,
+          "unit": "world units per update of lateral speed below which no damage is applied",
+          "source": "src/game/racer.c:2353"
+        },
+        {
+          "name": "sparkStrengthBase",
+          "value": 18,
+          "unit": "spark effect strength, with 1.5 added per world unit per update of impact speed",
+          "source": "src/game/racer.c:2360"
+        },
+        {
+          "name": "wallProbeMargin",
+          "value": 57.5,
+          "unit": "world units of extra corridor width used for the outside test, evaluated every update",
+          "source": "src/game/racer.c:2412"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 2325
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2349
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2353
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2368
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2374
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2412
+        }
+      ],
+      "capabilities": [
+        "corridor pushback",
+        "wall damage",
+        "velocity reflection",
+        "recoil tilt",
+        "forgiveness margin"
+      ],
+      "tags": [
+        "collision",
+        "damage",
+        "walls",
+        "physics"
+      ]
+    },
+    {
+      "id": "racer-contact",
+      "node": "race-step",
+      "name": "Machine contact",
+      "summary": "Pairwise contact resolved on true 3D distance, with attack asymmetry and a one-shot damage pass",
+      "behavior": "Every active pair of machines is tested each update. A pair is skipped when its trailing machine is more than 92 world units behind, and the contact test compares squared distance against 2116, first on the horizontal plane and then with the vertical term included, which makes the effective contact volume a 46-unit sphere across all three axes: machines stacked above and below each other still collide. The first update of a contact resolves damage once, weighted by the other machine's colliding strength and by 1.1 times the closing speed, so a heavy machine hurts a light one far more than the reverse. Separation then pushes both machines back out to the 46-unit sphere with a floor of three force units, and an attacking machine is exempt from the push while its victim takes the full three-unit shove plus a 60-update lock-out before it can attack in return. A 0.15 recoil tilt is written on both bodies in opposite directions, and the pair stays marked as colliding until the distance test fails again, so an impact is not re-scored on every update of a long scrape.",
+      "constants": [
+        {
+          "name": "pairCullTrailDistance",
+          "value": 92,
+          "unit": "world units of trail distance, tested every update at 60 Hz",
+          "source": "src/game/racer.c:5111"
+        },
+        {
+          "name": "contactRadiusSquared",
+          "value": 2116,
+          "unit": "squared world units, equal to a 46-unit contact radius, tested every update at 60 Hz",
+          "source": "src/game/racer.c:5120"
+        },
+        {
+          "name": "separationRadius",
+          "value": 46,
+          "unit": "world units of target pair separation, enforced every update at 60 Hz",
+          "source": "src/game/racer.c:5221"
+        },
+        {
+          "name": "separationFloor",
+          "value": 3,
+          "unit": "minimum separation force units applied on contact",
+          "source": "src/game/racer.c:5217"
+        },
+        {
+          "name": "contactDamageScale",
+          "value": 1.1,
+          "unit": "multiplier on closing speed when converting contact to damage",
+          "source": "src/game/racer.c:5186"
+        },
+        {
+          "name": "attackerPush",
+          "value": 3,
+          "unit": "separation force units applied to an attacked machine",
+          "source": "src/game/racer.c:5230"
+        },
+        {
+          "name": "victimLockout",
+          "value": 60,
+          "unit": "updates at 60 Hz during which an attacked machine cannot attack back",
+          "source": "src/game/racer.c:5232"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 5110
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 5120
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 5125
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 5186
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 5215
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 5232
+        }
+      ],
+      "capabilities": [
+        "pairwise 3D contact",
+        "attack asymmetry",
+        "one-shot damage per contact",
+        "separation push",
+        "recoil tilt"
+      ],
+      "tags": [
+        "collision",
+        "contact",
+        "damage",
+        "combat"
+      ]
+    },
+    {
+      "id": "spin-out-and-retirement",
+      "node": "racer-damage",
+      "name": "Spin-out and retirement",
+      "summary": "What happens when the pool empties, when a wreck is hit again and when a machine leaves the track for good",
+      "behavior": "Damage is subtracted straight from the energy pool while the machine is neither crashed nor finished. If the pool goes below zero and the machine is still being drawn, the pool is zeroed, the spin-out state is raised, the machine is taken off player control, a spin timer is armed and a wall bounce factor of 2.0 replaces the normal 1.7 so the spun machine rebounds harder off any wall it touches. If the machine is not being drawn, the pool is held at a floor of 0.1 instead, which keeps an off-screen machine from being wrecked by a hidden hit. A machine that is already crashed and takes more than 25 damage in one hit is destroyed outright and its model is replaced by debris. Running off the end of the track sets the falling state, and dropping 2750 world units below the origin crashes the machine and retires it, which freezes its race distance behind every survivor so the finish order stops moving for it.",
+      "constants": [
+        {
+          "name": "lowEnergyFloor",
+          "value": 0.1,
+          "unit": "energy pool units, held while the machine is not being drawn",
+          "source": "src/game/racer.c:2303"
+        },
+        {
+          "name": "destroyDamageThreshold",
+          "value": 25,
+          "unit": "damage in a single hit needed to destroy an already crashed machine",
+          "source": "src/game/racer.c:385"
+        },
+        {
+          "name": "spinOutBounceFactor",
+          "value": 2,
+          "unit": "wall bounce multiplier while spinning out, replacing the normal 1.7 factor",
+          "source": "src/game/racer.c:2319"
+        },
+        {
+          "name": "retireDepth",
+          "value": -2750,
+          "unit": "world units on the vertical axis, tested every update at 60 Hz",
+          "source": "src/game/racer.c:4172"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 2240
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2243
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2301
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 2315
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 760
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4172
+        }
+      ],
+      "capabilities": [
+        "spin-out on empty pool",
+        "destruction of a wreck",
+        "fall-out retirement",
+        "race distance freeze"
+      ],
+      "tags": [
+        "damage",
+        "retirement",
+        "race",
+        "failure"
+      ]
+    },
+    {
+      "id": "machine-energy-pool",
+      "node": "machine-stats",
+      "name": "Energy pool and mass",
+      "summary": "Pool size from the body rating and the colliding strength built from the same rating",
+      "behavior": "The energy pool is chosen from a machine's body rating, which has five steps running from 190 down to 142 in equal steps of 12. That pool is what boost drains, what collisions subtract from and what pit strips refill, so an identical hit costs a fragile machine a much larger share of its total than a sturdy one, and boost cost expressed as a fraction of the pool keeps the drain time equal across the field. Colliding strength is built from the same body rating: 312 per rating step below the top, a base of 780, and a mass term over the weight span used by the stat table. The result is squared before use, so machine mass does not merely add to contact damage but dominates it, which is why a heavy machine can brush a light one aside while barely losing energy itself.",
+      "constants": [
+        {
+          "name": "bestBodyEnergy",
+          "value": 190,
+          "unit": "energy pool units for the top body rating, assigned at spawn",
+          "source": "src/game/racer.c:441"
+        },
+        {
+          "name": "weakestBodyEnergy",
+          "value": 142,
+          "unit": "energy pool units for the bottom body rating, assigned at spawn",
+          "source": "src/game/racer.c:441"
+        },
+        {
+          "name": "collidingStrengthStep",
+          "value": 312,
+          "unit": "colliding strength per body rating step, computed at spawn",
+          "source": "src/game/racer.c:1642"
+        },
+        {
+          "name": "collidingStrengthBase",
+          "value": 780,
+          "unit": "colliding strength base added before the mass term, computed at spawn",
+          "source": "src/game/racer.c:1642"
+        },
+        {
+          "name": "collidingStrengthRatingSpan",
+          "value": 4,
+          "unit": "body rating steps spanned by the colliding strength term, computed at spawn",
+          "source": "src/game/racer.c:1642"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 440
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 1641
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 1660
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 1661
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 1666
+        }
+      ],
+      "capabilities": [
+        "rating-driven energy pool",
+        "rating-driven collision mass",
+        "fractional boost cost"
+      ],
+      "tags": [
+        "stats",
+        "energy",
+        "tuning",
+        "collision"
+      ]
+    },
+    {
+      "id": "spline-track-follow",
+      "node": "course-geometry",
+      "name": "Spline track follow",
+      "summary": "Position and orientation resolved against a cubic segment chain with a bounded iteration budget",
+      "behavior": "The track centre line is a chain of segments, each evaluated as a cubic blend of the previous, current, next and next-next control points with a per-segment tension term, and each segment also supplies its own centre, forward tangent, up axis and left and right radii. A machine's new position is resolved by a small fixed-point loop: the parameter along the segment advances by the projection of the leftover displacement onto the forward tangent, control passes to the next or previous segment when the parameter leaves the zero-to-one range, and the offset from the centre is recomputed against the spline each pass. The loop stops when the residual drops under 0.001 world units or when the iteration budget runs out, and the budget differs by driver: 100 steps with a tight tolerance for a player machine but only 3 steps with a loose tolerance for a CPU machine, which is the main cost saving in a full field. A step that would push the parameter past 1.9 or below -0.9 is rejected, and the racer is snapped back and treated as a track departure instead of tunnelling through geometry. The corridor widths at the resolved point are interpolated between the segment ends so every width test matches the current position rather than the segment start.",
+      "constants": [
+        {
+          "name": "playerStepBudget",
+          "value": 100,
+          "unit": "iterations per position resolve, run once per update at 60 Hz",
+          "source": "src/game/racer.c:4223"
+        },
+        {
+          "name": "cpuStepBudget",
+          "value": 3,
+          "unit": "iterations per position resolve, run once per update at 60 Hz",
+          "source": "src/game/racer.c:4226"
+        },
+        {
+          "name": "playerStepTolerance",
+          "value": 1,
+          "unit": "squared world units of residual accepted by the player resolve",
+          "source": "src/game/racer.c:4222"
+        },
+        {
+          "name": "cpuStepTolerance",
+          "value": 5,
+          "unit": "squared world units of residual accepted by the CPU resolve",
+          "source": "src/game/racer.c:4225"
+        },
+        {
+          "name": "forwardOvershootLimit",
+          "value": 1.9,
+          "unit": "segment parameter, tested on every resolve pass",
+          "source": "src/game/course.c:995"
+        },
+        {
+          "name": "backwardOvershootLimit",
+          "value": -0.9,
+          "unit": "segment parameter, tested on every resolve pass",
+          "source": "src/game/course.c:1016"
+        },
+        {
+          "name": "resolveEpsilon",
+          "value": 0.001,
+          "unit": "world units of residual, tested on every resolve pass",
+          "source": "src/game/course.c:1070"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/racer.c",
+          "line": 4231
+        },
+        {
+          "path": "src/game/racer.c",
+          "line": 4235
+        },
+        {
+          "path": "src/game/course.c",
+          "line": 886
+        },
+        {
+          "path": "src/game/course.c",
+          "line": 994
+        },
+        {
+          "path": "src/game/course.c",
+          "line": 1015
+        },
+        {
+          "path": "src/game/course.c",
+          "line": 1068
+        }
+      ],
+      "capabilities": [
+        "cubic segment evaluation",
+        "iterative position resolve",
+        "per-driver iteration budget",
+        "overshoot rejection",
+        "interpolated corridor widths"
+      ],
+      "tags": [
+        "track",
+        "geometry",
+        "spline",
+        "collision"
+      ]
+    },
+    {
+      "id": "camera-follow-rig",
+      "node": "camera",
+      "name": "Chase camera rig",
+      "summary": "Smooth follow with four presets, a stepped look-back yaw and a field of view that widens with speed",
+      "behavior": "The chase camera is a follow-smooth rig: distance, pitch and yaw each chase their targets by a fraction of the remaining gap per update, so the camera lags the machine instead of being welded to it. Four presets cover the view: overhead at 400 world units back with 50 degrees of pitch, close behind at 90 units back with 25 degrees, regular at 120 units back with 35 degrees, and wide at the same distance with 50 degrees; a button cycles them and also selects the field of view, which is 75 degrees for the regular and close views and 80 or 100 for the wider ones. The rig anchors on a focus point offset from the chassis along the local up axis, and it re-seats its own up axis toward the machine's up axis by a share of the error each update, so a banked or inverted section rolls the camera progressively rather than snapping. Holding the look-back button advances a step counter by one per update up to 8 steps and maps it onto yaw, so the full 180-degree rear view takes 8 updates to reach and 8 to release. Planar speed additionally widens the field of view: above 550 the target angle is pushed toward a ceiling of 120, reaching it at 1000, both measured in the same converted speed units as the machine velocity, which is what gives a boosted corner its stretched perspective.",
+      "constants": [
+        {
+          "name": "overheadDistance",
+          "value": 400,
+          "unit": "world units of follow distance, held between updates",
+          "source": "src/game/camera.c:282"
+        },
+        {
+          "name": "overheadPitch",
+          "value": 50,
+          "unit": "degrees of camera pitch, held between updates",
+          "source": "src/game/camera.c:282"
+        },
+        {
+          "name": "closeDistance",
+          "value": 90,
+          "unit": "world units of follow distance, held between updates",
+          "source": "src/game/camera.c:283"
+        },
+        {
+          "name": "regularDistance",
+          "value": 120,
+          "unit": "world units of follow distance, held between updates",
+          "source": "src/game/camera.c:284"
+        },
+        {
+          "name": "regularPitch",
+          "value": 35,
+          "unit": "degrees of camera pitch, held between updates",
+          "source": "src/game/camera.c:284"
+        },
+        {
+          "name": "regularFieldOfView",
+          "value": 75,
+          "unit": "degrees of vertical field of view, held between updates",
+          "source": "src/game/camera.c:284"
+        },
+        {
+          "name": "lookBackYaw",
+          "value": 180,
+          "unit": "degrees of yaw at full look-back, reached after 8 updates at 60 Hz",
+          "source": "src/game/camera.c:2958"
+        },
+        {
+          "name": "lookBackSteps",
+          "value": 8,
+          "unit": "look-back steps, advanced at most one per update at 60 Hz",
+          "source": "src/game/camera.c:437"
+        },
+        {
+          "name": "fovWidenStartSpeed",
+          "value": 550,
+          "unit": "converted speed units where the field of view starts to widen, evaluated every update",
+          "source": "src/game/camera.c:434"
+        },
+        {
+          "name": "fovWidenEndSpeed",
+          "value": 1000,
+          "unit": "converted speed units where the field of view reaches its ceiling, evaluated every update",
+          "source": "src/game/camera.c:435"
+        },
+        {
+          "name": "maxWideFieldOfView",
+          "value": 120,
+          "unit": "degrees of vertical field of view, approached every update at 60 Hz",
+          "source": "src/game/camera.c:2971"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/camera.c",
+          "line": 558
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 892
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2893
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2958
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2962
+        },
+        {
+          "path": "src/game/camera.c",
+          "line": 2971
+        }
+      ],
+      "capabilities": [
+        "smooth follow camera",
+        "four camera presets",
+        "stepped look-back",
+        "speed-driven field of view",
+        "rolling up vector"
+      ],
+      "tags": [
+        "camera",
+        "presentation",
+        "speed",
+        "feedback"
+      ]
+    },
+    {
+      "id": "rival-pace-control",
+      "node": "rival-ai",
+      "name": "Rival pace control",
+      "summary": "CPU drivers decide on a four-update rotation and pace themselves against a per-course difficulty table",
+      "behavior": "A CPU machine runs its decision pass on only every fourth update, chosen by comparing its machine index against the frame counter modulo 4; on the other updates it replays the stick and button values it stored, so a full field costs roughly a quarter of the input logic per update and the savings are what pay for the player machines. A rival's speed ceiling comes from a per-course, per-difficulty table multiplied by the same 2000 unit reference used for player machines, and practice mode reads its own pair of tables for speed and aggression instead. In the two-versus and three-versus modes the ceiling is tied to the leading player: while the rival is behind that player it drops to a flat 1500 reference and gains a catch-up term of 0.0003 per unit of gap, and while it is ahead its ceiling sits at the leading player's speed plus 0.0002 per unit of gap, which rises to 0.002 per unit once the final lap is past two thirds of the course. A finished or retired machine falls back to the flat 2000 unit ceiling with fixed handling constants so it keeps circulating without fighting for position. Every CPU pass finishes by holding the accelerator on, and pulses it again when a stored slide tolerance is exceeded.",
+      "constants": [
+        {
+          "name": "decisionInterval",
+          "value": 4,
+          "unit": "updates at 60 Hz between full CPU decision passes",
+          "source": "src/overlays/ovl_i3/cpu.c:1212"
+        },
+        {
+          "name": "speedTableReference",
+          "value": 2000,
+          "unit": "kilometres per hour reference multiplied into the difficulty table",
+          "source": "src/overlays/ovl_i3/cpu.c:1090"
+        },
+        {
+          "name": "catchUpGain",
+          "value": 0.0003,
+          "unit": "catch-up term gain per world unit of gap while behind the leading player, applied per decision pass",
+          "source": "src/overlays/ovl_i3/cpu.c:1261"
+        },
+        {
+          "name": "fallBackGain",
+          "value": 0.0002,
+          "unit": "speed ceiling gain per world unit of gap while ahead of the leading player, applied per decision pass",
+          "source": "src/overlays/ovl_i3/cpu.c:1266"
+        },
+        {
+          "name": "finalLapGain",
+          "value": 0.002,
+          "unit": "speed ceiling gain per world unit of gap on the final lap past two thirds of the course, applied per decision pass",
+          "source": "src/overlays/ovl_i3/cpu.c:1269"
+        },
+        {
+          "name": "chaseSpeedCeiling",
+          "value": 1500,
+          "unit": "kilometres per hour converted once per decision pass while behind the leading player",
+          "source": "src/overlays/ovl_i3/cpu.c:1260"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1212
+        },
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1258
+        },
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1261
+        },
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1266
+        },
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1269
+        },
+        {
+          "path": "src/overlays/ovl_i3/cpu.c",
+          "line": 1288
+        }
+      ],
+      "capabilities": [
+        "staggered CPU decision pass",
+        "difficulty speed table",
+        "rubber-band pacing",
+        "post-finish circulation"
+      ],
+      "tags": [
+        "ai",
+        "rival",
+        "pacing",
+        "difficulty"
+      ]
+    }
+  ]
+}

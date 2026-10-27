@@ -13,6 +13,15 @@ const catalogSchema = readSchema('catalog.schema.json');
 const validateCatalogDocument = ajv.compile(catalogSchema);
 export const platforms = new Set(catalogSchema.items.properties.platform.enum);
 
+// 3D-capable platforms only: the engine is 3D, so 2D-only hardware is out of scope.
+export const threeDPlatforms = new Set([
+  '3DO', 'Arcade', 'Atari Jaguar', 'Dreamcast', 'GameCube', 'Mac', 'Mobile',
+  'Nintendo 3DS', 'Nintendo 64', 'Nintendo DS', 'Nintendo Switch', 'PC / DOS',
+  'PlayStation', 'PlayStation 2', 'PlayStation 3', 'PlayStation 4', 'PlayStation 5',
+  'PlayStation Portable', 'Sega 32X', 'Sega Saturn', 'Wii', 'Wii U',
+  'Xbox', 'Xbox 360', 'Xbox One', 'Web / Flash', 'unknown',
+]);
+
 export const canonical = value => `${JSON.stringify(value, null, 2)}\n`;
 
 function unique(ids) {
@@ -22,9 +31,12 @@ function sourcePath(value) {
   if (path.isAbsolute(value) || value.split(/[\\/]/u).includes('..') || !/^[a-zA-Z0-9_./-]+$/u.test(value))
     throw new Error(`unsafe source path: ${value}`);
 }
-export function validateCatalog(catalog, games, stubs = []) {
+export function validateCatalog(catalog, games, stubs = [], { allowMissingGames = false } = {}) {
   if (!validateCatalogDocument(catalog)) throw new Error(JSON.stringify(validateCatalogDocument.errors));
   unique(catalog.map(row => row.id));
+  for (const row of catalog)
+    if (!threeDPlatforms.has(row.platform))
+      throw new Error(`catalog row ${row.id} uses 2D platform ${row.platform}: the library is 3D only`);
   const rows = new Map(catalog.map(row => [row.id, row]));
   const gameIdList = games.map(game => game.id);
   unique(gameIdList);
@@ -37,8 +49,9 @@ export function validateCatalog(catalog, games, stubs = []) {
     if (row.genre === undefined) throw new Error(`game ${id} needs a catalog genre`);
     if (row.platform === 'unknown') throw new Error(`game ${id} needs a catalog platform`);
   }
-  for (const row of catalog)
-    if (row.tier === 1 && !gameIds.has(row.id)) throw new Error(`tier 1 ${row.id} has no game file`);
+  if (!allowMissingGames)
+    for (const row of catalog)
+      if (row.tier === 1 && !gameIds.has(row.id)) throw new Error(`tier 1 ${row.id} has no game file`);
   for (const stub of stubs)
     if (!rows.has(stub.game)) throw new Error(`stub ${stub.id} references missing game ${stub.game}`);
   return catalog;
@@ -74,7 +87,7 @@ function read(name) {
   const text = readFileSync(path.join(root, name), 'utf8');
   return { name, text, value: JSON.parse(text) };
 }
-export function loadLibrary() {
+export function loadLibrary({ allowMissingGames = false } = {}) {
   for (const name of readdirSync(root))
     if (name === 'catalog.json' || /^game-.*\.json$/u.test(name))
       throw new Error(`legacy root data ${name}: authored data lives under data/`);
@@ -91,7 +104,7 @@ export function loadLibrary() {
     return doc.value;
   });
   const catalog = read(path.join('data', 'catalog.json'));
-  validateCatalog(catalog.value, games);
+  validateCatalog(catalog.value, games, [], { allowMissingGames });
   for (const doc of [...docs, catalog])
     if (doc.text !== canonical(doc.value))
       throw new Error(`noncanonical JSON in ${doc.name}: write JSON.stringify(value, null, 2) plus one trailing newline`);
@@ -136,9 +149,12 @@ export function run(args = process.argv.slice(2)) {
   const flag = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
   const gameId = flag('--game');
   if (args.includes('--game') && !gameId) throw new Error('missing --game id');
+  const isolated = args.includes('--isolated');
+  if (isolated && gameId === undefined) throw new Error('missing --game id for --isolated');
+  if (isolated && args.includes('--release')) throw new Error('--isolated cannot be combined with --release');
   const source = flag('--source');
   if (args.includes('--source') && !source) throw new Error('missing --source path');
-  const { catalog, games } = loadLibrary();
+  const { catalog, games } = loadLibrary({ allowMissingGames: isolated });
   const selected = gameId === undefined ? games : games.filter(game => game.id === gameId);
   if (!selected.length) throw new Error(`no game file for ${gameId}`);
   if (args.includes('--data-only')) {

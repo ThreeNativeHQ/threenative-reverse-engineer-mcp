@@ -1,0 +1,2369 @@
+{
+  "version": 1,
+  "id": "resident-evil-4-re4",
+  "title": "Resident Evil 4 (re4)",
+  "repo": "https://github.com/adonis-singh/re4",
+  "sha": "9b76ff003081d6ece8b838453fb8310743a972c7",
+  "nodes": [
+    {
+      "id": "frame-loop",
+      "name": "Frame loop and vsync pacing",
+      "purpose": "Owns the single per-frame update/present cycle, the global frame length in vsyncs that every other subsystem reads for timing, and the boot-time projection defaults.",
+      "paths": [
+        "src/game/main.cpp"
+      ],
+      "functions": [
+        {
+          "name": "main",
+          "path": "src/game/main.cpp",
+          "lines": [
+            116,
+            217
+          ]
+        },
+        {
+          "name": "postVSyncCallback",
+          "path": "src/game/main.cpp",
+          "lines": [
+            226,
+            235
+          ]
+        },
+        {
+          "name": "haltExecCheck",
+          "path": "src/game/main.cpp",
+          "lines": [
+            239,
+            246
+          ]
+        },
+        {
+          "name": "systemScreenInit",
+          "path": "src/game/main.cpp",
+          "lines": [
+            376,
+            394
+          ]
+        },
+        {
+          "name": "SetSystemVcnt",
+          "path": "src/game/main.cpp",
+          "lines": [
+            417,
+            424
+          ]
+        },
+        {
+          "name": "GetSystemVcnt",
+          "path": "src/game/main.cpp",
+          "lines": [
+            427,
+            430
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input-pad",
+      "name": "Controller sampling and key word remap",
+      "purpose": "Reads the four controller channels once per frame, turns analog sticks into digital direction bits, builds repeat masks, and folds the pad word into the 64-bit key word the gameplay code tests.",
+      "paths": [
+        "src/game/pad.cpp",
+        "src/game/pl_class.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PadRead",
+          "path": "src/game/pad.cpp",
+          "lines": [
+            61,
+            286
+          ]
+        },
+        {
+          "name": "KeyStop",
+          "path": "src/game/pad.cpp",
+          "lines": [
+            289,
+            293
+          ]
+        },
+        {
+          "name": "KeyClear",
+          "path": "src/game/pad.cpp",
+          "lines": [
+            297,
+            312
+          ]
+        },
+        {
+          "name": "keyConfigTypeA",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            971,
+            983
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    },
+    {
+      "id": "player-state",
+      "name": "Player routine tree and action selection",
+      "purpose": "Runs the player once per frame, dispatches the two-level routine tables (routine 0 holds damage, death, events and movement; routine 1 holds the movement actions) and decides which routine the player input asks for.",
+      "paths": [
+        "src/game/player.cpp",
+        "src/game/pl_class.cpp"
+      ],
+      "functions": [
+        {
+          "name": "cPlayer::move",
+          "path": "src/game/player.cpp",
+          "lines": [
+            294,
+            393
+          ]
+        },
+        {
+          "name": "pl_R0_Move",
+          "path": "src/game/player.cpp",
+          "lines": [
+            396,
+            403
+          ]
+        },
+        {
+          "name": "cPlayer::actionSelect",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            547,
+            643
+          ]
+        },
+        {
+          "name": "cPlayer::checkCtrl",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            929,
+            940
+          ]
+        },
+        {
+          "name": "upDownCk",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            943,
+            955
+          ]
+        },
+        {
+          "name": "cPlayer::keyConfig",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            958,
+            968
+          ]
+        }
+      ],
+      "dependsOn": [
+        "input-pad",
+        "motion-animation"
+      ]
+    },
+    {
+      "id": "player-locomotion",
+      "name": "Player locomotion routines",
+      "purpose": "Idle, walk, step back, run, turn in place and quick turn-around: each routine selects a motion and applies the per-update body yaw increments that steer the character.",
+      "paths": [
+        "src/game/player.cpp",
+        "src/game/pl_class.cpp"
+      ],
+      "functions": [
+        {
+          "name": "pl_R1_Footwork",
+          "path": "src/game/player.cpp",
+          "lines": [
+            406,
+            443
+          ]
+        },
+        {
+          "name": "pl_R1_Walk",
+          "path": "src/game/player.cpp",
+          "lines": [
+            446,
+            498
+          ]
+        },
+        {
+          "name": "pl_R1_Back",
+          "path": "src/game/player.cpp",
+          "lines": [
+            501,
+            524
+          ]
+        },
+        {
+          "name": "pl_R1_Run",
+          "path": "src/game/player.cpp",
+          "lines": [
+            528,
+            633
+          ]
+        },
+        {
+          "name": "pl_R1_Turn",
+          "path": "src/game/player.cpp",
+          "lines": [
+            636,
+            665
+          ]
+        },
+        {
+          "name": "pl_R1_Turn180",
+          "path": "src/game/player.cpp",
+          "lines": [
+            669,
+            728
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state",
+        "motion-animation"
+      ]
+    },
+    {
+      "id": "player-traversal",
+      "name": "Vertical traversal: vault, fall, ladder and level change",
+      "purpose": "The routines that move the player off the ground plane: the context vault over a low wall, the airborne fall and its landing, ladder climbing and the step-up/step-down level changes.",
+      "paths": [
+        "src/game/player.cpp",
+        "src/game/pl_class.cpp"
+      ],
+      "functions": [
+        {
+          "name": "jumpCheck",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            446,
+            500
+          ]
+        },
+        {
+          "name": "jumpFallOn",
+          "path": "src/game/pl_class.cpp",
+          "lines": [
+            503,
+            510
+          ]
+        },
+        {
+          "name": "pl_R1_Ladder",
+          "path": "src/game/player.cpp",
+          "lines": [
+            772,
+            912
+          ]
+        },
+        {
+          "name": "pl_R1_JumpFall",
+          "path": "src/game/player.cpp",
+          "lines": [
+            1015,
+            1051
+          ]
+        },
+        {
+          "name": "pl_R1_LevelUp",
+          "path": "src/game/player.cpp",
+          "lines": [
+            1081,
+            1119
+          ]
+        },
+        {
+          "name": "pl_R1_Fall",
+          "path": "src/game/player.cpp",
+          "lines": [
+            1379,
+            1479
+          ]
+        },
+        {
+          "name": "fallCheck",
+          "path": "src/game/player.cpp",
+          "lines": [
+            1510,
+            1526
+          ]
+        },
+        {
+          "name": "getHeighAdjust",
+          "path": "src/game/player.cpp",
+          "lines": [
+            1529,
+            1536
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state",
+        "scenario-collision"
+      ]
+    },
+    {
+      "id": "motion-animation",
+      "name": "Motion playback, root displacement and pose blending",
+      "purpose": "Advances the animation clock, resolves interpolated joint poses from the per-frame key data, extracts the root joint delta that drives character displacement, and blends the previous pose into a new motion.",
+      "paths": [
+        "src/game/motion.cpp",
+        "src/game/game.cpp"
+      ],
+      "functions": [
+        {
+          "name": "MotionMoveCore",
+          "path": "src/game/motion.cpp",
+          "lines": [
+            622,
+            774
+          ]
+        },
+        {
+          "name": "MotionHokan",
+          "path": "src/game/motion.cpp",
+          "lines": [
+            790,
+            937
+          ]
+        },
+        {
+          "name": "MotionGetSpeed",
+          "path": "src/game/motion.cpp",
+          "lines": [
+            943,
+            1027
+          ]
+        },
+        {
+          "name": "MotionAddSpeed",
+          "path": "src/game/motion.cpp",
+          "lines": [
+            1030,
+            1037
+          ]
+        },
+        {
+          "name": "MotionSequenceCtrl",
+          "path": "src/game/motion.cpp",
+          "lines": [
+            1088,
+            1168
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "scenario-collision",
+      "name": "Scenario collision and floor queries",
+      "purpose": "The collision manager that pushes characters out of room geometry with swept spheres or rectangles and that answers floor-height queries with a single vertical cast against floor-attributed polygons.",
+      "paths": [
+        "src/game/atari.cpp"
+      ],
+      "functions": [
+        {
+          "name": "cSatMgr::check",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            54,
+            76
+          ]
+        },
+        {
+          "name": "cSatMgr::checkRect",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            81,
+            173
+          ]
+        },
+        {
+          "name": "atck",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            198,
+            223
+          ]
+        },
+        {
+          "name": "cSatMgr::scrAtCheckSphere",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            227,
+            283
+          ]
+        },
+        {
+          "name": "cSatMgr::wallAdjust",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            327,
+            358
+          ]
+        },
+        {
+          "name": "cSatMgr::getFloor",
+          "path": "src/game/atari.cpp",
+          "lines": [
+            399,
+            418
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "Camera front end, over-the-shoulder rig and free camera",
+      "purpose": "Builds the frame camera: the controller picks cuts and rigs, the over-the-shoulder rig computes aim ratios and shoulder offsets in a body-space frame, and the front end turns the result into a projection and view matrix.",
+      "paths": [
+        "src/game/camera.cpp",
+        "src/game/cam_ctrl.cpp",
+        "src/game/cam_qfps.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CameraMove",
+          "path": "src/game/camera.cpp",
+          "lines": [
+            73,
+            108
+          ]
+        },
+        {
+          "name": "CamStick2World",
+          "path": "src/game/camera.cpp",
+          "lines": [
+            113,
+            136
+          ]
+        },
+        {
+          "name": "cameraHitCheck",
+          "path": "src/game/cam_ctrl.cpp",
+          "lines": [
+            354,
+            472
+          ]
+        },
+        {
+          "name": "CameraControl::Move",
+          "path": "src/game/cam_ctrl.cpp",
+          "lines": [
+            1150,
+            1255
+          ]
+        },
+        {
+          "name": "CameraControl::r0_Free",
+          "path": "src/game/cam_ctrl.cpp",
+          "lines": [
+            1848,
+            1976
+          ]
+        },
+        {
+          "name": "CameraQuasiFPS::calcDepressionRatio",
+          "path": "src/game/cam_qfps.cpp",
+          "lines": [
+            329,
+            359
+          ]
+        },
+        {
+          "name": "CameraQuasiFPS::calcBaseMatrix",
+          "path": "src/game/cam_qfps.cpp",
+          "lines": [
+            372,
+            443
+          ]
+        },
+        {
+          "name": "CameraQuasiFPS::calcOffset",
+          "path": "src/game/cam_qfps.cpp",
+          "lines": [
+            612,
+            700
+          ]
+        },
+        {
+          "name": "CameraQuasiFPS::hitCheck",
+          "path": "src/game/cam_qfps.cpp",
+          "lines": [
+            705,
+            880
+          ]
+        }
+      ],
+      "dependsOn": [
+        "scenario-collision",
+        "player-state"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Shooting, lock-on, damage volumes and reactions",
+      "purpose": "Player weapon hit resolution along a shot segment, auto-aim target scoring, the enemy attack sphere that decides damage placement, and the reaction side of taking damage.",
+      "paths": [
+        "src/game/pl_wep.cpp",
+        "src/game/em_sub.cpp",
+        "src/game/dmg.cpp",
+        "src/game/pl_dmg.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PlWepHitCheck2",
+          "path": "src/game/pl_wep.cpp",
+          "lines": [
+            197,
+            461
+          ]
+        },
+        {
+          "name": "cPlWep::lockInit",
+          "path": "src/game/pl_wep.cpp",
+          "lines": [
+            583,
+            605
+          ]
+        },
+        {
+          "name": "searchLockEm",
+          "path": "src/game/pl_wep.cpp",
+          "lines": [
+            750,
+            785
+          ]
+        },
+        {
+          "name": "GetWepTargetList2",
+          "path": "src/game/em_sub.cpp",
+          "lines": [
+            1166,
+            1395
+          ]
+        },
+        {
+          "name": "EmAtkHitCk",
+          "path": "src/game/em_sub.cpp",
+          "lines": [
+            2070,
+            2099
+          ]
+        },
+        {
+          "name": "EmAtkHitCk2",
+          "path": "src/game/em_sub.cpp",
+          "lines": [
+            2103,
+            2148
+          ]
+        },
+        {
+          "name": "cDmgCyl::hitCheck",
+          "path": "src/game/dmg.cpp",
+          "lines": [
+            108,
+            126
+          ]
+        },
+        {
+          "name": "damageNormal",
+          "path": "src/game/pl_dmg.cpp",
+          "lines": [
+            40,
+            161
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state",
+        "scenario-collision",
+        "motion-animation"
+      ]
+    },
+    {
+      "id": "enemy-ai",
+      "name": "Melee enemy awareness and approach",
+      "purpose": "The base enemy brain: sight, hearing and alert based awareness, the guarded-post and approach behaviours with rate-limited turning, and the attack routine that spends an attack cooldown and scales damage with difficulty.",
+      "paths": [
+        "src/em10/em10.cpp"
+      ],
+      "functions": [
+        {
+          "name": "em10_R1_Keeper",
+          "path": "src/em10/em10.cpp",
+          "lines": [
+            3521,
+            3627
+          ]
+        },
+        {
+          "name": "em10_R1_Find",
+          "path": "src/em10/em10.cpp",
+          "lines": [
+            6274,
+            6319
+          ]
+        },
+        {
+          "name": "em10FindCk",
+          "path": "src/em10/em10.cpp",
+          "lines": [
+            21287,
+            21401
+          ]
+        },
+        {
+          "name": "em10AtkCk",
+          "path": "src/em10/em10.cpp",
+          "lines": [
+            23071,
+            23399
+          ]
+        }
+      ],
+      "dependsOn": [
+        "scenario-collision",
+        "combat",
+        "motion-animation"
+      ]
+    },
+    {
+      "id": "action-prompt",
+      "name": "Context action prompt arbitration",
+      "purpose": "The single consumer of the per-frame context actions: subsystems offer prompts, and this arbiter picks the highest-priority valid one, draws its button icon and message, and runs it on the matching button.",
+      "paths": [
+        "src/game/act_btn.cpp"
+      ],
+      "functions": [
+        {
+          "name": "cActionButton::move",
+          "path": "src/game/act_btn.cpp",
+          "lines": [
+            42,
+            96
+          ]
+        },
+        {
+          "name": "cActionButton::checkButton",
+          "path": "src/game/act_btn.cpp",
+          "lines": [
+            147,
+            293
+          ]
+        },
+        {
+          "name": "cActionButton::checkPLStatus",
+          "path": "src/game/act_btn.cpp",
+          "lines": [
+            298,
+            320
+          ]
+        },
+        {
+          "name": "cActionButton::pullWork",
+          "path": "src/game/act_btn.cpp",
+          "lines": [
+            323,
+            333
+          ]
+        },
+        {
+          "name": "cActionButton::set",
+          "path": "src/game/act_btn.cpp",
+          "lines": [
+            337,
+            366
+          ]
+        }
+      ],
+      "dependsOn": [
+        "input-pad",
+        "player-state"
+      ]
+    },
+    {
+      "id": "block-streaming",
+      "name": "Area streaming and block residency",
+      "purpose": "Room geometry is split into loadable blocks; trigger volumes decide which block set is resident in main memory, which is demoted to audio memory and which is released as the player crosses an area boundary.",
+      "paths": [
+        "src/game/block.cpp"
+      ],
+      "functions": [
+        {
+          "name": "cBlock::check",
+          "path": "src/game/block.cpp",
+          "lines": [
+            246,
+            299
+          ]
+        },
+        {
+          "name": "cBlock::checkBlockArea",
+          "path": "src/game/block.cpp",
+          "lines": [
+            303,
+            335
+          ]
+        },
+        {
+          "name": "cBlock::checkBlockConnect",
+          "path": "src/game/block.cpp",
+          "lines": [
+            340,
+            371
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-loop"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "frame-cadence",
+      "node": "frame-loop",
+      "name": "Frame cadence and vsync pacing",
+      "summary": "The whole simulation advances once per presented frame, and the frame length in vsyncs is one global that the movie player temporarily lowers to run at double rate.",
+      "behavior": "The main loop runs one update/present pass and then spins on the vertical retrace counter: it first waits until the counter reaches the frame length minus one, swaps the render buffers, then waits for the full count and resets the counter. A post-retrace callback raises the counter and, once it equals the frame length, parks the interrupt-driven task list, so player routines, enemy brains, camera and animation all step exactly once per frame. Because the default frame length is two vsyncs on a 60 Hz display, one simulation frame is about 33.3 ms and every per-update constant elsewhere in the game is a per-30-Hz value; the subtitle and movie player temporarily sets the length to one vsync so video fields advance at 60 Hz, then restores the saved value. A non-positive length is coerced to one vsync so the presentation loop can never deadlock on a zero count. A watchdog halts the machine when the counter exceeds a large threshold with no debugger attached, which is roughly a minute of stalled presentation, so a hang surfaces instead of spinning forever.",
+      "constants": [
+        {
+          "name": "Frame length in vsyncs",
+          "value": 2,
+          "unit": "vsyncs per game frame; 2 vsyncs is 33.3 ms per update on a 60 Hz display",
+          "source": "src/game/main.cpp:386"
+        },
+        {
+          "name": "Coerced frame length",
+          "value": 1,
+          "unit": "vsyncs per game frame (fallback for a non-positive request)",
+          "source": "src/game/main.cpp:422"
+        },
+        {
+          "name": "Hang watchdog threshold",
+          "value": 3599,
+          "unit": "vsyncs, about 60 s at 60 Hz",
+          "source": "src/game/main.cpp:242"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/main.cpp",
+          "line": 116
+        },
+        {
+          "path": "src/game/main.cpp",
+          "line": 201
+        },
+        {
+          "path": "src/game/main.cpp",
+          "line": 204
+        },
+        {
+          "path": "src/game/main.cpp",
+          "line": 229
+        },
+        {
+          "path": "src/game/main.cpp",
+          "line": 386
+        }
+      ],
+      "capabilities": [
+        "frame-pacing",
+        "fixed-timestep"
+      ],
+      "tags": [
+        "timing",
+        "main-loop",
+        "vsync"
+      ]
+    },
+    {
+      "id": "pad-deadzone-repeat",
+      "node": "input-pad",
+      "name": "Stick dead zones, direction sectors and key repeat",
+      "summary": "One read per frame turns the pad into digital direction bits through a radial dead zone and angle sectors, then builds two repeat masks with fixed countdowns.",
+      "behavior": "Each frame samples four controller channels, applies the library clamp, and for the primary channel converts the analog stick into eight direction bits: the squared stick vector must exceed a 30-unit radius gate, and the angle about the vertical axis then selects up, down, left or right inside 70-, 110-, 30- and 150-degree sector boundaries, so a diagonal sets two bits at once. The secondary stick uses a plain per-axis threshold of ten units in both signs and is zeroed inside it, so a small cross-stick nudge never leaks into aim input. Edge bits are rebuilt from the exclusive-or of the previous and current words. Held buttons feed two independent countdowns from 24 and 18 frames after release; a fresh press fires both repeats immediately, and while held each countdown is decremented by the frame length in vsyncs, so the timers stay in simulation frames whatever the presentation cadence. When a countdown reaches zero the bit is re-issued and reloads to six or three frames. Opposite directions are cancelled afterwards and the L/R analog triggers are promoted to digital buttons.",
+      "constants": [
+        {
+          "name": "Stick direction gate radius",
+          "value": 30,
+          "unit": "stick units (radial), evaluated per update",
+          "source": "src/game/pad.cpp:18"
+        },
+        {
+          "name": "Secondary stick dead zone",
+          "value": 10,
+          "unit": "stick units per axis, evaluated per update",
+          "source": "src/game/pad.cpp:73"
+        },
+        {
+          "name": "Up sector boundary",
+          "value": 70,
+          "unit": "degrees from the stick axis, evaluated per update",
+          "source": "src/game/pad.cpp:128"
+        },
+        {
+          "name": "Down sector boundary",
+          "value": 110,
+          "unit": "degrees from the stick axis, evaluated per update",
+          "source": "src/game/pad.cpp:131"
+        },
+        {
+          "name": "Side sector band start",
+          "value": 30,
+          "unit": "degrees from the stick axis, evaluated per update",
+          "source": "src/game/pad.cpp:134"
+        },
+        {
+          "name": "Repeat period of the first mask",
+          "value": 6,
+          "unit": "frames, reloaded when the countdown expires",
+          "source": "src/game/pad.cpp:180"
+        },
+        {
+          "name": "Repeat period of the second mask",
+          "value": 3,
+          "unit": "frames, reloaded when the countdown expires",
+          "source": "src/game/pad.cpp:184"
+        },
+        {
+          "name": "Repeat delay of the first mask",
+          "value": 24,
+          "unit": "frames, reloaded while the button is released",
+          "source": "src/game/pad.cpp:190"
+        },
+        {
+          "name": "Repeat delay of the second mask",
+          "value": 18,
+          "unit": "frames, reloaded while the button is released",
+          "source": "src/game/pad.cpp:191"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pad.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 120
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 126
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 175
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 186
+        }
+      ],
+      "capabilities": [
+        "input-mapping",
+        "dead-zone",
+        "key-repeat"
+      ],
+      "tags": [
+        "input",
+        "gamepad",
+        "dead-zone"
+      ]
+    },
+    {
+      "id": "key-word-remap",
+      "node": "input-pad",
+      "name": "Pad word to 64-bit key word remap",
+      "summary": "A packed table maps each of 64 key bits to the pad bits that may raise it, so a physical button can feed two or three different logical actions.",
+      "behavior": "The sampled pad word is folded into a 64-bit key word through a table of 64 masks: key bit i is raised when the pad word shares any bit with entry i, and all 64 bits are OR-ed into place in one pass. The low entries hold the analog directions and the eight face and shoulder buttons, the middle entries repeat directions and buttons at alternate indices, and the upper entries alias the same physical buttons again. Gameplay code therefore reads directions from the lowest indices and reads the same buttons from higher indices, which is how one routine can treat index zero as walk forward and another can treat index thirty as run while both see the same physical press. Because the table is indexed by the configured pad type, an alternate layout is a single extra row rather than changes at every call site. A stop mask is applied after the remap and suppresses everything outside a whitelist during menus and cutscenes, which also zeroes the analog values stored alongside the key word.",
+      "constants": [
+        {
+          "name": "Forward direction alias mask",
+          "value": "0x00080008",
+          "unit": "pad bit mask (string form exactly as written at the source line: stick up plus its digital alias)",
+          "source": "src/game/pad.cpp:22"
+        },
+        {
+          "name": "Right shoulder alias mask",
+          "value": "0x00000020",
+          "unit": "pad bit mask (string form exactly as written at the source line)",
+          "source": "src/game/pad.cpp:22"
+        },
+        {
+          "name": "Primary action alias mask",
+          "value": "0x00000100",
+          "unit": "pad bit mask (string form exactly as written at the source line)",
+          "source": "src/game/pad.cpp:22"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pad.cpp",
+          "line": 20
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 22
+        },
+        {
+          "path": "src/game/pad.cpp",
+          "line": 204
+        }
+      ],
+      "capabilities": [
+        "input-mapping",
+        "remappable-buttons"
+      ],
+      "tags": [
+        "input",
+        "remap",
+        "key-word"
+      ]
+    },
+    {
+      "id": "action-select",
+      "node": "player-state",
+      "name": "Context action selection and routine switching",
+      "summary": "One function per frame decides whether the stick, the aim key, the knife key or the context action button changes the player routine.",
+      "behavior": "The player update calls a selector that bails out when a non-movement routine is active, and also when forward and back are held together so a diagonal on the digital pad cannot stall the character. It gives priority in a fixed order: the aim key starts the weapon-ready routine, the knife key starts the knife routine, the dedicated trigger key starts the turn-around, the side keys start an in-place turn only from the idle routine, and then forward and back start walking or stepping back only when the player is not already in that routine. Because those last two tests exclude the current routine, holding a direction does not restart its blend every frame. Reload is tested after the movement branches, so a reload request only wins when the player is not asking to move. The remainder gathers candidate context prompts in a fixed order — pushing an object, dropping down, vaulting a fence, vaulting a wall, entering or climbing out of a window, then the step and level changes implied by the wall attribute bits — and each candidate registers its callback at the same prompt priority, so a single button press resolves to the first applicable action in that order.",
+      "constants": [
+        {
+          "name": "Run-key latch length",
+          "value": 2,
+          "unit": "frames the forward trigger is re-issued for after a run-button press",
+          "source": "src/game/pl_class.cpp:978"
+        },
+        {
+          "name": "Context prompt priority slot",
+          "value": 2,
+          "unit": "prompt slot index (0..7 usable)",
+          "source": "src/game/pl_class.cpp:594"
+        },
+        {
+          "name": "Reload sub-state index",
+          "value": 4,
+          "unit": "routine sub-state index within the weapon routine",
+          "source": "src/game/pl_class.cpp:588"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 547
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 566
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 580
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 594
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 396
+        }
+      ],
+      "capabilities": [
+        "input-mapping",
+        "state-machine",
+        "context-actions"
+      ],
+      "tags": [
+        "player",
+        "input",
+        "state-machine"
+      ]
+    },
+    {
+      "id": "locomotion-walk",
+      "node": "player-locomotion",
+      "name": "Idle, walk and step-back turning",
+      "summary": "Walking and step-back rotate the body in fixed angular steps that ignore gait playback, and every entry into a motion carries the current pose forward.",
+      "behavior": "Idle, walk and step back are separate routines that only install a motion and then hand control to the shared action selector. Before a blend, the routine converts the current animation frame into a 0..255 byte, so the next motion can start near the same pose instead of snapping to frame zero. While walking, the left and right keys subtract or add a fixed yaw increment per update and the accumulated yaw is wrapped into the signed range; because the increment is per update and not scaled by the motion playback speed, the turn rate is constant even when the walk cycle is blended or played at a different rate. The step-back routine reuses the same increment, so walking and backing up steer identically. Releasing the run key from the run routine re-encodes the run motion frame into the same blend byte on the way back into the walk routine, which keeps the foot phase continuous through the gait change.",
+      "constants": [
+        {
+          "name": "Body turn step",
+          "value": 0.0418879,
+          "unit": "radians per update (about 2.4 degrees at 30 Hz)",
+          "source": "src/game/pl_class.cpp:1753"
+        },
+        {
+          "name": "Frame to blend-byte scale",
+          "value": 255,
+          "unit": "blend-byte units per animation frame, computed on each gait change",
+          "source": "src/game/player.cpp:484"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.cpp",
+          "line": 446
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 477
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 489
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 501
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 515
+        }
+      ],
+      "capabilities": [
+        "movement",
+        "turning",
+        "walk-cycle"
+      ],
+      "tags": [
+        "player",
+        "locomotion",
+        "movement"
+      ]
+    },
+    {
+      "id": "locomotion-run",
+      "node": "player-locomotion",
+      "name": "Run gait, faster steering and run audio gating",
+      "summary": "The run routine steers slightly faster than the walk, latches the run key behind a short counter, and gates a breathing sound on health and elapsed frames.",
+      "behavior": "Run is entered from the walk routine while the run button is held, and leaving it re-encodes the current frame so the walk resumes near the run pose. Steering uses the run turn increment multiplied by a static factor slightly above one, so running turns marginally faster than walking while both wrap the accumulated yaw the same way. The forward direction is re-issued as a trigger for a couple of frames after the run button is pressed, which keeps a tapped forward input from dropping the character back to a walk. The breathing sound is emitted only while health is above two thirds of the maximum, only after a fixed number of frames in the routine, and only inside a narrow window of the motion frame counter; a small state machine alternates between playing and suppressing it so it does not repeat on every cycle of the same window. A status flag can additionally sweep a melee hit volume at the character position while running, which is how a running body-check attack deals damage.",
+      "constants": [
+        {
+          "name": "Run turn multiplier",
+          "value": 1.1,
+          "unit": "dimensionless multiplier on the per-update run turn step",
+          "source": "src/game/player.cpp:531"
+        },
+        {
+          "name": "Run turn step",
+          "value": 0.0418879,
+          "unit": "radians per update, before the multiplier",
+          "source": "src/game/pl_class.cpp:1754"
+        },
+        {
+          "name": "Breathing sound delay",
+          "value": 150,
+          "unit": "frames in the run routine before the sound can play",
+          "source": "src/game/player.cpp:578"
+        },
+        {
+          "name": "Breathing frame window start",
+          "value": 4.7,
+          "unit": "animation frames within the run cycle",
+          "source": "src/game/player.cpp:581"
+        },
+        {
+          "name": "Breathing frame window end",
+          "value": 5.3,
+          "unit": "animation frames within the run cycle",
+          "source": "src/game/player.cpp:581"
+        },
+        {
+          "name": "Health numerator for the gate",
+          "value": 2,
+          "unit": "health must exceed two thirds of the maximum; compared per update",
+          "source": "src/game/player.cpp:577"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.cpp",
+          "line": 528
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 577
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 607
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 1754
+        }
+      ],
+      "capabilities": [
+        "movement",
+        "turning",
+        "audio-cue"
+      ],
+      "tags": [
+        "player",
+        "locomotion",
+        "run"
+      ]
+    },
+    {
+      "id": "locomotion-quick-turn",
+      "node": "player-locomotion",
+      "name": "Quick turn-around",
+      "summary": "A dedicated turn-around aims the shoulder camera at a point a fixed distance behind the character before the body rotates, so the view leads the turn.",
+      "behavior": "Entering the turn-around projects a point a fixed distance behind the character in body space and hands it to the shoulder camera as a temporary aim point together with a fixed search delay in frames, which forces the camera to swing around toward the new facing instead of staying on the old one. Each update the motion frame counter selects the camera behaviour: up to an early frame threshold the stored point remains the aim, and inside a later narrow window the search delay is cleared so the camera re-binds to the body matrix. The routine ends when the motion plays out, or when the motion frame reaches a character-specific threshold and either the action cancel mask or the aim key is held, which lets the player cut the animation short. On exit the search delay is cleared again, so an interrupted turn cannot leave the camera chasing a stale aim point.",
+      "constants": [
+        {
+          "name": "Camera aim point behind the character",
+          "value": 1000,
+          "unit": "units along the body forward axis, computed once when the turn starts",
+          "source": "src/game/player.cpp:681"
+        },
+        {
+          "name": "Camera search delay",
+          "value": 30,
+          "unit": "frames the camera holds the stored aim point",
+          "source": "src/game/player.cpp:683"
+        },
+        {
+          "name": "Aim hold end frame",
+          "value": 5,
+          "unit": "animation frames; the stored aim is used up to this frame",
+          "source": "src/game/player.cpp:689"
+        },
+        {
+          "name": "Search delay clear window start",
+          "value": 5.7,
+          "unit": "animation frames",
+          "source": "src/game/player.cpp:691"
+        },
+        {
+          "name": "Search delay clear window end",
+          "value": 6.3,
+          "unit": "animation frames",
+          "source": "src/game/player.cpp:691"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.cpp",
+          "line": 669
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 681
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 689
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 691
+        }
+      ],
+      "capabilities": [
+        "turning",
+        "camera-lead"
+      ],
+      "tags": [
+        "player",
+        "movement",
+        "camera"
+      ]
+    },
+    {
+      "id": "traversal-vault",
+      "node": "player-traversal",
+      "name": "Context vault over a low wall",
+      "summary": "A vault is offered only when a jumpable wall is in front of both shoulders and the floor behind it is within a vertical tolerance; the climb itself is a linear height ramp.",
+      "behavior": "The vault test casts two horizontal segments at the two shoulder offsets, three hundred units to each side and four hundred units above the origin, each extending six hundred units forward, and both must hit geometry carrying the jumpable attribute before the action is offered. It then reverses the hit normal to build a jump direction, projects a long distance along it, adds a large vertical offset, and samples the floor there; the height difference between that floor and the current position becomes the climb amount, and if its magnitude exceeds the tolerance the action is refused, so the character cannot vault into empty space or off a cliff (one scripted room zeroes the climb instead of refusing). On acceptance the body yaw is turned toward the jump direction and the vault routine starts. During the routine the collision volume is switched off and the model rises by one tenth of the stored climb each frame for ten frames; a fall check then looks for floor geometry below and the routine switches to the fall motion, re-enabling collision and marking the landing state, whose motion ends and hands control back after its twentieth frame.",
+      "constants": [
+        {
+          "name": "Forward projection for the landing probe",
+          "value": 3800,
+          "unit": "units along the reversed wall normal, evaluated once per offer",
+          "source": "src/game/pl_class.cpp:455"
+        },
+        {
+          "name": "Vertical tolerance",
+          "value": 1500,
+          "unit": "units; both the probe height above the projected point and the rejection bound",
+          "source": "src/game/pl_class.cpp:456"
+        },
+        {
+          "name": "Shoulder lateral offset",
+          "value": 300,
+          "unit": "units to each side of the body origin",
+          "source": "src/game/pl_class.cpp:461"
+        },
+        {
+          "name": "Probe height above the origin",
+          "value": 400,
+          "unit": "units, roughly torso height",
+          "source": "src/game/pl_class.cpp:462"
+        },
+        {
+          "name": "Forward probe length",
+          "value": 600,
+          "unit": "units from the shoulder offset",
+          "source": "src/game/pl_class.cpp:467"
+        },
+        {
+          "name": "Climb fraction per update",
+          "value": 0.1,
+          "unit": "fraction of the stored climb height applied per update",
+          "source": "src/game/player.cpp:1031"
+        },
+        {
+          "name": "Climb window start",
+          "value": 5,
+          "unit": "updates after entering the vault routine",
+          "source": "src/game/player.cpp:1030"
+        },
+        {
+          "name": "Climb window end",
+          "value": 14,
+          "unit": "updates after entering the vault routine",
+          "source": "src/game/player.cpp:1030"
+        },
+        {
+          "name": "Fall check frame",
+          "value": 7,
+          "unit": "animation frames before the floor below is probed",
+          "source": "src/game/player.cpp:1033"
+        },
+        {
+          "name": "Landing motion end frame",
+          "value": 20,
+          "unit": "animation frames before control returns to the idle routine",
+          "source": "src/game/player.cpp:1046"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 446
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 467
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1015
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1030
+        }
+      ],
+      "capabilities": [
+        "vertical-movement",
+        "context-action",
+        "root-motion"
+      ],
+      "tags": [
+        "player",
+        "traversal",
+        "jump"
+      ]
+    },
+    {
+      "id": "traversal-fall",
+      "node": "player-traversal",
+      "name": "Falling, wall separation and landing",
+      "summary": "The fall routine disables collision, aligns the body toward the fall direction at a fixed rate, nudges it away from nearby walls, and snaps to the first floor found below.",
+      "behavior": "A fall begins by switching collision off, clearing the neck motion, raising the collision priority, and placing a blend target a fixed distance along the action normal, which keeps the body clear of the ledge it just left. For the first ten frames of the motion the routine probes sideways from the hips, one metre past the offset point on each side; each side that is clear pushes the body a small distance away from it, which prevents the model intersecting the ledge while the fall pose leans. The body yaw is then blended toward the fall direction at a fixed angular step per update while the motion frame is below a character-dependent limit, so the character finishes aligning with the fall within a bounded time rather than snapping. A water probe runs once and raises a splash effect when the landing point is submerged. After the limit the routine casts from the hips to the current position; floor geometry along that segment fixes the exact height and switches to the landing motion, otherwise the character keeps falling.",
+      "constants": [
+        {
+          "name": "Wall probe lateral offset",
+          "value": 400,
+          "unit": "units to each side of the hips, per update during the adjust window",
+          "source": "src/game/player.cpp:1427"
+        },
+        {
+          "name": "Wall probe length",
+          "value": 1000,
+          "unit": "units along the fall direction beyond the offset point",
+          "source": "src/game/player.cpp:1429"
+        },
+        {
+          "name": "Wall separation push",
+          "value": 40,
+          "unit": "units per update",
+          "source": "src/game/player.cpp:1432"
+        },
+        {
+          "name": "Wall adjust window",
+          "value": 10,
+          "unit": "animation frames from the start of the fall",
+          "source": "src/game/player.cpp:1389"
+        },
+        {
+          "name": "Yaw alignment limit for most characters",
+          "value": 20,
+          "unit": "animation frames",
+          "source": "src/game/player.cpp:1399"
+        },
+        {
+          "name": "Yaw alignment limit default",
+          "value": 30,
+          "unit": "animation frames",
+          "source": "src/game/player.cpp:1393"
+        },
+        {
+          "name": "Yaw alignment step",
+          "value": 0.31415927,
+          "unit": "radians per update (18 degrees)",
+          "source": "src/game/player.cpp:1456"
+        },
+        {
+          "name": "Landing floor probe above",
+          "value": 600,
+          "unit": "units above the position where the vertical probe starts",
+          "source": "src/game/player.cpp:1463"
+        },
+        {
+          "name": "Landing floor probe below",
+          "value": 100000,
+          "unit": "units below the position where the vertical probe ends",
+          "source": "src/game/player.cpp:1463"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.cpp",
+          "line": 1379
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1413
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1456
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1463
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 1510
+        }
+      ],
+      "capabilities": [
+        "vertical-movement",
+        "collision-response",
+        "fall-recovery"
+      ],
+      "tags": [
+        "player",
+        "traversal",
+        "fall"
+      ]
+    },
+    {
+      "id": "collision-rectangle",
+      "node": "scenario-collision",
+      "name": "Rectangle character collision against scenery",
+      "summary": "Characters are pushed out of room geometry by twelve horizontal probes around a rectangle footprint rather than by one sphere.",
+      "behavior": "The character collision entry point dispatches on the collision info flags: the rectangle form runs twelve probes, the sphere form runs a swept sphere followed by a floor snap, and the airborne form keeps the vertical position and only resolves walls. The rectangle form derives a footprint from the info radius pair and insets the longitudinal probes to nine tenths of the radius so the corners are rounded off, which stops a character catching on a doorway edge. Each probe pair is projected onto the model yaw, raised to a fixed height of three hundred units above the origin, and cast horizontally; a hit moves the model to the hit point plus the surface normal, so several overlapping probes resolve into a diagonal push away from the corner. The probe reports success only when the horizontal displacement reaches one unit, which filters out sub-unit jitter from resting on coplanar surfaces and keeps the collision pass from marking the character as moved on every frame; that moved bit in turn decides whether the camera re-binds to the body matrix.",
+      "constants": [
+        {
+          "name": "Footprint inset for the corner probes",
+          "value": 0.9,
+          "unit": "fraction of the footprint radius, evaluated per update",
+          "source": "src/game/atari.cpp:90"
+        },
+        {
+          "name": "Probe height above the origin",
+          "value": 300,
+          "unit": "units, evaluated per update",
+          "source": "src/game/atari.cpp:212"
+        },
+        {
+          "name": "Minimum displacement that counts as a hit",
+          "value": 1,
+          "unit": "units of horizontal movement, evaluated per update",
+          "source": "src/game/atari.cpp:218"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/atari.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 81
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 198
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 212
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 218
+        }
+      ],
+      "capabilities": [
+        "collision-response",
+        "step-handling"
+      ],
+      "tags": [
+        "collision",
+        "scenery",
+        "character"
+      ]
+    },
+    {
+      "id": "collision-floor-probe",
+      "node": "scenario-collision",
+      "name": "Floor probe and height snap",
+      "summary": "Ground height comes from one vertical cast against floor-attributed polygons, with a sentinel for no floor and a sanity band before the character is snapped to it.",
+      "behavior": "The floor query casts a vertical segment from a configurable height above the query point to a configurable depth below it against polygons carrying the floor attribute, and returns the hit height plus the hit polygon normal, or a large negative sentinel when nothing is below. Callers in the character pass probe six hundred units above and one hundred thousand units below the point, which lets them find a floor slightly above (a low step) as well as one far below (a drop). The sphere-collision pass snaps the model to the returned height only when the difference is under a thousand units; a larger difference is treated as bad data, logged with the coordinates rounded to hundreds, and drawn as a long debug line upward so the failure is visible on screen. The snap is skipped entirely when the collision info disables floor handling, which is how airborne states keep their height while still being pushed out of walls. A second variant casts from the hips to the target position and returns the exact hit point, which is what the vault and fall routines use to land precisely.",
+      "constants": [
+        {
+          "name": "Floor probe height above",
+          "value": 600,
+          "unit": "units above the query point, per update",
+          "source": "src/game/atari.cpp:248"
+        },
+        {
+          "name": "Floor probe depth below",
+          "value": 100000,
+          "unit": "units below the query point, per update",
+          "source": "src/game/atari.cpp:248"
+        },
+        {
+          "name": "Snap tolerance",
+          "value": 1000,
+          "unit": "units of difference between the floor and the current height",
+          "source": "src/game/atari.cpp:249"
+        },
+        {
+          "name": "No-floor sentinel",
+          "value": -100000,
+          "unit": "units of height returned when the cast hits no floor polygon",
+          "source": "src/game/atari.cpp:255"
+        },
+        {
+          "name": "Debug failure line length",
+          "value": 50000,
+          "unit": "units, drawn only while the failure is being logged",
+          "source": "src/game/atari.cpp:261"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/atari.cpp",
+          "line": 227
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 248
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 255
+        },
+        {
+          "path": "src/game/atari.cpp",
+          "line": 399
+        }
+      ],
+      "capabilities": [
+        "ground-detection",
+        "height-snap"
+      ],
+      "tags": [
+        "collision",
+        "floor",
+        "physics"
+      ]
+    },
+    {
+      "id": "motion-root-displacement",
+      "node": "motion-animation",
+      "name": "Root-motion displacement and the animation clock",
+      "summary": "Character travel comes from the animation root joints, not from an integrator, and the animation clock is scaled by a single global speed factor.",
+      "behavior": "Each animation keeps a fractional frame counter that advances by the motion playback speed times a global factor each update; the player can run it forward, run it backward, wrap it when the motion loops, or clamp it at the last frame when it does not. The fractional frame is turned into an integer table index plus a six-bit sub-frame, and the integer part indexes a table of per-frame pose data so a frame between entries is interpolated; the sub-frame is stored as a fixed-point word scaled by 64, which is also how motion events are matched to a frame. The root translation and rotation joints are sampled at the current frame and differenced against the previous sample to get this frame displacement, and a sample that wrapped or reversed adds or subtracts the whole-motion delta so the loop seam does not teleport the character. That delta is rotated into the model previous facing before being applied. Consequently foot phase, gait speed and travel distance are authored together in the animation data, and slowing the single global factor slows walking, running and scripted movement at the same time.",
+      "constants": [
+        {
+          "name": "Animation speed factor",
+          "value": 1,
+          "unit": "dimensionless multiplier on every motion playback speed, set once at game start",
+          "source": "src/game/game.cpp:272"
+        },
+        {
+          "name": "Fixed-point sub-frame units per animation frame",
+          "value": 64,
+          "unit": "sub-frame units per animation frame, per update",
+          "source": "src/game/motion.cpp:1133"
+        },
+        {
+          "name": "Animation frames per sub-frame unit",
+          "value": 0.015625,
+          "unit": "animation frames per sub-frame unit (1/64), per sub-frame",
+          "source": "src/game/motion.cpp:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/motion.cpp",
+          "line": 943
+        },
+        {
+          "path": "src/game/motion.cpp",
+          "line": 1114
+        },
+        {
+          "path": "src/game/motion.cpp",
+          "line": 1133
+        },
+        {
+          "path": "src/game/motion.cpp",
+          "line": 1030
+        }
+      ],
+      "capabilities": [
+        "root-motion",
+        "animation-clock"
+      ],
+      "tags": [
+        "animation",
+        "movement",
+        "timing"
+      ]
+    },
+    {
+      "id": "motion-blend",
+      "node": "motion-animation",
+      "name": "Pose blending between motions",
+      "summary": "A motion change blends the previous pose into the new one over a caller-supplied frame count, slerping rotations and lerping translation and speed.",
+      "behavior": "Every motion switch carries a blend length in frames; the blend routine counts it down and uses the ratio of elapsed to total frames as the weight, so a length of eight produces a slow idle-to-walk crossfade while a length of five is used for snappier transitions and three for near-instant ones. For each affected part the routine lerps the local translation, converts both orientations to quaternions and slerps them, and lerps the scale, except when the previous and current scales are both identity and their product with the parent scale is identity, in which case a cancellation flag makes the routine inherit the parent reciprocal scale instead so a stretched hierarchy does not drift. Two epsilons guard those tests: a very small absolute one for deciding an axis is identity, and a tenth for deciding the parent product is identity. Root horizontal speed is blended with the same frame ratio when the motion flag requests it, which removes the velocity step that would otherwise appear at a gait change; the blend also runs on the root speed at exactly the frames the counter covers, so the velocity ramp and the pose ramp stay in sync.",
+      "constants": [
+        {
+          "name": "Identity-scale epsilon",
+          "value": 0.00002,
+          "unit": "absolute scale difference, tested per part per update during a blend",
+          "source": "src/game/motion.cpp:793"
+        },
+        {
+          "name": "Parent-scale product epsilon",
+          "value": 0.1,
+          "unit": "absolute difference of the parent scale product from one, per part per update",
+          "source": "src/game/motion.cpp:794"
+        },
+        {
+          "name": "Idle blend length",
+          "value": 8,
+          "unit": "frames of crossfade when entering the idle motion",
+          "source": "src/game/player.cpp:416"
+        },
+        {
+          "name": "Run entry blend length",
+          "value": 5,
+          "unit": "frames of crossfade when switching to the run motion",
+          "source": "src/game/player.cpp:483"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/motion.cpp",
+          "line": 790
+        },
+        {
+          "path": "src/game/motion.cpp",
+          "line": 1040
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 416
+        },
+        {
+          "path": "src/game/player.cpp",
+          "line": 483
+        }
+      ],
+      "capabilities": [
+        "animation-blending",
+        "pose-interpolation"
+      ],
+      "tags": [
+        "animation",
+        "blend",
+        "transition"
+      ]
+    },
+    {
+      "id": "camera-shoulder-aim",
+      "node": "camera",
+      "name": "Shoulder camera aim ratios",
+      "summary": "Two normalized ratios drive the over-the-shoulder camera: a depression ratio selects the height of the offset and a direction ratio yaws it around the character.",
+      "behavior": "The rig keeps a depression ratio and a direction ratio. While the weapon is raised the depression ratio is taken from the weapon aim blend, so the camera follows the gun pitch; otherwise the cross-stick vertical is divided by a fixed stick range and clamped to plus or minus one, and the cross-stick horizontal is scaled by a 60-degree limit with separate left and right gains and no dead-zone smoothing beyond the pad pass. With no cross-stick deflection both ratios decay multiplicatively by a fixed factor per update, so the view eases back to neutral rather than snapping when the player releases the stick. The depression ratio then picks between three stored offset triples: zero uses the middle triple, a positive ratio blends toward the raised triple and a negative ratio toward the lowered one, all by linear interpolation. The direction ratio finally rotates the three offset vectors about the vertical axis of the body frame, which produces the over-the-shoulder lean without moving the pivot point.",
+      "constants": [
+        {
+          "name": "Maximum yaw ratio angle",
+          "value": 1.0471976,
+          "unit": "radians (60 degrees) of yaw per full cross-stick deflection, applied per update",
+          "source": "src/game/cam_qfps.cpp:331"
+        },
+        {
+          "name": "Full-scale cross-stick range",
+          "value": 59,
+          "unit": "stick units that map to a ratio of one, evaluated per update",
+          "source": "src/game/cam_qfps.cpp:333"
+        },
+        {
+          "name": "Aim ratio decay per update",
+          "value": 0.9,
+          "unit": "dimensionless factor applied per update while the cross-stick is centered",
+          "source": "src/game/cam_qfps.cpp:356"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 329
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 331
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 333
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 612
+        }
+      ],
+      "capabilities": [
+        "camera-control",
+        "aiming",
+        "input-mapping"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "shoulder"
+      ]
+    },
+    {
+      "id": "camera-shoulder-frame",
+      "node": "camera",
+      "name": "Shoulder camera frame, floor tilt and obstruction pull-in",
+      "summary": "The offset triples live in a body-space frame that tilts toward the floor normal, drops while crouching, and gets shortened by a three-probe obstruction test.",
+      "behavior": "The rig builds its frame from the character matrix, or from a stored matrix while a camera search delay is still counting down, then applies any one-shot translation or look-direction override. While the weapon is not raised it gradually rotates the frame up axis toward the floor normal using a running ratio that mixes the previous ratio with the instantaneous one at a weight of nine tenths, and the interpolation uses a cube-root exponent so the first frames of a slope change bite harder than a plain linear blend. In the crouch status the frame origin drops by eight hundred units; in the deeper crouch status it is additionally pushed back along the frame lateral axis by six hundred units and down by four hundred, and the offset tables are shifted by half of that drop plus the same backward amount so the shoulder point stays behind the lowered head. Obstruction then shortens the camera-to-pivot segment: besides the straight probe, two lateral probes widened to the screen corners by the field of view, the near plane and the known four-thirds aspect ratio run at the top of the frustum, and the smallest of the surviving hits wins, so a wall beside the target cannot clip the edge of the screen.",
+      "constants": [
+        {
+          "name": "Floor tilt exponent",
+          "value": 0.33333334,
+          "unit": "exponent applied to the floor-follow ratio, per update",
+          "source": "src/game/cam_qfps.cpp:374"
+        },
+        {
+          "name": "Floor tilt previous-ratio weight",
+          "value": 0.9,
+          "unit": "dimensionless weight of the previous ratio, per update",
+          "source": "src/game/cam_qfps.cpp:375"
+        },
+        {
+          "name": "Crouch frame drop",
+          "value": 800,
+          "unit": "units the frame origin drops while crouching, per update",
+          "source": "src/game/cam_qfps.cpp:376"
+        },
+        {
+          "name": "Crouch camera backward offset",
+          "value": 600,
+          "unit": "units along the frame lateral axis while the deep crouch status is active",
+          "source": "src/game/cam_qfps.cpp:28"
+        },
+        {
+          "name": "Crouch camera vertical offset",
+          "value": 400,
+          "unit": "units downward while the deep crouch status is active",
+          "source": "src/game/cam_qfps.cpp:29"
+        },
+        {
+          "name": "Aspect ratio for the frustum probes",
+          "value": 1.3333334,
+          "unit": "horizontal over vertical, dimensionless",
+          "source": "src/game/cam_qfps.cpp:737"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 372
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 443
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 657
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 705
+        },
+        {
+          "path": "src/game/cam_qfps.cpp",
+          "line": 737
+        }
+      ],
+      "capabilities": [
+        "camera-collision",
+        "camera-control",
+        "slope-handling"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "crouch"
+      ]
+    },
+    {
+      "id": "camera-free-orbit",
+      "node": "camera",
+      "name": "Free orbit camera with smoothing and auto-recentre",
+      "summary": "A free camera orbiting the character is kept for debug and scripted views, with fixed stick sensitivity, pitch clamps, exponential smoothing and a hold-to-recentre behaviour.",
+      "behavior": "The free camera keeps orbit angles, an offset pair and a camera matrix. Entering it copies the character position into the matrix, takes the character yaw as the starting yaw, and rotates a fixed offset — a large height and a large backward distance, aimed just below that height — about the pivot so the rig orbits the body; an inverted-aim option negates both angles before the rotation. Each update the cross-stick adds to the angles scaled by a fixed radians-per-stick-unit sensitivity, the pitch is clamped between minus forty-five degrees and a fraction of pi, and the yaw wraps into plus or minus pi. While the recentre input is held the yaw and pitch are pulled toward the character facing by a tenth of the error per update; the recentre state advances into its active phase only when the hold input is present, and leaves it once the error magnitude drops below a small threshold or either stick is deflected, so a nudge cancels the recentre immediately. The new camera and target are then blended with the previous camera at a fixed weight, and the segment from target to camera is cast against scenery and shortened to the first hit, so an orbiting camera never enters a wall.",
+      "constants": [
+        {
+          "name": "Orbit height",
+          "value": 1800,
+          "unit": "units above the pivot in body space",
+          "source": "src/game/cam_ctrl.cpp:1850"
+        },
+        {
+          "name": "Stick sensitivity",
+          "value": 0.00125,
+          "unit": "radians per cross-stick unit, per update",
+          "source": "src/game/cam_ctrl.cpp:1899"
+        },
+        {
+          "name": "Downward pitch clamp",
+          "value": -0.7853982,
+          "unit": "radians (45 degrees) below the horizon",
+          "source": "src/game/cam_ctrl.cpp:1901"
+        },
+        {
+          "name": "Upward pitch clamp fraction",
+          "value": 0.35,
+          "unit": "fraction of pi above the horizon, per update",
+          "source": "src/game/cam_ctrl.cpp:1901"
+        },
+        {
+          "name": "Recentre correction per update",
+          "value": 0.1,
+          "unit": "fraction of the angle error corrected per update while the hold input is active",
+          "source": "src/game/cam_ctrl.cpp:1940"
+        },
+        {
+          "name": "Recentre completion threshold",
+          "value": 0.05,
+          "unit": "radians of remaining error under which recentring stops",
+          "source": "src/game/cam_ctrl.cpp:1945"
+        },
+        {
+          "name": "Smoothing weight of the new camera",
+          "value": 0.8,
+          "unit": "dimensionless, blended against the previous camera each update",
+          "source": "src/game/cam_ctrl.cpp:1957"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/cam_ctrl.cpp",
+          "line": 1848
+        },
+        {
+          "path": "src/game/cam_ctrl.cpp",
+          "line": 1899
+        },
+        {
+          "path": "src/game/cam_ctrl.cpp",
+          "line": 1901
+        },
+        {
+          "path": "src/game/cam_ctrl.cpp",
+          "line": 1957
+        },
+        {
+          "path": "src/game/camera.cpp",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "camera-control",
+        "debug-camera",
+        "smoothing"
+      ],
+      "tags": [
+        "camera",
+        "orbit",
+        "debug"
+      ]
+    },
+    {
+      "id": "combat-lock-on",
+      "node": "combat",
+      "name": "Auto-aim target scoring",
+      "summary": "Aiming can lock onto the enemy with the best distance-plus-direction score, with penalties for distance and for being outside a front cone.",
+      "behavior": "A candidate must be alive, active, explicitly lockable, a real target rather than a prop, and not currently immune to lock-on, and its lock point must not be hidden behind geometry: a segment from the aim origin to that point is cast against the effect-collision set and any hit rejects the candidate. Two boss identifiers additionally require the target to pass a sixty-degree front test. The score starts from the three-dimensional distance to the lock point and then adds a penalty bucket: past a near threshold the candidate is penalised less when it lies inside a fifty-degree cone around the character facing than when it is outside, and past a far threshold a larger fixed penalty is added, so distant enemies only win when nothing is close. An unset score is seeded with a sentinel equal to the squared near threshold so the first comparison always loses, and anything beyond the caller range returns an enormous score the caller treats as rejection. The winner arms a ten-frame tracking window during which the weapon follows it, and any cross-stick input cancels that window so manual aim always wins.",
+      "constants": [
+        {
+          "name": "Front cone half angle for the penalty bucket",
+          "value": 0.87266463,
+          "unit": "radians (50 degrees), evaluated per candidate per update",
+          "source": "src/game/pl_wep.cpp:612"
+        },
+        {
+          "name": "Near distance threshold",
+          "value": 16000000,
+          "unit": "squared units (4000 units), compared per candidate per update",
+          "source": "src/game/pl_wep.cpp:613"
+        },
+        {
+          "name": "Far distance threshold",
+          "value": 225000000,
+          "unit": "squared units (15000 units), compared per candidate per update",
+          "source": "src/game/pl_wep.cpp:614"
+        },
+        {
+          "name": "Initial score sentinel",
+          "value": 100000000,
+          "unit": "squared units (10000 units) used before any candidate has been scored",
+          "source": "src/game/pl_wep.cpp:621"
+        },
+        {
+          "name": "Lock tracking window",
+          "value": 10,
+          "unit": "frames the weapon follows the chosen target",
+          "source": "src/game/pl_wep.cpp:597"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 583
+        },
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 612
+        },
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 666
+        },
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 750
+        }
+      ],
+      "capabilities": [
+        "aiming",
+        "target-selection",
+        "auto-aim"
+      ],
+      "tags": [
+        "combat",
+        "aiming",
+        "lock-on"
+      ]
+    },
+    {
+      "id": "combat-shot-sweep",
+      "node": "combat",
+      "name": "Shot segment sweep and multi-hit ordering",
+      "summary": "A shot is a segment cast first against scenario geometry to bound its length, then against per-part target boxes, with a hard cap on how many targets one shot may reach.",
+      "behavior": "A fired round tests its segment against the effect-collision set; the first geometry hit sets the maximum distance and the impact normal used for the spark, and a miss leaves the segment at full length with a seeded distance that can never win a comparison. The segment is then transformed into a local space aligned with the shot direction so every target part can be rejected cheaply by a lateral bound before the exact intersection, and each surviving part is intersected in that space; the nearest part wins, and a part flagged as penetrable lets the shot continue, so several targets can be damaged in order of increasing distance. The resulting target list is capped at twenty entries, and the weapon table assigns each weapon a penetration priority that is clamped to the same cap. Blast-style weapons skip the segment test entirely and gather every target inside a radius instead. A shot that reaches nothing raises the global miss flag and awards accuracy points, so the scoring system reads the same hit test that damages the targets.",
+      "constants": [
+        {
+          "name": "Lateral bound in the shot-aligned space",
+          "value": 10000,
+          "unit": "units on each axis, per target scanned per shot",
+          "source": "src/game/em_sub.cpp:1246"
+        },
+        {
+          "name": "No-scenario-hit distance sentinel",
+          "value": "1e16",
+          "unit": "squared units, effectively infinite (string form as written in the source)",
+          "source": "src/game/em_sub.cpp:1196"
+        },
+        {
+          "name": "Maximum targets per shot",
+          "value": "0x14",
+          "unit": "targets (20), the clamp on the weapon penetration priority (string form as written in the source)",
+          "source": "src/game/pl_wep.cpp:306"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 197
+        },
+        {
+          "path": "src/game/pl_wep.cpp",
+          "line": 306
+        },
+        {
+          "path": "src/game/em_sub.cpp",
+          "line": 1166
+        },
+        {
+          "path": "src/game/em_sub.cpp",
+          "line": 1246
+        }
+      ],
+      "capabilities": [
+        "hitscan",
+        "penetration",
+        "damage"
+      ],
+      "tags": [
+        "combat",
+        "shooting",
+        "hit-detection"
+      ]
+    },
+    {
+      "id": "combat-damage-reaction",
+      "node": "combat",
+      "name": "Taking a hit: stagger, cancel window and recovery",
+      "summary": "Being hit switches to a damage routine whose stagger length and cancel window depend on the hit direction, then returns control to the normal routines.",
+      "behavior": "A damage entry first ends any running event and interrupts the current weapon and neck motions, then adds the incoming amount to a running accumulator; only when that accumulator passes a large threshold does it map the damage kind onto a plain stagger, a blow or a blast sub-routine. The stagger motion is chosen from the hit direction, and a recovery counter is seeded per direction — thirty frames for a frontal hit and thirty-five for the others — while the knocked-down variant uses a counter so large that it can only end by playing out. The body is turned toward the attacker yaw unless the caller passed a sentinel angle meaning keep the current facing, and the same angular delta is applied with the opposite sign to the head part so the head stays aligned with the body. A facial expression is set on entry and reverted inside a narrow animation frame window around frame twenty. Once the recovery counter expires the player may cancel the stagger with an input, at which point the damage flag is cleared and the residual five-frame damage state drains before the idle routine resumes.",
+      "constants": [
+        {
+          "name": "Frontal stagger length",
+          "value": "0x1E",
+          "unit": "frames before a cancel is accepted (30) (string form as written in the source)",
+          "source": "src/game/pl_dmg.cpp:59"
+        },
+        {
+          "name": "Side and back stagger length",
+          "value": "0x23",
+          "unit": "frames before a cancel is accepted (35) (string form as written in the source)",
+          "source": "src/game/pl_dmg.cpp:63"
+        },
+        {
+          "name": "Keep-facing sentinel angle",
+          "value": 123,
+          "unit": "radians-equivalent sentinel passed as the attacker yaw meaning do not turn",
+          "source": "src/game/pl_dmg.cpp:84"
+        },
+        {
+          "name": "Expression reset window start",
+          "value": 19.7,
+          "unit": "animation frames",
+          "source": "src/game/pl_dmg.cpp:100"
+        },
+        {
+          "name": "Expression reset window end",
+          "value": 20.3,
+          "unit": "animation frames",
+          "source": "src/game/pl_dmg.cpp:100"
+        },
+        {
+          "name": "Residual damage state after a cancel",
+          "value": 5,
+          "unit": "frames of timer left set, counted down per update",
+          "source": "src/game/pl_dmg.cpp:114"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/pl_dmg.cpp",
+          "line": 27
+        },
+        {
+          "path": "src/game/pl_dmg.cpp",
+          "line": 40
+        },
+        {
+          "path": "src/game/pl_dmg.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/game/pl_dmg.cpp",
+          "line": 106
+        },
+        {
+          "path": "src/game/pl_class.cpp",
+          "line": 676
+        }
+      ],
+      "capabilities": [
+        "damage-reaction",
+        "stagger",
+        "state-machine"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "reaction"
+      ]
+    },
+    {
+      "id": "combat-enemy-attack",
+      "node": "combat",
+      "name": "Enemy attack sphere and damage placement",
+      "summary": "Melee attacks use a sphere swept between two sample points, and the resulting reaction depends on the relative height and on which side of the attacker the victim is facing.",
+      "behavior": "An attack carries a radius, a power and a flag set. The hit test rejects a victim that is dead or already staggering, and rejects one standing inside an active damage volume; it then intersects the attack sphere against the victim per-part hit boxes, and the part that was hit records which body region was struck so the reaction and knock-back direction can use it. The horizontal travel between the two sample points decides where the push direction comes from: below a small squared travel the direction is the attacker-to-victim vector, and above it the swing own motion vector is used, so a fast swing knocks the victim along the swing rather than radially. A dot product against the victim facing separates a front hit from a back hit, and the height difference between the attack sphere and the victim feet selects a low or a mid reaction. The status code returned encodes direction plus height band plus one, which is exactly the stagger-direction index the reaction routine consumes, and a difficulty/flag case halves the power and adds one while a held grab forces lethal power.",
+      "constants": [
+        {
+          "name": "Sample travel before the swing vector is used",
+          "value": 10000,
+          "unit": "squared units (100 units of travel), evaluated per attack",
+          "source": "src/game/em_sub.cpp:2131"
+        },
+        {
+          "name": "Low reaction height band",
+          "value": 800,
+          "unit": "units of height difference above the victim origin, per attack",
+          "source": "src/game/em_sub.cpp:2142"
+        },
+        {
+          "name": "Mid reaction height band",
+          "value": 1300,
+          "unit": "units of height difference above the victim origin, per attack",
+          "source": "src/game/em_sub.cpp:2144"
+        },
+        {
+          "name": "Power divisor in the reduced-damage case",
+          "value": 2,
+          "unit": "divisor applied to the attack power, plus one, per attack",
+          "source": "src/em10/em10.cpp:23105"
+        },
+        {
+          "name": "Forced power while a grab is held",
+          "value": 9999,
+          "unit": "damage units, applied per attack while the hold status is active",
+          "source": "src/em10/em10.cpp:23108"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/em_sub.cpp",
+          "line": 2070
+        },
+        {
+          "path": "src/game/em_sub.cpp",
+          "line": 2103
+        },
+        {
+          "path": "src/game/em_sub.cpp",
+          "line": 2131
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 23071
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 23110
+        }
+      ],
+      "capabilities": [
+        "melee",
+        "hit-detection",
+        "damage"
+      ],
+      "tags": [
+        "combat",
+        "enemy-attack",
+        "hit-detection"
+      ]
+    },
+    {
+      "id": "ai-awareness",
+      "node": "enemy-ai",
+      "name": "Enemy sight, hearing and alert propagation",
+      "summary": "Awareness in the base melee enemy comes from three independent cues: a cone-limited sight test, a set of hearing radii, and global alert signals such as gunfire.",
+      "behavior": "The idle awareness test compares squared distances throughout. In patrol-like movement modes the sight radius is the largest of the set; in every other mode it is a smaller radius. Inside that radius the target must also lie within a sixty-degree half angle of the enemy facing, so the effective field is a wedge and a target behind the enemy is invisible until it circles around. Independently, the enemy reacts to the character footstep status inside one radius and to bare proximity inside a smaller radius regardless of facing, which is what makes a close but unseen character detectable. A height gate is applied when the caller asks for it, so an enemy on a balcony ignores a target far below. Gunfire raises a global burst status carrying a position, and any enemy whose route distance to that position is under a fixed radius becomes aware; a damage event on any enemy and an explicit alert flag both force awareness, which is how one shot pulls a whole group at once.",
+      "constants": [
+        {
+          "name": "Sight radius in patrol modes",
+          "value": 225000000,
+          "unit": "squared units (15000 units), compared per update",
+          "source": "src/em10/em10.cpp:21311"
+        },
+        {
+          "name": "Sight radius in other modes",
+          "value": 36000000,
+          "unit": "squared units (6000 units), compared per update",
+          "source": "src/em10/em10.cpp:21314"
+        },
+        {
+          "name": "Sight cone half angle",
+          "value": 1.0471976,
+          "unit": "radians (60 degrees) from the facing direction, per update",
+          "source": "src/em10/em10.cpp:21318"
+        },
+        {
+          "name": "Footstep hearing radius",
+          "value": 25000000,
+          "unit": "squared units (5000 units), compared per update",
+          "source": "src/em10/em10.cpp:21323"
+        },
+        {
+          "name": "Proximity radius",
+          "value": 12250000,
+          "unit": "squared units (3500 units), compared per update",
+          "source": "src/em10/em10.cpp:21327"
+        },
+        {
+          "name": "Height gate",
+          "value": 2000,
+          "unit": "units of allowed vertical difference between enemy and target, per update",
+          "source": "src/em10/em10.cpp:21331"
+        },
+        {
+          "name": "Gunfire awareness radius",
+          "value": 25000,
+          "unit": "route distance units from the shot position, evaluated when a burst occurs",
+          "source": "src/em10/em10.cpp:21378"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 21287
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 21311
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 21318
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 21378
+        }
+      ],
+      "capabilities": [
+        "enemy-ai",
+        "perception",
+        "alert-propagation"
+      ],
+      "tags": [
+        "ai",
+        "enemy",
+        "perception"
+      ]
+    },
+    {
+      "id": "ai-approach",
+      "node": "enemy-ai",
+      "name": "Guard post, approach turning and attack throttle",
+      "summary": "Enemies turn toward the target at a rate-limited step, hold a guard post until the target comes close or runs far, and throttle their next attack with a difficulty-scaled countdown.",
+      "behavior": "Turning is a rate-limited step added to the body yaw each update and then wrapped into the signed range: the guarded-post idle uses a slow step while the target is inside the post, and the general acquire routine uses a much larger step, so a target circling an enemy cannot make it spin instantly and a patrolling enemy does not wobble. A guard post is abandoned when the target enters the guard radius, when the target is farther than a large distance at which the model fades out and stops colliding, or when the room forces it; when the target is more than ninety degrees behind, the enemy plays a dedicated turn motion first and attacks out of that motion rather than out of the idle. After a successful attack, the next attack is delayed by a countdown of sixty frames at low difficulty, forty-five in the middle band and thirty at high difficulty, and the same shared group control timers gate a weapon throw at one hundred and twenty and ninety frames, so a group of enemies cannot all attack at the same instant. Those timers live on a shared group object rather than per enemy, which is what makes the throttle global to the group.",
+      "constants": [
+        {
+          "name": "Acquire turn step",
+          "value": 0.19634955,
+          "unit": "radians per update (11.25 degrees)",
+          "source": "src/em10/em10.cpp:6293"
+        },
+        {
+          "name": "Guard post turn step",
+          "value": 0.024543693,
+          "unit": "radians per update (1.4 degrees)",
+          "source": "src/em10/em10.cpp:3538"
+        },
+        {
+          "name": "Behind angle that forces a turn motion",
+          "value": 1.5707964,
+          "unit": "radians (90 degrees) of target angle offset, evaluated per update",
+          "source": "src/em10/em10.cpp:3526"
+        },
+        {
+          "name": "Guard post abandonment distance",
+          "value": 2500000000,
+          "unit": "squared units (50000 units), compared per update",
+          "source": "src/em10/em10.cpp:3544"
+        },
+        {
+          "name": "Attack cooldown at low difficulty",
+          "value": "0x3C",
+          "unit": "frames (60) (string form as written in the source)",
+          "source": "src/em10/em10.cpp:23114"
+        },
+        {
+          "name": "Attack cooldown at high difficulty",
+          "value": "0x1E",
+          "unit": "frames (30) (string form as written in the source)",
+          "source": "src/em10/em10.cpp:23118"
+        },
+        {
+          "name": "Attack cooldown in the middle band",
+          "value": "0x2D",
+          "unit": "frames (45) (string form as written in the source)",
+          "source": "src/em10/em10.cpp:23122"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 3521
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 3538
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 6274
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 6293
+        },
+        {
+          "path": "src/em10/em10.cpp",
+          "line": 23110
+        }
+      ],
+      "capabilities": [
+        "enemy-ai",
+        "steering",
+        "attack-cooldown"
+      ],
+      "tags": [
+        "ai",
+        "enemy",
+        "movement"
+      ]
+    },
+    {
+      "id": "prompt-arbitration",
+      "node": "action-prompt",
+      "name": "Context action prompt arbitration",
+      "summary": "Game code offers candidate actions every frame and a single arbiter picks, displays and executes the highest-priority valid one.",
+      "behavior": "Every frame the prompt list is cleared and each subsystem that wants an action calls in with a message identifier, a priority slot, a callback, a flag word and a button icon. There are eight work entries and sixteen draw slots, so at most eight prompts can be offered per frame and each is inserted into the draw list at its priority slot. The arbiter walks the list from the highest slot downward, skips entries the current player state refuses (for example a normal action button while the weapon is raised, unless the entry explicitly bypasses that test), draws the first surviving entry unless prompts are globally hidden, and runs its callback when the button test passes. The button test is a masked comparison against the trigger or held word with an optional exact-key mode that additionally requires no other button to be down, which is how a prompt can demand a clean press. Message identifiers are clamped at the top of the accepted range so a bad identifier cannot index past the message table. The list is cleared after the walk, which is why every subsystem has to re-offer its action on every frame it still applies.",
+      "constants": [
+        {
+          "name": "Draw slots in the prompt ordering",
+          "value": 16,
+          "unit": "draw-list slots, cleared once per frame",
+          "source": "src/game/act_btn.cpp:27"
+        },
+        {
+          "name": "Highest usable prompt index",
+          "value": 7,
+          "unit": "work entry index, so eight prompts per frame",
+          "source": "src/game/act_btn.cpp:327"
+        },
+        {
+          "name": "Highest message identifier",
+          "value": "0x41",
+          "unit": "message id (65), clamped on registration (string form as written in the source)",
+          "source": "src/game/act_btn.cpp:345"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/act_btn.cpp",
+          "line": 42
+        },
+        {
+          "path": "src/game/act_btn.cpp",
+          "line": 147
+        },
+        {
+          "path": "src/game/act_btn.cpp",
+          "line": 298
+        },
+        {
+          "path": "src/game/act_btn.cpp",
+          "line": 337
+        }
+      ],
+      "capabilities": [
+        "context-actions",
+        "ui-prompts",
+        "input-mapping"
+      ],
+      "tags": [
+        "interaction",
+        "prompt",
+        "ui"
+      ]
+    },
+    {
+      "id": "world-streaming",
+      "node": "block-streaming",
+      "name": "Area trigger volumes and block residency",
+      "summary": "The world is split into loadable blocks; crossing a trigger volume recomputes which blocks must be resident in main memory and which are demoted or released.",
+      "behavior": "Each frame the streamer samples the character position raised by a fixed height and walks the room trigger volumes in draw-list order, which is priority order: the highest-priority volume containing the point wins and a tie keeps the current area, so overlapping volumes resolve deterministically and a boundary cannot make the resident set oscillate. Only when the chosen area differs from the stored one does it recompute residency: the area own block plus its linked neighbours become main-memory residents, the neighbours of those that are not already residents are demoted to audio memory, explicit per-entry additions and removals are applied, and every block in neither set is given a delete command. Blocks whose data is still moving are hidden for the frame, and the load/delete commands are consumed later in the same frame by the block manager. Because the height bias is a constant, the volumes are decided at torso height rather than at the exact foot position, which keeps the boundary stable while the character walks up and down a slope or a staircase inside one area.",
+      "constants": [
+        {
+          "name": "Height bias for the trigger test",
+          "value": 200,
+          "unit": "units added to the sampled position before the volume test, per update",
+          "source": "src/game/block.cpp:316"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/block.cpp",
+          "line": 246
+        },
+        {
+          "path": "src/game/block.cpp",
+          "line": 269
+        },
+        {
+          "path": "src/game/block.cpp",
+          "line": 303
+        },
+        {
+          "path": "src/game/block.cpp",
+          "line": 340
+        }
+      ],
+      "capabilities": [
+        "world-streaming",
+        "memory-management",
+        "zone-transitions"
+      ],
+      "tags": [
+        "streaming",
+        "world",
+        "performance"
+      ]
+    }
+  ]
+}

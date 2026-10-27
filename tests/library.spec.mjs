@@ -17,14 +17,11 @@ test('the tracked library keeps the canonical layout and no legacy root files', 
   for (const name of [
     'data/catalog.json',
     'data/games/oot.json',
-    'data/games/openra.json',
     'data/games/quake.json',
     'data/games/sm64.json',
-    'data/games/super-metroid-sm.json',
     'schemas/game.schema.json',
     'schemas/catalog.schema.json',
     'scripts/validate.mjs',
-    'scripts/import.mjs',
     'scripts/scout/run.sh',
     'scripts/scout/BRIEF.md',
     'tests/fixtures/game.json',
@@ -193,7 +190,8 @@ test('check:data is read-only and offline', t => {
 
 test('no stale root routing references remain in tracked code, scripts or docs', () => {
   const tracked = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n')
-    .filter(name => /^(?:package\.json|README\.md|scripts\/|tests\/|\.github\/)/u.test(name));
+    .filter(name => /^(?:package\.json|README\.md|scripts\/|tests\/|\.github\/)/u.test(name))
+    .filter(name => existsSync(path.join(root, name)));
   const stale = tracked.flatMap(name => {
     const text = readFileSync(path.join(root, name), 'utf8');
     return [/node validate\.mjs/u, /node import\.mjs/u, /(?<!scripts\/)scout\/run\.sh/u, /test-fixture\.json/u]

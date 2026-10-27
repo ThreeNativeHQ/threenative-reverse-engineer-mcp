@@ -1,0 +1,1891 @@
+{
+  "version": 1,
+  "id": "harvest-moon-64",
+  "title": "Harvest Moon 64",
+  "repo": "https://github.com/harvestwhisperer/hm64-decomp",
+  "sha": "9824b8810fe97c3cf4d37ec887e02f968c6462fb",
+  "nodes": [
+    {
+      "id": "time",
+      "name": "Time and calendar",
+      "purpose": "Clock ticks, the day boundary, season and year rollover, and the date label shown to the player",
+      "paths": [
+        "src/game/time.c",
+        "src/game/time.h"
+      ],
+      "functions": [
+        {
+          "name": "handleTimeUpdates",
+          "path": "src/game/time.c",
+          "lines": [
+            46,
+            100
+          ]
+        },
+        {
+          "name": "updateClock",
+          "path": "src/game/time.c",
+          "lines": [
+            104,
+            157
+          ]
+        },
+        {
+          "name": "setClockNewDay",
+          "path": "src/game/time.c",
+          "lines": [
+            221,
+            232
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "field",
+      "name": "Field tiles and crops",
+      "purpose": "Per-tile ground-object grid for farm and greenhouse soil, the overnight stage advance, seasonal pruning, rain watering and grass grazing",
+      "paths": [
+        "src/game/groundObjects.c",
+        "src/game/groundObjects.h"
+      ],
+      "functions": [
+        {
+          "name": "setFieldTile",
+          "path": "src/game/groundObjects.c",
+          "lines": [
+            991,
+            1081
+          ]
+        },
+        {
+          "name": "updateGroundObjectsOvernight",
+          "path": "src/game/groundObjects.c",
+          "lines": [
+            1220,
+            1447
+          ]
+        },
+        {
+          "name": "updateCropsIfRain",
+          "path": "src/game/groundObjects.c",
+          "lines": [
+            1451,
+            1497
+          ]
+        },
+        {
+          "name": "checkAnimalCanEatGrass",
+          "path": "src/game/groundObjects.c",
+          "lines": [
+            1501,
+            1538
+          ]
+        }
+      ],
+      "dependsOn": [
+        "time"
+      ]
+    },
+    {
+      "id": "player",
+      "name": "Player actions and tools",
+      "purpose": "Input shaping, world-space movement, the short hop, tool swings with charge levels, and the stamina and fatigue budgets that gate them",
+      "paths": [
+        "src/game/player.c",
+        "src/game/player.h",
+        "src/game/items.c",
+        "src/system/controller.c",
+        "src/system/graphic.c",
+        "src/system/graphic.h"
+      ],
+      "functions": [
+        {
+          "name": "calculateAnalogStickDirection",
+          "path": "src/system/controller.c",
+          "lines": [
+            213,
+            294
+          ]
+        },
+        {
+          "name": "handlePlayerInput",
+          "path": "src/game/player.c",
+          "lines": [
+            951,
+            1298
+          ]
+        },
+        {
+          "name": "checkStaminaExhaustionLevel",
+          "path": "src/game/player.c",
+          "lines": [
+            1523,
+            1552
+          ]
+        },
+        {
+          "name": "checkFatigueLevel",
+          "path": "src/game/player.c",
+          "lines": [
+            1556,
+            1570
+          ]
+        },
+        {
+          "name": "handleToolAction",
+          "path": "src/game/player.c",
+          "lines": [
+            1615,
+            1675
+          ]
+        },
+        {
+          "name": "handleJumpAction",
+          "path": "src/game/player.c",
+          "lines": [
+            1902,
+            1955
+          ]
+        },
+        {
+          "name": "processToolUseState",
+          "path": "src/game/items.c",
+          "lines": [
+            2367,
+            2384
+          ]
+        }
+      ],
+      "dependsOn": [
+        "field"
+      ]
+    },
+    {
+      "id": "day-cycle",
+      "name": "End of day and shipments",
+      "purpose": "End-of-day sequence: overnight fatigue relief, stamina reset, clock rollover, shipment payout and the per-item shipping value table",
+      "paths": [
+        "src/game/game.c",
+        "src/game/game.h",
+        "src/game/items.c",
+        "src/game/items.h"
+      ],
+      "functions": [
+        {
+          "name": "endOfDayCallback1",
+          "path": "src/game/game.c",
+          "lines": [
+            2492,
+            2554
+          ]
+        },
+        {
+          "name": "handleDailyShipment",
+          "path": "src/game/game.c",
+          "lines": [
+            2767,
+            2774
+          ]
+        },
+        {
+          "name": "processItemShipping",
+          "path": "src/game/items.c",
+          "lines": [
+            4561,
+            4610
+          ]
+        }
+      ],
+      "dependsOn": [
+        "time",
+        "player"
+      ]
+    },
+    {
+      "id": "terrain",
+      "name": "Terrain height",
+      "purpose": "Tile-space lookup of the ground plane: triangle pairs per tile, plane equations, fallback heights and occupied-tile queries",
+      "paths": [
+        "src/system/map.c",
+        "src/system/map.h"
+      ],
+      "functions": [
+        {
+          "name": "getTerrainHeightAtPosition",
+          "path": "src/system/map.c",
+          "lines": [
+            936,
+            982
+          ]
+        },
+        {
+          "name": "getTerrainHeight",
+          "path": "src/system/map.c",
+          "lines": [
+            986,
+            1077
+          ]
+        },
+        {
+          "name": "checkTileHasGroundObject",
+          "path": "src/system/map.c",
+          "lines": [
+            1081,
+            1099
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "entity-collision",
+      "name": "Entity collision and steering",
+      "purpose": "Rotated terrain probes and the vertical band that veto movement, footprint overlap between entities, and the turn fallback that keeps walkers moving",
+      "paths": [
+        "src/system/entity.c",
+        "src/system/entity.h"
+      ],
+      "functions": [
+        {
+          "name": "checkTerrainCollisionInDirection",
+          "path": "src/system/entity.c",
+          "lines": [
+            1742,
+            1779
+          ]
+        },
+        {
+          "name": "checkTerrainMovementCollision",
+          "path": "src/system/entity.c",
+          "lines": [
+            1809,
+            1931
+          ]
+        },
+        {
+          "name": "detectEntityOverlap",
+          "path": "src/system/entity.c",
+          "lines": [
+            1935,
+            2039
+          ]
+        },
+        {
+          "name": "doEntityPathfinding",
+          "path": "src/system/entity.c",
+          "lines": [
+            2069,
+            2126
+          ]
+        },
+        {
+          "name": "updateEntityPhysics",
+          "path": "src/system/entity.c",
+          "lines": [
+            2130,
+            2282
+          ]
+        }
+      ],
+      "dependsOn": [
+        "terrain"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Camera and world rotation",
+      "purpose": "World-space view position, viewport tile derivation, view extents and frustum bounds, the projection and look-at build, and quarter-turn world yaw",
+      "paths": [
+        "src/system/mapController.c",
+        "src/system/mapController.h",
+        "src/system/graphic.c",
+        "src/system/graphic.h",
+        "src/system/map.c",
+        "src/game/level.c"
+      ],
+      "functions": [
+        {
+          "name": "setMapControllerViewPosition",
+          "path": "src/system/mapController.c",
+          "lines": [
+            254,
+            270
+          ]
+        },
+        {
+          "name": "setInitialMapRotation",
+          "path": "src/system/mapController.c",
+          "lines": [
+            343,
+            372
+          ]
+        },
+        {
+          "name": "updateMapViewport",
+          "path": "src/system/mapController.c",
+          "lines": [
+            628,
+            662
+          ]
+        },
+        {
+          "name": "handleMapRotation",
+          "path": "src/system/mapController.c",
+          "lines": [
+            666,
+            706
+          ]
+        },
+        {
+          "name": "getMovementVectorFromDirection",
+          "path": "src/system/graphic.c",
+          "lines": [
+            687,
+            789
+          ]
+        },
+        {
+          "name": "setupCameraMatrices",
+          "path": "src/system/graphic.c",
+          "lines": [
+            882,
+            906
+          ]
+        },
+        {
+          "name": "updateCameraViewBounds",
+          "path": "src/system/map.c",
+          "lines": [
+            1134,
+            1192
+          ]
+        },
+        {
+          "name": "checkTileVisible",
+          "path": "src/system/map.c",
+          "lines": [
+            1196,
+            1213
+          ]
+        }
+      ],
+      "dependsOn": [
+        "terrain",
+        "entity-collision"
+      ]
+    },
+    {
+      "id": "weather",
+      "name": "Weather",
+      "purpose": "Daily forecast draw from per-season weights, per-weather lighting tint, and the world-space rain and snow overlay sprites",
+      "paths": [
+        "src/game/weather.c",
+        "src/game/weather.h"
+      ],
+      "functions": [
+        {
+          "name": "setWeatherSprites",
+          "path": "src/game/weather.c",
+          "lines": [
+            38,
+            61
+          ]
+        },
+        {
+          "name": "setForecast",
+          "path": "src/game/weather.c",
+          "lines": [
+            65,
+            96
+          ]
+        },
+        {
+          "name": "setWeatherLighting",
+          "path": "src/game/weather.c",
+          "lines": [
+            100,
+            111
+          ]
+        }
+      ],
+      "dependsOn": [
+        "time"
+      ]
+    },
+    {
+      "id": "npc",
+      "name": "NPC schedules",
+      "purpose": "Hour and weekday windows that place each NPC on a map at world coordinates, the daily post variant, and the wander box with its idle rolls",
+      "paths": [
+        "src/game/npc.c",
+        "src/game/npc.h"
+      ],
+      "functions": [
+        {
+          "name": "setupActiveNPCs",
+          "path": "src/game/npc.c",
+          "lines": [
+            419,
+            436
+          ]
+        },
+        {
+          "name": "updateNPCMovement",
+          "path": "src/game/npc.c",
+          "lines": [
+            469,
+            515
+          ]
+        },
+        {
+          "name": "updateNPCWanderAnimation",
+          "path": "src/game/npc.c",
+          "lines": [
+            534,
+            582
+          ]
+        },
+        {
+          "name": "setNPCSpawningLocations",
+          "path": "src/game/npc.c",
+          "lines": [
+            939,
+            995
+          ]
+        }
+      ],
+      "dependsOn": [
+        "entity-collision",
+        "player"
+      ]
+    },
+    {
+      "id": "animals",
+      "name": "Livestock",
+      "purpose": "Daily feeding and grass checks, affection and condition changes, growth counters and the starvation rule",
+      "paths": [
+        "src/game/animals.c",
+        "src/game/animals.h"
+      ],
+      "functions": [
+        {
+          "name": "adjustFarmAnimalAffection",
+          "path": "src/game/animals.c",
+          "lines": [
+            329,
+            406
+          ]
+        },
+        {
+          "name": "updateChickenStartOfDay",
+          "path": "src/game/animals.c",
+          "lines": [
+            1933,
+            2047
+          ]
+        },
+        {
+          "name": "updateFarmAnimalStartOfDay",
+          "path": "src/game/animals.c",
+          "lines": [
+            2051,
+            2324
+          ]
+        }
+      ],
+      "dependsOn": [
+        "time",
+        "field"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "day-season-clock",
+      "node": "time",
+      "name": "Clock, day and season rollover",
+      "summary": "A ten-second clock tick drives minutes, hours, dates and seasons, with the calendar day turning at the morning rollover.",
+      "behavior": "Every gameplay update adds ten in-game seconds to the clock, but only while the current map carries the time-flow flag and nothing has suspended time for an animation. Seconds roll into minutes at sixty and minutes into hours at sixty; the date and the weekday both advance when the hour counter reaches six, and the next day is seeded from that six o'clock state. Midnight refreshes the season label, and a separate morning check ends the day when the guard bit is clear. The date counter wraps to the first day of the next season once it reaches thirty-one, the fifth season slot wraps back to the first season and increments the year, and the year is pinned at ninety-nine. The same routine stores tomorrow's season one step ahead so the next day's weather can be drawn before the rollover happens.",
+      "constants": [
+        {
+          "name": "Clock increment",
+          "value": 10,
+          "unit": "in-game seconds added once per gameplay update (update rate unverified)",
+          "source": "src/game/time.c:107"
+        },
+        {
+          "name": "Seconds per minute",
+          "value": 60,
+          "unit": "in-game seconds",
+          "source": "src/game/time.c:110"
+        },
+        {
+          "name": "Minutes per hour",
+          "value": 60,
+          "unit": "in-game minutes",
+          "source": "src/game/time.c:115"
+        },
+        {
+          "name": "Date rollover hour",
+          "value": 6,
+          "unit": "in-game hour at which the date and weekday advance",
+          "source": "src/game/time.c:118"
+        },
+        {
+          "name": "Hours per day",
+          "value": 24,
+          "unit": "in-game hours",
+          "source": "src/game/time.c:124"
+        },
+        {
+          "name": "Days per week",
+          "value": 7,
+          "unit": "in-game days",
+          "source": "src/game/time.c:128"
+        },
+        {
+          "name": "Season rollover counter",
+          "value": 31,
+          "unit": "in-game day counter value that wraps to the first day of the next season",
+          "source": "src/game/time.c:132"
+        },
+        {
+          "name": "Season wrap index",
+          "value": 5,
+          "unit": "season index that wraps back to the first season, checked once per clock step",
+          "source": "src/game/time.c:138"
+        },
+        {
+          "name": "Year ceiling",
+          "value": 99,
+          "unit": "in-game years",
+          "source": "src/game/time.c:145"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/time.c",
+          "line": 46
+        },
+        {
+          "path": "src/game/time.c",
+          "line": 104
+        },
+        {
+          "path": "src/game/time.c",
+          "line": 118
+        },
+        {
+          "path": "src/game/time.c",
+          "line": 221
+        }
+      ],
+      "capabilities": [
+        "advance an in-game clock in fixed steps",
+        "roll date, weekday, season and year",
+        "keep a one-day season lookahead",
+        "end the day at the morning rollover"
+      ],
+      "tags": [
+        "time",
+        "calendar",
+        "day-cycle",
+        "simulation"
+      ]
+    },
+    {
+      "id": "crop-growth",
+      "node": "field",
+      "name": "Overnight crop stage advance",
+      "summary": "Each day boundary walks both crop grids and shifts every tile by one step according to that tile's own rule bits, then prunes by season at month starts.",
+      "behavior": "Both crop grids store a ground-object id per tile and are walked tile by tile when the day boundary runs. The table row for the current id supplies three rule bits: one advances the id by a single step, one steps it back a single step, and one rewinds it seven steps. The paired ids carry that meaning directly, so a watered plant stage holds the advance bit and moves on to the next stage, while the dry stage of the same plant holds no growth bit and waits for water. The seven-step rewind belongs to cut grass, which drops back to an earlier growth stage instead of standing still. On the first day of a month a seasonal pass rewrites tiles: spring cuts ripe grass and randomly reverts tilled or watered soil to plain ground, summer and autumn clear planted stages back to tilled soil and turn sprouting or later stages into dead variants, and winter strips nearly every crop to plain ground. The greenhouse grid skips that seasonal pass and only advances stages.",
+      "constants": [
+        {
+          "name": "Advance bit",
+          "value": 1,
+          "unit": "bit in the player-interaction flag byte, read once per day boundary",
+          "source": "src/game/groundObjects.c:1241"
+        },
+        {
+          "name": "Step-back bit",
+          "value": 2,
+          "unit": "bit in the player-interaction flag byte, read once per day boundary",
+          "source": "src/game/groundObjects.c:1245"
+        },
+        {
+          "name": "Rewind bit",
+          "value": 4,
+          "unit": "bit in the player-interaction flag byte, read once per day boundary",
+          "source": "src/game/groundObjects.c:1249"
+        },
+        {
+          "name": "Rewind distance",
+          "value": 7,
+          "unit": "ground-object ids per day boundary",
+          "source": "src/game/groundObjects.c:1250"
+        },
+        {
+          "name": "Field rows",
+          "value": 24,
+          "unit": "tiles scanned per grid per day boundary",
+          "source": "src/game/groundObjects.h:6"
+        },
+        {
+          "name": "Field columns",
+          "value": 20,
+          "unit": "tiles scanned per grid per day boundary",
+          "source": "src/game/groundObjects.h:7"
+        },
+        {
+          "name": "Ground-object table size",
+          "value": 218,
+          "unit": "tile ids addressable per grid, fixed at load",
+          "source": "src/game/groundObjects.h:9"
+        },
+        {
+          "name": "Month-start day",
+          "value": 1,
+          "unit": "day of month that triggers the seasonal prune",
+          "source": "src/game/groundObjects.c:1253"
+        },
+        {
+          "name": "Spring soil revert roll",
+          "value": 5,
+          "unit": "random roll range per tilled tile at a month start",
+          "source": "src/game/groundObjects.c:1267"
+        },
+        {
+          "name": "Spring soil revert threshold",
+          "value": 3,
+          "unit": "roll value at or above which tilled soil reverts to plain ground",
+          "source": "src/game/groundObjects.c:1267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1220
+        },
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1253
+        },
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1267
+        }
+      ],
+      "capabilities": [
+        "advance crop stages once per day",
+        "apply per-tile growth rules",
+        "prune crops at month boundaries",
+        "keep greenhouse tiles out of seasonal pruning"
+      ],
+      "tags": [
+        "farming",
+        "crops",
+        "day-cycle",
+        "tile-grid"
+      ]
+    },
+    {
+      "id": "watering-and-rain",
+      "node": "field",
+      "name": "Watered soil variants and rain",
+      "summary": "Watering is recorded as a parallel tile id one step above the dry id, dries back overnight, and rain refills the whole grid at the day boundary.",
+      "behavior": "Soil and plant stages keep a watered twin id one step above the dry id, so a single increment expresses watering. The watering tool checks the target tile's tool flags for the waterable bit and writes the twin, using the tilled and watered id when the tile is plain tilled soil. When the day's weather is rain, the day boundary sweeps the whole farm grid and rewrites every tile whose tool flags contain the waterable bit to its watered twin, so rain waters a field without the player. The nightly walk then steps watered soil back down one id, which is how a field dries between mornings. Because the watered twin sits directly above the dry id and the watered plant stages hold the growth bit, a crop that was watered the day before advances to the next dry stage in that same pass, so a field has to be re-watered every day to keep growing.",
+      "constants": [
+        {
+          "name": "Waterable flag bit",
+          "value": "0x10",
+          "unit": "bit in the tool-interaction flag byte, tested on every watering pass",
+          "source": "src/game/groundObjects.h:16"
+        },
+        {
+          "name": "Plantable flag bit",
+          "value": "0x20",
+          "unit": "bit in the tool-interaction flag byte, tested on every planting pass",
+          "source": "src/game/groundObjects.h:17"
+        },
+        {
+          "name": "Tilled soil id",
+          "value": 2,
+          "unit": "ground-object id, fixed per tile",
+          "source": "src/game/groundObjects.h:21"
+        },
+        {
+          "name": "Tilled and watered id",
+          "value": 3,
+          "unit": "ground-object id, fixed per tile",
+          "source": "src/game/groundObjects.h:22"
+        },
+        {
+          "name": "Watering step",
+          "value": 1,
+          "unit": "ground-object ids per watering use",
+          "source": "src/game/items.c:3096"
+        },
+        {
+          "name": "Rain rewrite step",
+          "value": 1,
+          "unit": "ground-object ids per rain pass at the day boundary",
+          "source": "src/game/groundObjects.c:1473"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1451
+        },
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1473
+        },
+        {
+          "path": "src/game/items.c",
+          "line": 3093
+        }
+      ],
+      "capabilities": [
+        "mark soil and plants as watered",
+        "auto-water a whole field from rain",
+        "dry watered soil overnight"
+      ],
+      "tags": [
+        "farming",
+        "watering",
+        "weather",
+        "tile-grid"
+      ]
+    },
+    {
+      "id": "stamina-budget",
+      "node": "player",
+      "name": "Stamina cost, exhaustion tiers and overnight relief",
+      "summary": "Tool swings spend stamina and build fatigue, while four stamina tiers and three fatigue tiers decide when the player is forced to stop.",
+      "behavior": "Each completed swing spends stamina taken from the current tool's cost row at the current charge level, and the same amount is added to the fatigue counter when the swing lands outdoors, outside the unaffected work window, or in wet weather. The exhaustion check divides the maximum stamina by four and compares the remaining stamina against one, two and three quarters, so each quarter crossed changes the tier; a swing whose cost exceeds what is left reports the top tier. Crossing into a new tier, or reaching the top tier, starts the exhaustion action, which takes over the player until it finishes. Fatigue has its own three tiers at half the counter, three quarters and the full counter, and crossing one triggers a fatigue reaction. Sleep clears the fatigue counter by two points per hour before six in the morning, three with the comfort item, unless the counter is already at the top tier, and the next morning restores stamina to its maximum.",
+      "constants": [
+        {
+          "name": "Stamina ceiling",
+          "value": 250,
+          "unit": "stamina points, a fixed ceiling restored once per in-game day",
+          "source": "src/game/player.h:8"
+        },
+        {
+          "name": "Exhaustion divisor",
+          "value": 4,
+          "unit": "divisor applied to the stamina ceiling once per tier check",
+          "source": "src/game/player.c:1532"
+        },
+        {
+          "name": "Top exhaustion tier",
+          "value": 4,
+          "unit": "tier index reported when the swing cost exceeds the remaining stamina",
+          "source": "src/game/player.c:1535"
+        },
+        {
+          "name": "Fatigue ceiling",
+          "value": 100,
+          "unit": "fatigue points, a fixed ceiling",
+          "source": "src/game/player.h:6"
+        },
+        {
+          "name": "Upper fatigue tier",
+          "value": 75,
+          "unit": "fatigue points",
+          "source": "src/game/player.c:1562"
+        },
+        {
+          "name": "Lower fatigue tier",
+          "value": 50,
+          "unit": "fatigue points",
+          "source": "src/game/player.c:1565"
+        },
+        {
+          "name": "Unaffected work window start",
+          "value": 5,
+          "unit": "in-game hour; work strictly after it adds no fatigue",
+          "source": "src/game/player.c:1635"
+        },
+        {
+          "name": "Unaffected work window end",
+          "value": 18,
+          "unit": "in-game hour; work strictly before it adds no fatigue",
+          "source": "src/game/player.c:1635"
+        },
+        {
+          "name": "Gift fatigue divisor",
+          "value": 2,
+          "unit": "divisor applied to the outdoor fatigue gain per swing",
+          "source": "src/game/player.c:1638"
+        },
+        {
+          "name": "Comfort relief rate",
+          "value": 3,
+          "unit": "fatigue points removed per hour before 06:00 at the day boundary",
+          "source": "src/game/game.c:2529"
+        },
+        {
+          "name": "Sleep relief rate",
+          "value": 2,
+          "unit": "fatigue points removed per hour before 06:00 at the day boundary",
+          "source": "src/game/game.c:2531"
+        },
+        {
+          "name": "Sleep reference hour",
+          "value": 30,
+          "unit": "in-game hours, counted as 24 plus a pre-dawn hour, used to size the relief",
+          "source": "src/game/game.c:2529"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.c",
+          "line": 1523
+        },
+        {
+          "path": "src/game/player.c",
+          "line": 1615
+        },
+        {
+          "path": "src/game/game.c",
+          "line": 2492
+        },
+        {
+          "path": "src/game/game.c",
+          "line": 2543
+        }
+      ],
+      "capabilities": [
+        "charge stamina per tool swing",
+        "raise fatigue from poorly timed work",
+        "force an exhaustion stop at a tier change",
+        "relieve fatigue and restore stamina overnight"
+      ],
+      "tags": [
+        "stamina",
+        "fatigue",
+        "tools",
+        "day-cycle"
+      ]
+    },
+    {
+      "id": "tool-charge",
+      "node": "player",
+      "name": "Charged tool levels and swing reach",
+      "summary": "Holding the tool button charges through three levels, and the level buys a wider swing pattern at a higher stamina cost.",
+      "behavior": "The tool action resets the hold counter and the current level on its first frame, then resolves when the swing animation reports a state change. Releasing the button resolves the swing at the level reached so far and charges that level's stamina cost. Holding the button instead counts frames: once the counter passes sixteen frames and the player owns a higher tool upgrade, the level advances by one, but a level is refused when the next level's cost is larger than the stamina on hand. Each level widens the area the swing edits: the base level edits one tile directly ahead, the middle level walks a three-entry pattern that shifts with the facing, and the top level walks a nine-entry pattern. Swings therefore trade reach for stamina, and the hold counter restarts after every level change.",
+      "constants": [
+        {
+          "name": "Hold frames per level",
+          "value": 16,
+          "unit": "frames of held input at the gameplay update rate (rate unverified)",
+          "source": "src/game/player.c:1654"
+        },
+        {
+          "name": "Levels per tool",
+          "value": 3,
+          "unit": "charge levels, fixed per tool",
+          "source": "src/game/player.c:289"
+        },
+        {
+          "name": "Base reach",
+          "value": 1,
+          "unit": "tiles ahead of the player, applied once per swing",
+          "source": "src/game/items.c:2437"
+        },
+        {
+          "name": "Middle pattern length",
+          "value": 3,
+          "unit": "tiles edited per swing step",
+          "source": "src/game/items.c:2425"
+        },
+        {
+          "name": "Top pattern length",
+          "value": 9,
+          "unit": "tiles edited per swing step",
+          "source": "src/game/items.c:2429"
+        },
+        {
+          "name": "Light swing cost, first level",
+          "value": 1,
+          "unit": "stamina points per swing",
+          "source": "src/game/player.c:293"
+        },
+        {
+          "name": "Light swing cost, third level",
+          "value": 3,
+          "unit": "stamina points per swing",
+          "source": "src/game/player.c:293"
+        },
+        {
+          "name": "Heavy swing cost, third level",
+          "value": 6,
+          "unit": "stamina points per swing",
+          "source": "src/game/player.c:295"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.c",
+          "line": 1615
+        },
+        {
+          "path": "src/game/items.c",
+          "line": 2404
+        },
+        {
+          "path": "src/game/items.c",
+          "line": 2437
+        }
+      ],
+      "capabilities": [
+        "charge a tool through three levels",
+        "widen the tool's area of effect",
+        "refuse a level that the stamina cannot pay for"
+      ],
+      "tags": [
+        "tools",
+        "input-timing",
+        "stamina",
+        "tile-grid"
+      ]
+    },
+    {
+      "id": "ground-movement",
+      "node": "player",
+      "name": "Analog speed bands and world-space step",
+      "summary": "The stick is split into a heading and a magnitude; the magnitude picks walk or run and becomes the world step applied along that compass heading.",
+      "behavior": "Raw stick counts are divided down to a magnitude and a direction, and a small deadzone on both axes reports no direction at all. The chosen direction is a compass heading mapped from screen intent to world heading, so a diagonal push moves the player along the world diagonal rather than along the camera axes. The magnitude selects the run animation at four or above and the walk animation below it, and the same magnitude becomes the distance stepped along the heading for that update. The heading is turned into a three-component world offset, the entity's facing is set for the next update, and the step is handed to the entity mover, which can still cancel it for that update if a probe reports a block. The magnitude is clamped at the top of the heading range, so a fully deflected stick cannot outrun the animation.",
+      "constants": [
+        {
+          "name": "Stick direction divisor",
+          "value": 10,
+          "unit": "raw stick counts per direction unit, sampled once per gameplay update",
+          "source": "src/system/controller.c:221"
+        },
+        {
+          "name": "Stick magnitude divisor",
+          "value": 10,
+          "unit": "raw stick counts per magnitude unit, sampled once per gameplay update",
+          "source": "src/system/controller.c:222"
+        },
+        {
+          "name": "Deadzone magnitude",
+          "value": 3,
+          "unit": "magnitude units applied to both axes, read once per gameplay update",
+          "source": "src/system/controller.c:226"
+        },
+        {
+          "name": "Run threshold",
+          "value": 4,
+          "unit": "stick magnitude units on a scale that tops out below eight, read once per gameplay update",
+          "source": "src/game/player.c:1261"
+        },
+        {
+          "name": "Magnitude clamp",
+          "value": 7,
+          "unit": "magnitude units, the value at which the axis is clamped on each gameplay update",
+          "source": "src/system/graphic.h:14"
+        },
+        {
+          "name": "Compass directions",
+          "value": 8,
+          "unit": "world compass headings spaced forty-five degrees apart, fixed",
+          "source": "src/system/graphic.c:672"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/controller.c",
+          "line": 213
+        },
+        {
+          "path": "src/game/player.c",
+          "line": 1261
+        },
+        {
+          "path": "src/game/player.c",
+          "line": 1291
+        },
+        {
+          "path": "src/system/graphic.c",
+          "line": 687
+        }
+      ],
+      "capabilities": [
+        "shape analog input into heading and magnitude",
+        "select a walk or run speed band",
+        "convert a heading into a three-component world offset"
+      ],
+      "tags": [
+        "movement",
+        "input",
+        "world-space",
+        "speed"
+      ]
+    },
+    {
+      "id": "log-hop",
+      "node": "player",
+      "name": "Parabolic hop over a log tile",
+      "summary": "A hard stick push while standing on a log tile starts a short hop with a fixed horizontal drift and a parabolic height curve.",
+      "behavior": "When the player stands on a log tile and the stick is pushed well past the run band, the game probes a fixed distance ahead of the facing. The hop starts only when that probe finds no terrain block and the destination tile is empty or carries the pass-through interaction bit; time is suspended for the duration so the clock does not move while the hop plays. The action drops collision and terrain following from the player entity, sets a horizontal step from the facing, and each frame writes a height equal to the launch height minus the drop coefficient times the square of the frame counter minus the apex frame, plus the apex lift. The curve therefore peaks nineteen and six tenths units above the launch height seven frames in, and after fifteen frames the action stops the horizontal step and returns control. A sibling action with the same curve shape runs for twenty-seven frames and is used at a marked drop-off point instead of hopping a low obstacle.",
+      "constants": [
+        {
+          "name": "Approach probe",
+          "value": 52,
+          "unit": "world units ahead of the player, probed once per input update",
+          "source": "src/game/player.c:1035"
+        },
+        {
+          "name": "Hop stick threshold",
+          "value": 4.6,
+          "unit": "stick magnitude units after the scale divisor, sampled once per gameplay update",
+          "source": "src/game/player.c:1033"
+        },
+        {
+          "name": "Stick scale divisor",
+          "value": 1.2,
+          "unit": "divisor applied to the stick magnitude before the threshold, read once per gameplay update",
+          "source": "src/game/player.c:1033"
+        },
+        {
+          "name": "Apex lift",
+          "value": 19.6,
+          "unit": "world units above the launch height, fixed for the whole arc",
+          "source": "src/game/player.c:1940"
+        },
+        {
+          "name": "Drop coefficient",
+          "value": "0.4",
+          "unit": "world units per squared frame, subtracted from the apex",
+          "source": "src/game/player.c:1939"
+        },
+        {
+          "name": "Apex frame",
+          "value": 7,
+          "unit": "frames from launch to the top of the arc",
+          "source": "src/game/player.c:1939"
+        },
+        {
+          "name": "Hop frame cap",
+          "value": 15,
+          "unit": "frames of applied arc at the gameplay update rate",
+          "source": "src/game/player.c:1932"
+        },
+        {
+          "name": "Hop drift",
+          "value": 4,
+          "unit": "world units per frame",
+          "source": "src/game/player.c:1934"
+        },
+        {
+          "name": "Log tile id",
+          "value": 6,
+          "unit": "ground-object id, fixed per tile",
+          "source": "src/game/groundObjects.h:25"
+        },
+        {
+          "name": "Pass-through bit",
+          "value": 8,
+          "unit": "bit in the player-interaction flag byte, read once per input update",
+          "source": "src/game/player.c:1041"
+        },
+        {
+          "name": "Ledge-drop frame cap",
+          "value": 27,
+          "unit": "frames at the gameplay update rate",
+          "source": "src/game/player.c:1989"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/player.c",
+          "line": 1033
+        },
+        {
+          "path": "src/game/player.c",
+          "line": 1902
+        },
+        {
+          "path": "src/game/player.c",
+          "line": 1959
+        }
+      ],
+      "capabilities": [
+        "trigger a contextual hop from movement input",
+        "apply a parabolic height curve to an entity",
+        "suspend the clock during a scripted action"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "height",
+        "action"
+      ]
+    },
+    {
+      "id": "terrain-height",
+      "node": "terrain",
+      "name": "Terrain height from tile triangles",
+      "summary": "Ground height comes from a per-tile pair of triangles and a plane equation, with fallbacks for points outside both triangles.",
+      "behavior": "A world position is converted into tile space by adding the map origin and dividing by the tile size, and that tile's id selects its terrain quad. The quad holds two triangles; the code solves the plane of the first triangle for the height at the local position and accepts it only when the point lies inside that triangle, otherwise it solves the second triangle the same way. A solved height of zero is treated as absent and replaced by the tile's fallback height. When the point lies outside both triangles, a signed evaluation of the plane decides between the quad's base height and the fallback height, so an ambiguous corner still returns a defined floor. The tile's own vertical offset is added to the result, and that sum is the value every collision probe and every ground-snapping entity uses as the floor for its world position.",
+      "constants": [
+        {
+          "name": "Invalid tile coordinate marker",
+          "value": 65535,
+          "unit": "world units returned as a sentinel per height query when a position maps outside the ground-object grid",
+          "source": "src/system/map.c:1091"
+        },
+        {
+          "name": "Zero height fallback test",
+          "value": 0,
+          "unit": "world units; a solved height of zero defers to the tile fallback",
+          "source": "src/system/map.c:1027"
+        },
+        {
+          "name": "Outside-triangle plane test",
+          "value": 0,
+          "unit": "signed plane distance evaluated once per height query",
+          "source": "src/system/map.c:1067"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/map.c",
+          "line": 936
+        },
+        {
+          "path": "src/system/map.c",
+          "line": 986
+        },
+        {
+          "path": "src/system/map.c",
+          "line": 1081
+        }
+      ],
+      "capabilities": [
+        "sample ground height at a world position",
+        "fall back when a point leaves both triangles",
+        "report whether a tile is occupied"
+      ],
+      "tags": [
+        "terrain",
+        "height",
+        "collision",
+        "3d"
+      ]
+    },
+    {
+      "id": "terrain-probes",
+      "node": "entity-collision",
+      "name": "Rotated terrain probes and the vertical band",
+      "summary": "Movement is vetoed by four probes placed around the footprint against a forty-eight unit tall band, plus a footprint overlap test against other entities.",
+      "behavior": "Before a step is committed the mover models the entity as a band twenty-four units above and twenty-four units below its current height. Four probe points sit at the entity's own collision distance from its centre and are rotated by the facing angle plus and minus eight degrees and plus and minus forty-five degrees, which covers the corners of the footprint for cardinal and diagonal facings. Each probe samples terrain height and the occupancy of the tile beneath it; ground higher than the top of the band, ground lower than the bottom, or an occupied tile sets that probe's own nibble in a returned bit field. The caller uses those nibbles to cancel the step, keep it, or re-aim it. A second veto compares the moved position against every other active entity using half-extents of twice the larger sprite dimension in each axis minus one unit, and the pair is reported as overlapping only when both axis distances stay inside double each half-extent, so two bodies cannot end up occupying the same column of world space.",
+      "constants": [
+        {
+          "name": "Vertical half extent",
+          "value": 24,
+          "unit": "world units above and below the entity's feet, checked on every movement attempt",
+          "source": "src/system/entity.c:1829"
+        },
+        {
+          "name": "Cardinal probe offset",
+          "value": 8,
+          "unit": "degrees either side of the facing heading, applied per probe",
+          "source": "src/system/entity.c:1839"
+        },
+        {
+          "name": "Diagonal probe offset",
+          "value": 45,
+          "unit": "degrees either side of the facing heading, applied per probe",
+          "source": "src/system/entity.c:1885"
+        },
+        {
+          "name": "Full turn",
+          "value": 360,
+          "unit": "degrees added before the negative diagonal offset, applied per probe",
+          "source": "src/system/entity.c:1907"
+        },
+        {
+          "name": "Front probe nibble",
+          "value": "0xF00",
+          "unit": "bits set in the collision field returned per movement attempt",
+          "source": "src/system/entity.c:1860"
+        },
+        {
+          "name": "Opposite probe nibble",
+          "value": "0xF000",
+          "unit": "bits set in the collision field returned per movement attempt",
+          "source": "src/system/entity.c:1882"
+        },
+        {
+          "name": "Footprint scale",
+          "value": 2,
+          "unit": "multiplier applied to the sprite dimension per overlap test",
+          "source": "src/system/entity.c:1973"
+        },
+        {
+          "name": "Footprint inset",
+          "value": 1,
+          "unit": "world units removed from the doubled sprite dimension per overlap test",
+          "source": "src/system/entity.c:1973"
+        },
+        {
+          "name": "Overlap result",
+          "value": 3,
+          "unit": "value returned per overlap test when two footprints intersect",
+          "source": "src/system/entity.c:2030"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/entity.c",
+          "line": 1742
+        },
+        {
+          "path": "src/system/entity.c",
+          "line": 1809
+        },
+        {
+          "path": "src/system/entity.c",
+          "line": 1935
+        }
+      ],
+      "capabilities": [
+        "probe terrain around a footprint",
+        "veto movement into height steps or occupied tiles",
+        "detect overlap between entity footprints"
+      ],
+      "tags": [
+        "collision",
+        "3d",
+        "height",
+        "footprint"
+      ]
+    },
+    {
+      "id": "steer-around-blocks",
+      "node": "entity-collision",
+      "name": "Turn fallback when a step is blocked",
+      "summary": "A blocked walker tries one compass step to the right and then one to the left before it stops dead for the update.",
+      "behavior": "The mover probes the intended step first and inspects the nibble pair it returns. When the pair shows a block on one side only, the walker replaces its step with one aimed a single compass heading around that side, and if that alternative is also blocked the step is zeroed for the update. When both sides are blocked the walker keeps the original heading and simply drops the step, so a corridor still admits straight movement. The worst case, where every probe is blocked, skips the turn attempts entirely and zeroes the step at once. Because headings are world compass directions and the step length comes from the walker's own speed, the fallback costs no speed: a walker that turns keeps its unit step and only changes direction, which is why a crowd of walkers keeps drifting along walls instead of piling up.",
+      "constants": [
+        {
+          "name": "Fully blocked mask",
+          "value": "0xFF00",
+          "unit": "bits set in the collision field read once per movement attempt",
+          "source": "src/system/entity.c:2076"
+        },
+        {
+          "name": "Right-side mask",
+          "value": "0xF0F",
+          "unit": "bits set in the collision field read once per movement attempt",
+          "source": "src/system/entity.c:2078"
+        },
+        {
+          "name": "Left-side mask",
+          "value": "0xF0F0",
+          "unit": "bits set in the collision field read once per movement attempt",
+          "source": "src/system/entity.c:2095"
+        },
+        {
+          "name": "Right turn step",
+          "value": 1,
+          "unit": "compass headings added modulo eight per turn attempt",
+          "source": "src/system/entity.c:2081"
+        },
+        {
+          "name": "Left turn step",
+          "value": 7,
+          "unit": "compass headings added modulo eight per turn attempt",
+          "source": "src/system/entity.c:2098"
+        },
+        {
+          "name": "Heading count",
+          "value": 8,
+          "unit": "world compass headings, fixed",
+          "source": "src/system/entity.c:2081"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/entity.c",
+          "line": 2069
+        },
+        {
+          "path": "src/system/entity.c",
+          "line": 2085
+        },
+        {
+          "path": "src/system/entity.c",
+          "line": 2130
+        }
+      ],
+      "capabilities": [
+        "slide around an obstacle instead of stopping",
+        "keep walkers moving through narrow gaps",
+        "stop dead only when every probe is blocked"
+      ],
+      "tags": [
+        "navigation",
+        "collision",
+        "steering"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera",
+      "name": "World-space camera view and viewport",
+      "summary": "The camera is a world position: everything on screen is offset by it, and the tile under the view plus the leftover fraction drive the render.",
+      "behavior": "The camera does not sit inside the player; instead the tracked entity writes its own world position into the view position of the map controller, and every sprite is placed in view space by subtracting that position, so the tracked entity stays centred while the world slides past underneath it. The viewport routine turns the view position into a tile coordinate plus a sub-tile remainder by adding half the map extent and dividing by the tile size, and hands both the tile and the remainder to the map as the camera view. The view extent, expressed in tiles either side of the camera tile, is seeded when the level loads and bounds which tiles are considered for drawing. The four frustum corners are rebuilt from that extent and the current world yaw, and each visible tile is accepted only when it passes all four edge tests, which keeps off-screen geometry out of the display list. Rendering then builds a projection, orthographic or perspective depending on the camera mode, followed by a look-at matrix from explicit eye, target and up vectors.",
+      "constants": [
+        {
+          "name": "View extent",
+          "value": 8,
+          "unit": "tiles either side of the camera tile, seeded once per level load",
+          "source": "src/game/level.c:654"
+        },
+        {
+          "name": "Orthographic depth scale",
+          "value": 0.9999,
+          "unit": "normalized depth scale applied whenever that projection is built",
+          "source": "src/system/graphic.c:888"
+        },
+        {
+          "name": "Tile visibility threshold",
+          "value": -1,
+          "unit": "signed edge test value checked for each of the four frustum edges on every frame",
+          "source": "src/system/map.c:1201"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/mapController.c",
+          "line": 254
+        },
+        {
+          "path": "src/system/mapController.c",
+          "line": 628
+        },
+        {
+          "path": "src/system/graphic.c",
+          "line": 882
+        },
+        {
+          "path": "src/system/map.c",
+          "line": 1134
+        }
+      ],
+      "capabilities": [
+        "follow an entity with a world-space view offset",
+        "derive the camera tile and the sub-tile remainder",
+        "build projection and look-at matrices",
+        "reject tiles outside the rotated view bounds"
+      ],
+      "tags": [
+        "camera",
+        "3d",
+        "view-space",
+        "rendering"
+      ]
+    },
+    {
+      "id": "world-rotation",
+      "node": "camera",
+      "name": "Quarter-turn world rotation",
+      "summary": "On the farm the whole world yaws in forty-five degree steps at one degree per frame, and the compass mapping follows it.",
+      "behavior": "The farm map can be turned one slot at a time with the shoulder buttons: the request stores a target slot and a direction, and every update adds or subtracts one degree of world yaw until a full forty-five degree step has run. The turn is animated over forty-five frames, and halfway through, at frame twenty-two, every entity sprite is turned by one compass step so the artwork keeps facing the same world direction while the geometry swings beneath it. When the step completes, the stored rotation slot advances or retreats by one and wraps within eight slots, and the recorded previous and current world angles are copied so interpolation between steps stays continuous. While a turn is running, entity tracking updates are suppressed so attached objects do not jitter, and after the turn the player's screen-relative heading is rebuilt from the new world rotation, which keeps a stick push meaning the same thing on screen.",
+      "constants": [
+        {
+          "name": "Quarter-turn yaw",
+          "value": 45,
+          "unit": "degrees of world yaw per rotation slot",
+          "source": "src/system/mapController.c:362"
+        },
+        {
+          "name": "Yaw step",
+          "value": 1,
+          "unit": "degrees per frame at the gameplay update rate",
+          "source": "src/system/mapController.c:672"
+        },
+        {
+          "name": "Frames per quarter turn",
+          "value": 45,
+          "unit": "frames at the gameplay update rate",
+          "source": "src/system/mapController.c:686"
+        },
+        {
+          "name": "Entity re-orient frame",
+          "value": 22,
+          "unit": "frames into a quarter turn",
+          "source": "src/system/mapController.c:678"
+        },
+        {
+          "name": "Rotation slots",
+          "value": 8,
+          "unit": "forty-five degree slots around the vertical axis, fixed",
+          "source": "src/system/mapController.c:691"
+        },
+        {
+          "name": "Counter-clockwise slot step",
+          "value": 7,
+          "unit": "slots added modulo eight per completed turn",
+          "source": "src/system/mapController.c:689"
+        },
+        {
+          "name": "Initial rotation modulo",
+          "value": 8,
+          "unit": "slots used to normalise the starting yaw at level load",
+          "source": "src/game/level.c:649"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/system/mapController.c",
+          "line": 343
+        },
+        {
+          "path": "src/system/mapController.c",
+          "line": 666
+        },
+        {
+          "path": "src/game/level.c",
+          "line": 648
+        }
+      ],
+      "capabilities": [
+        "yaw the whole world in fixed steps",
+        "keep sprite facing stable during a turn",
+        "re-map input headings after a turn"
+      ],
+      "tags": [
+        "camera",
+        "rotation",
+        "3d",
+        "world-space"
+      ]
+    },
+    {
+      "id": "weather-forecast",
+      "node": "weather",
+      "name": "Weighted forecast and weather tint",
+      "summary": "Next-day weather is drawn from per-season percentage weights over five weather ids, and each id carries its own lighting tint and overlay set.",
+      "behavior": "The forecast is a weighted roulette: a uniform roll from one to a hundred walks the weight row for tomorrow's season until the running total reaches the roll, and the index where it stops becomes the forecast. Each season row mixes the five weather slots, with clear weather dominating every row, a small wet chance in spring and summer, a storm chance in summer, and a solid wet share in winter. A second weight table replaces the first when the player has earned a weather wish or owns the related figurine, which shifts the summer split slightly. Each weather id has an RGBA multiplier applied to the map lighting, and the wet and snowy ids dim and cool the channel values while clear and storm ids stay neutral. Wet and snowy weather also install a set of animated overlay sprites in world space, which is how rain and snow are drawn over the scene rather than as a screen effect.",
+      "constants": [
+        {
+          "name": "Forecast roll range",
+          "value": 100,
+          "unit": "probability points per daily forecast draw",
+          "source": "src/game/weather.c:77"
+        },
+        {
+          "name": "Forecast roll minimum",
+          "value": 1,
+          "unit": "probability points per daily forecast draw",
+          "source": "src/game/weather.c:77"
+        },
+        {
+          "name": "Clear spring weight",
+          "value": 85,
+          "unit": "percent of spring forecasts, applied per daily forecast draw",
+          "source": "src/game/weather.c:119"
+        },
+        {
+          "name": "Wet summer weight",
+          "value": 10,
+          "unit": "percent of summer forecasts, applied per daily forecast draw",
+          "source": "src/game/weather.c:120"
+        },
+        {
+          "name": "Storm summer weight",
+          "value": 5,
+          "unit": "percent of summer forecasts, applied per daily forecast draw",
+          "source": "src/game/weather.c:120"
+        },
+        {
+          "name": "Wet winter weight",
+          "value": 30,
+          "unit": "percent of winter forecasts, applied per daily forecast draw",
+          "source": "src/game/weather.c:122"
+        },
+        {
+          "name": "Wet lighting level",
+          "value": 176,
+          "unit": "RGBA channel value out of 255 applied for the whole day",
+          "source": "src/game/weather.c:27"
+        },
+        {
+          "name": "Wet blue tint",
+          "value": 192,
+          "unit": "blue channel value out of 255 applied for the whole day",
+          "source": "src/game/weather.c:27"
+        },
+        {
+          "name": "Snow lighting level",
+          "value": 176,
+          "unit": "RGBA channel value out of 255 applied for the whole day",
+          "source": "src/game/weather.c:29"
+        },
+        {
+          "name": "Overlay sprite count",
+          "value": 10,
+          "unit": "weather overlay sprites installed per wet or snowy day",
+          "source": "src/game/weather.h:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/weather.c",
+          "line": 38
+        },
+        {
+          "path": "src/game/weather.c",
+          "line": 65
+        },
+        {
+          "path": "src/game/weather.c",
+          "line": 100
+        }
+      ],
+      "capabilities": [
+        "draw a weighted daily forecast",
+        "tint world lighting per weather id",
+        "draw rain and snow as world-space overlays"
+      ],
+      "tags": [
+        "weather",
+        "day-cycle",
+        "lighting",
+        "probability"
+      ]
+    },
+    {
+      "id": "npc-schedule",
+      "node": "npc",
+      "name": "Hour and weekday schedule windows",
+      "summary": "Every morning each NPC is re-placed by hour brackets and weekday tests, with a daily random variant choosing among alternative posts.",
+      "behavior": "The morning spawn pass runs over the whole NPC table. Each NPC first draws a small random location variant, then a chain of hour brackets and weekday tests decides whether it is active, which map it stands on, and which world coordinates, facing and animation mode it uses; variants below a cutoff pick one set of posts and the rest pick another. The remaining schedule entries are skipped entirely when the day is flagged as a festival. An NPC outside every bracket stays inactive, so a schedule is a set of time windows rather than one fixed post. The wander box is stored as an x half-extent and a z half-extent around the spawn point, and a candidate step that would leave that box is refused before it ever reaches the entity mover. Idle wandering rolls a random value each idle update and only a small slice of the range turns into a new facing, while a walking update stops outright on an odd diagonal heading and otherwise keeps walking with a fixed chance. When an NPC turns to address the player its facing is rebuilt from the player's heading plus half a turn.",
+      "constants": [
+        {
+          "name": "Daily location variants",
+          "value": 3,
+          "unit": "variants drawn once per NPC per in-game day",
+          "source": "src/game/npc.c:463"
+        },
+        {
+          "name": "Variant cutoff",
+          "value": 2,
+          "unit": "variant index that separates the two post sets, compared once per in-game day",
+          "source": "src/game/npc.c:3769"
+        },
+        {
+          "name": "Morning window start hour",
+          "value": 8,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3681"
+        },
+        {
+          "name": "Morning window end hour",
+          "value": 12,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3681"
+        },
+        {
+          "name": "Afternoon window start hour",
+          "value": 11,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3708"
+        },
+        {
+          "name": "Afternoon window end hour",
+          "value": 18,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3708"
+        },
+        {
+          "name": "Evening window start hour",
+          "value": 17,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3769"
+        },
+        {
+          "name": "Evening window end hour",
+          "value": 24,
+          "unit": "in-game hour",
+          "source": "src/game/npc.c:3769"
+        },
+        {
+          "name": "Wander half-extent",
+          "value": 64,
+          "unit": "world units in x and z around the spawn point, checked per candidate step",
+          "source": "src/game/npc.c:3792"
+        },
+        {
+          "name": "Wide wander half-extent",
+          "value": "0x80",
+          "unit": "world units in x and z around the spawn point, checked per candidate step",
+          "source": "src/game/npc.c:3674"
+        },
+        {
+          "name": "Idle roll range",
+          "value": 60,
+          "unit": "roll values per idle update",
+          "source": "src/game/npc.c:545"
+        },
+        {
+          "name": "Direction change cutoff",
+          "value": 4,
+          "unit": "roll values that trigger a new heading per idle update",
+          "source": "src/game/npc.c:547"
+        },
+        {
+          "name": "Walk roll range",
+          "value": 19,
+          "unit": "roll values per walking update",
+          "source": "src/game/npc.c:569"
+        },
+        {
+          "name": "Walk continue cutoff",
+          "value": 8,
+          "unit": "roll values that keep the walk going per walking update",
+          "source": "src/game/npc.c:569"
+        },
+        {
+          "name": "NPC table size",
+          "value": 48,
+          "unit": "schedule entries, fixed at load",
+          "source": "src/game/npc.h:6"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/npc.c",
+          "line": 419
+        },
+        {
+          "path": "src/game/npc.c",
+          "line": 534
+        },
+        {
+          "path": "src/game/npc.c",
+          "line": 939
+        }
+      ],
+      "capabilities": [
+        "place NPCs by hour and weekday",
+        "randomise daily posts",
+        "wander inside a rectangular world box",
+        "face the player when addressed"
+      ],
+      "tags": [
+        "npc",
+        "schedule",
+        "wander",
+        "day-cycle"
+      ]
+    },
+    {
+      "id": "animal-care",
+      "node": "animals",
+      "name": "Daily feeding, affection and condition",
+      "summary": "Each day boundary reconciles the fed flag, checks for grass under the animal, and turns the result into affection, condition and growth changes.",
+      "behavior": "The day boundary reconciles each animal's fed and grass-fed flags: animals on the farm grid have both cleared and are then re-fed when a ripe grass tile can be found and consumed, one stored status bit clears both flags outright, and animals kept anywhere else lose a point of affection instead. An unfed adult loses affection and then has an even chance of falling sick, which costs more affection and some happiness; a fed animal on the farm has a one-in-four chance of the opposite outcome, becoming happy and gaining affection and happiness. Happy and mad conditions count their own days and revert after three, while an untreated sick animal keeps counting toward a death threshold instead. Growth is a counter per animal type: a newborn spends fourteen days before becoming a calf and another twenty-one before becoming an adult, and an unfed bird moves to its starved condition and dies after three consecutive starved days. Eggs also hatch on a day counter, so a flock can expand without any purchase.",
+      "constants": [
+        {
+          "name": "Status bit that clears feeding flags",
+          "value": "0x4000",
+          "unit": "bit in the animal status word, tested once per in-game day",
+          "source": "src/game/animals.c:2055"
+        },
+        {
+          "name": "Off-farm affection loss",
+          "value": -1,
+          "unit": "affection points per in-game day",
+          "source": "src/game/animals.c:2068"
+        },
+        {
+          "name": "Unfed affection loss",
+          "value": -8,
+          "unit": "affection points per in-game day",
+          "source": "src/game/animals.c:2107"
+        },
+        {
+          "name": "Sickness roll",
+          "value": 1,
+          "unit": "roll range per in-game day; one value in two succeeds",
+          "source": "src/game/animals.c:2109"
+        },
+        {
+          "name": "Sickness affection loss",
+          "value": -30,
+          "unit": "affection points per in-game day",
+          "source": "src/game/animals.c:2111"
+        },
+        {
+          "name": "Sickness happiness loss",
+          "value": -10,
+          "unit": "happiness points per in-game day",
+          "source": "src/game/animals.c:2112"
+        },
+        {
+          "name": "Happy roll",
+          "value": 3,
+          "unit": "roll range per in-game day; one value in four succeeds",
+          "source": "src/game/animals.c:2117"
+        },
+        {
+          "name": "Happy affection gain",
+          "value": 30,
+          "unit": "affection points per in-game day",
+          "source": "src/game/animals.c:2119"
+        },
+        {
+          "name": "Happy happiness gain",
+          "value": 5,
+          "unit": "happiness points per in-game day",
+          "source": "src/game/animals.c:2120"
+        },
+        {
+          "name": "Condition duration",
+          "value": 3,
+          "unit": "in-game days before a happy or sick animal reverts",
+          "source": "src/game/animals.c:2135"
+        },
+        {
+          "name": "Infant stage",
+          "value": 14,
+          "unit": "in-game days before a newborn reaches the next stage",
+          "source": "src/game/animals.h:30"
+        },
+        {
+          "name": "Youth stage",
+          "value": 21,
+          "unit": "in-game days before a young animal becomes an adult",
+          "source": "src/game/animals.h:31"
+        },
+        {
+          "name": "Egg incubation",
+          "value": 3,
+          "unit": "in-game days before an incubated egg hatches",
+          "source": "src/game/animals.h:35"
+        },
+        {
+          "name": "Starvation limit",
+          "value": 3,
+          "unit": "consecutive unfed in-game days before a bird dies",
+          "source": "src/game/animals.c:2018"
+        },
+        {
+          "name": "Ripe grass id",
+          "value": 142,
+          "unit": "ground-object id consumed by one animal feeding",
+          "source": "src/game/groundObjects.h:161"
+        },
+        {
+          "name": "Cut grass id",
+          "value": 143,
+          "unit": "ground-object id left behind after an animal feeds",
+          "source": "src/game/groundObjects.h:162"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/animals.c",
+          "line": 1933
+        },
+        {
+          "path": "src/game/animals.c",
+          "line": 2051
+        },
+        {
+          "path": "src/game/groundObjects.c",
+          "line": 1501
+        }
+      ],
+      "capabilities": [
+        "check daily feeding against grass tiles",
+        "change affection and condition per day",
+        "grow animals through timed stages",
+        "kill unfed animals after a countdown"
+      ],
+      "tags": [
+        "animals",
+        "day-cycle",
+        "affection",
+        "growth"
+      ]
+    },
+    {
+      "id": "shipping-income",
+      "node": "day-cycle",
+      "name": "Shipping bin value and daily payout",
+      "summary": "Each shipped item adds a fixed value to the day's bin total, which is paid out once at the end of the day and clamped at a ceiling.",
+      "behavior": "Shipping is deferred income: every item put into the bin adds its own fixed value to a day-total accumulator that is clamped so it can never exceed the bin ceiling, and the crop and animal tallies are bumped alongside the value. The accumulator becomes money only in the end-of-day sequence, which adds it to the purse with a clamp at the gold ceiling and then clears the bin, so a day of work pays out in one amount rather than per item. A handful of items are worth nothing at all, vegetables sit in the tens to low hundreds, eggs and milk span the low tens up to a few hundred, and the refined animal products climb into the high hundreds and beyond. Because the value is looked up per item id, an item's price is a property of the item table and not of where or to whom it was sold.",
+      "constants": [
+        {
+          "name": "Bin ceiling",
+          "value": 999999,
+          "unit": "gold pieces per in-game day",
+          "source": "src/game/game.h:12"
+        },
+        {
+          "name": "Gold ceiling",
+          "value": 999999,
+          "unit": "gold pieces, a fixed ceiling applied once per in-game day",
+          "source": "src/game/game.h:6"
+        },
+        {
+          "name": "Lowest root crop value",
+          "value": 60,
+          "unit": "gold pieces per shipped item",
+          "source": "src/game/items.c:1097"
+        },
+        {
+          "name": "Egg value",
+          "value": 50,
+          "unit": "gold pieces per shipped item",
+          "source": "src/game/items.c:1104"
+        },
+        {
+          "name": "Large milk value",
+          "value": 300,
+          "unit": "gold pieces per shipped item",
+          "source": "src/game/items.c:1107"
+        },
+        {
+          "name": "Premium wool value",
+          "value": 1800,
+          "unit": "gold pieces per shipped item",
+          "source": "src/game/items.c:1110"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/game.c",
+          "line": 2492
+        },
+        {
+          "path": "src/game/game.c",
+          "line": 2767
+        },
+        {
+          "path": "src/game/items.c",
+          "line": 4561
+        }
+      ],
+      "capabilities": [
+        "accumulate a daily shipping total",
+        "pay the bin out once per day",
+        "clamp income at a hard ceiling"
+      ],
+      "tags": [
+        "economy",
+        "shipping",
+        "day-cycle"
+      ]
+    }
+  ]
+}

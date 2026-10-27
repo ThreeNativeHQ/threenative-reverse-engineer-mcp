@@ -1,0 +1,2141 @@
+{
+  "version": 1,
+  "id": "call-of-duty-4-modern-warfare-kisakcod",
+  "title": "Call of Duty 4: Modern Warfare (KisakCOD)",
+  "repo": "https://github.com/SwagSoftware/KisakCOD",
+  "sha": "8aadf94cc82795d6829ca06052996a5ec79001c3",
+  "nodes": [
+    {
+      "id": "pmove-core",
+      "name": "Pmove step driver and server frame clock",
+      "purpose": "Owns the contract between wall-clock time and simulated time: a client movement command is converted into one bounded step, and the server turns accumulated milliseconds into whole fixed server frames. Every other movement node is weighted by the step length produced here.",
+      "paths": [
+        "src/bgame/bg_pmove.cpp",
+        "src/bgame/bg_local.h",
+        "src/server_mp/sv_main_mp.cpp",
+        "src/server_mp/sv_init_mp.cpp",
+        "src/universal/com_math.h"
+      ],
+      "functions": [
+        {
+          "name": "Pmove",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            1609,
+            1637
+          ]
+        },
+        {
+          "name": "PmoveSingle",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            1639,
+            2015
+          ]
+        },
+        {
+          "name": "SV_FrameInternal",
+          "path": "src/server_mp/sv_main_mp.cpp",
+          "lines": [
+            1206,
+            1236
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "pmove-locomotion",
+      "name": "Ground, air and sprint locomotion",
+      "purpose": "Turns a wish direction into velocity. Friction runs first, then acceleration accumulates only the missing speed along the wish direction, then the result is swept by the collision node. Stance, surface type, weapon and damage state all scale the same pipeline instead of creating separate movement modes.",
+      "paths": [
+        "src/bgame/bg_pmove.cpp",
+        "src/bgame/bg_misc.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PM_Friction",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2211,
+            2277
+          ]
+        },
+        {
+          "name": "PM_Accelerate",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2279,
+            2334
+          ]
+        },
+        {
+          "name": "PM_WalkMove",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2623,
+            2708
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2497,
+            2539
+          ]
+        },
+        {
+          "name": "PM_CmdScale_Walk",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2710,
+            2802
+          ]
+        },
+        {
+          "name": "PM_CmdScaleForStance",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2804,
+            2841
+          ]
+        },
+        {
+          "name": "PM_UpdateSprint",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            2017,
+            2064
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "pmove-jump",
+      "name": "Jump arc, landing slowdown and fall damage",
+      "purpose": "Owns vertical intent: a jump is gated, converted into an upward velocity from a target apex height, clamped so the apex is never exceeded, and then resolved on contact into a landing slowdown band, a stun timer and optionally fall damage.",
+      "paths": [
+        "src/bgame/bg_jump.cpp",
+        "src/bgame/bg_pmove.cpp",
+        "src/bgame/bg_misc.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Jump_RegisterDvars",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            14,
+            80
+          ]
+        },
+        {
+          "name": "Jump_Check",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            210,
+            260
+          ]
+        },
+        {
+          "name": "Jump_Start",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            262,
+            298
+          ]
+        },
+        {
+          "name": "Jump_ApplySlowdown",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            123,
+            152
+          ]
+        },
+        {
+          "name": "Jump_GetSlowdownFriction",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            169,
+            182
+          ]
+        },
+        {
+          "name": "Jump_GetStepHeight",
+          "path": "src/bgame/bg_jump.cpp",
+          "lines": [
+            88,
+            105
+          ]
+        },
+        {
+          "name": "PM_GroundTrace",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            3021,
+            3116
+          ]
+        },
+        {
+          "name": "PM_CrashLand",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            3118,
+            3253
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-locomotion",
+        "pmove-collision"
+      ]
+    },
+    {
+      "id": "pmove-collision",
+      "name": "Swept collision, step up and plane clipping",
+      "purpose": "Moves the player box through the world with sub-stepping, clips velocity against up to eight planes, and retries a blocked move as a step up plus a downward reattach. Shared by walking, air movement, ladder movement and mantle exit.",
+      "paths": [
+        "src/bgame/bg_slidemove.cpp",
+        "src/bgame/bg_pmove.cpp",
+        "src/bgame/bg_local.h"
+      ],
+      "functions": [
+        {
+          "name": "PM_SlideMove",
+          "path": "src/bgame/bg_slidemove.cpp",
+          "lines": [
+            277,
+            475
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove",
+          "path": "src/bgame/bg_slidemove.cpp",
+          "lines": [
+            9,
+            218
+          ]
+        },
+        {
+          "name": "PM_VerifyPronePosition",
+          "path": "src/bgame/bg_slidemove.cpp",
+          "lines": [
+            220,
+            268
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "pmove-mantle",
+      "name": "Ledge mantle search and animation drive",
+      "purpose": "Detects a mantlable ledge in front of a standing player, picks the animation band matching the measured ledge height, and moves the player with animation translation deltas instead of the normal velocity integrator.",
+      "paths": [
+        "src/bgame/bg_mantle.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Mantle_RegisterDvars",
+          "path": "src/bgame/bg_mantle.cpp",
+          "lines": [
+            62,
+            103
+          ]
+        },
+        {
+          "name": "Mantle_Check",
+          "path": "src/bgame/bg_mantle.cpp",
+          "lines": [
+            167,
+            216
+          ]
+        },
+        {
+          "name": "Mantle_FindMantleSurface",
+          "path": "src/bgame/bg_mantle.cpp",
+          "lines": [
+            499,
+            579
+          ]
+        },
+        {
+          "name": "Mantle_Move",
+          "path": "src/bgame/bg_mantle.cpp",
+          "lines": [
+            581,
+            639
+          ]
+        },
+        {
+          "name": "Mantle_CapView",
+          "path": "src/bgame/bg_mantle.cpp",
+          "lines": [
+            657,
+            682
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-collision",
+        "pmove-jump"
+      ]
+    },
+    {
+      "id": "input-command",
+      "name": "Usercmd button bits and view angle mapping",
+      "purpose": "Defines the wire format of player intent: two analog movement axes, a button bitfield and three compressed angle words, plus the clamps that keep angles legal before any movement code sees them.",
+      "paths": [
+        "src/qcommon/msg_mp.h",
+        "src/bgame/bg_pmove.cpp",
+        "src/bgame/bg_misc.cpp",
+        "src/bgame/bg_local.h"
+      ],
+      "functions": [
+        {
+          "name": "PM_UpdateViewAngles",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            663,
+            722
+          ]
+        },
+        {
+          "name": "PM_UpdateViewAngles_Clamp",
+          "path": "src/bgame/bg_pmove.cpp",
+          "lines": [
+            724,
+            768
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "camera-view",
+      "name": "First person camera offsets, view kick and shake",
+      "purpose": "Client side camera composition: additive recoil recovery, vertical step smoothing, and proximity driven shake, all applied to the reference view origin and angles before rendering.",
+      "paths": [
+        "src/cgame/cg_view.cpp",
+        "src/cgame/cg_camerashake.cpp",
+        "src/cgame/cg_main.cpp",
+        "src/cgame/cg_predict.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CG_KickAngles",
+          "path": "src/cgame/cg_view.cpp",
+          "lines": [
+            202,
+            289
+          ]
+        },
+        {
+          "name": "CG_SmoothCameraZ",
+          "path": "src/cgame/cg_view.cpp",
+          "lines": [
+            169,
+            200
+          ]
+        },
+        {
+          "name": "CG_StartShakeCamera",
+          "path": "src/cgame/cg_camerashake.cpp",
+          "lines": [
+            25,
+            73
+          ]
+        },
+        {
+          "name": "CG_UpdateCameraShake",
+          "path": "src/cgame/cg_camerashake.cpp",
+          "lines": [
+            75,
+            127
+          ]
+        },
+        {
+          "name": "CG_ShakeCamera",
+          "path": "src/cgame/cg_camerashake.cpp",
+          "lines": [
+            129,
+            189
+          ]
+        }
+      ],
+      "dependsOn": [
+        "input-command"
+      ]
+    },
+    {
+      "id": "weapon-spread",
+      "name": "Hip fire spread accumulator and aim blend",
+      "purpose": "Maintains one 0..255 spread accumulator from turn rate, movement speed and air state, converts it into the current min and max cone using per weapon tables interpolated by view height, and blends the aim down sight fraction that selects the aim cone instead.",
+      "paths": [
+        "src/bgame/bg_weapons.cpp",
+        "src/bgame/bg_misc.cpp",
+        "src/bgame/bg_perks_mp.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PM_AdjustAimSpreadScale",
+          "path": "src/bgame/bg_weapons.cpp",
+          "lines": [
+            1094,
+            1212
+          ]
+        },
+        {
+          "name": "BG_GetSpreadForWeapon",
+          "path": "src/bgame/bg_weapons.cpp",
+          "lines": [
+            730,
+            771
+          ]
+        },
+        {
+          "name": "PM_UpdateAimDownSightLerp",
+          "path": "src/bgame/bg_weapons.cpp",
+          "lines": [
+            948,
+            1033
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-locomotion"
+      ]
+    },
+    {
+      "id": "combat-hitscan",
+      "name": "Hitscan traces, penetration and melee volumes",
+      "purpose": "Resolves a shot from a random direction inside the spread cone, walks the trace through successive impacts while honouring per surface penetration depth, and resolves melee as a small set of parallel rays.",
+      "paths": [
+        "src/game/bullet.cpp",
+        "src/game/g_weapon.cpp",
+        "src/bgame/bg_weapons.cpp",
+        "src/bgame/bg_perks_mp.cpp",
+        "src/DynEntity/DynEntity_client.h"
+      ],
+      "functions": [
+        {
+          "name": "Bullet_RandomDir",
+          "path": "src/game/bullet.cpp",
+          "lines": [
+            212,
+            231
+          ]
+        },
+        {
+          "name": "Bullet_Endpos",
+          "path": "src/game/bullet.cpp",
+          "lines": [
+            109,
+            210
+          ]
+        },
+        {
+          "name": "Bullet_FireExtended",
+          "path": "src/game/bullet.cpp",
+          "lines": [
+            312,
+            358
+          ]
+        },
+        {
+          "name": "Bullet_FirePenetrate",
+          "path": "src/game/bullet.cpp",
+          "lines": [
+            798,
+            966
+          ]
+        },
+        {
+          "name": "BG_AdvanceTrace",
+          "path": "src/bgame/bg_weapons.cpp",
+          "lines": [
+            102,
+            132
+          ]
+        },
+        {
+          "name": "FireWeapon",
+          "path": "src/game/g_weapon.cpp",
+          "lines": [
+            488,
+            553
+          ]
+        },
+        {
+          "name": "Weapon_RocketLauncher_Fire",
+          "path": "src/game/g_weapon.cpp",
+          "lines": [
+            405,
+            444
+          ]
+        },
+        {
+          "name": "Weapon_Melee",
+          "path": "src/game/g_weapon.cpp",
+          "lines": [
+            149,
+            162
+          ]
+        },
+        {
+          "name": "Melee_Trace",
+          "path": "src/game/g_weapon.cpp",
+          "lines": [
+            249,
+            313
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-spread"
+      ]
+    },
+    {
+      "id": "ai-perception",
+      "name": "AI sight cone and accuracy falloff",
+      "purpose": "Decides whether an actor can see a point, and how accurate its fire is at that distance, folding in the target posture and the target motion relative to the line of sight.",
+      "paths": [
+        "src/game/actor_senses.cpp",
+        "src/game/actor_aim.cpp",
+        "src/game/g_main.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PointInFovAndRange",
+          "path": "src/game/actor_senses.cpp",
+          "lines": [
+            390,
+            425
+          ]
+        },
+        {
+          "name": "Actor_CanSeeSentientEx",
+          "path": "src/game/actor_senses.cpp",
+          "lines": [
+            618,
+            641
+          ]
+        },
+        {
+          "name": "Actor_UpdateSight",
+          "path": "src/game/actor_senses.cpp",
+          "lines": [
+            745,
+            816
+          ]
+        },
+        {
+          "name": "Actor_GetPlayerStanceAccuracy",
+          "path": "src/game/actor_aim.cpp",
+          "lines": [
+            152,
+            173
+          ]
+        },
+        {
+          "name": "Actor_GetPlayerMovementAccuracy",
+          "path": "src/game/actor_aim.cpp",
+          "lines": [
+            175,
+            216
+          ]
+        },
+        {
+          "name": "Sentient_GetScarinessForDistance",
+          "path": "src/game/actor_aim.cpp",
+          "lines": [
+            921,
+            964
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ai-cover",
+      "name": "Cover node scoring and selection",
+      "purpose": "Scores navigation nodes as firing positions with a weighted sum of geometric and tactical terms, then picks the best node inside the requested goal volume using a two pass sort that separates tactical quality from travel distance.",
+      "paths": [
+        "src/game/actor_cover.cpp",
+        "src/game/g_main.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Actor_Cover_GetNodeDistMetric",
+          "path": "src/game/actor_cover.cpp",
+          "lines": [
+            609,
+            625
+          ]
+        },
+        {
+          "name": "Actor_Cover_GetNodeMetric",
+          "path": "src/game/actor_cover.cpp",
+          "lines": [
+            627,
+            667
+          ]
+        },
+        {
+          "name": "Actor_Cover_FindBestCoverList",
+          "path": "src/game/actor_cover.cpp",
+          "lines": [
+            907,
+            989
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-navigation"
+      ]
+    },
+    {
+      "id": "ai-navigation",
+      "name": "Path following momentum and steering blend",
+      "purpose": "Converts a polyline of path points into a per step wish direction, blending the new segment direction with the previous one so the actor turns smoothly at nodes, and produces a lean term reused by the animation blend.",
+      "paths": [
+        "src/game/actor.cpp",
+        "src/game/g_main.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Path_UpdateLeanAmount",
+          "path": "src/game/actor.cpp",
+          "lines": [
+            2034,
+            2055
+          ]
+        },
+        {
+          "name": "Path_UpdateMomentum",
+          "path": "src/game/actor.cpp",
+          "lines": [
+            2057,
+            2089
+          ]
+        },
+        {
+          "name": "Path_UpdateMovementDelta",
+          "path": "src/game/actor.cpp",
+          "lines": [
+            2096,
+            2217
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-perception"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "pmove-fixed-step",
+      "node": "pmove-core",
+      "name": "One movement command becomes one bounded step",
+      "summary": "PmoveSingle derives the simulation step from the gap between the command timestamp and the player state clock, clamps it to 1..200 ms and converts it to seconds; the server advances on 50 ms frames by default.",
+      "behavior": "The step length is the command server time minus the stored command time. It is floored at one millisecond so a duplicate or out of order command cannot produce a zero length step, and capped at 200 ms so a hitch or a burst of queued packets cannot teleport the player or tunnel through geometry in one step. The millisecond count is then multiplied by 0.001 to give the step in seconds, and that value is the only time base the movement integrators use: acceleration, friction, gravity, spread growth and timer decay are all expressed per step and multiplied by it, so behaviour is frame-rate independent as long as the step stays inside the clamp. Because the step is capped rather than split, a client that stalls for longer than 200 ms loses simulated time instead of gaining it, which is deliberate: the alternative would let a stalled client replay many steps at once and travel much farther than the server expects. The server side runs on a separate clock: the frame length is 1000 divided by the server frame rate, 50 ms at the default rate of 20, and each call accumulates the elapsed wall-clock time, then runs whole frames while the residual is at least one frame, so a slow machine catches up with several short frames rather than one long one.",
+      "constants": [
+        {
+          "name": "movement step cap",
+          "value": 200,
+          "unit": "milliseconds per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:1783"
+        },
+        {
+          "name": "movement step floor",
+          "value": 1,
+          "unit": "milliseconds per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:1788"
+        },
+        {
+          "name": "milliseconds to seconds factor",
+          "value": 0.001,
+          "unit": "seconds per millisecond, applied once per step",
+          "source": "src/universal/com_math.h:8"
+        },
+        {
+          "name": "default server frame rate",
+          "value": 20,
+          "unit": "frames per second, giving a 50 ms server step",
+          "source": "src/server_mp/sv_init_mp.cpp:751"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 1797
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 1783
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 1639
+        },
+        {
+          "path": "src/server_mp/sv_main_mp.cpp",
+          "line": 1214
+        },
+        {
+          "path": "src/server_mp/sv_init_mp.cpp",
+          "line": 751
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "clamped step length",
+        "catch up frames"
+      ],
+      "tags": [
+        "timing",
+        "simulation loop",
+        "netcode"
+      ]
+    },
+    {
+      "id": "command-input-mapping",
+      "node": "input-command",
+      "name": "Stick deflection and button bits to world intent",
+      "summary": "Forward and right axes span -127..127, angles travel as 16 bit words at 360/65536 degrees per unit, pitch is clamped to 85 degrees each way, and every action is one bit of a button word.",
+      "behavior": "Commands carry a forward axis and a right axis with a full deflection of 127, which the movement scale divides out, so pushing the stick half way produces half the stance speed and diagonals are normalised rather than being faster. View angles are quantised as 16 bit words covering a full turn, 0.0054931640625 degrees per unit, decoded by adding the accumulated network angle delta, normalised into 0..360, and then clamped: pitch is limited to 85 degrees up and 85 degrees down. When the clamp bites, the correction is written back into the delta so the client and server agree on the clamped angle instead of fighting each other every command. Actions are individual bits of one word, so jump is bit 10; a jump only fires on the rising edge, so the previous command has to have the bit clear. Sprint additionally compares the forward axis against a threshold of 105 of 127, so a weak deflection cannot sustain it.",
+      "constants": [
+        {
+          "name": "full analog deflection",
+          "value": 127,
+          "unit": "command axis units at full stick deflection, per command",
+          "source": "src/bgame/bg_pmove.cpp:2763"
+        },
+        {
+          "name": "degrees per angle unit",
+          "value": 0.0054931640625,
+          "unit": "degrees per 16 bit angle unit, per command",
+          "source": "src/bgame/bg_pmove.cpp:742"
+        },
+        {
+          "name": "pitch clamp up",
+          "value": 85,
+          "unit": "degrees from level, applied every command",
+          "source": "src/bgame/bg_misc.cpp:358"
+        },
+        {
+          "name": "pitch clamp down",
+          "value": 85,
+          "unit": "degrees from level, applied every command",
+          "source": "src/bgame/bg_misc.cpp:366"
+        },
+        {
+          "name": "forward axis needed to sustain sprint",
+          "value": 105,
+          "unit": "command axis units out of 127, per command",
+          "source": "src/bgame/bg_misc.cpp:865"
+        },
+        {
+          "name": "jump button bit",
+          "value": 10,
+          "unit": "bit index inside the button word, per command",
+          "source": "src/qcommon/msg_mp.h:21"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 663
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 742
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 753
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 239
+        },
+        {
+          "path": "src/qcommon/msg_mp.h",
+          "line": 21
+        }
+      ],
+      "capabilities": [
+        "analog movement axes",
+        "quantised view angles",
+        "edge triggered buttons"
+      ],
+      "tags": [
+        "input",
+        "mapping",
+        "controls"
+      ]
+    },
+    {
+      "id": "ground-acceleration",
+      "node": "pmove-locomotion",
+      "name": "Stance dependent ground acceleration",
+      "summary": "Ground acceleration is 9 standing, 12 crouched and 19 prone, collapses to 1 on slick or knocked back ground and is quartered during a hard landing; it only ever fills the gap up to the wish speed.",
+      "behavior": "Acceleration is not a force but a rate limit on how fast the velocity along the wish direction may reach the wish speed. Each step the code takes the dot product of the current velocity and the wish direction, subtracts it from the wish speed, and if there is any shortfall adds accel times the step length times a control speed, never more than the shortfall itself. The result is that at low speed the direction change is almost instant, while at the cap the player keeps almost all of the old velocity and turns slowly, which is the characteristic feeling of a heavy first person character. The rate is chosen by stance and surface: prone accelerates fastest so going prone does not feel sticky, crouch is between, slick surfaces and knockback drop the rate to 1 so the player can barely steer, and the hard landing flag multiplies whatever was chosen by 0.25. A player inertia limiter then caps the acceleration contribution at a ceiling of 50 units and only engages when the old velocity is large enough to matter, which suppresses rapid alternating strafe spam without touching normal turning. After acceleration the velocity is projected back onto the ground plane so a slope cannot accumulate outward velocity over time.",
+      "constants": [
+        {
+          "name": "slick or knockback acceleration",
+          "value": 1,
+          "unit": "acceleration constant, per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:2678"
+        },
+        {
+          "name": "prone acceleration",
+          "value": 19,
+          "unit": "acceleration constant, per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:2682"
+        },
+        {
+          "name": "crouched acceleration",
+          "value": 12,
+          "unit": "acceleration constant, per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:2686"
+        },
+        {
+          "name": "standing acceleration",
+          "value": 9,
+          "unit": "acceleration constant, per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:2690"
+        },
+        {
+          "name": "hard landing acceleration multiplier",
+          "value": 0.25,
+          "unit": "dimensionless multiplier, applied per fixed movement step while the flag is set",
+          "source": "src/bgame/bg_pmove.cpp:2694"
+        },
+        {
+          "name": "inertia acceleration ceiling",
+          "value": 50,
+          "unit": "velocity units per second added per step at most, per fixed movement step",
+          "source": "src/bgame/bg_misc.cpp:503"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2674
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2321
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2336
+        }
+      ],
+      "capabilities": [
+        "stance dependent acceleration",
+        "velocity shortfall clamp",
+        "inertia limiter"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "game feel"
+      ]
+    },
+    {
+      "id": "friction-and-stop-speed",
+      "node": "pmove-locomotion",
+      "name": "Friction, stop speed and the resting dead zone",
+      "summary": "Friction removes speed proportional to the larger of the current speed and a 100 unit stop speed, at a rate of 5.5 per second, but is skipped below 1 unit per second where the velocity is zeroed outright.",
+      "behavior": "Friction runs before acceleration every step, and it uses the horizontal speed only while the player is walking, so falling velocity is not bled away while running off a ledge. Above one unit per second of speed the movement removes a distance of control speed times friction times the step length, where the control speed is the larger of the current speed and the stop speed of 100 units per second. That single choice produces two regimes: faster than 100 the deceleration scales with speed, giving a smooth asymptotic glide, and slower than 100 the deceleration is constant at 550 units per second squared, giving a predictable, crisp stop. Below one unit per second the whole velocity vector is zeroed, which prevents the endless creep that a proportional model would leave behind. Several states replace or scale friction: a hard landing multiplies the control speed by 0.3 for extra grip, a jump in progress multiplies it by a ramp that climbs to 2.5 as the landing slowdown expires, slick ground and knockback disable it entirely, and a melee charge uses its own very large friction instead so a lunge stops almost immediately.",
+      "constants": [
+        {
+          "name": "ground friction rate",
+          "value": 5.5,
+          "unit": "per second, multiplied by the step length each fixed step",
+          "source": "src/bgame/bg_misc.cpp:515"
+        },
+        {
+          "name": "stop speed",
+          "value": 100,
+          "unit": "velocity units per second, compared once per fixed step",
+          "source": "src/bgame/bg_misc.cpp:601"
+        },
+        {
+          "name": "friction dead zone",
+          "value": 1,
+          "unit": "velocity units per second, tested once per fixed step",
+          "source": "src/bgame/bg_pmove.cpp:2233"
+        },
+        {
+          "name": "hard landing friction multiplier",
+          "value": 0.300000011920929,
+          "unit": "dimensionless multiplier on the control speed, per fixed step",
+          "source": "src/bgame/bg_pmove.cpp:2251"
+        },
+        {
+          "name": "noclip friction multiplier",
+          "value": 1.5,
+          "unit": "dimensionless multiplier on the friction rate, per fixed step",
+          "source": "src/bgame/bg_pmove.cpp:2897"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2211
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2258
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2263
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2272
+        }
+      ],
+      "capabilities": [
+        "two regime deceleration",
+        "surface dependent friction",
+        "rest snapping"
+      ],
+      "tags": [
+        "movement",
+        "friction",
+        "game feel"
+      ]
+    },
+    {
+      "id": "air-control",
+      "node": "pmove-locomotion",
+      "name": "Air acceleration and gravity integration",
+      "summary": "Airborne movement keeps the ground friction but uses an acceleration constant of 1, so steering adds only the perpendicular component; gravity at 800 units per second squared is integrated once per step.",
+      "behavior": "While the player is not on the ground the same wish direction and scale are computed, but acceleration is 1 instead of the stance rate. With such a small constant the shortfall clamp almost never binds, so the added velocity is a small vector in the wish direction; projecting it on the existing motion means the component that would slow the player down is capped by the shortfall while the perpendicular component is free. Turning the view while holding a strafe key therefore curves the trajectory and can add speed, because the wish direction becomes orthogonal to the current velocity. Vertical velocity is integrated separately with gravity, 800 units per second squared, once per step, and the sweep is then run with gravity enabled so the collision step works on the mid-step velocity. Step-up handling is only reachable while the jump state is active, so a plain fall along a wall cannot be converted into a climb.",
+      "constants": [
+        {
+          "name": "air acceleration constant",
+          "value": 1,
+          "unit": "acceleration constant, per fixed movement step",
+          "source": "src/bgame/bg_pmove.cpp:2532"
+        },
+        {
+          "name": "world gravity",
+          "value": 800,
+          "unit": "velocity units per second squared, integrated once per fixed step",
+          "source": "src/game/g_main.cpp:309"
+        },
+        {
+          "name": "airborne spread decay divisor",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on the weapon spread decay rate, per fixed step",
+          "source": "src/bgame/bg_weapons.cpp:1146"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2497
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2532
+        },
+        {
+          "path": "src/game/g_main.cpp",
+          "line": 309
+        }
+      ],
+      "capabilities": [
+        "air strafing",
+        "gravity integration",
+        "no step up while falling"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "jump"
+      ]
+    },
+    {
+      "id": "sprint-budget",
+      "node": "pmove-locomotion",
+      "name": "Sprint as a millisecond budget",
+      "summary": "Sprint lasts the base sprint time scaled by the weapon and a perk, capped at 16383 ms; it requires 1 second of remaining budget to start, a 1.5 speed multiplier and a 0.667 strafe multiplier while active.",
+      "behavior": "The budget is the base sprint time of 4 seconds converted to milliseconds and scaled by the equipped weapon and, in multiplayer, by a sprint perk, then clamped to 16383 ms because the value is stored in a 14 bit field. Starting a sprint requires more than 1 second of the budget left, a forward axis above 105 of 127, no attack, melee, reload, jump or grenade buttons held, a standable stance, and no lean, mantle or shellshock flag; releasing and re-pressing the sprint button is required after an interruption so a held button cannot chain sprints. While active the speed scale multiplies the command scale by 1.5 and the strafe axis is multiplied by 0.667 first, so sprinting forward is fast while sprinting sideways is not. The budget drains in real time against the command clock rather than by step count, and the recharge pause default of zero means refill starts immediately after the sprint ends.",
+      "constants": [
+        {
+          "name": "base sprint time",
+          "value": 4,
+          "unit": "seconds of budget at weapon scale 1, converted to milliseconds once per sprint",
+          "source": "src/bgame/bg_misc.cpp:881"
+        },
+        {
+          "name": "minimum budget to start a sprint",
+          "value": 1,
+          "unit": "seconds of remaining budget, tested once per fixed step",
+          "source": "src/bgame/bg_misc.cpp:889"
+        },
+        {
+          "name": "sprint speed scale",
+          "value": 1.5,
+          "unit": "dimensionless multiplier on the command speed scale, per fixed step",
+          "source": "src/bgame/bg_misc.cpp:873"
+        },
+        {
+          "name": "sprint strafe scale",
+          "value": 0.667,
+          "unit": "dimensionless multiplier on the right axis, per fixed step",
+          "source": "src/bgame/bg_misc.cpp:905"
+        },
+        {
+          "name": "seconds to milliseconds factor",
+          "value": 1000,
+          "unit": "milliseconds per second, applied when the budget is computed",
+          "source": "src/bgame/bg_misc.cpp:2339"
+        },
+        {
+          "name": "sprint recharge pause",
+          "value": 0,
+          "unit": "seconds before the budget refills, tested per fixed step",
+          "source": "src/bgame/bg_misc.cpp:897"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2026
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2044
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2091
+        },
+        {
+          "path": "src/bgame/bg_misc.cpp",
+          "line": 2339
+        }
+      ],
+      "capabilities": [
+        "timed sprint",
+        "input gated start",
+        "forward biased speed"
+      ],
+      "tags": [
+        "movement",
+        "stamina",
+        "controls"
+      ]
+    },
+    {
+      "id": "jump-arc",
+      "node": "pmove-jump",
+      "name": "Jump launch velocity from a target apex",
+      "summary": "A jump is launched at the speed needed to reach a 39 unit apex under 800 units per second squared gravity, roughly 250 units per second, is refused for 500 ms after the previous jump, and is clamped so the apex is never exceeded.",
+      "behavior": "The launch speed is computed as the square root of twice the target apex height times gravity, so the apex is an author tunable in world units rather than a velocity. With the default 39 units and 800 units per second squared the launch is about 250 units per second and the rise takes about a third of a second. The gate rejects a jump while the jump flag, respawn, mantle, crouch or prone state applies, while the previous jump is younger than 500 ms, and when the button was already down on the previous command, which forces a release before the next jump. During the rise a ceiling clamp compares the remaining height to the apex every step: below 0.1 units the vertical velocity is zeroed, otherwise it is capped at the speed that would exactly reach the apex, so a boosted or stepped landing cannot overshoot the arc. Jumping also adds 64 to the aim spread accumulator, capped at 255, and clears the hard landing and knockback timers.",
+      "constants": [
+        {
+          "name": "jump apex height",
+          "value": 39,
+          "unit": "world units above the launch point, converted to velocity on each jump",
+          "source": "src/bgame/bg_jump.cpp:24"
+        },
+        {
+          "name": "jump re-use cooldown",
+          "value": 500,
+          "unit": "milliseconds between jumps, tested once per fixed step",
+          "source": "src/bgame/bg_jump.cpp:221"
+        },
+        {
+          "name": "aim spread added per jump",
+          "value": 64,
+          "unit": "spread accumulator points out of 255, added once per jump",
+          "source": "src/bgame/bg_jump.cpp:46"
+        },
+        {
+          "name": "apex clamp dead band",
+          "value": 0.1000000014901161,
+          "unit": "world units of remaining height, tested once per fixed step",
+          "source": "src/bgame/bg_jump.cpp:196"
+        },
+        {
+          "name": "jump step height",
+          "value": 18,
+          "unit": "world units of step up allowed along the jump arc, per fixed step",
+          "source": "src/bgame/bg_jump.cpp:29"
+        },
+        {
+          "name": "spread accumulator ceiling",
+          "value": 255,
+          "unit": "spread accumulator points, clamped once per jump",
+          "source": "src/bgame/bg_jump.cpp:296"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 272
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 210
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 184
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 262
+        }
+      ],
+      "capabilities": [
+        "apex based jump height",
+        "edge triggered jump",
+        "ceiling clamp"
+      ],
+      "tags": [
+        "jump",
+        "vertical movement",
+        "game feel"
+      ]
+    },
+    {
+      "id": "landing-slowdown",
+      "node": "pmove-jump",
+      "name": "Landing slowdown windows and friction ramp",
+      "summary": "Landing scales velocity to 0.5 for 1200 ms after a full height jump or 0.65 for 1800 ms otherwise, and raises ground friction up to 2.5 as the window expires.",
+      "behavior": "The jump state runs a millisecond timer. On the first excited step after take-off, if the player has climbed at least 18 units the timer is set to 1200 ms and the velocity is halved, otherwise it is set to 1800 ms and scaled to 0.65; once the timer has already run past 1800 ms the state clears and the velocity is scaled by 0.65 one last time. Friction consults the same state: while the timer is above 1700 ms the multiplier is 2.5, otherwise it ramps linearly from 1.0 at zero elapsed to 2.5 at 1700 ms, so the player regains normal grip gradually instead of snapping back. Jumping again inside the window divides the squared launch velocity by the same land factor before the square root is taken, which makes a chained jump measurably lower than the first. The effect is deliberately non-linear: the loss is concentrated at the start of the landing and the recovery is gradual.",
+      "constants": [
+        {
+          "name": "short landing slowdown time",
+          "value": 1800,
+          "unit": "milliseconds of slowdown after a jump that did not reach the apex",
+          "source": "src/bgame/bg_jump.cpp:119"
+        },
+        {
+          "name": "full height landing slowdown time",
+          "value": 1200,
+          "unit": "milliseconds of slowdown after a jump that reached the apex",
+          "source": "src/bgame/bg_jump.cpp:135"
+        },
+        {
+          "name": "full height landing velocity scale",
+          "value": 0.5,
+          "unit": "dimensionless velocity multiplier, applied once at take-off resolution",
+          "source": "src/bgame/bg_jump.cpp:136"
+        },
+        {
+          "name": "partial landing velocity scale",
+          "value": 0.64999998,
+          "unit": "dimensionless velocity multiplier, applied once when the window expires",
+          "source": "src/bgame/bg_jump.cpp:141"
+        },
+        {
+          "name": "peak landing friction multiplier",
+          "value": 2.5,
+          "unit": "dimensionless multiplier on the friction rate, per fixed step",
+          "source": "src/bgame/bg_jump.cpp:179"
+        },
+        {
+          "name": "friction ramp slope",
+          "value": 0.0005882352706976235,
+          "unit": "friction multiplier per millisecond of timer, computed per fixed step",
+          "source": "src/bgame/bg_jump.cpp:181"
+        },
+        {
+          "name": "jump apex threshold for the full slowdown",
+          "value": 18,
+          "unit": "world units climbed, compared once per jump",
+          "source": "src/bgame/bg_jump.cpp:133"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 123
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 154
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 2642
+        },
+        {
+          "path": "src/bgame/bg_jump.cpp",
+          "line": 150
+        }
+      ],
+      "capabilities": [
+        "landing penalty",
+        "friction ramp",
+        "chained jump reduction"
+      ],
+      "tags": [
+        "jump",
+        "landing",
+        "game feel"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "pmove-jump",
+      "name": "Fall damage from an equivalent free-fall height",
+      "summary": "Impact velocity is converted back into an equivalent fall height and mapped to 0..100 damage between 128 and 300 units, with a separate view dip and stun timer for the landing itself.",
+      "behavior": "On the first contact step the code recovers the impact speed from the previous step displacement and vertical velocity, then converts it to the height that would have produced it under the current gravity, so a jump, a fall and a launch all use the same scale. Below 128 units of equivalent height there is no damage; between 128 and 300 the fraction of the range is scaled to 0..100 and truncated, so the first damage points appear immediately above the threshold and the maximum arrives exactly at 300; above 300 the damage is the full 100. Non-damaging surfaces and dead players are exempt, and an inverted configuration is reported and treated as zero damage rather than being silently clamped. Independently of damage, a fall over 12 units adds a downward camera dip of four degrees plus four more degrees for every 26 units of height above that threshold, clamped at 24 degrees. A damaging landing instead sets a stun timer of 35 ms per damage point plus 500 ms, clamped at 2000 ms, and scales the horizontal velocity between 0.5 and 0.2 depending on the timer length, also raising the hard landing flag so ground acceleration is quartered until the timer expires.",
+      "constants": [
+        {
+          "name": "fall damage start height",
+          "value": 128,
+          "unit": "world units of equivalent free fall, evaluated once per landing",
+          "source": "src/bgame/bg_misc.cpp:489"
+        },
+        {
+          "name": "fall damage maximum height",
+          "value": 300,
+          "unit": "world units of equivalent free fall, evaluated once per landing",
+          "source": "src/bgame/bg_misc.cpp:497"
+        },
+        {
+          "name": "full damage value",
+          "value": 100,
+          "unit": "health points, applied once per damaging landing",
+          "source": "src/bgame/bg_pmove.cpp:3179"
+        },
+        {
+          "name": "damage percentage cap",
+          "value": 100,
+          "unit": "health points, clamped once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3165"
+        },
+        {
+          "name": "view dip start height",
+          "value": 12,
+          "unit": "world units of equivalent free fall, evaluated once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3188"
+        },
+        {
+          "name": "view dip height divisor",
+          "value": 26,
+          "unit": "world units per four degrees of view dip, evaluated once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3190"
+        },
+        {
+          "name": "view dip clamp",
+          "value": 24,
+          "unit": "degrees of downward camera offset, clamped once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3191"
+        },
+        {
+          "name": "stun milliseconds per damage point",
+          "value": 35,
+          "unit": "milliseconds per health point of fall damage, computed once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3211"
+        },
+        {
+          "name": "landing stun base",
+          "value": 500,
+          "unit": "milliseconds added to the stun timer, computed once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3211"
+        },
+        {
+          "name": "landing stun clamp",
+          "value": 2000,
+          "unit": "milliseconds, clamped once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3212"
+        },
+        {
+          "name": "hard landing speed floor",
+          "value": 0.2,
+          "unit": "dimensionless velocity multiplier, applied once per landing",
+          "source": "src/bgame/bg_pmove.cpp:3220"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 3118
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 3142
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 3150
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 3231
+        },
+        {
+          "path": "src/bgame/bg_pmove.cpp",
+          "line": 3237
+        }
+      ],
+      "capabilities": [
+        "height based damage",
+        "camera dip",
+        "landing stun"
+      ],
+      "tags": [
+        "falling",
+        "damage",
+        "camera"
+      ]
+    },
+    {
+      "id": "step-slide-collision",
+      "node": "pmove-collision",
+      "name": "Swept slide with step up and reattach",
+      "summary": "The sweep uses four bumps and eight clip planes on a 30 by 30 by 70 box, then a blocked move is retried as an 18 unit step up (10 prone) followed by a downward trace 9 units past the step height.",
+      "behavior": "The player is a box 30 units wide and 70 tall. A sweep splits the remaining step time across up to four bumps; after each impact the velocity is clipped against the plane, and the solver keeps up to eight planes so a corner can be resolved by permuting the most restrictive pair. The ground plane and the incoming velocity direction are pre-seeded as clip planes, which prevents the solver from ever turning the player back into the floor or reversing the move. Gravity is folded in by averaging the pre and post gravity vertical velocity before the sweep, so the arc is symmetric over the step. The step retry is only considered while the player is on the ground, or while a jump or a ladder climb is lifting them, and inside that it triggers when the sweep was blocked or when the ground normal is flatter than 0.9, which is how walking into the base of a step is detected. The retry raises the start position by step size plus one, re-runs the sweep, then traces down by the achieved height plus 9 units to find the new floor; it is rejected if the down trace hits another player, if the resulting surface is steeper than a 0.3 normal, or if the horizontal progress is not better than the unstepped result. Prone uses a 10 unit step so a prone player cannot climb what a standing player can, and the camera is told about the height change so it can be smoothed rather than snapped.",
+      "constants": [
+        {
+          "name": "standing step height",
+          "value": 18,
+          "unit": "world units of climbable step, tested once per fixed movement step",
+          "source": "src/bgame/bg_slidemove.cpp:74"
+        },
+        {
+          "name": "prone step height",
+          "value": 10,
+          "unit": "world units of climbable step, tested once per fixed movement step",
+          "source": "src/bgame/bg_slidemove.cpp:72"
+        },
+        {
+          "name": "step probe overshoot",
+          "value": 1,
+          "unit": "world units added to the step height, per step attempt",
+          "source": "src/bgame/bg_slidemove.cpp:99"
+        },
+        {
+          "name": "downward reattach distance",
+          "value": 9,
+          "unit": "world units below the current position, traced once per step attempt",
+          "source": "src/bgame/bg_slidemove.cpp:127"
+        },
+        {
+          "name": "walkable normal threshold",
+          "value": 0.300000011920929,
+          "unit": "cosine of the surface angle, tested once per step attempt",
+          "source": "src/bgame/bg_slidemove.cpp:142"
+        },
+        {
+          "name": "flat ground normal threshold",
+          "value": 0.8999999761581421,
+          "unit": "cosine of the surface angle, tested once per fixed movement step",
+          "source": "src/bgame/bg_slidemove.cpp:93"
+        },
+        {
+          "name": "clip plane budget",
+          "value": 8,
+          "unit": "simultaneous contact planes, per bump",
+          "source": "src/bgame/bg_slidemove.cpp:7"
+        },
+        {
+          "name": "sweep bump budget",
+          "value": 4,
+          "unit": "sub traces, per fixed movement step",
+          "source": "src/bgame/bg_slidemove.cpp:302"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_slidemove.cpp",
+          "line": 9
+        },
+        {
+          "path": "src/bgame/bg_slidemove.cpp",
+          "line": 277
+        },
+        {
+          "path": "src/bgame/bg_local.h",
+          "line": 2458
+        },
+        {
+          "path": "src/bgame/bg_slidemove.cpp",
+          "line": 157
+        }
+      ],
+      "capabilities": [
+        "step up",
+        "plane clipping",
+        "slope handling"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "stairs"
+      ]
+    },
+    {
+      "id": "mantle-ledge-search",
+      "node": "pmove-mantle",
+      "name": "Ledge search order and animation banding",
+      "summary": "Mantle probes a thin box forward 20 units, requires a mantlable surface within 60 degrees of the view, and tests ledges at 60, 40 then 20 units so the highest reachable ledge wins.",
+      "behavior": "The search starts 14.9 units behind the player and traces 20 units forward with a box only 0.2 units wide and 70 units tall, so it is effectively a vertical sheet probing for a mantlable face. The surface must carry a mantle flag, its horizontal normal must be within 60 degrees of the view direction, and a purely vertical normal is rejected because it means the player is facing a wall that offers no ledge. A mantle-over surface flag is recorded on the result so the animation set can end on top of the ledge instead of stopping at its edge. Candidate heights are tried in descending order, 60 then 40 then 20 units above the player origin, and the first one that traces a valid box position wins, which biases mantling towards the highest ledge the player is aiming near. The chosen height selects the first animation band whose table entry does not exceed it, mapping 57, 51, 45, 39, 33, 27 and 21 unit bands onto three over-the-ledge variants. While the mantle runs, view yaw is capped at 60 degrees from the entry direction so the animation cannot be fought by the mouse.",
+      "constants": [
+        {
+          "name": "mantle forward reach",
+          "value": 20,
+          "unit": "world units of forward trace, evaluated once per fixed movement step",
+          "source": "src/bgame/bg_mantle.cpp:75"
+        },
+        {
+          "name": "mantle probe radius",
+          "value": 0.1,
+          "unit": "world units half width of the probe box, per mantle test",
+          "source": "src/bgame/bg_mantle.cpp:83"
+        },
+        {
+          "name": "mantle facing tolerance",
+          "value": 60,
+          "unit": "degrees between view direction and surface normal, per mantle test",
+          "source": "src/bgame/bg_mantle.cpp:91"
+        },
+        {
+          "name": "mantle view yaw cap",
+          "value": 60,
+          "unit": "degrees of allowed yaw change while mantling, per fixed movement step",
+          "source": "src/bgame/bg_mantle.cpp:99"
+        },
+        {
+          "name": "first ledge probe height",
+          "value": 60,
+          "unit": "world units above the player origin, tested first per mantle attempt",
+          "source": "src/bgame/bg_mantle.cpp:203"
+        },
+        {
+          "name": "lowest ledge probe height",
+          "value": 20,
+          "unit": "world units above the player origin, tested last per mantle attempt",
+          "source": "src/bgame/bg_mantle.cpp:204"
+        },
+        {
+          "name": "tallest mantle animation band",
+          "value": 57,
+          "unit": "world units of ledge height for the highest up animation",
+          "source": "src/bgame/bg_mantle.cpp:53"
+        },
+        {
+          "name": "shortest mantle animation band",
+          "value": 21,
+          "unit": "world units of ledge height for the lowest up animation",
+          "source": "src/bgame/bg_mantle.cpp:59"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_mantle.cpp",
+          "line": 167
+        },
+        {
+          "path": "src/bgame/bg_mantle.cpp",
+          "line": 499
+        },
+        {
+          "path": "src/bgame/bg_mantle.cpp",
+          "line": 203
+        },
+        {
+          "path": "src/bgame/bg_mantle.cpp",
+          "line": 469
+        }
+      ],
+      "capabilities": [
+        "ledge detection",
+        "animation driven movement",
+        "view yaw lock"
+      ],
+      "tags": [
+        "mantle",
+        "vertical movement",
+        "collision"
+      ]
+    },
+    {
+      "id": "camera-shake",
+      "node": "camera-view",
+      "name": "Proximity shake with four slots",
+      "summary": "Four shakes can coexist; each decays with distance from its source and with remaining duration, and the final offsets are three phase shifted sine terms at 8, 15 and 12 pi radians per 600 ms clock wrap, scaled 18, 16 and 10 degrees.",
+      "behavior": "A shake stores a source position, radius, peak scale and duration. When all four slots are busy the smallest active shake is evicted, so a nearby explosion replaces a distant one instead of being dropped. Size combines two decays: a spatial term of one minus distance over radius, and a temporal term of one minus elapsed over duration. When the viewer is outside the radius the spatial term is negative, and in that case it is divided by the temporal term instead of multiplied, which keeps the magnitude bounded; the result stays negative and so never wins the strongest-shake comparison. The strongest surviving shake, or the current rumble scale if larger, drives the offsets: pitch, yaw and roll each get a sine of the phase plus the free running clock scaled by 8 pi, 15 pi and 12 pi, so the three axes cycle at different rates and never lock in step, with amplitudes of 18, 16 and 10 degrees in that order. When nothing is active the phase is randomised over zero to pi, so consecutive events do not start from the same orientation.",
+      "constants": [
+        {
+          "name": "simultaneous shake slots",
+          "value": 4,
+          "unit": "slot count, per local client per update",
+          "source": "src/cgame/cg_camerashake.cpp:15"
+        },
+        {
+          "name": "shake clock wrap",
+          "value": 600,
+          "unit": "milliseconds per oscillation clock cycle, evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:149"
+        },
+        {
+          "name": "pitch oscillation rate factor",
+          "value": 25.13274192810059,
+          "unit": "radians per clock cycle (8 pi), evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:175"
+        },
+        {
+          "name": "pitch shake amplitude",
+          "value": 18,
+          "unit": "degrees at full scale, evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:176"
+        },
+        {
+          "name": "yaw oscillation rate factor",
+          "value": 47.1238899230957,
+          "unit": "radians per clock cycle (15 pi), evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:178"
+        },
+        {
+          "name": "yaw shake amplitude",
+          "value": 16,
+          "unit": "degrees at full scale, evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:179"
+        },
+        {
+          "name": "roll oscillation rate factor",
+          "value": 37.69911193847656,
+          "unit": "radians per clock cycle (12 pi), evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:181"
+        },
+        {
+          "name": "roll shake amplitude",
+          "value": 10,
+          "unit": "degrees at full scale, evaluated per client frame",
+          "source": "src/cgame/cg_camerashake.cpp:182"
+        },
+        {
+          "name": "idle phase randomisation range",
+          "value": 3.141592741012573,
+          "unit": "radians, randomised once when all shakes are inactive",
+          "source": "src/cgame/cg_camerashake.cpp:187"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/cgame/cg_camerashake.cpp",
+          "line": 25
+        },
+        {
+          "path": "src/cgame/cg_camerashake.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/cgame/cg_camerashake.cpp",
+          "line": 129
+        }
+      ],
+      "capabilities": [
+        "proximity falloff",
+        "slot eviction",
+        "multi axis oscillation"
+      ],
+      "tags": [
+        "camera",
+        "explosion",
+        "feedback"
+      ]
+    },
+    {
+      "id": "view-kick-and-step-smoothing",
+      "node": "camera-view",
+      "name": "Recoil recovery sub-steps and vertical step smoothing",
+      "summary": "Recoil recovers at a per weapon centring speed integrated in 5 ms sub-steps and clamps at 10 degrees, while a step up or down spreads the vertical camera change over 100 ms.",
+      "behavior": "Recoil is stored as a target angle pair and a current angle pair. Each client frame the elapsed time is split into sub-steps of at most 5 ms so a long frame does not overshoot: the current angle is pushed towards the target by the centring speed, which comes from the weapon and is selected by whether the player is aiming down sights, with a fallback of 2400 degrees per second when no weapon is equipped. When the recovery would cross zero inside a sub-step the step is multiplied by 0.06, which produces a fast but non-oscillating settle, and the angle is hard clamped to plus or minus 10 degrees. Separately, when the collision step reports a vertical displacement, the client records the change and its start time: the view origin is pulled down by the remaining fraction of that displacement, linear over the 100 ms smoothing window, so an 18 unit step reads as a short rise rather than a teleport. Client side prediction skips the smoothing entirely when the recorded step change is zero, is older than the current prediction entry, or follows a teleport, so a respawn is not animated.",
+      "constants": [
+        {
+          "name": "recoil sub-step length",
+          "value": 5,
+          "unit": "milliseconds per recovery integration sub-step, per client frame",
+          "source": "src/cgame/cg_view.cpp:224"
+        },
+        {
+          "name": "milliseconds to seconds factor",
+          "value": 0.001,
+          "unit": "seconds per millisecond, applied per sub-step",
+          "source": "src/cgame/cg_view.cpp:254"
+        },
+        {
+          "name": "default recoil centring speed",
+          "value": 2400,
+          "unit": "degrees per second, applied per sub-step when no weapon is held",
+          "source": "src/cgame/cg_view.cpp:252"
+        },
+        {
+          "name": "recoil overshoot damper",
+          "value": 0.059999999,
+          "unit": "dimensionless multiplier when a sub-step crosses zero, per sub-step",
+          "source": "src/cgame/cg_view.cpp:262"
+        },
+        {
+          "name": "recoil angle clamp",
+          "value": 10,
+          "unit": "degrees per axis, clamped per sub-step",
+          "source": "src/cgame/cg_view.cpp:273"
+        },
+        {
+          "name": "vertical step smoothing window",
+          "value": 0.1,
+          "unit": "seconds, converted to milliseconds once per step event",
+          "source": "src/cgame/cg_main.cpp:523"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/cgame/cg_view.cpp",
+          "line": 202
+        },
+        {
+          "path": "src/cgame/cg_view.cpp",
+          "line": 169
+        },
+        {
+          "path": "src/cgame/cg_view.cpp",
+          "line": 191
+        },
+        {
+          "path": "src/cgame/cg_main.cpp",
+          "line": 523
+        },
+        {
+          "path": "src/cgame/cg_predict.cpp",
+          "line": 597
+        }
+      ],
+      "capabilities": [
+        "recoil recovery",
+        "zero crossing damper",
+        "step camera smoothing"
+      ],
+      "tags": [
+        "camera",
+        "recoil",
+        "feedback"
+      ]
+    },
+    {
+      "id": "hipfire-spread",
+      "node": "weapon-spread",
+      "name": "Hip spread accumulator and view height interpolation",
+      "summary": "A 0..255 accumulator grows from view turn rate, planar speed above a threshold and air state, then interpolates between per weapon stance cones using the view height around 11, 40 and 60 units.",
+      "behavior": "The accumulator is the single state that drives hip accuracy. Each step either grows or decays it, never both: when the three growth terms produce a positive increase the accumulator grows by that increase and no decay is applied, and otherwise it decays by the weapon decay rate times the step length. The growth terms are a turn term equal to the absolute view angle change in degrees divided by the step length, factored by 0.01 and the weapon turn add; a movement term equal to speed times the weapon move add divided by base speed, only when the planar speed exceeds the aim spread move threshold; and an airborne term of two increments of 0.01 times 128. Note the turn term divides by the step length before being multiplied back, which makes it rate independent, while the movement term does not. The decay rate is halved in the air and multiplied by the per stance decay factors of the weapon for prone and crouched targets. The accumulator is then read as a fraction between the minimum and maximum spread for the current stance, chosen from per weapon tables and blended by view height: below 40 units the blend runs from the prone cone at 11 to the crouched cone at 40 over a 29 unit ramp, above 40 it runs from the crouched cone to the standing cone at 60 over a 20 unit ramp. Aiming down sights bypasses the stance blend and interpolates the aim spread with the same accumulator fraction.",
+      "constants": [
+        {
+          "name": "degrees per angle unit",
+          "value": 0.0054931640625,
+          "unit": "degrees per 16 bit angle unit, read once per fixed step",
+          "source": "src/bgame/bg_weapons.cpp:1168"
+        },
+        {
+          "name": "turn term time factor",
+          "value": 0.0099999998,
+          "unit": "dimensionless factor on the angular rate, applied per fixed step",
+          "source": "src/bgame/bg_weapons.cpp:1171"
+        },
+        {
+          "name": "airborne spread increment",
+          "value": 128,
+          "unit": "spread accumulator points per axis fraction, added per fixed step while airborne",
+          "source": "src/bgame/bg_weapons.cpp:1187"
+        },
+        {
+          "name": "spread accumulator ceiling",
+          "value": 255,
+          "unit": "spread accumulator points, clamped once per fixed step",
+          "source": "src/bgame/bg_weapons.cpp:1205"
+        },
+        {
+          "name": "airborne spread decay multiplier",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on the decay rate, per fixed step",
+          "source": "src/bgame/bg_weapons.cpp:1146"
+        },
+        {
+          "name": "crouch view height",
+          "value": 40,
+          "unit": "world units of eye height, evaluated once per shot",
+          "source": "src/bgame/bg_weapons.cpp:747"
+        },
+        {
+          "name": "prone to crouch blend range",
+          "value": 29,
+          "unit": "world units of view height, evaluated once per shot",
+          "source": "src/bgame/bg_weapons.cpp:749"
+        },
+        {
+          "name": "crouch to stand blend range",
+          "value": 20,
+          "unit": "world units of view height, evaluated once per shot",
+          "source": "src/bgame/bg_weapons.cpp:755"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/bgame/bg_weapons.cpp",
+          "line": 1094
+        },
+        {
+          "path": "src/bgame/bg_weapons.cpp",
+          "line": 730
+        },
+        {
+          "path": "src/bgame/bg_weapons.cpp",
+          "line": 1155
+        },
+        {
+          "path": "src/bgame/bg_weapons.cpp",
+          "line": 1194
+        }
+      ],
+      "capabilities": [
+        "accumulated spread",
+        "stance based cone",
+        "aim blend"
+      ],
+      "tags": [
+        "weapons",
+        "accuracy",
+        "combat"
+      ]
+    },
+    {
+      "id": "bullet-penetration",
+      "node": "combat-hitscan",
+      "name": "Shot cone, impact chain and penetration depth",
+      "summary": "A shot is a ray offset inside the spread cone by a random radius and angle, chains through up to 12 impacts (or 5 penetrations), and halves damage per entity it passes through.",
+      "behavior": "The muzzle direction is perturbed by taking the tangent of the spread angle in degrees and multiplying by the maximum range to get a lateral offset budget, then choosing a uniformly random radius and a uniformly random angle over a full turn to distribute the offset in the right and up basis. The result is a disc rather than a gaussian, so the edge of the cone is as likely as the middle at a given radius fraction. Two chain algorithms then run. The plain chain allows up to 12 impact iterations: glass is passed through with a 0.135 unit push along the ray so the next trace starts outside the surface, and each entity passed through halves the damage multiplier, so the third body hit carries a quarter of the original damage. The penetration chain instead allows 5 penetration attempts, reads the maximum depth for the weapon penetration class and the surface type from a table, multiplies it by 2.0 when the penetration perk is active, pushes the start 0.135 units and then traces backwards 0.01 units from the pre-impact point to verify the exit hole is not a solid pocket; if the reverse trace is solid or the surface has no depth budget the chain stops and no damage is transmitted.",
+      "constants": [
+        {
+          "name": "impact push distance",
+          "value": 0.13500001,
+          "unit": "world units along the ray, per impact in the chain",
+          "source": "src/game/bullet.cpp:329"
+        },
+        {
+          "name": "impact chain length",
+          "value": 12,
+          "unit": "trace iterations, per shot",
+          "source": "src/game/bullet.cpp:324"
+        },
+        {
+          "name": "damage multiplier per body passed",
+          "value": 0.5,
+          "unit": "dimensionless multiplier, applied per entity passed through",
+          "source": "src/game/bullet.cpp:353"
+        },
+        {
+          "name": "penetration attempts",
+          "value": 5,
+          "unit": "penetration iterations, per shot",
+          "source": "src/game/bullet.cpp:843"
+        },
+        {
+          "name": "reverse trace epsilon",
+          "value": 0.01,
+          "unit": "world units, applied once per penetration test",
+          "source": "src/game/bullet.cpp:885"
+        },
+        {
+          "name": "penetration perk multiplier",
+          "value": 2,
+          "unit": "dimensionless multiplier on the depth budget, evaluated per penetration",
+          "source": "src/bgame/bg_perks_mp.cpp:102"
+        },
+        {
+          "name": "random direction angular span",
+          "value": 360,
+          "unit": "degrees of the random azimuth, chosen once per shot",
+          "source": "src/game/bullet.cpp:224"
+        },
+        {
+          "name": "shallow hit cutoff",
+          "value": 0.125,
+          "unit": "cosine between the ray and the surface normal, evaluated once per impact",
+          "source": "src/bgame/bg_weapons.cpp:116"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bullet.cpp",
+          "line": 109
+        },
+        {
+          "path": "src/game/bullet.cpp",
+          "line": 312
+        },
+        {
+          "path": "src/game/bullet.cpp",
+          "line": 798
+        },
+        {
+          "path": "src/bgame/bg_weapons.cpp",
+          "line": 102
+        },
+        {
+          "path": "src/game/g_weapon.cpp",
+          "line": 488
+        }
+      ],
+      "capabilities": [
+        "cone spread",
+        "multi surface penetration",
+        "damage fallthrough"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "ballistics"
+      ]
+    },
+    {
+      "id": "melee-volumes",
+      "node": "combat-hitscan",
+      "name": "Five ray melee volume",
+      "summary": "Melee traces a centre ray plus four corner rays offset by one unit on each lateral axis, so 64 units of reach becomes a cross shaped volume 10 units wide and 10 units tall.",
+      "behavior": "A melee attack traces from the muzzle along the view direction to the melee range. When either the width or the height parameter is non-zero the trace count becomes five: a centre ray and four rays offset by plus or minus one unit times the width on the right axis and plus or minus one unit times the height on the up axis, giving a cross of five short rays. The first ray that strikes anything that blocks impact wins and its impact point becomes the hit position, so the centre ray is always tested first and a target directly in front is preferred. If none of the five hits, a second pass connects adjacent corner offsets with cross-rays, which catches a target standing between the sampled points. Default values give 64 units of reach with 10 units of width and 10 units of height, and the applied damage is the weapon melee damage plus a random zero to four points.",
+      "constants": [
+        {
+          "name": "melee reach",
+          "value": 64,
+          "unit": "world units of forward trace, evaluated once per swing",
+          "source": "src/bgame/bg_misc.cpp:1176"
+        },
+        {
+          "name": "melee width",
+          "value": 10,
+          "unit": "world units of lateral spread, evaluated once per swing",
+          "source": "src/bgame/bg_misc.cpp:1184"
+        },
+        {
+          "name": "melee height",
+          "value": 10,
+          "unit": "world units of vertical spread, evaluated once per swing",
+          "source": "src/bgame/bg_misc.cpp:1192"
+        },
+        {
+          "name": "melee ray count with volume",
+          "value": 5,
+          "unit": "parallel traces, per swing",
+          "source": "src/game/g_weapon.cpp:271"
+        },
+        {
+          "name": "corner offset scale",
+          "value": 1,
+          "unit": "dimensionless multiplier applied to width and height, per corner ray",
+          "source": "src/DynEntity/DynEntity_client.h:11"
+        },
+        {
+          "name": "melee damage jitter range",
+          "value": 5,
+          "unit": "health points maximum random addition, chosen once per hit",
+          "source": "src/game/g_weapon.cpp:234"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.cpp",
+          "line": 249
+        },
+        {
+          "path": "src/game/g_weapon.cpp",
+          "line": 277
+        },
+        {
+          "path": "src/game/g_weapon.cpp",
+          "line": 149
+        },
+        {
+          "path": "src/DynEntity/DynEntity_client.h",
+          "line": 11
+        }
+      ],
+      "capabilities": [
+        "multi ray melee",
+        "impact ordering",
+        "damage jitter"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "collision"
+      ]
+    },
+    {
+      "id": "ai-accuracy",
+      "node": "ai-perception",
+      "name": "AI accuracy from distance, posture and target motion",
+      "summary": "AI accuracy falls from 0.5 inside 800 units to 0.1 beyond 2000, is multiplied by 0.5 for a prone target and 0.75 for a crouched one, and drops with target speed along the line of sight down to a floor of 0.1.",
+      "behavior": "Sight and accuracy share one distance rule. A point is inside the field of view when the squared distance is within the maximum range squared and within the fog opaque distance, and the cosine between the eye direction and the direction to the point exceeds the field of view dot; a zero dot or zero range means the caller wants an unlimited test, which is how the same routine serves as a pure distance probe. For accuracy the distance selects a band: inside 800 units the near factor of 0.5 applies, beyond 2000 the far factor of 0.1 applies, and between them the factor is interpolated linearly. Posture multiplies that: prone gives 0.5, crouched 0.75 and standing 1.0. Target motion along the line of sight multiplies again, as one minus the absolute dot of velocity and direction clamped at 250 units per second times 0.004, with a floor of 0.1, so strafing across the line of sight costs nothing while running directly towards or away from the shooter costs up to the full factor. The scariness path multiplies the band value by 5, which is why the same numbers express both a 0..1 accuracy and a threat weight.",
+      "constants": [
+        {
+          "name": "near accuracy factor",
+          "value": 0.5,
+          "unit": "dimensionless accuracy multiplier, evaluated per shot",
+          "source": "src/game/g_main.cpp:344"
+        },
+        {
+          "name": "near band edge",
+          "value": 800,
+          "unit": "world units of distance, evaluated per shot",
+          "source": "src/game/g_main.cpp:345"
+        },
+        {
+          "name": "far accuracy factor",
+          "value": 0.1,
+          "unit": "dimensionless accuracy multiplier, evaluated per shot",
+          "source": "src/game/g_main.cpp:346"
+        },
+        {
+          "name": "far band edge",
+          "value": 2000,
+          "unit": "world units of distance, evaluated per shot",
+          "source": "src/game/g_main.cpp:347"
+        },
+        {
+          "name": "prone target accuracy factor",
+          "value": 0.5,
+          "unit": "dimensionless accuracy multiplier, evaluated per shot",
+          "source": "src/game/actor_aim.cpp:163"
+        },
+        {
+          "name": "crouched target accuracy factor",
+          "value": 0.75,
+          "unit": "dimensionless accuracy multiplier, evaluated per shot",
+          "source": "src/game/actor_aim.cpp:167"
+        },
+        {
+          "name": "motion speed clamp",
+          "value": 250,
+          "unit": "world units per second, clamped per shot",
+          "source": "src/game/actor_aim.cpp:205"
+        },
+        {
+          "name": "motion accuracy slope",
+          "value": 0.004,
+          "unit": "accuracy lost per unit per second of closing speed, per shot",
+          "source": "src/game/actor_aim.cpp:207"
+        },
+        {
+          "name": "motion accuracy floor",
+          "value": 0.1,
+          "unit": "dimensionless accuracy multiplier, clamped per shot",
+          "source": "src/game/actor_aim.cpp:209"
+        },
+        {
+          "name": "threat weight scale",
+          "value": 5,
+          "unit": "dimensionless multiplier on the band value, evaluated per threat update",
+          "source": "src/game/actor_aim.cpp:960"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/actor_senses.cpp",
+          "line": 390
+        },
+        {
+          "path": "src/game/actor_aim.cpp",
+          "line": 921
+        },
+        {
+          "path": "src/game/actor_aim.cpp",
+          "line": 152
+        },
+        {
+          "path": "src/game/actor_aim.cpp",
+          "line": 175
+        },
+        {
+          "path": "src/game/g_main.cpp",
+          "line": 344
+        }
+      ],
+      "capabilities": [
+        "fov and range sight test",
+        "distance accuracy bands",
+        "posture and motion modifiers"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "combat"
+      ]
+    },
+    {
+      "id": "ai-cover-score",
+      "node": "ai-cover",
+      "name": "Weighted cover node scoring and two pass selection",
+      "summary": "Cover quality is a weighted sum of distance, engagement, cover type, visibility, node angle, target direction, player line of sight and priority, with distance clamped at 1200 units squared and priority weighted 8.0.",
+      "behavior": "Each candidate node gets eight terms. Distance is the squared distance to the node clamped at 1440000 squared units, one thousand two hundred units, and mapped so nearer is better. Engagement rewards nodes at a good fighting distance, and cover type separates true cover from concealment. Visibility weights whether the AI can see the enemy from the node, node angle rewards nodes whose facing suits the enemy direction, target direction rewards positions the AI can shoot from and player line of sight lets squad AI avoid blocking the human player lane. Priority is a level design flag weighted at 8.0, the joint highest weight with visibility and player line of sight, and distance carries 16.0, so travel distance dominates the sum while the tactical terms break ties. Selection collects nodes in a cylinder around the goal, computes a metric for each, sorts once with the distance term removed so purely tactical quality leads, adds the distance term back for all but the node the AI already claims, then sorts again; the head of the second list is the chosen node, which keeps a firing position stable instead of oscillating between near-equal candidates.",
+      "constants": [
+        {
+          "name": "distance clamp",
+          "value": 1440000,
+          "unit": "squared world units (1200 units), clamped per candidate node",
+          "source": "src/game/actor_cover.cpp:621"
+        },
+        {
+          "name": "distance weight",
+          "value": 16,
+          "unit": "weight applied to the normalized distance metric, per candidate node",
+          "source": "src/game/g_main.cpp:357"
+        },
+        {
+          "name": "priority weight",
+          "value": 8,
+          "unit": "weight applied to the level design priority flag, per candidate node",
+          "source": "src/game/g_main.cpp:361"
+        },
+        {
+          "name": "visibility weight",
+          "value": 8,
+          "unit": "weight applied to the enemy visibility term, per candidate node",
+          "source": "src/game/g_main.cpp:363"
+        },
+        {
+          "name": "player line of sight weight",
+          "value": 8,
+          "unit": "weight applied to the player line of sight term, per candidate node",
+          "source": "src/game/g_main.cpp:360"
+        },
+        {
+          "name": "cover type weight",
+          "value": 2,
+          "unit": "weight applied to the cover versus concealment term, per candidate node",
+          "source": "src/game/g_main.cpp:356"
+        },
+        {
+          "name": "engagement weight",
+          "value": 4,
+          "unit": "weight applied to the engagement distance term, per candidate node",
+          "source": "src/game/g_main.cpp:358"
+        },
+        {
+          "name": "node angle weight",
+          "value": 4,
+          "unit": "weight applied to the node facing term, per candidate node",
+          "source": "src/game/g_main.cpp:359"
+        },
+        {
+          "name": "target direction weight",
+          "value": 4,
+          "unit": "weight applied to the direction to the enemy term, per candidate node",
+          "source": "src/game/g_main.cpp:362"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/actor_cover.cpp",
+          "line": 609
+        },
+        {
+          "path": "src/game/actor_cover.cpp",
+          "line": 627
+        },
+        {
+          "path": "src/game/actor_cover.cpp",
+          "line": 907
+        },
+        {
+          "path": "src/game/g_main.cpp",
+          "line": 357
+        }
+      ],
+      "capabilities": [
+        "multi criteria scoring",
+        "stable node choice",
+        "level design priority"
+      ],
+      "tags": [
+        "ai",
+        "cover",
+        "navigation"
+      ]
+    },
+    {
+      "id": "ai-path-momentum",
+      "node": "ai-navigation",
+      "name": "Path direction smoothing with a momentum blend",
+      "summary": "The wish direction is blended with the previous step direction at 0.78 whenever the step distance exceeds 15 units, which turns node corners into smooth arcs and drives the lean animation term.",
+      "behavior": "Path following produces a wish direction per step by looking ahead along the node polyline. That direction is then blended towards the previous one: the new direction becomes the previous direction plus the difference to the requested direction times the momentum factor of 0.78, renormalised afterwards. Because the factor is applied to the difference rather than the angle, the result is a first order low pass that cuts direction changes per step by roughly four fifths, so an actor taking a ninety degree node corner turns over several steps instead of snapping. The blend only runs when the step distance exceeds 15 units, so a nearly stationary actor still points exactly where the path says. The same routine records a lean term from the dot product of consecutive directions and scales the believed travel distance by a factor between roughly 0.5 and 1.0 depending on alignment, with the lateral cross product used to flip the sign of the lean so the animation leans into a turn; approaching the node just before a path negotiation within 100 units resets the lean and the previous direction so the actor squares up before interacting.",
+      "constants": [
+        {
+          "name": "path momentum factor",
+          "value": 0.77999997,
+          "unit": "dimensionless blend fraction towards the previous direction, per AI move step",
+          "source": "src/game/g_main.cpp:316"
+        },
+        {
+          "name": "minimum distance for momentum",
+          "value": 15,
+          "unit": "world units of planned move distance, tested per AI move step",
+          "source": "src/game/actor.cpp:2066"
+        },
+        {
+          "name": "lean distance half factor",
+          "value": 0.5,
+          "unit": "dimensionless scale on the travelled distance, computed per AI move step",
+          "source": "src/game/actor.cpp:2070"
+        },
+        {
+          "name": "negotiation lean reset radius",
+          "value": 100,
+          "unit": "world units, tested per AI move step",
+          "source": "src/game/actor.cpp:2044"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/actor.cpp",
+          "line": 2057
+        },
+        {
+          "path": "src/game/actor.cpp",
+          "line": 2066
+        },
+        {
+          "path": "src/game/actor.cpp",
+          "line": 2034
+        },
+        {
+          "path": "src/game/g_main.cpp",
+          "line": 316
+        }
+      ],
+      "capabilities": [
+        "direction smoothing",
+        "corner arcs",
+        "lean animation drive"
+      ],
+      "tags": [
+        "ai",
+        "navigation",
+        "animation"
+      ]
+    }
+  ]
+}

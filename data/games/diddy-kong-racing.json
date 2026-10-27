@@ -1,0 +1,2086 @@
+{
+  "version": 1,
+  "id": "diddy-kong-racing",
+  "title": "Diddy Kong Racing",
+  "repo": "https://github.com/davidsm64/diddy-kong-racing",
+  "sha": "a5eb080fa8f91b97d6f6495e0549ef7121ae7496",
+  "nodes": [
+    {
+      "id": "racer",
+      "name": "Racer object and vehicle dispatch",
+      "purpose": "Racer object setup, the per-frame input and vehicle branch, and lap and checkpoint bookkeeping",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "obj_init_racer",
+          "path": "src/racer.c",
+          "lines": [
+            4012,
+            4115
+          ]
+        },
+        {
+          "name": "update_player_racer",
+          "path": "src/racer.c",
+          "lines": [
+            4121,
+            4667
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "racer-car",
+      "parent": "racer",
+      "name": "Wheeled ground drive model",
+      "purpose": "Throttle and brake ramps, per-surface grip, drift state and the shared top-speed multiplier for racers rolling on wheels",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "update_car",
+          "path": "src/racer.c",
+          "lines": [
+            4703,
+            4991
+          ]
+        },
+        {
+          "name": "update_player_car_velocity_ground",
+          "path": "src/racer.c",
+          "lines": [
+            5084,
+            5568
+          ]
+        },
+        {
+          "name": "update_car_velocity_ground",
+          "path": "src/racer.c",
+          "lines": [
+            6463,
+            6609
+          ]
+        },
+        {
+          "name": "handle_car_steering",
+          "path": "src/racer.c",
+          "lines": [
+            6038,
+            6064
+          ]
+        },
+        {
+          "name": "handle_car_velocity_control",
+          "path": "src/racer.c",
+          "lines": [
+            6084,
+            6103
+          ]
+        },
+        {
+          "name": "handle_racer_top_speed",
+          "path": "src/racer.c",
+          "lines": [
+            7451,
+            7561
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-airborne",
+      "parent": "racer",
+      "name": "Airborne travel and hit states",
+      "purpose": "Off-ground velocity, pitch control, character-scaled gravity and the fixed reaction states applied when a racer is struck",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "update_car_velocity_offground",
+          "path": "src/racer.c",
+          "lines": [
+            5900,
+            6032
+          ]
+        },
+        {
+          "name": "racer_spinout_car",
+          "path": "src/racer.c",
+          "lines": [
+            5852,
+            5894
+          ]
+        },
+        {
+          "name": "racer_attack_handler_car",
+          "path": "src/racer.c",
+          "lines": [
+            6227,
+            6297
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-hovercraft",
+      "parent": "racer",
+      "name": "Hovercraft handling",
+      "purpose": "Hovercraft throttle curve, brake ramp, contact-weighted gravity and the buoyancy float that keeps the hull on the water surface",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "func_80046524",
+          "path": "src/racer.c",
+          "lines": [
+            1560,
+            2270
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-plane",
+      "parent": "racer",
+      "name": "Plane handling",
+      "purpose": "Plane thrust ramp, nose pitch, terrain floor, airborne tricks and the wave-crest skim used by the flight branch",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "func_80049794",
+          "path": "src/racer.c",
+          "lines": [
+            2521,
+            3368
+          ]
+        },
+        {
+          "name": "apply_plane_tilt_anim",
+          "path": "src/racer.c",
+          "lines": [
+            3374,
+            3407
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-collision",
+      "parent": "racer",
+      "name": "Racer collision and world bounds",
+      "purpose": "Four-sphere racer collision against level facets, wall impact response, contact averaging and level boundary rejection",
+      "paths": [
+        "src/racer.c",
+        "src/objects.c",
+        "src/hasm/collision.c"
+      ],
+      "functions": [
+        {
+          "name": "update_racer_collision",
+          "path": "src/racer.c",
+          "lines": [
+            6616,
+            6828
+          ]
+        },
+        {
+          "name": "collision_objectmodel",
+          "path": "src/objects.c",
+          "lines": [
+            5204,
+            5352
+          ]
+        },
+        {
+          "name": "resolve_collisions",
+          "path": "src/hasm/collision.c",
+          "lines": [
+            282,
+            505
+          ]
+        },
+        {
+          "name": "move_object",
+          "path": "src/objects.c",
+          "lines": [
+            3148,
+            3237
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-camera",
+      "parent": "racer",
+      "name": "Chase and flight cameras",
+      "purpose": "Boom length, height and yaw smoothing for the per-vehicle chase cameras plus the shared perspective bounds",
+      "paths": [
+        "src/racer.c",
+        "src/camera.h"
+      ],
+      "functions": [
+        {
+          "name": "update_camera_car",
+          "path": "src/racer.c",
+          "lines": [
+            7805,
+            8000
+          ]
+        },
+        {
+          "name": "update_camera_hovercraft",
+          "path": "src/racer.c",
+          "lines": [
+            2336,
+            2469
+          ]
+        },
+        {
+          "name": "update_camera_plane",
+          "path": "src/racer.c",
+          "lines": [
+            3462,
+            3651
+          ]
+        },
+        {
+          "name": "update_player_camera",
+          "path": "src/racer.c",
+          "lines": [
+            7668,
+            7780
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-items",
+      "parent": "racer",
+      "name": "Item balloons, stock and use",
+      "purpose": "Item box pickup, stock level upgrade, banana drops and the boost, shield and magnet effects triggered by the held item",
+      "paths": [
+        "src/racer.c",
+        "src/object_functions.c"
+      ],
+      "functions": [
+        {
+          "name": "handle_racer_items",
+          "path": "src/racer.c",
+          "lines": [
+            6939,
+            7245
+          ]
+        },
+        {
+          "name": "drop_bananas",
+          "path": "src/racer.c",
+          "lines": [
+            7583,
+            7638
+          ]
+        },
+        {
+          "name": "racer_activate_magnet",
+          "path": "src/racer.c",
+          "lines": [
+            7340,
+            7388
+          ]
+        },
+        {
+          "name": "obj_loop_weaponballoon",
+          "path": "src/object_functions.c",
+          "lines": [
+            4705,
+            4814
+          ]
+        },
+        {
+          "name": "obj_loop_banana",
+          "path": "src/object_functions.c",
+          "lines": [
+            4369,
+            4499
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    },
+    {
+      "id": "racer-weapons",
+      "parent": "racer",
+      "name": "Weapon projectiles and traps",
+      "purpose": "Spawned weapon objects: rockets that fly straight or track a victim, and traps that drop, arm and trigger",
+      "paths": [
+        "src/object_functions.c"
+      ],
+      "functions": [
+        {
+          "name": "obj_init_weapon",
+          "path": "src/object_functions.c",
+          "lines": [
+            4835,
+            4842
+          ]
+        },
+        {
+          "name": "obj_loop_weapon",
+          "path": "src/object_functions.c",
+          "lines": [
+            4849,
+            4864
+          ]
+        },
+        {
+          "name": "weapon_projectile",
+          "path": "src/object_functions.c",
+          "lines": [
+            4871,
+            5013
+          ]
+        },
+        {
+          "name": "homing_rocket_prevent_overshoot",
+          "path": "src/object_functions.c",
+          "lines": [
+            5062,
+            5124
+          ]
+        },
+        {
+          "name": "weapon_trap",
+          "path": "src/object_functions.c",
+          "lines": [
+            5196,
+            5399
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer-items"
+      ]
+    },
+    {
+      "id": "racer-ai",
+      "parent": "racer",
+      "name": "Computer racer behaviour",
+      "purpose": "Spline following, target pace control and the behaviour weighting that decides when computer racers boost or spend items",
+      "paths": [
+        "src/racer.c"
+      ],
+      "functions": [
+        {
+          "name": "increment_ai_behaviour_chances",
+          "path": "src/racer.c",
+          "lines": [
+            528,
+            596
+          ]
+        },
+        {
+          "name": "racer_AI_pathing_inputs",
+          "path": "src/racer.c",
+          "lines": [
+            602,
+            664
+          ]
+        },
+        {
+          "name": "update_onscreen_AI_racer",
+          "path": "src/racer.c",
+          "lines": [
+            6304,
+            6455
+          ]
+        },
+        {
+          "name": "update_AI_racer",
+          "path": "src/racer.c",
+          "lines": [
+            8664,
+            8967
+          ]
+        },
+        {
+          "name": "func_8005B818",
+          "path": "src/racer.c",
+          "lines": [
+            8969,
+            9228
+          ]
+        }
+      ],
+      "dependsOn": [
+        "racer"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-acceleration",
+      "node": "racer-car",
+      "name": "Throttle, brake and drive force",
+      "summary": "Wheeled racers ramp throttle and brake over several updates and derive drive force from a speed-indexed curve scaled by the top-speed multiplier",
+      "behavior": "Holding the accelerator pins throttle to 1, and releasing it bleeds throttle by a tenth per update, while the brake climbs a fifth per update under pressure and decays by a tenth when released. Drive force comes from a curve indexed by the magnitude of forward speed and interpolated between neighbouring entries, with the speed index capped at 12 units, then multiplied by 1.7 and by the shared top-speed multiplier. Throttle multiplied by that force is subtracted from the forward scalar each update; braking removes brake times force times 0.32, and any forward speed under 0.04 snaps to zero. At near stand-still with the accelerator released and the brake held, a reverse term of 0.15 times the headroom below three units is added. The handling stat scales how many binary angle units of visual yaw each step of steering input produces, and the character weight stat, 0.45 of its table value, is removed from vertical velocity every update. Forward travel is stored as a negative scalar, so forward motion reads as values below roughly minus two.",
+      "constants": [
+        {
+          "name": "throttleDecay",
+          "value": 0.1,
+          "unit": "throttle fraction per 30 Hz logic frame",
+          "source": "src/racer.c:6086"
+        },
+        {
+          "name": "brakeRamp",
+          "value": 0.2,
+          "unit": "brake fraction per 30 Hz logic frame",
+          "source": "src/racer.c:6095"
+        },
+        {
+          "name": "driveForceScale",
+          "value": 1.7,
+          "unit": "multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:5490"
+        },
+        {
+          "name": "speedCurveIndexCap",
+          "value": 12,
+          "unit": "world units of speed per 30 Hz logic frame",
+          "source": "src/racer.c:5482"
+        },
+        {
+          "name": "brakeForceShare",
+          "value": 0.32,
+          "unit": "force fraction per 30 Hz logic frame",
+          "source": "src/racer.c:5518"
+        },
+        {
+          "name": "reverseGain",
+          "value": 0.15,
+          "unit": "speed gain per unit of headroom per 30 Hz logic frame",
+          "source": "src/racer.c:5506"
+        },
+        {
+          "name": "characterWeightScale",
+          "value": 0.45,
+          "unit": "multiplier on the weight table value, applied per 30 Hz logic frame",
+          "source": "src/racer.c:4233"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 6084
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6090
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5482
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5506
+        },
+        {
+          "path": "src/racer.c",
+          "line": 4233
+        }
+      ],
+      "capabilities": [
+        "throttle ramp",
+        "brake ramp",
+        "speed-indexed drive force",
+        "per-character weight"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "braking",
+        "speed"
+      ]
+    },
+    {
+      "id": "surface-grip",
+      "node": "racer-car",
+      "name": "Per-surface grip and lateral slide",
+      "summary": "Every grounded wheel reports a surface, and the drive model averages those surfaces into a speed-loss term and a fraction of sideways speed to keep",
+      "behavior": "Each of the four wheel contacts contributes a traction value from a nineteen-entry surface table and the contributions are averaged, so a racer straddling two surfaces feels a blend. The road, water and ice slots use 0.004, grass uses 0.007 and sand and stone use 0.01, and a racer floating on water has its traction replaced by 0.02. Speed loss is the squared forward scalar times that average, except below one unit of speed with the accelerator released, where a linear term eight times the average bleeds the remainder. Sideways velocity is multiplied by an averaged slide factor taken from a second table: 0.8 on the road, snow and water, 0.85 on grass and sand, and 0.5 on boost pads and stone, so the smaller value grips harder. That product is scaled again by the cosine of the chassis pitch. Stone contact also multiplies the top-speed multiplier by a per-wheel-count value and clears both sideways velocity and any active magnet, while frozen water plays a bounce cue. Sand under load starts a rumble, and grass or sand landings play a per-surface cue and start a vertical bob.",
+      "constants": [
+        {
+          "name": "roadTraction",
+          "value": 0.004,
+          "unit": "speed-loss multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:62"
+        },
+        {
+          "name": "grassTraction",
+          "value": 0.007,
+          "unit": "speed-loss multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:62"
+        },
+        {
+          "name": "sandTraction",
+          "value": 0.01,
+          "unit": "speed-loss multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:62"
+        },
+        {
+          "name": "floatingTraction",
+          "value": 0.02,
+          "unit": "speed-loss multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:5375"
+        },
+        {
+          "name": "roadSlideShare",
+          "value": 0.8,
+          "unit": "fraction of lateral velocity kept per 30 Hz logic frame",
+          "source": "src/racer.c:68"
+        },
+        {
+          "name": "padAndStoneSlideShare",
+          "value": 0.5,
+          "unit": "fraction of lateral velocity kept per 30 Hz logic frame",
+          "source": "src/racer.c:68"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 5340
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5365
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5403
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5413
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5375
+        }
+      ],
+      "capabilities": [
+        "surface lookup per wheel",
+        "averaged grip",
+        "lateral slide",
+        "surface audio cues"
+      ],
+      "tags": [
+        "physics",
+        "grip",
+        "surfaces",
+        "handling"
+      ]
+    },
+    {
+      "id": "drift-hold",
+      "node": "racer-car",
+      "name": "Drift hold and counter-steer",
+      "summary": "A shoulder-button drift at speed locks a sideways state that steers harder, tilts the chassis and spins the racer out if countered too long",
+      "behavior": "A drift engages when the racer is already moving above two units, the shoulder button is held and lateral stick deflection passes 50 counts; while it lasts the accelerator input is dropped and the brake input forced on. The body rotation offset for a drift is the drift direction times 3640 binary angle units, the visual yaw rate while sliding is 0x600 binary units per update in the drift direction, and the heading offset eases toward the drift direction shifted left by 13 bits. Steering authority rises from six counts of input per step to twelve while braking and to eighteen while drifting and braking. The top-speed multiplier gains a tenth during a drift, and the camera is pushed twelve units toward the outside of the turn. Counter-steering against the drift accumulates a deviation count, and once that passes 80 the drift cancels, a brake-skid cue plays and a spin-out timer is set to the opposite sign of the drift.",
+      "constants": [
+        {
+          "name": "driftEntryStick",
+          "value": 50,
+          "unit": "stick counts out of 70, tested every 30 Hz logic frame",
+          "source": "src/racer.c:5176"
+        },
+        {
+          "name": "driftVisualYawRate",
+          "value": "0x600",
+          "unit": "binary angle units per 30 Hz logic frame",
+          "source": "src/racer.c:5195"
+        },
+        {
+          "name": "driftTopSpeedBonus",
+          "value": 1.1,
+          "unit": "multiplier held while the drift is active",
+          "source": "src/racer.c:5242"
+        },
+        {
+          "name": "driftHeadingShift",
+          "value": 13,
+          "unit": "left-shift steps applied to the drift direction each 30 Hz logic frame",
+          "source": "src/racer.c:5252"
+        },
+        {
+          "name": "driftSteeringCount",
+          "value": 18,
+          "unit": "steering input counts per 30 Hz logic frame while drifting and braking",
+          "source": "src/racer.c:6498"
+        },
+        {
+          "name": "driftBodyOffset",
+          "value": 3640,
+          "unit": "binary angle units held while drifting",
+          "source": "src/racer.c:4735"
+        },
+        {
+          "name": "driftSpinoutDeviation",
+          "value": 80,
+          "unit": "accumulated deviation units, tested every 30 Hz logic frame",
+          "source": "src/racer.c:4769"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 5175
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5195
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5242
+        },
+        {
+          "path": "src/racer.c",
+          "line": 4769
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5252
+        }
+      ],
+      "capabilities": [
+        "drifting",
+        "counter-steer spin-out",
+        "extra steering authority",
+        "drift camera bias"
+      ],
+      "tags": [
+        "movement",
+        "drifting",
+        "handling",
+        "risk-reward"
+      ]
+    },
+    {
+      "id": "boost-timers",
+      "node": "racer-car",
+      "name": "Boost timers and launch timing",
+      "summary": "Boost is a countdown that pins the throttle open and replaces drive force with a fixed value, fed by pads, launch timing and held bananas",
+      "behavior": "While a boost timer runs, the throttle is forced to 1 and the drive force term is replaced by 2 units so the racer snaps forward, and the timer loses the update multiplier every update. A boost pad touched while unboosted grants 45 frames and the largest boost class, and the hovercraft and plane pad branches also tag the empowered variant when the accelerator was already released, which changes the exhaust effect. The launch window is the last 30 countdown frames: pressing the accelerator inside it builds a timer across a 24-step span and grades it small below 20 frames, medium below 35 and large above, though a human launch can only reach the medium grade because a perfect press stores 20 frames. Banana stock multiplies speed by one plus 0.025 per banana, with the human stock counted up to ten unless the unlimited-banana cheat is on, and the multiplier input clamped to twenty in either direction. In the air a boost also halves the gravity weight, so a boosted jump keeps its height instead of sagging.",
+      "constants": [
+        {
+          "name": "padBoostFrames",
+          "value": 45,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:5422"
+        },
+        {
+          "name": "launchWindowFrames",
+          "value": 30,
+          "unit": "countdown frames at 30 Hz",
+          "source": "src/racer.c:7469"
+        },
+        {
+          "name": "launchTimerSpan",
+          "value": 24,
+          "unit": "frame span at 30 Hz",
+          "source": "src/racer.c:7484"
+        },
+        {
+          "name": "smallBoostCeiling",
+          "value": 20,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7490"
+        },
+        {
+          "name": "largeBoostFloor",
+          "value": 35,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7492"
+        },
+        {
+          "name": "boostDriveForce",
+          "value": 2,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:5497"
+        },
+        {
+          "name": "bananaSpeedBonus",
+          "value": 0.025,
+          "unit": "speed multiplier per banana held",
+          "source": "src/racer.c:7559"
+        },
+        {
+          "name": "bananaBufferCap",
+          "value": 20,
+          "unit": "bananas converted into the speed multiplier",
+          "source": "src/racer.c:7552"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 5422
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7469
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7484
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5497
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7559
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2799
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6011
+        }
+      ],
+      "capabilities": [
+        "boost pad",
+        "launch timing boost",
+        "banana speed bonus",
+        "boost grading"
+      ],
+      "tags": [
+        "boost",
+        "speed",
+        "timing",
+        "items"
+      ]
+    },
+    {
+      "id": "airborne-travel",
+      "node": "racer-airborne",
+      "name": "Airborne travel and gravity",
+      "summary": "Off the ground a racer keeps horizontal momentum, pitches with the stick and is pulled down by a character-scaled weight that the stick and boost modify",
+      "behavior": "With no wheel contact, vertical velocity first loses 2.5 percent of itself each update and then has the gravity weight subtracted. That weight is the character weight stat, multiplied by 1.33 when the stick is pushed fully into a dive, by 0.53 when pulled fully back for lift, and halved while boosting. Airborne forward speed is not driven by the throttle, so a jump preserves momentum, and steering subtracts the stored steer angle times six binary units per update. A boost in the air adds 1.6 units of speed per update for as long as forward speed stays under 20 units. Under water contact the vertical velocity is clamped to two units either way and horizontal speed keeps 87 percent per update. Body pitch follows stick Y in 64-unit steps toward the requested angle with a shift-based easing, and with no water under it the vertical speed is converted into a clamped 50 to 127 impulse value that drives the landing stretch effect. Tricks need 6.5 units of speed, no contact and no water, spin the body at 0x600 binary units per update and grant a ten-frame boost when the rotation completes.",
+      "constants": [
+        {
+          "name": "verticalDamping",
+          "value": 0.025,
+          "unit": "fraction of vertical velocity removed per 30 Hz logic frame",
+          "source": "src/racer.c:5978"
+        },
+        {
+          "name": "diveWeightScale",
+          "value": 1.33,
+          "unit": "multiplier on gravity while diving, applied per 30 Hz logic frame",
+          "source": "src/racer.c:6004"
+        },
+        {
+          "name": "liftWeightScale",
+          "value": 0.53,
+          "unit": "multiplier on gravity while pulling up, applied per 30 Hz logic frame",
+          "source": "src/racer.c:6007"
+        },
+        {
+          "name": "boostAirBleed",
+          "value": 1.6,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:5971"
+        },
+        {
+          "name": "waterSpeedRetention",
+          "value": 0.87,
+          "unit": "fraction of horizontal speed kept per 30 Hz logic frame",
+          "source": "src/racer.c:5950"
+        },
+        {
+          "name": "trickSpeedGate",
+          "value": -6.5,
+          "unit": "world units per 30 Hz logic frame, stored as a negative forward scalar",
+          "source": "src/racer.c:3117"
+        },
+        {
+          "name": "landingStretchGain",
+          "value": 20,
+          "unit": "stretch impulse units per unit of vertical speed on the landing update",
+          "source": "src/racer.c:6022"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 5900
+        },
+        {
+          "path": "src/racer.c",
+          "line": 5978
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6004
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6022
+        },
+        {
+          "path": "src/racer.c",
+          "line": 3117
+        }
+      ],
+      "capabilities": [
+        "air control",
+        "variable gravity",
+        "water landing",
+        "airborne tricks"
+      ],
+      "tags": [
+        "movement",
+        "gravity",
+        "jumping",
+        "tricks"
+      ]
+    },
+    {
+      "id": "hit-reactions",
+      "node": "racer-airborne",
+      "name": "Hit reactions and shield immunity",
+      "summary": "Every weapon hit maps to one of a few fixed reaction states with their own timers and launch impulses, and an active shield discards the state entirely",
+      "behavior": "An attack state is cleared with no effect whenever the shield timer is still running, so a shield turns any hit into nothing. An explosion launch adds 10.5 units of upward velocity when the victim carries no bananas, or 8.5 units and a quarter of forward speed when it does, and drops two bananas for any hit other than a spin or a squish. A spin sets a two-update spin-out timer with a yaw rate of 0x1002 binary angle units and a tyre-skid cue. A bubble trap sets a 120-update trapped timer and halves forward speed. A squish sets a 60-update squish timer and flattens the body to a tenth of its height. Each reaction is applied once and the attack state is then cleared, so the same path runs again on the next hit instead of stacking.",
+      "constants": [
+        {
+          "name": "explosionLaunch",
+          "value": 10.5,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:6264"
+        },
+        {
+          "name": "loadedExplosionLaunch",
+          "value": 8.5,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:6267"
+        },
+        {
+          "name": "spinoutYawRate",
+          "value": "0x1002",
+          "unit": "binary angle units per 30 Hz logic frame",
+          "source": "src/racer.c:6273"
+        },
+        {
+          "name": "spinoutFrames",
+          "value": 2,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:6272"
+        },
+        {
+          "name": "squishFrames",
+          "value": 60,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:6278"
+        },
+        {
+          "name": "bubbleTrapFrames",
+          "value": 120,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:6282"
+        },
+        {
+          "name": "bubbleSpeedShare",
+          "value": 0.5,
+          "unit": "fraction of forward speed kept on the hit update",
+          "source": "src/racer.c:6283"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 6245
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6264
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6272
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6282
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6250
+        }
+      ],
+      "capabilities": [
+        "shield immunity",
+        "launch impulse",
+        "spin-out",
+        "bubble and squish states"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "state machine",
+        "vehicles"
+      ]
+    },
+    {
+      "id": "wall-crash",
+      "node": "racer-collision",
+      "name": "Wall impact response",
+      "summary": "Hitting a wall facet close to the racer's heading turns speed into a sideways push along the surface normal, discards most forward speed and locks input briefly",
+      "behavior": "Once facets are resolved, a hit whose surface normal points within 8192 binary angle units of the racer's own heading, or any hit taken by a hovercraft, is treated as a wall crash. The impulse scale is the magnitude of forward speed times 1.075. Above four units the racer gets three units of camera shake, a seven-update input lockout, a crash cue, the angry voice cue and a rumble scaled from the same value. The two lateral push channels are then written from the surface normal times that scale, forward speed keeps 15 percent of its magnitude, sideways speed is zeroed, and a hovercraft halves the impulse. Because the impulse is a push out along the normal rather than a mirrored reflection, the racer is pushed clear of the wall and then slides along it with the little speed it kept.",
+      "constants": [
+        {
+          "name": "crashSpeedScale",
+          "value": 1.075,
+          "unit": "multiplier on forward speed per 30 Hz logic frame",
+          "source": "src/racer.c:6701"
+        },
+        {
+          "name": "crashSpeedThreshold",
+          "value": 4,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:6708"
+        },
+        {
+          "name": "crashCameraShake",
+          "value": 3,
+          "unit": "shake units held for the shake timer",
+          "source": "src/racer.c:6711"
+        },
+        {
+          "name": "crashLockoutFrames",
+          "value": 7,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:6713"
+        },
+        {
+          "name": "hovercraftImpulseShare",
+          "value": 0.5,
+          "unit": "multiplier applied to the impulse on the hit update",
+          "source": "src/racer.c:6720"
+        },
+        {
+          "name": "retainedForwardShare",
+          "value": 0.15,
+          "unit": "fraction of forward speed kept on the hit update",
+          "source": "src/racer.c:6724"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 6693
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6701
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6713
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6724
+        }
+      ],
+      "capabilities": [
+        "wall impact",
+        "camera shake",
+        "input lockout",
+        "vehicle-specific impact scaling"
+      ],
+      "tags": [
+        "collision",
+        "impact",
+        "feedback",
+        "physics"
+      ]
+    },
+    {
+      "id": "grounded-collision",
+      "node": "racer-collision",
+      "name": "Four-point ground and facet collision",
+      "summary": "Four offset spheres carry the racer's contact with level facets; their corrected points are averaged into the body position and their facets define the wheels",
+      "behavior": "Four sphere offsets with their own radii are transformed by the racer's matrix and handed to the level solver together with the vehicle type so it can pick suitable facets. The solver treats a facet as struck when the destination point is more than a tenth of a unit behind it while the origin is not, and finds where the travel segment pierces the triangle. A gentle facet, one whose normal points at least 0.707 up and is not stone, pushes the point straight up the vertical axis, while a facet steeper than a 0.45 normal is recorded as a wall for the impact response. Triangle tests reject points more than four units outside an edge. The four corrected points are averaged into the racer's position, the per-sphere contact flags give the grounded wheel count that selects the driving model, and when any contact exists an average more than four units below the body centre marks a low body. A low body with three or more collisions squashes the racer. Object interactions use a 15-unit hitbox radius and a 20-unit push force, and an object past the level bounds by 1000 units horizontally or 3000 above is treated as out of the course.",
+      "constants": [
+        {
+          "name": "collisionSphereCount",
+          "value": 4,
+          "unit": "spheres tested per 30 Hz logic frame",
+          "source": "src/racer.c:6668"
+        },
+        {
+          "name": "lowBodyThreshold",
+          "value": 4,
+          "unit": "world units below the body centre, tested every 30 Hz logic frame",
+          "source": "src/racer.c:6689"
+        },
+        {
+          "name": "squishContactCount",
+          "value": 3,
+          "unit": "contacts per 30 Hz logic frame",
+          "source": "src/racer.c:6729"
+        },
+        {
+          "name": "slopeNormalThreshold",
+          "value": 0.707,
+          "unit": "unit normal Y component, static",
+          "source": "src/hasm/collision.c:371"
+        },
+        {
+          "name": "wallNormalThreshold",
+          "value": 0.45,
+          "unit": "unit normal Y component, static",
+          "source": "src/hasm/collision.c:378"
+        },
+        {
+          "name": "facetBehindTolerance",
+          "value": -0.1,
+          "unit": "world units of plane distance per collision test, negative for points behind the facet",
+          "source": "src/hasm/collision.c:328"
+        },
+        {
+          "name": "facetEdgeTolerance",
+          "value": 4,
+          "unit": "world units outside a triangle edge",
+          "source": "src/hasm/collision.c:365"
+        },
+        {
+          "name": "racerHitboxRadius",
+          "value": 15,
+          "unit": "world units, radius for object interaction",
+          "source": "src/racer.c:4093"
+        },
+        {
+          "name": "horizontalBoundMargin",
+          "value": 1000,
+          "unit": "world units beyond the level box, checked on every move",
+          "source": "src/objects.c:3169"
+        },
+        {
+          "name": "verticalBoundMargin",
+          "value": 3000,
+          "unit": "world units above the level box, checked on every move",
+          "source": "src/objects.c:3181"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 6668
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6693
+        },
+        {
+          "path": "src/racer.c",
+          "line": 6729
+        },
+        {
+          "path": "src/hasm/collision.c",
+          "line": 328
+        },
+        {
+          "path": "src/hasm/collision.c",
+          "line": 371
+        },
+        {
+          "path": "src/objects.c",
+          "line": 3181
+        }
+      ],
+      "capabilities": [
+        "multi-sphere collision",
+        "facet classification",
+        "grounded wheel count",
+        "out-of-bounds rejection"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "ground",
+        "3d"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "node": "racer-camera",
+      "name": "Chase boom, height and pitch",
+      "summary": "The chase camera rides a spring-damped boom whose length, height and lateral bias react to viewport count, zoom, speed, drift and boost",
+      "behavior": "The wheeled chase camera starts from a 120-unit boom with 50 units of height. The two-player layout stretches the boom to 192, three or more players shorten it to 100 and lower the height to 40, and while a boss encounter is active the boom becomes 144 with a height of 110, plus 30 more in the very close zoom. Zoom offsets add 35 units in the far setting, remove 35 and ten units of height in the close setting, and remove 53 with five units of height in the very close setting. Boom length and height each ease toward their target by an eighth per update, so the camera lags visibly behind hard changes. Reversing shortens the boom by up to 65 units scaled by brake and speed, forward speed lengthens it by 60 times the smoothed forward scalar and by 30 while drifting, and a boost longer than 36 frames snaps the boom to minus 30 units while a shorter boost sets 180. Drifting also pulls the camera twelve units toward the outside of the turn, and a spin-out shrinks the boom in quarter steps. The flight camera instead rotates its pitch with height above the terrain over a 200-unit window and swings its yaw toward the body heading at no more than 0x200 binary angle units per update while it is not rolling on the ground. Perspective uses a 60 degree field of view with the near plane at 10 units and the far plane at 15000.",
+      "constants": [
+        {
+          "name": "defaultBoomLength",
+          "value": 120,
+          "unit": "world units",
+          "source": "src/racer.c:7809"
+        },
+        {
+          "name": "defaultBoomHeight",
+          "value": 50,
+          "unit": "world units",
+          "source": "src/racer.c:7810"
+        },
+        {
+          "name": "twoPlayerBoom",
+          "value": 192,
+          "unit": "world units",
+          "source": "src/racer.c:7831"
+        },
+        {
+          "name": "crowdedViewportBoom",
+          "value": 100,
+          "unit": "world units",
+          "source": "src/racer.c:7834"
+        },
+        {
+          "name": "bossEncounterBoom",
+          "value": 144,
+          "unit": "world units",
+          "source": "src/racer.c:7839"
+        },
+        {
+          "name": "boomEase",
+          "value": 0.125,
+          "unit": "fraction of the remaining gap closed per 30 Hz logic frame",
+          "source": "src/racer.c:7931"
+        },
+        {
+          "name": "driftCameraBias",
+          "value": 12,
+          "unit": "world units of lateral offset held while drifting",
+          "source": "src/racer.c:7956"
+        },
+        {
+          "name": "boostCameraBoom",
+          "value": 180,
+          "unit": "world units during a short boost",
+          "source": "src/racer.c:7924"
+        },
+        {
+          "name": "planeCameraYawClamp",
+          "value": "0x200",
+          "unit": "binary angle units per 30 Hz logic frame",
+          "source": "src/racer.c:3512"
+        },
+        {
+          "name": "planeCameraHeightWindow",
+          "value": 200,
+          "unit": "world units of height above terrain",
+          "source": "src/racer.c:3482"
+        },
+        {
+          "name": "fieldOfView",
+          "value": 60,
+          "unit": "degrees, static projection constant",
+          "source": "src/camera.h:23"
+        },
+        {
+          "name": "farPlane",
+          "value": 15000,
+          "unit": "world units, static projection constant",
+          "source": "src/camera.h:21"
+        },
+        {
+          "name": "bossEncounterHeight",
+          "value": 110,
+          "unit": "world units",
+          "source": "src/racer.c:7840"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 7805
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7831
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7931
+        },
+        {
+          "path": "src/racer.c",
+          "line": 3462
+        },
+        {
+          "path": "src/racer.c",
+          "line": 3482
+        },
+        {
+          "path": "src/camera.h",
+          "line": 23
+        }
+      ],
+      "capabilities": [
+        "spring-damped chase boom",
+        "viewport-dependent framing",
+        "drift and boost framing",
+        "height-driven pitch"
+      ],
+      "tags": [
+        "camera",
+        "3d",
+        "feedback",
+        "speed"
+      ]
+    },
+    {
+      "id": "item-pickup",
+      "node": "racer-items",
+      "name": "Item balloon pickup and stock",
+      "summary": "Driving through an item balloon copies its type into the racer, raises the stock level when the same type is collected again and grants a quantity from a per-type table",
+      "behavior": "A balloon is collected by a racer within 45 units of it, and the pickup is skipped by computer racers driving boss vehicles. When the collected type matches the racer's current stock the level rises by one, otherwise the level resets to zero and the new type is adopted. Levels stop at two, and challenge races cap them at one and force trap items up to the second level. The stock quantity is then read from a table indexed by type and level, and a HUD cue plays in three graded pitches by level. A collected balloon respawns after 90 frames and scales down from full size to nothing as that timer drains, hiding itself below a tenth of full scale. Being hit drops at most two bananas at a time: they spawn 12 units ahead and 8 units up, are launched two units per update along the depositor's forward axis with five units of upward velocity, and are flagged with the dropping vehicle. Bananas dropped from a plane keep no gravity but a 70-unit collision distance, while bananas on the ground fall one unit per update, damp their horizontal speed by 5 percent per update and use a 55-unit distance.",
+      "constants": [
+        {
+          "name": "balloonCollectRadius",
+          "value": 45,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4741"
+        },
+        {
+          "name": "balloonRespawnFrames",
+          "value": 90,
+          "unit": "frames at 30 Hz",
+          "source": "src/object_functions.c:4809"
+        },
+        {
+          "name": "balloonLevelCap",
+          "value": 2,
+          "unit": "stock levels, static",
+          "source": "src/object_functions.c:4768"
+        },
+        {
+          "name": "balloonRespawnDivisor",
+          "value": 90,
+          "unit": "frames at 30 Hz used to scale the respawn shrink",
+          "source": "src/object_functions.c:4718"
+        },
+        {
+          "name": "droppedBananaForwardOffset",
+          "value": 12,
+          "unit": "world units ahead of the racer at spawn",
+          "source": "src/racer.c:7603"
+        },
+        {
+          "name": "droppedBananaLift",
+          "value": 5,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:7619"
+        },
+        {
+          "name": "groundBananaHitDistance",
+          "value": 55,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4449"
+        },
+        {
+          "name": "planeBananaHitDistance",
+          "value": 70,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4447"
+        },
+        {
+          "name": "droppedBananaSpeed",
+          "value": 2,
+          "unit": "world units per 30 Hz logic frame along the forward axis",
+          "source": "src/racer.c:7618"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/object_functions.c",
+          "line": 4741
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 4809
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 4447
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7583
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7622
+        }
+      ],
+      "capabilities": [
+        "item box pickup",
+        "stock level upgrade",
+        "respawn timer",
+        "trailing banana drops"
+      ],
+      "tags": [
+        "items",
+        "pickups",
+        "combat",
+        "balance"
+      ]
+    },
+    {
+      "id": "weapon-fire",
+      "node": "racer-items",
+      "name": "Firing a held item",
+      "summary": "Using an item decrements stock, applies immediate effects such as shields, magnets and nitro, or spawns a weapon shifted in front of or behind the vehicle",
+      "behavior": "Using an item consumes one unit of stock. Shields set a timer of 300, 600 or 900 frames by level and arm an immunity state. Nitro sets a boost of 35, 55 or 75 frames in the small, medium and large class, and marks the empowered variant when the accelerator had been released before the item was used, which changes the exhaust. Magnets search for a victim ahead of the racer, accept one inside 1000 units at the first level and 1500 at the higher levels, and pull the racer toward it for 90 frames, while the third level instead attaches a 120-frame magnet to the victim. The pull speed is the victim's own speed plus 5 units, with that speed clamped between 8 and 20 units, and the pull collapses when the victim is closer than 150 units or further than 2000. Projectiles are placed along the vehicle axes: 10 units ahead of the front axis for rockets and 10 units behind for traps, plus 10 units along the vehicle up axis. A rocket adds 30 units of velocity per update along the racer's forward axis to the racer's own velocity, so its own forward speed ends up 30 units beyond the racer's, while a trap gets minus two units and drops away behind the racer.",
+      "constants": [
+        {
+          "name": "projectileLaunchSpeed",
+          "value": 30,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:7057"
+        },
+        {
+          "name": "rocketSpawnOffset",
+          "value": -10,
+          "unit": "world units along the forward axis at spawn",
+          "source": "src/racer.c:7060"
+        },
+        {
+          "name": "trapSpawnOffset",
+          "value": 10,
+          "unit": "world units along the forward axis at spawn",
+          "source": "src/racer.c:7068"
+        },
+        {
+          "name": "trapLaunchSpeed",
+          "value": -2,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:7069"
+        },
+        {
+          "name": "spawnUpOffset",
+          "value": 10,
+          "unit": "world units along the vehicle up axis at spawn",
+          "source": "src/racer.c:7176"
+        },
+        {
+          "name": "shieldFramesSmall",
+          "value": 300,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7157"
+        },
+        {
+          "name": "shieldFramesLarge",
+          "value": 900,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7167"
+        },
+        {
+          "name": "nitroFramesSmall",
+          "value": 35,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7104"
+        },
+        {
+          "name": "nitroFramesLarge",
+          "value": 75,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7094"
+        },
+        {
+          "name": "magnetFrames",
+          "value": 90,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:7132"
+        },
+        {
+          "name": "magnetRangeNear",
+          "value": 1000,
+          "unit": "world units ahead of the racer",
+          "source": "src/racer.c:7039"
+        },
+        {
+          "name": "magnetRangeFar",
+          "value": 1500,
+          "unit": "world units ahead of the racer",
+          "source": "src/racer.c:7041"
+        },
+        {
+          "name": "magnetSpeedFloor",
+          "value": 8,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:7378"
+        },
+        {
+          "name": "magnetSpeedCeiling",
+          "value": 20,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:7380"
+        },
+        {
+          "name": "magnetSpeedBias",
+          "value": 5,
+          "unit": "world units per 30 Hz logic frame added to the pull",
+          "source": "src/racer.c:7383"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 7057
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7094
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7132
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7157
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7176
+        },
+        {
+          "path": "src/racer.c",
+          "line": 7383
+        }
+      ],
+      "capabilities": [
+        "item activation",
+        "shield timers",
+        "nitro boost",
+        "target magnet"
+      ],
+      "tags": [
+        "items",
+        "combat",
+        "boost",
+        "defence"
+      ]
+    },
+    {
+      "id": "homing-rocket",
+      "node": "racer-weapons",
+      "name": "Tracking rocket flight",
+      "summary": "A rocket flies straight along its spawn heading or, when the item carried a target, steers toward that victim's checkpoint position before striking",
+      "behavior": "A spawned weapon gets a 24-unit hitbox radius and a 480-frame life. Each update the projectile moves along its heading by its forward speed and sweeps a 16-unit sphere through the level ahead of it, detonating when the sweep reports a surface or when the attempted move is blocked. Against racers the detonation distance is 75 units for the tracked victim, 20 for any other racer caught in the sweep, and 60 for a rocket with no target. A tracking rocket re-reads the victim's checkpoint position; beyond 300 units of distance it aims at a spline point ahead of the victim, and inside that range it reverses its forward speed to minus 25 and pins the collision to the victim so the hit is resolved on the current update. Tracking is abandoned when the victim is within 100 units horizontally but more than 100 units above or below. Once the hit sphere is resolved the projectile spawns an explosion effect and frees itself, and its animation pulses through a scale ramp for the first eight updates and the eight after that.",
+      "constants": [
+        {
+          "name": "rocketHitboxRadius",
+          "value": 24,
+          "unit": "world units, radius for object interaction",
+          "source": "src/object_functions.c:4838"
+        },
+        {
+          "name": "rocketLifetimeFrames",
+          "value": 480,
+          "unit": "frames at 30 Hz",
+          "source": "src/object_functions.c:4840"
+        },
+        {
+          "name": "rocketProbeRadius",
+          "value": 16,
+          "unit": "world units swept per 30 Hz logic frame",
+          "source": "src/object_functions.c:4916"
+        },
+        {
+          "name": "trackedHitDistance",
+          "value": 75,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4969"
+        },
+        {
+          "name": "bystanderHitDistance",
+          "value": 20,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4971"
+        },
+        {
+          "name": "straightHitDistance",
+          "value": 60,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:4974"
+        },
+        {
+          "name": "overshootReverseSpeed",
+          "value": -25,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/object_functions.c:5042"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/object_functions.c",
+          "line": 4871
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 4916
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 4969
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5042
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5062
+        }
+      ],
+      "capabilities": [
+        "straight rocket",
+        "target tracking",
+        "level sweep detection",
+        "overshoot reversal"
+      ],
+      "tags": [
+        "combat",
+        "projectiles",
+        "targeting",
+        "3d"
+      ]
+    },
+    {
+      "id": "dropped-traps",
+      "node": "racer-weapons",
+      "name": "Dropped traps and arming",
+      "summary": "Mines, slicks and bubble traps are dropped behind the racer, fall under a small sphere probe until they touch ground or water, then arm and grow before triggering",
+      "behavior": "A dropped trap advances by its velocity and resolves a nine-unit sphere against the level. The moment that probe reports contact, or immediately when the owner is a plane, the trap arms: horizontal and vertical velocity are cleared and its scale restarts from zero. Water contact arms a trap the same way and records that it is submerged. Bubble traps are lifted 16 units on arming so the bubble sits above the surface. While still falling and not dropped by a plane, a trap loses two units of vertical velocity per update and bleeds an eighth of its horizontal velocity, so it settles instead of skidding. An armed slick grows one scale unit per update up to twelve and shows a shadow or water ring at 0.6 of that value, while an armed bubble grows to twenty and is drawn at 0.075 scale per unit. A trap considers racers inside 60 units, or 34 when it was dropped by a grounded vehicle, and slick and bubble distances are increased by half again. On trigger the victim receives the matching reaction, an explosion for a mine, a spin for a slick or the trapped state for a bubble, and a level three shield pops a bubble harmlessly instead. A trap cannot hit its own owner until its shared timer has fallen below 450, and every trap expires once that timer reaches -1320.",
+      "constants": [
+        {
+          "name": "trapProbeRadius",
+          "value": 9,
+          "unit": "world units swept per 30 Hz logic frame",
+          "source": "src/object_functions.c:5220"
+        },
+        {
+          "name": "bubbleArmLift",
+          "value": 16,
+          "unit": "world units applied on the arming update",
+          "source": "src/object_functions.c:5238"
+        },
+        {
+          "name": "trapScaleCeiling",
+          "value": 12,
+          "unit": "scale units grown at one per 30 Hz logic frame",
+          "source": "src/object_functions.c:5255"
+        },
+        {
+          "name": "trapHitDistance",
+          "value": 60,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:5318"
+        },
+        {
+          "name": "groundTrapHitDistance",
+          "value": 34,
+          "unit": "world units, tested every 30 Hz logic frame",
+          "source": "src/object_functions.c:5320"
+        },
+        {
+          "name": "trapFallAccel",
+          "value": 2,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/object_functions.c:5321"
+        },
+        {
+          "name": "trapExpiryTimer",
+          "value": -1320,
+          "unit": "frames at 30 Hz from the shared decay timer",
+          "source": "src/object_functions.c:5382"
+        },
+        {
+          "name": "trapOwnerGraceTimer",
+          "value": 450,
+          "unit": "frames at 30 Hz on the shared decay timer",
+          "source": "src/object_functions.c:5333"
+        },
+        {
+          "name": "bubbleScaleCap",
+          "value": 20,
+          "unit": "scale units reached at one per 30 Hz logic frame",
+          "source": "src/object_functions.c:5286"
+        },
+        {
+          "name": "bubbleScaleFactor",
+          "value": 0.075,
+          "unit": "drawn scale per stored scale unit",
+          "source": "src/object_functions.c:5313"
+        },
+        {
+          "name": "slickShadowShare",
+          "value": 0.6,
+          "unit": "shadow scale per stored scale unit",
+          "source": "src/object_functions.c:5269"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/object_functions.c",
+          "line": 5196
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5220
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5231
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5238
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5255
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5318
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5382
+        },
+        {
+          "path": "src/object_functions.c",
+          "line": 5269
+        }
+      ],
+      "capabilities": [
+        "ground arming",
+        "water arming",
+        "scaling slick radius",
+        "vehicle-specific traps"
+      ],
+      "tags": [
+        "combat",
+        "traps",
+        "projectiles",
+        "physics"
+      ]
+    },
+    {
+      "id": "hovercraft-water",
+      "node": "racer-hovercraft",
+      "name": "Hovercraft thrust and water float",
+      "summary": "The hovercraft ramps its throttle and brake slowly, drives from a squared throttle curve and floats on a spring-like buoyancy term over water",
+      "behavior": "The hovercraft ramps throttle 0.016 and brake 0.046 per update with the brake stopping at 1.2, and turns throttle into a drive term by multiplying it by three, squaring and dividing by nine, with a fifth more again when it is already moving. Its character weight is taken at three quarters of the stock value, and with three or more contacts the downward pull is halved again. Steering subtracts the stick value times eight per update scaled by the handling stat, and pulling the stick back toward the rider adds up to about 63 percent more turn rate while cutting the speed curve output by up to 23 percent. Over water it probes the surface under the hull, clamps the probe depth to four units times 0.8 and records any penetration as buoyancy for five updates. While buoyant the hull is lifted by buoyancy times a float factor that starts at 0.5 and eases toward 0.75 by an eighth per update, so the hull springs back to the surface instead of snapping up. A buoyant hull also aligns to the wave normal, takes a lateral correction from the shoulder button at twice the stick value, and has its vertical speed capped at four units. The whole branch runs 1.15 times the frame multiplier when the PAL flag is set.",
+      "constants": [
+        {
+          "name": "hovercraftThrottleRamp",
+          "value": 0.016,
+          "unit": "throttle fraction per 30 Hz logic frame",
+          "source": "src/racer.c:1637"
+        },
+        {
+          "name": "hovercraftBrakeRamp",
+          "value": 0.046,
+          "unit": "brake fraction per 30 Hz logic frame",
+          "source": "src/racer.c:1660"
+        },
+        {
+          "name": "hovercraftBrakeCeiling",
+          "value": 1.2,
+          "unit": "brake fraction, static cap",
+          "source": "src/racer.c:1661"
+        },
+        {
+          "name": "throttleCurveDivisor",
+          "value": 9,
+          "unit": "divisor applied to the squared throttle term per update",
+          "source": "src/racer.c:1652"
+        },
+        {
+          "name": "palFrameScale",
+          "value": 1.15,
+          "unit": "multiplier per 30 Hz logic frame on PAL",
+          "source": "src/racer.c:1598"
+        },
+        {
+          "name": "hovercraftWeightScale",
+          "value": 0.75,
+          "unit": "multiplier on the weight table value, applied per update",
+          "source": "src/racer.c:1819"
+        },
+        {
+          "name": "contactGravityScale",
+          "value": 0.5,
+          "unit": "multiplier on gravity with three or more contacts",
+          "source": "src/racer.c:1821"
+        },
+        {
+          "name": "steerRatePerCount",
+          "value": 8,
+          "unit": "binary angle units per stick count per 30 Hz logic frame",
+          "source": "src/racer.c:1831"
+        },
+        {
+          "name": "leanTurnBonusDivisor",
+          "value": 112,
+          "unit": "stick counts per unit of extra turn rate, evaluated every 30 Hz logic frame",
+          "source": "src/racer.c:1834"
+        },
+        {
+          "name": "leanSpeedCostDivisor",
+          "value": 300,
+          "unit": "stick counts per unit of speed lost, evaluated every 30 Hz logic frame",
+          "source": "src/racer.c:1835"
+        },
+        {
+          "name": "waterProbeSpeedClamp",
+          "value": 4,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:2092"
+        },
+        {
+          "name": "waterProbeDepthShare",
+          "value": 0.8,
+          "unit": "fraction of forward speed used as probe depth",
+          "source": "src/racer.c:2095"
+        },
+        {
+          "name": "waterBuoyancyFrames",
+          "value": 5,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:2098"
+        },
+        {
+          "name": "floatStartShare",
+          "value": 0.5,
+          "unit": "fraction applied on the first buoyant update",
+          "source": "src/racer.c:4039"
+        },
+        {
+          "name": "floatEaseTarget",
+          "value": 0.75,
+          "unit": "fraction the float factor eases toward per 30 Hz logic frame",
+          "source": "src/racer.c:2123"
+        },
+        {
+          "name": "waterVerticalCap",
+          "value": 4,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:2146"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 1560
+        },
+        {
+          "path": "src/racer.c",
+          "line": 1637
+        },
+        {
+          "path": "src/racer.c",
+          "line": 1826
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2092
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2117
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2123
+        }
+      ],
+      "capabilities": [
+        "squared throttle curve",
+        "wave crest riding",
+        "wake state",
+        "PAL frame scaling"
+      ],
+      "tags": [
+        "vehicles",
+        "water",
+        "movement",
+        "physics"
+      ]
+    },
+    {
+      "id": "plane-flight",
+      "node": "racer-plane",
+      "name": "Plane thrust, pitch and tricks",
+      "summary": "The plane thrusts through the same speed curve with a larger multiplier, pitches with the stick, is held above the terrain and can roll or flip for a short boost",
+      "behavior": "Plane throttle ramps 0.01 per update and brake 0.016 with the same 1.2 ceiling. Forward speed is read through the shared speed curve and scaled by 1.8 for thrust, and while airborne the throttle is lifted to 0.4 so the aircraft never loses drive, while braking is halved when no wheel touches. Pitch is driven by stick Y scaled by a speed factor between four and fourteen divided by seven, rotating the nose by 19 units of that input per update normally and 30 with the shoulder button held, and with three or more wheels down it steers with stick X at six units per update, or four without the shoulder button. The terrain floor matters: within 50 units of the course height a climb term of the gap over 25 is added to lift, stick-down is limited to 20 counts, and total lift is capped at 2.5. Tricks require 6.5 units of speed, no contact and no water, spin the body at 0x600 binary units per update and grant a ten-frame boost when completed, with throttle forced to 1.2 through a roll. Skimming a crest works in the other direction: more than a hundred units of clearance clears any skim state, a wake starts under 35 units of clearance with speed below eight, and a skim engages within 38 units once speed reaches eight, lifting the hull toward the crest by the clearance gap times speed over eight per update until speed drops below eight or the stick pulls back.",
+      "constants": [
+        {
+          "name": "planeThrottleRamp",
+          "value": 0.01,
+          "unit": "throttle fraction per 30 Hz logic frame",
+          "source": "src/racer.c:2681"
+        },
+        {
+          "name": "planeBrakeRamp",
+          "value": 0.016,
+          "unit": "brake fraction per 30 Hz logic frame",
+          "source": "src/racer.c:2698"
+        },
+        {
+          "name": "planeThrustScale",
+          "value": 1.8,
+          "unit": "multiplier per 30 Hz logic frame",
+          "source": "src/racer.c:3142"
+        },
+        {
+          "name": "terrainFloorGap",
+          "value": 50,
+          "unit": "world units of clearance above the course height",
+          "source": "src/racer.c:2744"
+        },
+        {
+          "name": "climbGainDivisor",
+          "value": 25,
+          "unit": "world units of clearance per unit of lift per 30 Hz logic frame",
+          "source": "src/racer.c:2746"
+        },
+        {
+          "name": "climbCeiling",
+          "value": 2.5,
+          "unit": "lift multiplier, static cap",
+          "source": "src/racer.c:2750"
+        },
+        {
+          "name": "trickSpinRate",
+          "value": "0x600",
+          "unit": "binary angle units per 30 Hz logic frame",
+          "source": "src/racer.c:2941"
+        },
+        {
+          "name": "trickThrottle",
+          "value": 1.2,
+          "unit": "throttle fraction held through a roll",
+          "source": "src/racer.c:2942"
+        },
+        {
+          "name": "trickSpeedGate",
+          "value": -6.5,
+          "unit": "world units per 30 Hz logic frame, stored as a negative forward scalar",
+          "source": "src/racer.c:3117"
+        },
+        {
+          "name": "crestClearanceOffset",
+          "value": 10,
+          "unit": "world units of clearance per 30 Hz logic frame",
+          "source": "src/racer.c:2597"
+        },
+        {
+          "name": "wakeClearanceWindow",
+          "value": 35,
+          "unit": "world units of clearance, tested every 30 Hz logic frame",
+          "source": "src/racer.c:2605"
+        },
+        {
+          "name": "waveDriftClearanceWindow",
+          "value": 38,
+          "unit": "world units of clearance, tested every 30 Hz logic frame",
+          "source": "src/racer.c:2625"
+        },
+        {
+          "name": "waveDriftSpeedGate",
+          "value": 8,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:2608"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 2521
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2681
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2744
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2941
+        },
+        {
+          "path": "src/racer.c",
+          "line": 3142
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2597
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2608
+        },
+        {
+          "path": "src/racer.c",
+          "line": 2625
+        }
+      ],
+      "capabilities": [
+        "plane thrust",
+        "stick pitch control",
+        "terrain floor",
+        "roll and flip tricks"
+      ],
+      "tags": [
+        "vehicles",
+        "flight",
+        "tricks",
+        "movement"
+      ]
+    },
+    {
+      "id": "ai-racers",
+      "node": "racer-ai",
+      "name": "Computer racer pathing and pace",
+      "summary": "Computer racers follow the checkpoint spline, aim at a pace derived from their item stock and switch to cheaper physics when they are visible or near a human",
+      "behavior": "Computer racers read inputs from the checkpoint spline through a pathing routine chosen by race type, and an on-rails variant advances a scalar along the spline, converts the sampled target into a velocity and steps at most 35 units per update toward it, nudging the spline position when the racer drifts off the line. Pace is computed as the square root of the AI's banana-bonus counter times 0.025 plus 0.595 divided by 0.004, multiplied by 1.3 while boosting; a hovercraft also loses pace when its heading departs from the spline by more than 200 binary units, at one quantity per 150 units of deviation, never dropping below two. Wheeled racers close a quarter of the remaining gap to that pace per update and hovercraft close an eighth. Behaviour weighting raises the chance of an empowered boost after 20 updates without the accelerator and of seeking a better balloon once stock level rises, with every chance clamped to 100 percent. A computer racer within 400 world units of a human player, or on screen, is switched to the on-screen AI path with a 30-update grace each way.",
+      "constants": [
+        {
+          "name": "paceBase",
+          "value": 0.595,
+          "unit": "speed offset inside the pace formula, evaluated every 30 Hz logic frame",
+          "source": "src/racer.c:9016"
+        },
+        {
+          "name": "pacePerBanana",
+          "value": 0.025,
+          "unit": "speed gain per banana held",
+          "source": "src/racer.c:9016"
+        },
+        {
+          "name": "paceDivisor",
+          "value": 0.004,
+          "unit": "divisor inside the pace formula, evaluated every 30 Hz logic frame",
+          "source": "src/racer.c:9016"
+        },
+        {
+          "name": "boostPaceBonus",
+          "value": 1.3,
+          "unit": "multiplier while boosting",
+          "source": "src/racer.c:9018"
+        },
+        {
+          "name": "hovercraftPaceFloor",
+          "value": 2,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:9032"
+        },
+        {
+          "name": "carPaceEase",
+          "value": 0.25,
+          "unit": "fraction of the gap closed per 30 Hz logic frame",
+          "source": "src/racer.c:9042"
+        },
+        {
+          "name": "offscreenCatchupRangeSquared",
+          "value": 160000,
+          "unit": "squared world units, tested every 30 Hz logic frame",
+          "source": "src/racer.c:8758"
+        },
+        {
+          "name": "splineCorrectionCap",
+          "value": 35,
+          "unit": "world units per 30 Hz logic frame",
+          "source": "src/racer.c:9113"
+        },
+        {
+          "name": "behaviourHoldFrames",
+          "value": 20,
+          "unit": "frames at 30 Hz",
+          "source": "src/racer.c:555"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/racer.c",
+          "line": 602
+        },
+        {
+          "path": "src/racer.c",
+          "line": 9016
+        },
+        {
+          "path": "src/racer.c",
+          "line": 9042
+        },
+        {
+          "path": "src/racer.c",
+          "line": 8758
+        },
+        {
+          "path": "src/racer.c",
+          "line": 9113
+        }
+      ],
+      "capabilities": [
+        "spline following",
+        "pace target",
+        "behaviour weighting",
+        "physics level of detail"
+      ],
+      "tags": [
+        "ai",
+        "racing",
+        "difficulty",
+        "pathing"
+      ]
+    }
+  ]
+}

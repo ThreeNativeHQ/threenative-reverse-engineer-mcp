@@ -1,0 +1,2048 @@
+{
+  "version": 1,
+  "id": "grand-theft-auto-san-andreas-reversed",
+  "title": "Grand Theft Auto: San Andreas (reversed)",
+  "repo": "https://github.com/gta-reversed/gta-reversed",
+  "sha": "dd0288e7752cd482246ba5923198d63d051a76fc",
+  "nodes": [
+    {
+      "id": "frame-timing",
+      "name": "Frame clock and fixed timestep",
+      "purpose": "Turns one frame of wall-clock elapsed time into the single timestep scalar that every simulation subsystem multiplies its rates by, including the clamps that keep a hitch from teleporting entities and a pause from producing a zero step",
+      "paths": [
+        "source/game_sa/Timer.h",
+        "source/game_sa/Timer.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CTimer::UpdateVariables",
+          "path": "source/game_sa/Timer.cpp",
+          "lines": [
+            156,
+            200
+          ]
+        },
+        {
+          "name": "CTimer::Update",
+          "path": "source/game_sa/Timer.cpp",
+          "lines": [
+            203,
+            232
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input-mapping",
+      "name": "Device input to controller state",
+      "purpose": "Folds keyboard and joypad events into one analog controller state whose axes are half-range integers, so downstream gameplay code never has to know which physical device produced a movement request",
+      "paths": [
+        "source/game_sa/ControllerConfigManager.cpp",
+        "source/game_sa/Pad.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstAndThirdPersonOnly",
+          "path": "source/game_sa/ControllerConfigManager.cpp",
+          "lines": [
+            281,
+            298
+          ]
+        },
+        {
+          "name": "CControllerConfigManager::CheckAndSetStick",
+          "path": "source/game_sa/ControllerConfigManager.cpp",
+          "lines": [
+            1411,
+            1420
+          ]
+        },
+        {
+          "name": "CPad::GetPedWalkLeftRight",
+          "path": "source/game_sa/Pad.cpp",
+          "lines": [
+            707,
+            722
+          ]
+        },
+        {
+          "name": "CPad::GetPedWalkUpDown",
+          "path": "source/game_sa/Pad.cpp",
+          "lines": [
+            740,
+            755
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "player-locomotion",
+      "name": "On-foot locomotion controller",
+      "purpose": "Converts the two walk axes and the camera orientation into a rate-limited move-blend ratio, the walk/run/sprint state ladder, sprint stamina and the crouched variant of the same mapping",
+      "paths": [
+        "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+        "source/game_sa/Entity/Ped/PlayerPed.cpp",
+        "source/game_sa/Entity/Ped/Ped.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CTaskSimplePlayerOnFoot::ProcessPed",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "lines": [
+            99,
+            132
+          ]
+        },
+        {
+          "name": "CTaskSimplePlayerOnFoot::PlayerControlDucked",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "lines": [
+            839,
+            930
+          ]
+        },
+        {
+          "name": "CTaskSimplePlayerOnFoot::PlayerControlZelda",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "lines": [
+            932,
+            1028
+          ]
+        },
+        {
+          "name": "CPlayerPed::HandleSprintEnergy",
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "lines": [
+            652,
+            669
+          ]
+        },
+        {
+          "name": "CPlayerPed::GetButtonSprintResults",
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "lines": [
+            697,
+            712
+          ]
+        },
+        {
+          "name": "CPlayerPed::ProcessControl",
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "lines": [
+            1008,
+            1268
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "input-mapping"
+      ]
+    },
+    {
+      "id": "vertical-motion",
+      "name": "Jump, clearance test and climb hand-off",
+      "purpose": "The task ladder that decides whether a jump may start, applies the launch impulse, measures head clearance by temporarily shrinking the ped collision spheres, and hands control to a climb task when the vertical probe found a ledge",
+      "paths": [
+        "source/game_sa/Tasks/TaskTypes/TaskComplexJump.cpp",
+        "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+        "source/game_sa/Tasks/TaskTypes/TaskSimpleClimb.h"
+      ],
+      "functions": [
+        {
+          "name": "CTaskComplexJump::CreateNextSubTask",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskComplexJump.cpp",
+          "lines": [
+            45,
+            76
+          ]
+        },
+        {
+          "name": "CTaskComplexJump::CreateSubTask",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskComplexJump.cpp",
+          "lines": [
+            104,
+            138
+          ]
+        },
+        {
+          "name": "CTaskSimpleJump::CheckIfJumpBlocked",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "lines": [
+            90,
+            116
+          ]
+        },
+        {
+          "name": "CTaskSimpleJump::Launch",
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "lines": [
+            118,
+            190
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "player-locomotion",
+        "physics-collision"
+      ]
+    },
+    {
+      "id": "physics-collision",
+      "name": "Rigid body integration and contact response",
+      "purpose": "Applies gravity and drag to velocity, converts contact points into impulses with the centre-of-mass correction, and resolves shallow penetration softly instead of bouncing, including the scrape effects that report surface friction",
+      "paths": [
+        "source/game_sa/Entity/Physical.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPhysical::ApplyGravity",
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "lines": [
+            823,
+            838
+          ]
+        },
+        {
+          "name": "CPhysical::ApplyAirResistance",
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "lines": [
+            1430,
+            1455
+          ]
+        },
+        {
+          "name": "CPhysical::ApplyCollision",
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "lines": [
+            981,
+            1029
+          ]
+        },
+        {
+          "name": "CPhysical::ApplySoftCollision",
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "lines": [
+            1031,
+            1119
+          ]
+        },
+        {
+          "name": "CPhysical::ApplyFriction",
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "lines": [
+            1683,
+            1762
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Chase camera and free look",
+      "purpose": "Free-look accumulation from mouse counts and analog look axes scaled by the live field of view, the pitch clamp, the per-mode follow defaults, and the projection math that converts a crosshair offset into an aim pitch",
+      "paths": [
+        "source/game_sa/Cam.cpp",
+        "source/game_sa/Camera.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CCamera::Init",
+          "path": "source/game_sa/Camera.cpp",
+          "lines": [
+            169,
+            230
+          ]
+        },
+        {
+          "name": "CCamera::Find3rdPersonQuickAimPitch",
+          "path": "source/game_sa/Camera.cpp",
+          "lines": [
+            390,
+            398
+          ]
+        },
+        {
+          "name": "CCam::ClipAlpha",
+          "path": "source/game_sa/Cam.cpp",
+          "lines": [
+            500,
+            506
+          ]
+        },
+        {
+          "name": "CCam::ClipBeta",
+          "path": "source/game_sa/Cam.cpp",
+          "lines": [
+            509,
+            514
+          ]
+        },
+        {
+          "name": "CCam::Process_1rstPersonPedOnPC",
+          "path": "source/game_sa/Cam.cpp",
+          "lines": [
+            533,
+            641
+          ]
+        },
+        {
+          "name": "CCam::Process_1stPerson",
+          "path": "source/game_sa/Cam.cpp",
+          "lines": [
+            643,
+            776
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "input-mapping"
+      ]
+    },
+    {
+      "id": "combat-weapons",
+      "name": "Weapon fire, spread and feedback",
+      "purpose": "Instant-hit and projectile fire paths, the pellet and spread parameters of the shotgun family, and the camera jitter plus pad shake that give first-person fire its recoil feel",
+      "paths": [
+        "source/game_sa/Weapon.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CWeapon::FireInstantHit",
+          "path": "source/game_sa/Weapon.cpp",
+          "lines": [
+            1387,
+            1397
+          ]
+        },
+        {
+          "name": "CWeapon::FireM16_1stPerson",
+          "path": "source/game_sa/Weapon.cpp",
+          "lines": [
+            1565,
+            1647
+          ]
+        },
+        {
+          "name": "CWeapon::Fire",
+          "path": "source/game_sa/Weapon.cpp",
+          "lines": [
+            1649,
+            2051
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "camera"
+      ]
+    },
+    {
+      "id": "ped-ai",
+      "name": "Ped perception and stat profile",
+      "purpose": "The sensing budget a non-player ped gets each update (ranges, scan counts, follow distance) and the fear, temper and heading-rate defaults that bias its responses before any scripted behaviour runs",
+      "paths": [
+        "source/game_sa/PedIntelligence.cpp",
+        "source/game_sa/PedStats.cpp",
+        "source/game_sa/Entity/Ped/Ped.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPedIntelligence::CPedIntelligence",
+          "path": "source/game_sa/PedIntelligence.cpp",
+          "lines": [
+            103,
+            129
+          ]
+        },
+        {
+          "name": "CPedIntelligence::SetPedDecisionMakerType",
+          "path": "source/game_sa/PedIntelligence.cpp",
+          "lines": [
+            136,
+            156
+          ]
+        },
+        {
+          "name": "CPedIntelligence::IsInSeeingRange",
+          "path": "source/game_sa/PedIntelligence.cpp",
+          "lines": [
+            186,
+            194
+          ]
+        },
+        {
+          "name": "CPedStats::Initialise",
+          "path": "source/game_sa/PedStats.cpp",
+          "lines": [
+            21,
+            39
+          ]
+        },
+        {
+          "name": "CPed::CanSeeEntity",
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "lines": [
+            1548,
+            1564
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "animation",
+      "name": "Locomotion animation selection",
+      "purpose": "Maps a move state onto an animation group and blend rate, and scales the playback speed of the chosen cycle by slope pitch and a per-ped random offset so identical inputs do not look synchronised across a crowd",
+      "paths": [
+        "source/game_sa/Entity/Ped/Ped.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPed::SetMoveAnim",
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "lines": [
+            389,
+            495
+          ]
+        },
+        {
+          "name": "CPed::SetMoveAnimSpeed",
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "lines": [
+            710,
+            719
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "vehicle-handling",
+      "name": "Automobile driver input",
+      "purpose": "The steering ramp that turns a half-range axis or mouse motion into a raw steering value, the nonlinear mapping from that value to the wheel lock, and the pedal/gas arbitration that turns accelerate and brake values into forward or reverse demand",
+      "paths": [
+        "source/game_sa/Entity/Vehicle/Automobile.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CAutomobile::ProcessControlInputs",
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "lines": [
+            1921,
+            2094
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "input-mapping"
+      ]
+    },
+    {
+      "id": "world-streaming",
+      "name": "World streaming radius and cadence",
+      "purpose": "Chooses which model and lod sectors become load requests around the camera, how far from the player those requests reach, and how often the low-frequency decisions such as boat spawning are reevaluated",
+      "paths": [
+        "source/game_sa/Streaming.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CStreaming::AddLodsToRequestList",
+          "path": "source/game_sa/Streaming.cpp",
+          "lines": [
+            157,
+            175
+          ]
+        },
+        {
+          "name": "CStreaming::AddModelsToRequestList",
+          "path": "source/game_sa/Streaming.cpp",
+          "lines": [
+            178,
+            227
+          ]
+        },
+        {
+          "name": "CStreaming::Update",
+          "path": "source/game_sa/Streaming.cpp",
+          "lines": [
+            3687,
+            3750
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing",
+        "camera"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-timestep-clamp",
+      "node": "frame-timing",
+      "name": "Fixed 50 Hz timestep and its clamp band",
+      "summary": "Every rate in the game is multiplied by one scalar timestep that is derived from real elapsed time, normalised so that one step equals twenty milliseconds, and then clamped so hitches stay bounded.",
+      "behavior": "The elapsed timer delta is first divided by the timer divider to convert hardware ticks into milliseconds, and the result is divided by the nominal step length to obtain the timestep in step units, where one unit is twenty milliseconds. Two clocks are kept: an unclipped millisecond clock that accumulates the true delta, and a clipped clock that accumulates at most three hundred milliseconds per frame so that long stalls cannot advance scripted timers arbitrarily far. The unclipped timestep is then floored at a small positive value unless the game is paused or a special-effects snapshot is active; that floor prevents a zero divisor downstream. The previous step is saved before the new value is clamped into a narrow band with a tiny positive lower bound and an upper bound of three steps, and entity motion consumes the clamped value. The ordering matters: the floor is applied to the unclipped value before the clamp, and the old step is recorded before the clamp so comparisons such as \"was this a really short frame\" see the previous clamped step. A paused frame therefore produces the minimum step rather than zero, which is why paused code that still integrates velocity does not divide by zero but also does not move perceptibly.",
+      "constants": [
+        {
+          "name": "TIMESTEP_PER_SECOND",
+          "value": 50,
+          "unit": "simulation steps per second (Hz)",
+          "source": "source/game_sa/Timer.h:17"
+        },
+        {
+          "name": "minimum non-clipped step",
+          "value": 0.01,
+          "unit": "timestep units (1 unit = 20 ms at the nominal rate)",
+          "source": "source/game_sa/Timer.cpp:195"
+        },
+        {
+          "name": "step clamp lower bound",
+          "value": 0.00001,
+          "unit": "timestep units",
+          "source": "source/game_sa/Timer.cpp:199"
+        },
+        {
+          "name": "step clamp upper bound",
+          "value": 3,
+          "unit": "timestep units (60 ms of simulated time per frame)",
+          "source": "source/game_sa/Timer.cpp:199"
+        },
+        {
+          "name": "wall-clock advance cap",
+          "value": 300,
+          "unit": "milliseconds per frame",
+          "source": "source/game_sa/Timer.cpp:191"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Timer.cpp",
+          "line": 156
+        },
+        {
+          "path": "source/game_sa/Timer.cpp",
+          "line": 199
+        },
+        {
+          "path": "source/game_sa/Timer.h",
+          "line": 17
+        }
+      ],
+      "capabilities": [
+        "frame pacing",
+        "timestep normalisation"
+      ],
+      "tags": [
+        "timing",
+        "fixed-step",
+        "clamp"
+      ]
+    },
+    {
+      "id": "frame-clock-bookkeeping",
+      "node": "frame-timing",
+      "name": "Frame counter, FPS estimate and millisecond history",
+      "summary": "Before the timestep is derived, the clock rotates a short history of clipped millisecond stamps and estimates frames per second from the difference of the unclipped clock.",
+      "behavior": "The per-frame update first recomputes frames per second as one thousand divided by the number of unclipped milliseconds added since the previous update, which makes the value instantaneous rather than averaged, and therefore meaningless or unbounded on a frame that consumed zero time. It then walks the four previous clipped millisecond stamps down one slot each, so gameplay code can ask for the time one, two and three frames back and compare them without storing its own history. Elapsed time between render starts is measured in timer ticks, multiplied by the game speed scale when not paused, and accumulated into a separate pause-mode clock. The last step is the call that derives and clamps the timestep and then increments the frame counter, so anything that reads the frame counter during the update sees the pre-increment value. The ticks-per-frame helper multiplies the ticks-per-millisecond divider by twenty, which is the same twenty millisecond step length expressed in ticks; it is only correct if the frame really did take one step of wall-clock time.",
+      "constants": [
+        {
+          "name": "nominal step length numerator",
+          "value": 1000,
+          "unit": "milliseconds per second (divided by 50 steps per second gives 20 ms)",
+          "source": "source/game_sa/Timer.h:18"
+        },
+        {
+          "name": "ticks-per-frame multiplier",
+          "value": 20,
+          "unit": "milliseconds assumed per frame",
+          "source": "source/game_sa/Timer.cpp:139"
+        },
+        {
+          "name": "FPS conversion factor",
+          "value": 1000,
+          "unit": "milliseconds per second",
+          "source": "source/game_sa/Timer.cpp:210"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Timer.cpp",
+          "line": 203
+        },
+        {
+          "path": "source/game_sa/Timer.cpp",
+          "line": 210
+        },
+        {
+          "path": "source/game_sa/Timer.h",
+          "line": 18
+        }
+      ],
+      "capabilities": [
+        "frame counter",
+        "fps estimate",
+        "time history"
+      ],
+      "tags": [
+        "timing",
+        "instrumentation"
+      ]
+    },
+    {
+      "id": "keyboard-to-analog-stick",
+      "node": "input-mapping",
+      "name": "Digital keys folded into a half-range analog axis",
+      "summary": "A direction key writes a fixed half-range value into the same integer axis a joypad drives, and opposite keys pressed together are resolved to a neutral axis before any gameplay code reads it.",
+      "behavior": "The action table is applied in a fixed order: fire buttons and lock-on first, then the four walk directions on the two left-stick axes, then the walk modifier, the group-control pad, and finally the two right-stick look axes, whose up and down pair is only bound when the control method is a joypad. For each direction the helper checks whether the key currently pressed is the one bound to that action; if so, it compares the axis with the negated value of this action and with a shared both-directions flag. If the axis already holds the opposite direction, or the flag is set from an earlier write this frame, the axis is zeroed and the flag is latched, otherwise the axis takes this direction value. Because both directions of an axis share the same axis reference and the same latch, holding forward and back yields zero, and the latch persists for the rest of the frame; a separate reset walks every controller type and clears all four axis latches before the next frame folds input again, so the neutral holds for exactly the frame in which both keys were down. The axis is a signed sixteen-bit count with a half-range of one hundred and twenty-eight, which gameplay code normalises by dividing by that half-range, while the pedal paths read the merged value against the two hundred and fifty-five full scale instead.",
+      "constants": [
+        {
+          "name": "positive direction deflection",
+          "value": 128,
+          "unit": "signed int16 axis counts (full-scale digital deflection)",
+          "source": "source/game_sa/ControllerConfigManager.cpp:286"
+        },
+        {
+          "name": "negative direction deflection",
+          "value": -128,
+          "unit": "signed int16 axis counts",
+          "source": "source/game_sa/ControllerConfigManager.cpp:285"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/ControllerConfigManager.cpp",
+          "line": 281
+        },
+        {
+          "path": "source/game_sa/ControllerConfigManager.cpp",
+          "line": 1411
+        },
+        {
+          "path": "source/game_sa/ControllerConfigManager.cpp",
+          "line": 889
+        }
+      ],
+      "capabilities": [
+        "input mapping",
+        "axis folding",
+        "digital to analog"
+      ],
+      "tags": [
+        "input",
+        "controller",
+        "keyboard"
+      ]
+    },
+    {
+      "id": "onfoot-move-blend-ratio",
+      "node": "player-locomotion",
+      "name": "Camera-relative move-blend ratio with rate limit",
+      "summary": "The walk axes become a target blend ratio and a world heading; the ratio chases the target at a bounded rate per timestep so an instant stick flick does not produce an instant speed change.",
+      "behavior": "The two walk axes are squared, summed and square-rooted to get stick magnitude, and that magnitude is divided by sixty to convert the half-range integer counts into blend-ratio units, so a full-deflection diagonal stick lands near two units and the walk modifier cuts that back to one. An angle is measured from the negated horizontal axis and the vertical axis so that pushing up points forward in screen space, and the camera orientation is subtracted to make the request camera-relative rather than world-relative; the result is wrapped into one turn. If the walk modifier is held the target ratio is capped at one, and a target of zero or less writes zero immediately and skips the rest of the update, which leaves the player facing untouched. When the direction is allowed by the game logic the facing rotation is set to the computed heading first and the blend ratio is then stepped toward the target by at most seven hundredths of a blend unit per timestep, applying the whole difference when it is inside the band and the band itself when it is outside. Because the limit is scaled by the timestep, a slow frame produces a proportionally larger allowed change, so the acceleration rate is per unit of simulated time rather than per frame.",
+      "constants": [
+        {
+          "name": "axis-to-blend-ratio divisor",
+          "value": 60,
+          "unit": "int16 axis counts per blend-ratio unit",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:939"
+        },
+        {
+          "name": "blend-ratio rate limit",
+          "value": 0.07,
+          "unit": "blend-ratio units per simulation step (multiplied by the timestep factor, so 0.07 at the nominal 50 Hz rate)",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:956"
+        },
+        {
+          "name": "walk-modifier cap",
+          "value": 1,
+          "unit": "blend-ratio units",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:947"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 932
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 939
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 956
+        }
+      ],
+      "capabilities": [
+        "movement",
+        "acceleration limit",
+        "camera-relative input"
+      ],
+      "tags": [
+        "locomotion",
+        "movement",
+        "player"
+      ]
+    },
+    {
+      "id": "sprint-energy-budget",
+      "node": "player-locomotion",
+      "name": "Sprint stamina drain, floor and refill",
+      "summary": "Sprinting spends a stamina reserve, bottoms out at a negative floor, and refills at half the drain rate whenever the ped is not sprinting.",
+      "behavior": "The reserve is initialised from a body-stat modifier and is decremented by the timestep times a consumption factor while a sprint is requested; with the factor of one used by the player controller that is fifty reserve units per second at the nominal step rate. Two exemptions short-circuit it: a flag that disables tiredness, and either the adrenaline state or a zero consumption rate. The drain stops at a negative floor of one hundred and fifty units, three seconds of full-rate sprinting past the empty point, and the function reports failure once the floor is reached, which is what the caller uses to stop treating the ped as a sprinter even though the sprint input is still held. While not sprinting the reserve climbs back toward the stat maximum at half the consumption rate, and the player controller contributes an additional per-step refill while the move state is run but not sprint, so ordinary running also tops the reserve up. The sprint blend multiplier is derived separately: below a move-speed threshold the multiplier is exactly one for any positive speed, and above it the multiplier grows linearly with how far past the threshold the speed is, using the per-surface sprint set entry for the current medium. A move speed of zero or below yields a zero multiplier, which is the edge case that lets a stationary ped hold the sprint button without a sprint animation.",
+      "constants": [
+        {
+          "name": "PLAYER_SPRINT_THRESHOLD",
+          "value": 5,
+          "unit": "move-speed units per step; below this the sprint blend multiplier is exactly 1",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:672"
+        },
+        {
+          "name": "stamina reserve floor",
+          "value": -150,
+          "unit": "stamina reserve units; drained at one unit per simulation step by the player controller, so fifty units per second at 50 Hz",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:660"
+        },
+        {
+          "name": "refill divisor",
+          "value": 2,
+          "unit": "dimensionless divisor; recovery takes twice as long as the drain that caused it",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:666"
+        },
+        {
+          "name": "run refill rate",
+          "value": 0.15,
+          "unit": "stamina reserve units per simulation step while the move state is run",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1137"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 652
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 697
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 1137
+        }
+      ],
+      "capabilities": [
+        "stamina",
+        "sprint gating",
+        "resource budget"
+      ],
+      "tags": [
+        "locomotion",
+        "sprint",
+        "player"
+      ]
+    },
+    {
+      "id": "crouched-move-mapping",
+      "node": "player-locomotion",
+      "name": "Crouched movement quantisation",
+      "summary": "While ducked the same two axes are normalised against the full half-range, clamped to one, and then collapsed to a walk or run state only when the stick clears a dead band.",
+      "behavior": "The duck path divides each axis by the half-range directly rather than dividing by the blend divisor used when standing, so a full stick deflection maps to exactly one unit of movement, and the resulting vector magnitude is clamped to one. The player is pinned to zero movement while attached to another entity. When the duck is released by any of several inputs the task blends a run cycle if sprint is held and a walk cycle otherwise, both at the shared duck blend rate, and it only does so when the stick magnitude exceeds the dead band of one half; below that it returns without changing state, so a light nudge of the stick cancels the crouch without starting a move. The move-blend ratio is forced to one and a half and the move state is mirrored into the swimming move state so that leaving water does not restart an animation transition. The armed variant instead blends a forward gun-move cycle, sets a blend ratio of one and feeds a fixed forward vector to the gun task, so a crouched aiming ped cannot strafe.",
+      "constants": [
+        {
+          "name": "crouch axis normaliser",
+          "value": 128,
+          "unit": "int16 axis counts per unit of crouched movement",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:850"
+        },
+        {
+          "name": "crouch blend ratio on exit",
+          "value": 1.5,
+          "unit": "blend-ratio units (above the standing run threshold)",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:871"
+        },
+        {
+          "name": "crouch dead band",
+          "value": 0.5,
+          "unit": "blend-ratio units of stick magnitude",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp:866"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 839
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 850
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimplePlayerOnFoot.cpp",
+          "line": 866
+        }
+      ],
+      "capabilities": [
+        "crouch",
+        "movement quantisation",
+        "state transition"
+      ],
+      "tags": [
+        "locomotion",
+        "crouch",
+        "player"
+      ]
+    },
+    {
+      "id": "player-facing-look-flags",
+      "node": "player-locomotion",
+      "name": "Look-at heading chosen from the camera yaw",
+      "summary": "When the chase camera looks in a direction the ped is not facing, the ped turns its head toward the closest of two candidate headings and holds it for a few frames, unless it is attacking or sprinting.",
+      "behavior": "The player controller compares the camera front vector, converted to a heading, with the ped rotation and only acts on the difference when the ped is not attacking and the mismatch is inside a wide arc, which excludes the sector directly behind so a look-at does not read as a full turn. Inside that arc a narrower band is treated as the ambiguous case: two candidate headings are built by offsetting the current facing by one hundred and fifty degrees in each direction, and the one closer to the previous look direction is kept, which makes repeated updates sticky instead of oscillating. The look flag is then set with a timer of five milliseconds of timestep-scaled time, so the head turn survives about five updates at the nominal rate, and it is cleared entirely when the mismatch falls outside the arc. Sprinting cancels any active look and installs a fixed two hundred and fifty millisecond timer, so the head does not drift while running. Independently, the controller watches speed magnitude: above one tenth of a unit per step the stand-still timer is cleared, and below it a deadline of half a second is armed, after which the ped is flagged as stopped moving, which is what downstream code uses to decide that a player is idle rather than merely slow.",
+      "constants": [
+        {
+          "name": "minimum look-at mismatch",
+          "value": 30,
+          "unit": "degrees of yaw between camera heading and ped facing",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1173"
+        },
+        {
+          "name": "maximum look-at mismatch",
+          "value": 330,
+          "unit": "degrees of yaw (the complement of the 30 degree dead zone in front)",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1173"
+        },
+        {
+          "name": "ambiguous half-turn band lower angle",
+          "value": 150,
+          "unit": "degrees added or subtracted from the current facing to build a candidate heading",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1174"
+        },
+        {
+          "name": "ambiguous half-turn band upper angle",
+          "value": 210,
+          "unit": "degrees",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1174"
+        },
+        {
+          "name": "look timer scale",
+          "value": 5,
+          "unit": "milliseconds of step time per unit; the step length in milliseconds is multiplied by this factor once per update",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1184"
+        },
+        {
+          "name": "sprint look suppression timer",
+          "value": 250,
+          "unit": "milliseconds of wall-clock time",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1191"
+        },
+        {
+          "name": "stopped-moving deadline",
+          "value": 500,
+          "unit": "milliseconds after the last fast-enough update",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1197"
+        },
+        {
+          "name": "stand-still speed threshold",
+          "value": 0.1,
+          "unit": "world units per simulation step of total speed magnitude",
+          "source": "source/game_sa/Entity/Ped/PlayerPed.cpp:1193"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 1173
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 1184
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/PlayerPed.cpp",
+          "line": 1193
+        }
+      ],
+      "capabilities": [
+        "procedural look-at",
+        "idle detection",
+        "camera coupling"
+      ],
+      "tags": [
+        "locomotion",
+        "head-tracking",
+        "player"
+      ]
+    },
+    {
+      "id": "jump-launch-impulse",
+      "node": "vertical-motion",
+      "name": "Jump launch impulse and horizontal carry-over",
+      "summary": "A launch adds a fixed vertical force whose value depends on whether the ped is a player, and separately seeds horizontal speed only when the ped is already slower than a speed picked from the current locomotion blend.",
+      "behavior": "The launch first picks a horizontal target speed from animation blend amounts: if a sprint cycle is playing the target is interpolated between the two sprint bounds by that cycle weight, otherwise if a run cycle is playing it is interpolated between the lower pair, and with neither the flat minimum is used. The vertical force is a single value for player-controlled or explicitly high jumps and a lower value for non-player peds. Any ped that carries player data multiplies both the horizontal target and the vertical force by a body-stat modifier, so a ped whose fat and muscle modifier falls below one jumps lower and reaches a shorter horizontal target, and a cheat multiplies only the vertical force by a large factor. The vertical force is converted to velocity by dividing by mass, so the resulting launch speed is inversely proportional to mass and the shared constant does not mean a shared jump height. Horizontal seeding is skipped in three cases: a climb jump zeroes both horizontal components, a jump aimed at a climbable entity leaves the velocity alone, and a ped already moving faster than the target is left untouched by the squared 2D speed comparison. When the ped is standing on a moving entity the entity horizontal velocity is added afterwards, which is why jumping off a moving vehicle keeps the vehicle momentum. The airborne and standing flags are set before the animation blend is requested, and the glide or climb-jump cycle is blended at the same fixed rate in both branches.",
+      "constants": [
+        {
+          "name": "player and high-jump vertical force",
+          "value": 8.5,
+          "unit": "force units per launch (divided by mass to give a velocity change at that frame)",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:130"
+        },
+        {
+          "name": "non-player vertical force",
+          "value": 4.5,
+          "unit": "force units per launch",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:130"
+        },
+        {
+          "name": "minimum horizontal speed",
+          "value": 0.1,
+          "unit": "world units per simulation step",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:119"
+        },
+        {
+          "name": "run-blend lower horizontal speed",
+          "value": 0.1,
+          "unit": "world units per simulation step",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:127"
+        },
+        {
+          "name": "run-blend upper horizontal speed",
+          "value": 0.17,
+          "unit": "world units per simulation step",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:127"
+        },
+        {
+          "name": "sprint-blend upper horizontal speed",
+          "value": 0.22,
+          "unit": "world units per simulation step",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:123"
+        },
+        {
+          "name": "high-jump cheat multiplier",
+          "value": 10,
+          "unit": "dimensionless multiplier on the vertical force",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:139"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "line": 118
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "line": 130
+        },
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 719
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "launch impulse",
+        "stat scaling"
+      ],
+      "tags": [
+        "jump",
+        "vertical",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "jump-clearance-test",
+      "node": "vertical-motion",
+      "name": "Head clearance probe and climb probe",
+      "summary": "Before a jump is allowed the ped is probed twice: a small sphere ahead and above the third collision sphere decides whether the jump becomes a climb, and a temporary sphere shrink plus a vertical offset decides whether there is head room.",
+      "behavior": "The blocked test is skipped entirely for a ped that is already stuck or that is responding to a stuck-in-air event, so a ped cannot be trapped by its own jump test. The climb probe places a sphere a quarter of a unit in front of the ped and a quarter of a unit above the centre of the third collision sphere, tests it against buildings, objects and dummies, and records the result as the climb-jump flag, so the same probe that detects obstruction also decides whether the jump turns into a mantle. For the head test the ped is moved to a point three quarters of a unit above its own origin and every collision sphere radius is temporarily shrunk, then a collision-only test is run; a blocked result latches the blocked flag. The radii are restored afterwards in a second loop to a slightly larger default, and the ped is returned to its saved position, so the function is not a pure query: it leaves the sphere radii modified. Because the probe runs before the launch, a ped with a low ceiling is converted into a hit-head task instead of being launched into geometry.",
+      "constants": [
+        {
+          "name": "climb probe forward offset",
+          "value": 0.25,
+          "unit": "world units along the ped forward vector from the ped origin",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:96"
+        },
+        {
+          "name": "climb probe radius",
+          "value": 0.25,
+          "unit": "world units",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:98"
+        },
+        {
+          "name": "head test vertical offset",
+          "value": 0.75,
+          "unit": "world units above the ped origin",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:101"
+        },
+        {
+          "name": "temporary sphere radius during head test",
+          "value": 0.3,
+          "unit": "world units",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:104"
+        },
+        {
+          "name": "restored sphere radius",
+          "value": 0.35,
+          "unit": "world units",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:112"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "line": 90
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "line": 98
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp",
+          "line": 104
+        }
+      ],
+      "capabilities": [
+        "ceiling test",
+        "climb detection",
+        "collision probing"
+      ],
+      "tags": [
+        "jump",
+        "collision",
+        "vertical"
+      ]
+    },
+    {
+      "id": "jump-subtask-ladder",
+      "node": "vertical-motion",
+      "name": "Jump subtask ladder and climb hand-off",
+      "summary": "A jump is a small state machine: launch, then either land, hit the head, or hand over to a climb whose grab style is chosen from how far the ledge is above the ped.",
+      "behavior": "The complex jump creates a simple jump as its first subtask and then selects the follow-up from what that subtask reported. If the launch animation never started the chain finishes and the landing flag is cleared. If the launch was blocked the ped gets a hit-head task and is marked as landing. If the launch found a climbable entity and climbing is not disabled the ped is marked airborne and gets a climb task, otherwise it gets the generic in-air-and-land task. When the climb subtask itself finishes the chain either goes straight to in-air-and-land if the ped is still airborne or finishes outright, and the next transition after in-air-and-land clears the landing flag and finishes. The grab style of the climb task is decided by comparing the climb position height with the ped height: a ledge closer than the stretch threshold yields a pull-up, anything higher yields a plain grab, so the threshold is the switch between stepping onto a ledge and hanging from it. The forced-climb flag is passed through to the climb task, which is how a scripted mantle differs from a discovered one.",
+      "constants": [
+        {
+          "name": "climb pull-up threshold",
+          "value": 1.4,
+          "unit": "world units of vertical gap between the climb point and the ped origin",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleClimb.h:28"
+        },
+        {
+          "name": "launch animation blend rate",
+          "value": 8,
+          "unit": "blend delta per update, rate unverified as a per-step rate",
+          "source": "source/game_sa/Tasks/TaskTypes/TaskSimpleJump.cpp:161"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskComplexJump.cpp",
+          "line": 45
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskComplexJump.cpp",
+          "line": 104
+        },
+        {
+          "path": "source/game_sa/Tasks/TaskTypes/TaskSimpleClimb.h",
+          "line": 28
+        }
+      ],
+      "capabilities": [
+        "task sequencing",
+        "climb",
+        "jump"
+      ],
+      "tags": [
+        "jump",
+        "climb",
+        "tasks"
+      ]
+    },
+    {
+      "id": "gravity-and-air-drag",
+      "node": "physics-collision",
+      "name": "Per-step gravity and air resistance",
+      "summary": "Gravity is a constant velocity decrement per timestep, and drag multiplies speed by a power of a damping factor raised to the timestep, so both are frame-rate independent.",
+      "behavior": "Gravity subtracts a fixed amount from vertical velocity, scaled by the timestep, for any physical that uses collision; for a body with infinite mass the same velocity change is expressed as a force scaled by the body mass and applied at its centre of mass, so resting contacts still carry the weight even though the body itself cannot be accelerated. Because the decrement is per unit of simulated time, the resulting acceleration is the constant multiplied by the step rate squared, which at fifty steps per second works out to twenty world units per second squared. Drag has two branches: for a coefficient at or below the small threshold, and for every vehicle regardless of coefficient, speed is reduced by raising one minus speed magnitude times the coefficient to the power of the timestep, which makes the loss grow with current speed and therefore bound the top speed; for a larger coefficient on a non-vehicle the coefficient itself is raised to the power of the timestep instead. The low branch also multiplies angular velocity by a fixed factor per step instead of by a timestep power, so spin decays at a per-step rate rather than a per-second one; at fifty steps per second that factor removes about forty per cent of spin each second. The choice of branch is made per update from the coefficient and the body type, so a vehicle always takes the speed-proportional branch even with a large coefficient, and only a non-vehicle with a large coefficient takes the pure exponential branch.",
+      "constants": [
+        {
+          "name": "gravity velocity decrement",
+          "value": 0.008,
+          "unit": "world units per step of downward velocity added per simulation step (0.008 per step squared; 20 world units/s squared at 50 Hz)",
+          "source": "source/game_sa/Entity/Physical.cpp:833"
+        },
+        {
+          "name": "low air-resistance branch threshold",
+          "value": 0.1,
+          "unit": "air-resistance coefficient, dimensionless",
+          "source": "source/game_sa/Entity/Physical.cpp:1432"
+        },
+        {
+          "name": "angular velocity damp per step",
+          "value": 0.99,
+          "unit": "dimensionless multiplier applied once per simulation step (about 0.6 of the spin remains after one second at 50 Hz)",
+          "source": "source/game_sa/Entity/Physical.cpp:1446"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 823
+        },
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 1430
+        },
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 1430
+        }
+      ],
+      "capabilities": [
+        "gravity",
+        "drag",
+        "frame-rate independence"
+      ],
+      "tags": [
+        "physics",
+        "integration"
+      ]
+    },
+    {
+      "id": "collision-impulse-and-scrape",
+      "node": "physics-collision",
+      "name": "Contact impulse, soft contact and scrape sparks",
+      "summary": "Contacts only respond when the approach speed is negative along the normal; the impulse is scaled by an effective mass that mixes linear and angular inertia, and shallow penetrations are pushed out softly instead of bounced.",
+      "behavior": "The impulse path computes the speed at the contact point rather than at the origin, so an off-centre hit converts some of the approach into rotation. It takes the dot product of that speed with the contact normal and does nothing when it is positive, then derives an effective mass from the inverse mass and the inverse turn mass weighted by the normal squared, multiplies by one plus the elasticity, and applies the resulting impulse at the contact point. For vehicles the vertical component of the impulse is scaled down unless the normal is close to vertical, which keeps curb strikes from launching a car. The soft path is used for shallow overlap: its magnitude is the penetration depth times the timestep times a depth multiplier times the collision mass, so a deeper overlap or a longer step produces a stronger push, and the approach speed term is added with the speed multiplier. When the approach speed is not negative the soft path reports no damage and returns without pushing, so a body separating from a surface is left alone. The monster-truck branch first rejects contacts that are almost directly underneath, then projects the normal onto the plane perpendicular to the body up axis so that a shallow underbody contact slides along the body, and switches to the alternate speed multiplier when the contact is well above the belly. Scrape effects are emitted only above a speed threshold, only when the surface friction effect is enabled on the appropriate member of the contact pair, and the BMX case requires the normal to be close to the body side; each scrape sprays a small number of particles with a force proportional to speed.",
+      "constants": [
+        {
+          "name": "vehicle vertical impulse reduction threshold",
+          "value": 0.7,
+          "unit": "contact normal z component, dimensionless",
+          "source": "source/game_sa/Entity/Physical.cpp:1011"
+        },
+        {
+          "name": "vehicle vertical impulse scale",
+          "value": 0.3,
+          "unit": "dimensionless multiplier on the vertical impulse component",
+          "source": "source/game_sa/Entity/Physical.cpp:1013"
+        },
+        {
+          "name": "scrape speed threshold",
+          "value": 0.1,
+          "unit": "world units per simulation step of sliding speed",
+          "source": "source/game_sa/Entity/Physical.cpp:1741"
+        },
+        {
+          "name": "near-vertical side contact threshold",
+          "value": 0.86669999,
+          "unit": "cosine of the angle between contact normal and body right vector",
+          "source": "source/game_sa/Entity/Physical.cpp:1745"
+        },
+        {
+          "name": "scrape particle count",
+          "value": 8,
+          "unit": "particles emitted per scraped contact",
+          "source": "source/game_sa/Entity/Physical.cpp:1753"
+        },
+        {
+          "name": "scrape particle spread",
+          "value": 0.2,
+          "unit": "world units of lateral offset per particle, symmetric about the contact point",
+          "source": "source/game_sa/Entity/Physical.cpp:1755"
+        },
+        {
+          "name": "scrape force scale",
+          "value": 12.5,
+          "unit": "force units per unit of sliding speed",
+          "source": "source/game_sa/Entity/Physical.cpp:1757"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 981
+        },
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 1031
+        },
+        {
+          "path": "source/game_sa/Entity/Physical.cpp",
+          "line": 1683
+        }
+      ],
+      "capabilities": [
+        "collision response",
+        "soft contact",
+        "surface effects"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "fx"
+      ]
+    },
+    {
+      "id": "first-person-look-rates",
+      "node": "camera",
+      "name": "Free-look accumulation from mouse and stick",
+      "summary": "Free look integrates mouse counts scaled by field of view and a sensitivity constant, and falls back to a squared stick value scaled by the timestep when the mouse is idle.",
+      "behavior": "The free-look update runs after the camera source point is computed and before the angles are clamped. It normalises the current field of view by a reference value, so a narrower field magnifies the same mouse motion, then adds mouse delta times that ratio times the horizontal and vertical sensitivity constants; the horizontal term is negated and the vertical term is not, which is the sign convention that makes mouse-right rotate the view right and mouse-down pitch the view down. When no mouse motion arrived it instead reads the analog look pair and applies a squared curve divided by a large per-axis constant, then scaled by the field-of-view ratio, divided by an axis-specific divisor and multiplied by the timestep; squaring makes small stick deflections nearly inert while full deflection dominates, and because the timestep multiplies the whole term the turn rate is per unit of simulated time rather than per frame. The horizontal term is then wrapped into one turn and the vertical term is clamped, in that order, so the pitch clamp sees the already-wrapped yaw. Note that the wrap helper as written only adds a full turn for angles below minus half a turn and subtracts a full turn in every other case, so it is written for callers whose angle is known to be outside the range.",
+      "constants": [
+        {
+          "name": "field-of-view reference",
+          "value": 80,
+          "unit": "degrees used to normalise the live field of view",
+          "source": "source/game_sa/Cam.cpp:601"
+        },
+        {
+          "name": "horizontal mouse gain",
+          "value": -3,
+          "unit": "radians per mouse count per unit of normalised field of view, applied with a leading negation",
+          "source": "source/game_sa/Cam.cpp:605"
+        },
+        {
+          "name": "vertical mouse gain",
+          "value": 4,
+          "unit": "radians per mouse count per unit of normalised field of view",
+          "source": "source/game_sa/Cam.cpp:606"
+        },
+        {
+          "name": "horizontal stick curve divisor",
+          "value": 10000,
+          "unit": "squared axis counts per radian before the remaining scales",
+          "source": "source/game_sa/Cam.cpp:611"
+        },
+        {
+          "name": "horizontal stick rate divisor",
+          "value": 17.5,
+          "unit": "dimensionless divisor applied to the per-step turn",
+          "source": "source/game_sa/Cam.cpp:611"
+        },
+        {
+          "name": "vertical stick curve divisor",
+          "value": 22500,
+          "unit": "squared axis counts per radian before the remaining scales",
+          "source": "source/game_sa/Cam.cpp:612"
+        },
+        {
+          "name": "vertical stick rate divisor",
+          "value": 14,
+          "unit": "dimensionless divisor applied to the per-step turn",
+          "source": "source/game_sa/Cam.cpp:612"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Cam.cpp",
+          "line": 533
+        },
+        {
+          "path": "source/game_sa/Cam.cpp",
+          "line": 605
+        },
+        {
+          "path": "source/game_sa/Cam.cpp",
+          "line": 611
+        }
+      ],
+      "capabilities": [
+        "free look",
+        "mouse look",
+        "stick look"
+      ],
+      "tags": [
+        "camera",
+        "look",
+        "input"
+      ]
+    },
+    {
+      "id": "camera-follow-defaults-and-pitch-clamp",
+      "node": "camera",
+      "name": "Chase camera defaults and pitch limits",
+      "summary": "The first chase camera ships with a ground distance and three zoom tiers, the pitch clamp is asymmetric between looking up and looking down, and the first-person mode fixes its own field of view.",
+      "behavior": "Initialisation sets the active camera to the follow-ped mode and installs a close-in distance derived from a literal minus the minimum real ground distance, so the close-in target is a small fraction of a unit rather than the minimum distance itself. Three zoom tiers carry separate height offsets: the tightest tier lowers the view slightly below the buffered height, while the two wider tiers raise it by progressively larger amounts, which gives each zoom step its own vertical framing instead of a linear scale. The vertical angle clamp is deliberately asymmetric: one bound sits eighty-five and a half degrees from level and the other only sixty, so the camera may pitch much further in one direction than the other, and the tighter bound is the one that would otherwise show the ground plane from underneath. The vertical mouse sensitivity is derived from the horizontal one when the fix-bugs flag is on, otherwise it keeps a fixed much smaller default, so horizontal and vertical mouse feel are intentionally different. The first-person path resets its own vertical angle and derives the horizontal angle from the target heading plus a quarter turn, and stamps a fixed field of view for that mode before any other work.",
+      "constants": [
+        {
+          "name": "minimum real ground distance",
+          "value": 1.85,
+          "unit": "world units from the target to the camera at the closest zoom",
+          "source": "source/game_sa/Camera.cpp:180"
+        },
+        {
+          "name": "close-in distance literal",
+          "value": 2.0837801,
+          "unit": "world units before the ground distance is subtracted",
+          "source": "source/game_sa/Camera.cpp:179"
+        },
+        {
+          "name": "ground zoom tier one offset",
+          "value": -0.55,
+          "unit": "world units of height offset",
+          "source": "source/game_sa/Camera.cpp:181"
+        },
+        {
+          "name": "ground zoom tier two offset",
+          "value": 1.5,
+          "unit": "world units of height offset",
+          "source": "source/game_sa/Camera.cpp:182"
+        },
+        {
+          "name": "ground zoom tier three offset",
+          "value": 3.6,
+          "unit": "world units of height offset",
+          "source": "source/game_sa/Camera.cpp:183"
+        },
+        {
+          "name": "vertical mouse sensitivity fallback",
+          "value": 0.0015,
+          "unit": "radians per mouse count when the derived value is not used",
+          "source": "source/game_sa/Camera.cpp:220"
+        },
+        {
+          "name": "pitch clamp lower bound",
+          "value": -85.5,
+          "unit": "degrees of vertical camera angle",
+          "source": "source/game_sa/Cam.cpp:503"
+        },
+        {
+          "name": "pitch clamp upper bound",
+          "value": 60,
+          "unit": "degrees of vertical camera angle",
+          "source": "source/game_sa/Cam.cpp:504"
+        },
+        {
+          "name": "first-person field of view",
+          "value": 70,
+          "unit": "degrees, fixed for the first-person mode",
+          "source": "source/game_sa/Cam.cpp:651"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Camera.cpp",
+          "line": 169
+        },
+        {
+          "path": "source/game_sa/Cam.cpp",
+          "line": 500
+        },
+        {
+          "path": "source/game_sa/Cam.cpp",
+          "line": 643
+        }
+      ],
+      "capabilities": [
+        "camera defaults",
+        "pitch clamp",
+        "zoom tiers"
+      ],
+      "tags": [
+        "camera",
+        "third-person",
+        "first-person"
+      ]
+    },
+    {
+      "id": "third-person-aim-pitch",
+      "node": "camera",
+      "name": "Crosshair offset to aim pitch",
+      "summary": "The aim direction in third person is derived from how far the crosshair sits from the screen centre, using the vertical field of view and the aspect ratio as a small right-triangle solve.",
+      "behavior": "The crosshair is stored as a pair of normalised screen multipliers that are not both one half, so the visible crosshair does not sit exactly at the projection centre. The pitch solve converts the vertical offset from centre into a half-height fraction by doubling the difference from one half, then multiplies it by the tangent of half the vertical field of view to get the opposite side of a right triangle whose adjacent side is one. Dividing the opposite by the aspect ratio converts that vertical offset into the horizontal scale used by the projection, and the resulting angle is added to the current camera vertical angle before being negated, because the aim pitch is expressed as a rotation relative to the camera rather than an absolute view angle. Two consequences follow from the ordering: changing the field of view or the aspect ratio changes the aim pitch without touching the crosshair, and because the horizontal multiplier is above one half while the vertical one is below it, the crosshair is placed right of and above centre, which biases the corresponding aim components.",
+      "constants": [
+        {
+          "name": "crosshair horizontal multiplier",
+          "value": 0.53,
+          "unit": "fraction of screen width from the left edge",
+          "source": "source/game_sa/Camera.cpp:225"
+        },
+        {
+          "name": "crosshair vertical multiplier",
+          "value": 0.4,
+          "unit": "fraction of screen height from the top edge",
+          "source": "source/game_sa/Camera.cpp:226"
+        },
+        {
+          "name": "screen centre reference",
+          "value": 0.5,
+          "unit": "fraction of screen extent, subtracted before doubling",
+          "source": "source/game_sa/Camera.cpp:394"
+        },
+        {
+          "name": "half-extent doubling factor",
+          "value": 2,
+          "unit": "dimensionless; converts a signed centre offset into a fraction of the half extent",
+          "source": "source/game_sa/Camera.cpp:394"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Camera.cpp",
+          "line": 390
+        },
+        {
+          "path": "source/game_sa/Camera.cpp",
+          "line": 394
+        },
+        {
+          "path": "source/game_sa/Camera.cpp",
+          "line": 225
+        }
+      ],
+      "capabilities": [
+        "aim projection",
+        "crosshair offset",
+        "pitch solve"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "projection"
+      ]
+    },
+    {
+      "id": "hipfire-recoil-and-shake",
+      "node": "combat-weapons",
+      "name": "First-person fire recoil and pad shake",
+      "summary": "Firing in a first-person weapon camera sprays the view angle by a per-weapon intensity applied to a random offset, then shakes the pad for a duration derived from the step and a weapon-dependent frequency.",
+      "behavior": "The first-person fire path first narrows the world query to include dead peds, tyres and bikers, traces three units forward from the camera source, and only then decides whether the hit is inside the weapon range; a hit beyond the range is discarded so it produces impact effects without damage. Feedback is applied only for a player owner. The angle jitter picks a random integer in a symmetric range around zero, multiplies it by a per-weapon intensity that differs by an order of magnitude between weapons, and adds it to the camera horizontal and vertical angles; when the shooter is ducked or attached to another entity the intensity is scaled down further, which is why firing from cover feels steadier. The shake is built from the animation loop length of the weapon: the longer the loop, the lower the target frequency, and the frequency is interpolated between two bounds from a normalised, clamped ratio. The shake duration passed to the pad is the timestep times a large constant divided by the frequency, so a slower step or a lower frequency both lengthen the shake, and because the constant is large the duration stays in the range the pad expects for a short burst.",
+      "constants": [
+        {
+          "name": "first-person trace distance",
+          "value": 3,
+          "unit": "world units along the camera front vector",
+          "source": "source/game_sa/Weapon.cpp:1591"
+        },
+        {
+          "name": "jitter intensity for one rifle",
+          "value": 0.00015,
+          "unit": "radians per random count of camera jitter",
+          "source": "source/game_sa/Weapon.cpp:1621"
+        },
+        {
+          "name": "jitter intensity for another rifle",
+          "value": 0.0003,
+          "unit": "radians per random count of camera jitter",
+          "source": "source/game_sa/Weapon.cpp:1623"
+        },
+        {
+          "name": "jitter intensity default",
+          "value": 0.0002,
+          "unit": "radians per random count of camera jitter",
+          "source": "source/game_sa/Weapon.cpp:1625"
+        },
+        {
+          "name": "ducked or attached jitter scale",
+          "value": 0.3,
+          "unit": "dimensionless multiplier on the jitter intensity",
+          "source": "source/game_sa/Weapon.cpp:1629"
+        },
+        {
+          "name": "jitter random range",
+          "value": 64,
+          "unit": "signed integer counts, symmetric about zero",
+          "source": "source/game_sa/Weapon.cpp:1633"
+        },
+        {
+          "name": "shake frequency lower bound",
+          "value": 130,
+          "unit": "pad shake frequency units",
+          "source": "source/game_sa/Weapon.cpp:1637"
+        },
+        {
+          "name": "shake frequency upper bound",
+          "value": 210,
+          "unit": "pad shake frequency units",
+          "source": "source/game_sa/Weapon.cpp:1637"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1565
+        },
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1621
+        },
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1637
+        }
+      ],
+      "capabilities": [
+        "recoil",
+        "camera jitter",
+        "pad shake"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "feedback"
+      ]
+    },
+    {
+      "id": "projectile-and-pellet-spread",
+      "node": "combat-weapons",
+      "name": "Projectile throw force and shotgun pellet budget",
+      "summary": "Thrown weapons scale their launch force with distance and with how long the attack button has been held, while the shotgun family fires a fixed number of pellets inside a per-shot spread rate.",
+      "behavior": "The fire entry point first refuses to act unless the weapon state is ready or firing, and reloads the clip from reserve ammo only when the clip is empty, capping the clip at the configured size, so the order is state check, then ammo top-up, then per-weapon-type dispatch. For thrown weapons with a target the force is a clamped mapping of the distance to the target, so a nearby throw is weak and a distant one saturates at the maximum; without a target the player case integrates the attack button hold counter times a small constant, which is what makes a held throw stronger, and the non-player case uses a flat force. The instant-hit entry point still calls into native code, but declares its tuning constants locally, which is where the pellet and spread numbers live: a player aim scale and a scale distance, a rotation rate used when the aim is animated, a shotgun spread rate, and separate pellet counts for the pump shotguns and the automatic shotgun, so the same code covers all of them with different budgets. Pellet count multiplies the number of damage events while the spread rate decides the cone in which they are distributed, which is why a shotgun has a wide close-range hit pattern and a much weaker one at range.",
+      "constants": [
+        {
+          "name": "player aim scale",
+          "value": 0.75,
+          "unit": "dimensionless scale on player aim error",
+          "source": "source/game_sa/Weapon.cpp:1388"
+        },
+        {
+          "name": "player aim scale distance",
+          "value": 5,
+          "unit": "world units at which the aim scale applies",
+          "source": "source/game_sa/Weapon.cpp:1389"
+        },
+        {
+          "name": "player aim rotation rate",
+          "value": 0.0062832,
+          "unit": "radians per update of aim animation, rate unverified",
+          "source": "source/game_sa/Weapon.cpp:1390"
+        },
+        {
+          "name": "shotgun spread rate",
+          "value": 0.05,
+          "unit": "spread growth per pellet set, exact rate unverified",
+          "source": "source/game_sa/Weapon.cpp:1391"
+        },
+        {
+          "name": "pump shotgun pellet count",
+          "value": 15,
+          "unit": "pellets per shot",
+          "source": "source/game_sa/Weapon.cpp:1392"
+        },
+        {
+          "name": "automatic shotgun pellet count",
+          "value": 4,
+          "unit": "pellets per shot",
+          "source": "source/game_sa/Weapon.cpp:1393"
+        },
+        {
+          "name": "player throw force factor",
+          "value": 0.0375,
+          "unit": "force units per unit of attack button hold counter",
+          "source": "source/game_sa/Weapon.cpp:1715"
+        },
+        {
+          "name": "throw force distance offset",
+          "value": 10,
+          "unit": "world units subtracted from the target distance before clamping",
+          "source": "source/game_sa/Weapon.cpp:1704"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1649
+        },
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1387
+        },
+        {
+          "path": "source/game_sa/Weapon.cpp",
+          "line": 1704
+        }
+      ],
+      "capabilities": [
+        "projectiles",
+        "spread",
+        "pellet budget"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "ballistics"
+      ]
+    },
+    {
+      "id": "ped-perception-budget",
+      "node": "ped-ai",
+      "name": "Per-update sensing ranges and scan budget",
+      "summary": "Every ped intelligence starts with a sight and hearing range, a decision-maker radius and a cap on how many neighbours it may scan, and gang members get a much larger range.",
+      "behavior": "The constructor sets sight and hearing to the same default, a decision-maker radius equal to it, a scan count of a few neighbours, and a follow-node threshold roughly double the sensing range, which is the distance at which a leader is considered too far from its formation node. If the ped type belongs to a gang the sight and hearing ranges are replaced with a much larger value, so gang members react at range while ordinary pedestrians react only when close. The shared seeing test multiplies the range by itself and compares it with the squared distance to avoid a square root, and then requires the dot product of the offset vector with the ped forward vector to be positive, which is a half-plane test rather than a cone: anything in front within the radius is visible regardless of angle, and anything behind is invisible even if it is touching. A separate facing test takes a heading between the two positions, wraps it into one turn, and compares the absolute difference with a caller-supplied limit, accepting the difference on either side of the wrap point, which is the version that produces a real cone with a configurable half-angle. Switching the decision-maker to one specific type overrides the sensing budget with a small radius and a much larger scan count, which is how a ped can be made to survey many neighbours in a small area for one particular event.",
+      "constants": [
+        {
+          "name": "default sight range",
+          "value": 15,
+          "unit": "world units; compared once per visibility query",
+          "source": "source/game_sa/PedIntelligence.cpp:112"
+        },
+        {
+          "name": "default hearing range",
+          "value": 15,
+          "unit": "world units",
+          "source": "source/game_sa/PedIntelligence.cpp:111"
+        },
+        {
+          "name": "decision-maker radius",
+          "value": 15,
+          "unit": "world units",
+          "source": "source/game_sa/PedIntelligence.cpp:114"
+        },
+        {
+          "name": "neighbour scan count",
+          "value": 3,
+          "unit": "peds per update",
+          "source": "source/game_sa/PedIntelligence.cpp:113"
+        },
+        {
+          "name": "follow-node threshold distance",
+          "value": 30,
+          "unit": "world units between a follower and its formation node",
+          "source": "source/game_sa/PedIntelligence.cpp:115"
+        },
+        {
+          "name": "gang sight and hearing range",
+          "value": 40,
+          "unit": "world units, replacing both default ranges",
+          "source": "source/game_sa/PedIntelligence.cpp:124"
+        },
+        {
+          "name": "event-specific decision radius",
+          "value": 5,
+          "unit": "world units after switching to that decision-maker",
+          "source": "source/game_sa/PedIntelligence.cpp:152"
+        },
+        {
+          "name": "event-specific scan count",
+          "value": 15,
+          "unit": "peds per update after switching to that decision-maker",
+          "source": "source/game_sa/PedIntelligence.cpp:153"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/PedIntelligence.cpp",
+          "line": 103
+        },
+        {
+          "path": "source/game_sa/PedIntelligence.cpp",
+          "line": 186
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "line": 1548
+        }
+      ],
+      "capabilities": [
+        "perception",
+        "sensing budget",
+        "decision maker"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "npc"
+      ]
+    },
+    {
+      "id": "ped-stat-defaults",
+      "node": "ped-ai",
+      "name": "Stat profile defaults behind AI temperament",
+      "summary": "Each of the fixed ped stat profiles is initialised with a flee distance, a heading change rate, mid-scale fear, temper and lawfulness, and unit attack and defence multipliers before per-type data is loaded.",
+      "behavior": "Initialisation allocates one profile per stat slot and writes the same defaults into every one: a flee distance that decides how far a frightened ped tries to get, a heading change rate that limits how fast the profile is allowed to turn its facing, and three 0-100 scales for fear, temper and lawfulness all seeded at the midpoint so that no personality bias exists until per-type data overwrites them. Attack strength and defend weakness both start at one, which makes the damage arithmetic neutral until the loader raises or lowers them. The loader runs after the defaults and the default decision-maker table is installed last, so per-type rows override individual fields rather than replacing the whole profile. Because the defaults are written before any file is read, a stat type missing from the data file keeps a mid-temperament, unit-damage profile instead of an all-zero one, which is the behaviour that keeps a partially loaded table from making every ped passive or unloseable.",
+      "constants": [
+        {
+          "name": "default flee distance",
+          "value": 20,
+          "unit": "world units of desired separation used by flee behaviour",
+          "source": "source/game_sa/PedStats.cpp:25"
+        },
+        {
+          "name": "default heading change rate",
+          "value": 15,
+          "unit": "turning-rate units consumed by the ped facing code, per update, rate unverified",
+          "source": "source/game_sa/PedStats.cpp:26"
+        },
+        {
+          "name": "default fear, temper and lawfulness",
+          "value": 50,
+          "unit": "points on a 0-100 scale, midpoint",
+          "source": "source/game_sa/PedStats.cpp:27"
+        },
+        {
+          "name": "default attack strength and defend weakness",
+          "value": 1,
+          "unit": "dimensionless damage multiplier",
+          "source": "source/game_sa/PedStats.cpp:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/PedStats.cpp",
+          "line": 21
+        },
+        {
+          "path": "source/game_sa/PedStats.cpp",
+          "line": 25
+        },
+        {
+          "path": "source/game_sa/PedStats.cpp",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "ai tuning",
+        "stat profile",
+        "defaults"
+      ],
+      "tags": [
+        "ai",
+        "stats",
+        "npc"
+      ]
+    },
+    {
+      "id": "move-anim-selection",
+      "node": "animation",
+      "name": "Move state to animation blend and playback speed",
+      "summary": "A move state selects one locomotion cycle per group, blends it in at a state-specific rate, and then modulates playback speed with slope pitch and a small random per-ped offset.",
+      "behavior": "The selection refuses to run for a dead or ducked ped or one attached to another entity, and it only rebuilds the blend when the move state differs from the swimming state that was last applied, so repeated calls with an unchanged state only refresh the speed. When the state does change, all partial-body associations that are not auto-removed and not marked as excluded are faded out by setting a negative blend delta and flagged for automatic removal, and both the aim and look flags are cleared so a new cycle starts from a neutral upper body. The blend rate differs by state: turning uses the fastest rate, stopping uses a quarter of it, walking and running use the base rate except when fleeing, which uses a faster rate so the transition to a panic run reads as urgent. Sprinting picks a different animation group when the ped belongs to the player group and its leader is also running or sprinting, which is what makes a follower copy the gait of its leader. Playback speed is then the slope pitch clamped to a symmetric band plus a base factor, and for non-mission peds a random subtraction up to a fixed amount, so a crowd of identical models never plays in lockstep.",
+      "constants": [
+        {
+          "name": "idle blend delta",
+          "value": 4,
+          "unit": "blend delta per update when returning to idle, rate unverified",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:453"
+        },
+        {
+          "name": "turn blend delta",
+          "value": 16,
+          "unit": "blend delta per update for the turn cycles, rate unverified",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:457"
+        },
+        {
+          "name": "flee run blend delta",
+          "value": 3,
+          "unit": "blend delta per update while fleeing",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:469"
+        },
+        {
+          "name": "slope pitch clamp",
+          "value": 0.3,
+          "unit": "dimensionless slope pitch, symmetric band",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:711"
+        },
+        {
+          "name": "base playback speed",
+          "value": 1.2,
+          "unit": "animation speed multiplier before the random offset",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:715"
+        },
+        {
+          "name": "random playback spread",
+          "value": 0.4,
+          "unit": "animation speed multiplier subtracted at most, scaled by a per-ped random seed",
+          "source": "source/game_sa/Entity/Ped/Ped.cpp:715"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "line": 389
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "line": 453
+        },
+        {
+          "path": "source/game_sa/Entity/Ped/Ped.cpp",
+          "line": 710
+        }
+      ],
+      "capabilities": [
+        "animation blending",
+        "state mapping",
+        "playback speed"
+      ],
+      "tags": [
+        "animation",
+        "locomotion",
+        "npc"
+      ]
+    },
+    {
+      "id": "vehicle-steering-ramp",
+      "node": "vehicle-handling",
+      "name": "Steering ramp and nonlinear wheel lock",
+      "summary": "Raw steering chases the stick through a first-order ramp with a five-step time constant, mouse motion adds directly, and the raw value is squared with its sign preserved before being scaled by the handling lock.",
+      "behavior": "Keyboard and joypad steering build a per-frame delta as the difference between the normalised stick value and the current raw steering, divided by five and multiplied by the timestep, and add it to the raw value; dividing by five makes the response a first-order lag with a time constant of about five steps at the nominal rate. Mouse steering bypasses the ramp: it adds the horizontal mouse delta times a small per-count coefficient, so mouse steering is a direct rate rather than a spring. When mouse steering is not actively moving, the raw value is decayed toward zero by a factor raised to the timestep, which gives an exponential self-centring with a half-life of a few dozen steps; the decay only applies while the wheel is inside a narrow band near centre, otherwise the value is held, which prevents a hard turn from snapping back. The raw value is clamped to a symmetric unit band last, after all three write paths, so the clamp cannot be bypassed by a large mouse delta. The wheel lock is the handling value scaled by the raw value squared with the original sign, so half a stick gives a quarter of the lock and small corrections are gently geared, which is the nonlinearity that makes high-speed steering feel stable.",
+      "constants": [
+        {
+          "name": "steering axis normaliser",
+          "value": 128,
+          "unit": "int16 axis counts per unit of raw steering",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1949"
+        },
+        {
+          "name": "steering ramp time constant",
+          "value": 5,
+          "unit": "simulation steps of the first-order lag, so about 63 per cent of the gap to the stick is closed every 5 steps",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1949"
+        },
+        {
+          "name": "mouse steering rate",
+          "value": 0.0035,
+          "unit": "raw steering per mouse count (about 286 counts for full lock)",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1962"
+        },
+        {
+          "name": "self-centring factor",
+          "value": 0.975,
+          "unit": "dimensionless base raised to the timestep, so about 1.6 per cent of the raw value is lost per step at 50 Hz",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1966"
+        },
+        {
+          "name": "self-centring band",
+          "value": 0.7,
+          "unit": "raw steering magnitude below which self-centring is allowed",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1965"
+        },
+        {
+          "name": "raw steering clamp",
+          "value": 1,
+          "unit": "raw steering units, symmetric band",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1974"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 1921
+        },
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 1949
+        },
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 2040
+        }
+      ],
+      "capabilities": [
+        "vehicle steering",
+        "input smoothing",
+        "nonlinear gearing"
+      ],
+      "tags": [
+        "vehicle",
+        "driving",
+        "input"
+      ]
+    },
+    {
+      "id": "vehicle-pedal-arbitration",
+      "node": "vehicle-handling",
+      "name": "Accelerate, brake and reverse arbitration",
+      "summary": "A single signed pedal input is split into gas and brake by the current forward speed, with special cases for standing still, reversing into a stop, and pressing both pedals at once.",
+      "behavior": "The pedal input is the accelerate value minus the brake value, both read from the zero-to-full-scale axis, then divided by the full scale to normalise; one model scales a reverse value down before that division, and a driveby case substitutes the shoulder buttons for the same signed input. When forward speed is essentially zero the code checks whether both pedals are pressed past a threshold and, if so, flags a burnout and returns both raw pedal fractions, which is the only place where both pedals are reported simultaneously. With a positive forward speed the sign of the input alone decides gas or brake, so pressing reverse while rolling forward brakes instead of reversing. With a negative forward speed the input is applied as gas only when it is already positive and the player has been holding gas (or the reverse speed is large); otherwise it is treated as braking, which is what produces the look of a car braking out of reverse before rolling forward. A separate permission check zeroes the gas when the game logic forbids travel in the chosen direction, and the handbrake case forces zero gas and full brake before any of this runs, so automatic braking outranks input. A speed-squared guard then clamps the speed of a player ped that another system has forced to a stop.",
+      "constants": [
+        {
+          "name": "pedal full scale",
+          "value": 255,
+          "unit": "int16 input counts for a fully pressed accelerate or brake",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1999"
+        },
+        {
+          "name": "burnout pedal threshold",
+          "value": 150,
+          "unit": "input counts on each pedal",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:2003"
+        },
+        {
+          "name": "reverse force scale for one model",
+          "value": 0.3,
+          "unit": "dimensionless multiplier applied to the negative pedal value for one specific model id",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:1997"
+        },
+        {
+          "name": "gas hold threshold",
+          "value": 0.5,
+          "unit": "normalised gas pedal value",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:2022"
+        },
+        {
+          "name": "reverse speed threshold",
+          "value": -0.15,
+          "unit": "world units per simulation step of forward velocity (negative means reversing)",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:2022"
+        },
+        {
+          "name": "forced stop speed clamp",
+          "value": 0.28,
+          "unit": "world units per simulation step of speed magnitude",
+          "source": "source/game_sa/Entity/Vehicle/Automobile.cpp:2082"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 1982
+        },
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 2022
+        },
+        {
+          "path": "source/game_sa/Entity/Vehicle/Automobile.cpp",
+          "line": 2082
+        }
+      ],
+      "capabilities": [
+        "driving model",
+        "pedal mapping",
+        "burnout"
+      ],
+      "tags": [
+        "vehicle",
+        "driving",
+        "handling"
+      ]
+    },
+    {
+      "id": "streaming-request-radius",
+      "node": "world-streaming",
+      "name": "Model request rectangle and sector radii",
+      "summary": "Model requests are gathered inside a square around the streamed point, with an inner sector radius that loads unconditionally and a slightly larger outer radius that only loads entities inside the square.",
+      "behavior": "The radius is chosen from whether the current area allows seeing outside, and a rectangle of that half-extent is built around the point in map coordinates, clamped to the sector grid. The point sector is converted to whole sectors and the inner radius becomes one sector fewer than the half-extent converted to sectors, squared, while the outer radius is two sectors more, also squared; both are squared so the per-sector test is a single integer comparison. Every sector pair in the rectangle is visited, and the squared sector distance from the point sector is compared with the inner bound first: inside it, all buildings, peds and dummies are requested without further distance tests. Between the inner and outer bounds an additional per-entity test against the square is applied, so an entity in a diagonal sector that is outside the square is skipped even though its sector was visited. Sectors beyond the outer bound are not visited at all, which is why the rectangle can be larger than the radius without over-requesting. The results therefore depend on the order of the comparisons, and an entity exactly on a bound is included by the less-than-or-equal tests.",
+      "constants": [
+        {
+          "name": "outside-visible request radius",
+          "value": 80,
+          "unit": "world units when the current area allows seeing outside",
+          "source": "source/game_sa/Streaming.cpp:179"
+        },
+        {
+          "name": "interior request radius",
+          "value": 40,
+          "unit": "world units when it does not",
+          "source": "source/game_sa/Streaming.cpp:179"
+        },
+        {
+          "name": "inner radius sector shrink",
+          "value": 1,
+          "unit": "sectors subtracted from the converted half-extent",
+          "source": "source/game_sa/Streaming.cpp:189"
+        },
+        {
+          "name": "outer radius sector growth",
+          "value": 2,
+          "unit": "sectors added to the converted half-extent",
+          "source": "source/game_sa/Streaming.cpp:193"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 178
+        },
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 179
+        },
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 189
+        }
+      ],
+      "capabilities": [
+        "world streaming",
+        "sector queries",
+        "lod selection"
+      ],
+      "tags": [
+        "streaming",
+        "world",
+        "loading"
+      ]
+    },
+    {
+      "id": "streaming-update-cadence",
+      "node": "world-streaming",
+      "name": "Streaming cadence and camera-height switch",
+      "summary": "Each streaming update picks a lod sweep or a model sweep from how far the camera is above the ground, and re-evaluates the water-dependent extras on a fixed frame mask rather than every frame.",
+      "behavior": "The update returns immediately when the game is paused, so streaming is frame-driven but gate-able by pause. It measures the camera height above the ground, and at or above a fifty-unit threshold it requests lod entities and only when the area allows seeing outside, while below the threshold and only when outside-tunnel rendering is active it requests normal models around the camera; the two paths are mutually exclusive, which is why a high camera streams coarse geometry and a low one streams detail. The low-frequency decisions run on a frame-counter remainder test rather than a timer, so they fire once every one hundred and twenty-eight frames regardless of framerate, and the remainder is not zero, which puts this check on a different frame from the other periodic checks in the same file. On that tick the boat flag is rebuilt only when the camera is below a height ceiling and only if a water node is within the boat radius. The remaining calls are ordered: vehicles and peds always, then zone models and the general vehicle stream only when the streaming budget is not saturated, then the request list is flushed, then collision and ipl data are ensured for the player position. Because the saturated branch is skipped rather than queued, a busy frame leaves the zone and vehicle work for the next frame instead of accumulating it.",
+      "constants": [
+        {
+          "name": "lod-versus-model camera height threshold",
+          "value": 50,
+          "unit": "world units between the camera and the ground",
+          "source": "source/game_sa/Streaming.cpp:3697"
+        },
+        {
+          "name": "periodic check frame mask",
+          "value": 128,
+          "unit": "frames, tested as a bitmask so the check runs once per 128 updates",
+          "source": "source/game_sa/Streaming.cpp:3707"
+        },
+        {
+          "name": "periodic check phase",
+          "value": 106,
+          "unit": "frame counter remainder that triggers the check",
+          "source": "source/game_sa/Streaming.cpp:3707"
+        },
+        {
+          "name": "boat decision camera ceiling",
+          "value": 500,
+          "unit": "world units of camera height above which the boat check is skipped",
+          "source": "source/game_sa/Streaming.cpp:3709"
+        },
+        {
+          "name": "boat water-node search radius",
+          "value": 80,
+          "unit": "world units around the camera",
+          "source": "source/game_sa/Streaming.cpp:3710"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 3687
+        },
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 3697
+        },
+        {
+          "path": "source/game_sa/Streaming.cpp",
+          "line": 3707
+        }
+      ],
+      "capabilities": [
+        "streaming cadence",
+        "performance gating",
+        "lod"
+      ],
+      "tags": [
+        "streaming",
+        "performance",
+        "lod"
+      ]
+    }
+  ]
+}

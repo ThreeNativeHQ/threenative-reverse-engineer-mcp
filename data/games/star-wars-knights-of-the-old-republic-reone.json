@@ -1,0 +1,1807 @@
+{
+  "version": 1,
+  "id": "star-wars-knights-of-the-old-republic-reone",
+  "title": "Star Wars: Knights of the Old Republic (reone)",
+  "repo": "https://github.com/seedhartha/reone",
+  "sha": "9417f636f2d13c7b2f359308525009f286d765c0",
+  "nodes": [
+    {
+      "id": "navigation",
+      "name": "Waypoint path search",
+      "purpose": "Search over the area waypoint graph, producing a world-space route whose vertices carry their own vertical position",
+      "paths": [
+        "src/libs/game/pathfinder.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Pathfinder::load",
+          "path": "src/libs/game/pathfinder.cpp",
+          "lines": [
+            41,
+            55
+          ]
+        },
+        {
+          "name": "Pathfinder::findPath",
+          "path": "src/libs/game/pathfinder.cpp",
+          "lines": [
+            57,
+            134
+          ]
+        },
+        {
+          "name": "Pathfinder::getNearestVertex",
+          "path": "src/libs/game/pathfinder.cpp",
+          "lines": [
+            136,
+            150
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "collision",
+      "name": "Walkmesh probes",
+      "purpose": "Scene graph ray tests that decide walkability, ground height and occlusion for the 3D level geometry",
+      "paths": [
+        "src/libs/scene/graph.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SceneGraph::testElevation",
+          "path": "src/libs/scene/graph.cpp",
+          "lines": [
+            757,
+            791
+          ]
+        },
+        {
+          "name": "SceneGraph::testLineOfSight",
+          "path": "src/libs/scene/graph.cpp",
+          "lines": [
+            793,
+            832
+          ]
+        },
+        {
+          "name": "SceneGraph::testWalk",
+          "path": "src/libs/scene/graph.cpp",
+          "lines": [
+            834,
+            865
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "creature-motion",
+      "parent": "navigation",
+      "name": "Creature motion",
+      "purpose": "Steering a creature along a route and stepping it across walkable surfaces with sliding and ground snapping",
+      "paths": [
+        "src/libs/game/object/creature.cpp",
+        "src/libs/game/object/area.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Creature::navigateTo",
+          "path": "src/libs/game/object/creature.cpp",
+          "lines": [
+            721,
+            745
+          ]
+        },
+        {
+          "name": "Creature::advanceOnPath",
+          "path": "src/libs/game/object/creature.cpp",
+          "lines": [
+            747,
+            783
+          ]
+        },
+        {
+          "name": "Creature::updatePath",
+          "path": "src/libs/game/object/creature.cpp",
+          "lines": [
+            785,
+            789
+          ]
+        },
+        {
+          "name": "Area::moveCreature",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            657,
+            715
+          ]
+        },
+        {
+          "name": "Area::moveCreatureTowards",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            717,
+            721
+          ]
+        }
+      ],
+      "dependsOn": [
+        "navigation",
+        "collision"
+      ]
+    },
+    {
+      "id": "actions",
+      "name": "Action queue",
+      "purpose": "Ordered per-object action list that advances one action per frame and gates interactions on arrival",
+      "paths": [
+        "src/libs/game/object.cpp",
+        "src/libs/game/action/movetopoint.cpp",
+        "src/libs/game/action/attackobject.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Object::addAction",
+          "path": "src/libs/game/object.cpp",
+          "lines": [
+            73,
+            75
+          ]
+        },
+        {
+          "name": "Object::updateActions",
+          "path": "src/libs/game/object.cpp",
+          "lines": [
+            88,
+            91
+          ]
+        },
+        {
+          "name": "Object::executeActions",
+          "path": "src/libs/game/object.cpp",
+          "lines": [
+            118,
+            124
+          ]
+        },
+        {
+          "name": "MoveToPointAction::execute",
+          "path": "src/libs/game/action/movetopoint.cpp",
+          "lines": [
+            27,
+            33
+          ]
+        },
+        {
+          "name": "AttackObjectAction::execute",
+          "path": "src/libs/game/action/attackobject.cpp",
+          "lines": [
+            29,
+            41
+          ]
+        }
+      ],
+      "dependsOn": [
+        "creature-motion"
+      ]
+    },
+    {
+      "id": "player-input",
+      "name": "Player control",
+      "purpose": "Keyboard movement resolved against the active camera plus click selection that turns into queued actions",
+      "paths": [
+        "src/libs/game/player.cpp",
+        "src/libs/game/object/module.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Player::update",
+          "path": "src/libs/game/player.cpp",
+          "lines": [
+            128,
+            157
+          ]
+        },
+        {
+          "name": "Module::handleMouseButtonDown",
+          "path": "src/libs/game/object/module.cpp",
+          "lines": [
+            188,
+            205
+          ]
+        },
+        {
+          "name": "Module::onObjectClick",
+          "path": "src/libs/game/object/module.cpp",
+          "lines": [
+            207,
+            221
+          ]
+        },
+        {
+          "name": "Module::onCreatureClick",
+          "path": "src/libs/game/object/module.cpp",
+          "lines": [
+            223,
+            245
+          ]
+        },
+        {
+          "name": "Module::onDoorClick",
+          "path": "src/libs/game/object/module.cpp",
+          "lines": [
+            247,
+            257
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actions"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Play cameras",
+      "purpose": "Third-person orbit and conversation framing cameras, including their style defaults and occlusion handling",
+      "paths": [
+        "src/libs/game/object/camera/thirdperson.cpp",
+        "src/libs/game/object/camera/dialog.cpp",
+        "src/libs/game/object/area.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ThirdPersonCamera::update",
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "lines": [
+            138,
+            151
+          ]
+        },
+        {
+          "name": "ThirdPersonCamera::updateSceneNode",
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "lines": [
+            153,
+            180
+          ]
+        },
+        {
+          "name": "DialogCamera::updateSceneNode",
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "lines": [
+            61,
+            128
+          ]
+        },
+        {
+          "name": "Area::initCameras",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            417,
+            438
+          ]
+        },
+        {
+          "name": "Area::update3rdPersonCameraTarget",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            844,
+            859
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Combat resolution",
+      "purpose": "Timed combat rounds, attack rolls, defense, damage dice and projectile travel",
+      "paths": [
+        "src/libs/game/combat.cpp",
+        "src/libs/game/object/creature.cpp",
+        "src/libs/game/d20/attributes.cpp",
+        "src/libs/game/effect/damage.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Combat::addAttack",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            60,
+            91
+          ]
+        },
+        {
+          "name": "Combat::updateRound",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            107,
+            174
+          ]
+        },
+        {
+          "name": "Combat::determineAttackResult",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            227,
+            265
+          ]
+        },
+        {
+          "name": "Combat::applyAttackResult",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            334,
+            384
+          ]
+        },
+        {
+          "name": "Combat::getDamageEffects",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            386,
+            401
+          ]
+        },
+        {
+          "name": "Combat::fireProjectile",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            403,
+            449
+          ]
+        },
+        {
+          "name": "Combat::updateProjectile",
+          "path": "src/libs/game/combat.cpp",
+          "lines": [
+            451,
+            462
+          ]
+        },
+        {
+          "name": "Creature::getAttackBonus",
+          "path": "src/libs/game/object/creature.cpp",
+          "lines": [
+            615,
+            636
+          ]
+        },
+        {
+          "name": "Creature::getWeaponDamage",
+          "path": "src/libs/game/object/creature.cpp",
+          "lines": [
+            646,
+            665
+          ]
+        },
+        {
+          "name": "CreatureAttributes::getDefense",
+          "path": "src/libs/game/d20/attributes.cpp",
+          "lines": [
+            29,
+            31
+          ]
+        },
+        {
+          "name": "CreatureAttributes::getAbilityModifier",
+          "path": "src/libs/game/d20/attributes.cpp",
+          "lines": [
+            38,
+            41
+          ]
+        },
+        {
+          "name": "DamageEffect::applyTo",
+          "path": "src/libs/game/effect/damage.cpp",
+          "lines": [
+            28,
+            32
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actions"
+      ]
+    },
+    {
+      "id": "perception",
+      "name": "Creature perception",
+      "purpose": "Periodic sight and hearing sweep over area creatures plus faction hostility lookup",
+      "paths": [
+        "src/libs/game/object/area.cpp",
+        "src/libs/game/reputes.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Area::updatePerception",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            1170,
+            1176
+          ]
+        },
+        {
+          "name": "Area::doUpdatePerception",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            1178,
+            1227
+          ]
+        },
+        {
+          "name": "Area::isObjectSeen",
+          "path": "src/libs/game/object/area.cpp",
+          "lines": [
+            723,
+            742
+          ]
+        },
+        {
+          "name": "Reputes::getIsEnemy",
+          "path": "src/libs/game/reputes.cpp",
+          "lines": [
+            64,
+            73
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision"
+      ]
+    },
+    {
+      "id": "party",
+      "name": "Party roster",
+      "purpose": "Leader-first member list, leader rotation and the script-issued follow actions",
+      "paths": [
+        "src/libs/game/party.cpp",
+        "src/libs/game/action/followleader.cpp",
+        "src/libs/game/action/follow.cpp",
+        "src/libs/game/script/routine/impl/action.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Party::addMember",
+          "path": "src/libs/game/party.cpp",
+          "lines": [
+            77,
+            88
+          ]
+        },
+        {
+          "name": "Party::switchLeader",
+          "path": "src/libs/game/party.cpp",
+          "lines": [
+            94,
+            116
+          ]
+        },
+        {
+          "name": "Party::onLeaderChanged",
+          "path": "src/libs/game/party.cpp",
+          "lines": [
+            118,
+            127
+          ]
+        },
+        {
+          "name": "FollowLeaderAction::execute",
+          "path": "src/libs/game/action/followleader.cpp",
+          "lines": [
+            28,
+            35
+          ]
+        },
+        {
+          "name": "FollowAction::execute",
+          "path": "src/libs/game/action/follow.cpp",
+          "lines": [
+            27,
+            34
+          ]
+        }
+      ],
+      "dependsOn": [
+        "creature-motion"
+      ]
+    },
+    {
+      "id": "world-objects",
+      "name": "Doors and transitions",
+      "purpose": "Door open and close states that swap walkmeshes, and the module change a linked door schedules",
+      "paths": [
+        "src/libs/game/object/door.cpp",
+        "src/libs/game/object/module.cpp",
+        "src/libs/game/action/opendoor.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Door::open",
+          "path": "src/libs/game/object/door.cpp",
+          "lines": [
+            115,
+            131
+          ]
+        },
+        {
+          "name": "Door::close",
+          "path": "src/libs/game/object/door.cpp",
+          "lines": [
+            133,
+            149
+          ]
+        },
+        {
+          "name": "OpenDoorAction::execute",
+          "path": "src/libs/game/action/opendoor.cpp",
+          "lines": [
+            29,
+            53
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "waypoint-path-search",
+      "node": "navigation",
+      "name": "Waypoint graph path search",
+      "summary": "A star search across area waypoints that each carry their own height above the floor plane",
+      "behavior": "Loading turns each area waypoint into a search vertex built from its planar coordinates plus a height read from a per-point table; points missing from that table are placed on the zero plane instead of being rejected. A query snaps the start and the goal to their nearest vertices by squared distance and answers with a straight two-point segment whenever the vertex set is empty or both endpoints snap to the same vertex. The frontier repeatedly takes the open vertex with the lowest accumulated distance plus a straight-line estimate to the goal, moves it to the closed set, and stops as soon as the goal vertex is taken, then walks the parent links back into an ordered path. Neighbours already closed are skipped, and a neighbour already open is replaced only when the new accumulated distance is lower. If the open set drains without reaching the goal, the search still returns a straight segment so callers always get a route.",
+      "constants": [
+        {
+          "name": "missingVertexHeight",
+          "value": 0,
+          "unit": "world units on the vertical axis, substituted once per waypoint when the graph loads",
+          "source": "src/libs/game/pathfinder.cpp:43"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 41
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 57
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 68
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 114
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 115
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 122
+        },
+        {
+          "path": "src/libs/game/pathfinder.cpp",
+          "line": 133
+        }
+      ],
+      "capabilities": [
+        "nearest-vertex snapping for both endpoints",
+        "open-set replacement only when the new distance improves",
+        "straight-segment fallback for empty graphs and unreachable goals"
+      ],
+      "tags": [
+        "pathfinding",
+        "a star",
+        "waypoint graph",
+        "navigation",
+        "height"
+      ]
+    },
+    {
+      "id": "path-following",
+      "node": "creature-motion",
+      "name": "Creature path following",
+      "summary": "Waypoint stepping with an arrival radius, a path reuse window and a shortcut to the final destination",
+      "behavior": "A movement request is refused outright while the creature's movement is restricted, which is how a combat exchange keeps an attacker in place. Otherwise the planar squared distance to the goal is compared with the square of the requested arrival radius, and reaching it drops the stored path and returns the movement type to idle. An existing path is reused when its destination matches the new goal or when it was found no more than one second earlier; any other case asks the area for a fresh route. While following, the final destination replaces the next waypoint whenever the destination is nearer than that waypoint, and once the squared distance to the current target falls to one the waypoint index advances instead of moving. The actual step is delegated to the area, and the walk or run animation is selected from whether that step succeeded.",
+      "constants": [
+        {
+          "name": "pathReuseWindow",
+          "value": 1000,
+          "unit": "milliseconds of wall-clock time, compared once per creature update",
+          "source": "src/libs/game/object/creature.cpp:66"
+        },
+        {
+          "name": "waypointAdvanceDistanceSquared",
+          "value": 1,
+          "unit": "squared world units, compared once per creature update",
+          "source": "src/libs/game/object/creature.cpp:773"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 721
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 726
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 735
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 741
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 773
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 777
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 785
+        }
+      ],
+      "capabilities": [
+        "arrival radius compared in squared space",
+        "path reuse keyed by destination or age",
+        "waypoint skipping toward the final destination",
+        "movement refusal while movement is restricted"
+      ],
+      "tags": [
+        "movement",
+        "path following",
+        "steering",
+        "navigation"
+      ]
+    },
+    {
+      "id": "walkmesh-stepping",
+      "node": "creature-motion",
+      "name": "Walkmesh stepping and wall sliding",
+      "summary": "Per-step sweep over walkmeshes with normal-projected sliding, a downward ground snap and a room update",
+      "behavior": "One step first turns the creature to face the requested direction, lifts the origin slightly above the floor, multiplies the creature's walk or run speed by the frame delta and sweeps that distance along the requested direction while excluding any walkmesh owned by the mover. A blocking hit does not end the step: the direction is projected onto the horizontal perpendicular of the hit surface normal and swept a second time, so a creature slides along a wall instead of stopping dead, and only a second blocked sweep gives up. Ground height is then resolved by casting a long ray downward onto walkable surfaces and keeping the nearest walkable hit, which also supplies the new room, the surface material and the vertical position written back to the creature. A room change notifies the party leader hook so room visibility and the camera target refresh, and the step finishes by testing area triggers at the new position.",
+      "constants": [
+        {
+          "name": "stepOriginLift",
+          "value": 0.1,
+          "unit": "world units on the vertical axis, applied once per movement step",
+          "source": "src/libs/game/object/area.cpp:672"
+        },
+        {
+          "name": "elevationProbeDrop",
+          "value": 1024,
+          "unit": "world units of downward probe reach, one probe per movement step",
+          "source": "src/libs/scene/graph.cpp:54"
+        },
+        {
+          "name": "walkProbeLength",
+          "value": 8,
+          "unit": "world units of horizontal sweep reach, up to two sweeps per movement step",
+          "source": "src/libs/scene/graph.cpp:58"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 657
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 672
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 674
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 683
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 705
+        },
+        {
+          "path": "src/libs/scene/graph.cpp",
+          "line": 757
+        },
+        {
+          "path": "src/libs/scene/graph.cpp",
+          "line": 776
+        },
+        {
+          "path": "src/libs/scene/graph.cpp",
+          "line": 834
+        },
+        {
+          "path": "src/libs/scene/graph.cpp",
+          "line": 841
+        },
+        {
+          "path": "src/libs/scene/graph.cpp",
+          "line": 853
+        }
+      ],
+      "capabilities": [
+        "slide along wall normals instead of stopping",
+        "vertical snap from a downward walkmesh probe",
+        "mover excluded from its own collision sweep",
+        "walkable surface filter by material"
+      ],
+      "tags": [
+        "collision",
+        "walkmesh",
+        "slide",
+        "elevation",
+        "movement"
+      ]
+    },
+    {
+      "id": "action-queue",
+      "node": "actions",
+      "name": "Action queue execution",
+      "summary": "Per-object action list that runs one action per frame and gates interactions on arrival distance",
+      "behavior": "Every object owns a queue of actions. Each update first drops completed actions from the front of the queue, then promotes delayed actions whose timers have elapsed, then executes only the new front action with the frame delta, so a long queue advances at one action per frame rather than all at once. Interaction actions re-test arrival on every update and therefore share a single approach distance: opening a door, closing it, searching a container and using the security skill all walk to within two units before acting, while a plain move-to-point order completes at a one unit radius. The attack action only registers a combat round once the target is inside the attacker's attack range. Clearing the queue from outside also returns the creature to the idle movement type.",
+      "constants": [
+        {
+          "name": "objectInteractionDistance",
+          "value": 2,
+          "unit": "world units, re-tested once per action update",
+          "source": "src/libs/game/object.cpp:34"
+        },
+        {
+          "name": "moveToPointArrivalRadius",
+          "value": 1,
+          "unit": "world units, re-tested once per action update",
+          "source": "src/libs/game/action/movetopoint.cpp:29"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/action/attackobject.cpp",
+          "line": 38
+        },
+        {
+          "path": "src/libs/game/action/movetopoint.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/libs/game/action/opendoor.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/libs/game/object.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/libs/game/object.cpp",
+          "line": 88
+        },
+        {
+          "path": "src/libs/game/object.cpp",
+          "line": 118
+        },
+        {
+          "path": "src/libs/game/object.cpp",
+          "line": 122
+        }
+      ],
+      "capabilities": [
+        "one action advance per object update",
+        "timer-based promotion of delayed actions",
+        "shared arrival distance across interaction actions"
+      ],
+      "tags": [
+        "action queue",
+        "scheduling",
+        "interaction",
+        "state"
+      ]
+    },
+    {
+      "id": "camera-relative-movement",
+      "node": "player-input",
+      "name": "Camera-relative leader movement",
+      "summary": "Held direction keys resolved against the camera yaw, with a walk modifier and action cancellation",
+      "behavior": "Direct control only applies to the party leader and is skipped entirely while the leader's movement is restricted. Held direction keys resolve to an angle offset from the third-person camera yaw: forward follows the camera, back adds a half turn, and the two strafe directions add and subtract a quarter turn, after which the angle is converted into a planar unit direction with the horizontal component negated. Any movement request clears the leader's queued actions and asks the area to step the leader in run mode unless the walk modifier is held, so keyboard movement takes priority over queued orders. When no direction is held and the queue is empty, the leader returns to the idle movement type. Walk and run speeds come from the appearance table and fall back to one world unit per second when the table has no entry.",
+      "constants": [
+        {
+          "name": "walkSpeedFallback",
+          "value": 1,
+          "unit": "world units per second, applied with the frame delta",
+          "source": "src/libs/game/object/creature.cpp:104"
+        },
+        {
+          "name": "runSpeedFallback",
+          "value": 1,
+          "unit": "world units per second, applied with the frame delta",
+          "source": "src/libs/game/object/creature.cpp:105"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 104
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 105
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 128
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 137
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 139
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 149
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 150
+        },
+        {
+          "path": "src/libs/game/player.cpp",
+          "line": 151
+        }
+      ],
+      "capabilities": [
+        "camera-relative direction with quarter-turn strafing",
+        "walk modifier overriding run",
+        "direct input cancels queued actions"
+      ],
+      "tags": [
+        "input",
+        "movement",
+        "camera relative",
+        "party leader"
+      ]
+    },
+    {
+      "id": "third-person-orbit",
+      "node": "camera",
+      "name": "Third-person orbit camera",
+      "summary": "Accelerating yaw orbit, relative mouse look, style-driven offsets and line-of-sight pull-in",
+      "behavior": "Held rotation keys drive the orbit yaw: rotation speed starts at the minimum, grows with accumulated frame time up to the maximum, integrates into yaw and wraps at a full turn. Holding the right mouse button switches to relative mouse look, where each pixel of horizontal motion subtracts a small fixed yaw step and the camera transform is rebuilt immediately. Placement pads the target point along the view direction, offsets the eye by the style distance along that direction, raises it by the style height, and then trims the target-to-eye segment to the first walkmesh hit so level geometry never sits between camera and leader. The target itself comes from the leader model's dedicated camera hook when present, otherwise from the model bounds centre. The default style supplies a three point two unit distance, a zero point four five unit height and a fifty-five degree vertical field of view; the style also carries a pitch value that this revision never applies. Entering combat swaps the orbit to a second style slot, although in this revision the combat lookup writes its table entry into the default slot, so the combat slot is never filled from the table.",
+      "constants": [
+        {
+          "name": "orbitMinSpeed",
+          "value": 1,
+          "unit": "radians per second, integrated with the frame delta",
+          "source": "src/libs/game/object/camera/thirdperson.cpp:34"
+        },
+        {
+          "name": "orbitMaxSpeed",
+          "value": 2.5,
+          "unit": "radians per second, integrated with the frame delta",
+          "source": "src/libs/game/object/camera/thirdperson.cpp:35"
+        },
+        {
+          "name": "orbitAcceleration",
+          "value": 1,
+          "unit": "radians per second squared, integrated with the frame delta",
+          "source": "src/libs/game/object/camera/thirdperson.cpp:36"
+        },
+        {
+          "name": "mouseLookRadiansPerPixel",
+          "value": 0.001,
+          "unit": "radians per pixel of horizontal mouse motion, applied per motion event",
+          "source": "src/libs/game/object/camera/thirdperson.cpp:37"
+        },
+        {
+          "name": "targetPadding",
+          "value": 0.05,
+          "unit": "world units along the view direction, recomputed per camera update",
+          "source": "src/libs/game/object/camera/thirdperson.cpp:38"
+        },
+        {
+          "name": "defaultStyleDistance",
+          "value": 3.2,
+          "unit": "world units behind the target, recomputed per camera update",
+          "source": "src/libs/game/object/area.cpp:80"
+        },
+        {
+          "name": "defaultStyleHeight",
+          "value": 0.45,
+          "unit": "world units on the vertical axis above the target, recomputed per camera update",
+          "source": "src/libs/game/object/area.cpp:80"
+        },
+        {
+          "name": "defaultStyleViewAngle",
+          "value": 55,
+          "unit": "degrees of vertical field of view, fixed when the camera loads",
+          "source": "src/libs/game/object/area.cpp:80"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 80
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 853
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 36
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 37
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 109
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 111
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 138
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 153
+        },
+        {
+          "path": "src/libs/game/object/camera/thirdperson.cpp",
+          "line": 170
+        }
+      ],
+      "capabilities": [
+        "yaw acceleration ramp with wrap",
+        "relative mouse look while the right button is held",
+        "camera pull-in on level geometry",
+        "style-driven distance, height and field of view"
+      ],
+      "tags": [
+        "camera",
+        "orbit",
+        "mouse look",
+        "occlusion",
+        "third person"
+      ]
+    },
+    {
+      "id": "conversation-framing",
+      "node": "camera",
+      "name": "Conversation camera framing",
+      "summary": "Speaker and listener shot variants built from the gap between bodies, with occlusion pull-in",
+      "behavior": "Conversation framing derives a direction and a gap from the listener to the speaker and centres the shot on the midpoint between them, then positions eye and target for each variant. Close-up variants offset the eye from the midpoint by a quarter of the gap both along and across the view direction, each offset capped at one unit, lift it a tenth of a unit and shift the aim point a tenth of the gap to one side of the subject. Far variants sit half the gap to the side of the speaker or listener position and aim at the midpoint. The two-subject variant pushes the eye two and a quarter times the gap to the side, capped at four units, lifts it a quarter unit and aims a quarter unit below the midpoint. After placement the target-to-eye segment is trimmed to the first walkmesh hit, and the final transform inverts a look-at from eye to target with a world up axis.",
+      "constants": [
+        {
+          "name": "closeUpOffsetFraction",
+          "value": 0.25,
+          "unit": "fraction of the speaker-to-listener gap, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:75"
+        },
+        {
+          "name": "closeUpOffsetCap",
+          "value": 1,
+          "unit": "world units, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:75"
+        },
+        {
+          "name": "closeUpLift",
+          "value": 0.1,
+          "unit": "world units on the vertical axis, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:77"
+        },
+        {
+          "name": "farOffsetFraction",
+          "value": 0.5,
+          "unit": "fraction of the speaker-to-listener gap, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:85"
+        },
+        {
+          "name": "bothSubjectsOffsetFraction",
+          "value": 2.25,
+          "unit": "fraction of the speaker-to-listener gap, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:110"
+        },
+        {
+          "name": "bothSubjectsOffsetCap",
+          "value": 4,
+          "unit": "world units, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:110"
+        },
+        {
+          "name": "bothSubjectsAimDrop",
+          "value": 0.25,
+          "unit": "world units on the vertical axis below the midpoint, recomputed per framing change",
+          "source": "src/libs/game/object/camera/dialog.cpp:114"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 65
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 68
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 85
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 110
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 120
+        },
+        {
+          "path": "src/libs/game/object/camera/dialog.cpp",
+          "line": 125
+        }
+      ],
+      "capabilities": [
+        "per-variant shot composition from the body gap",
+        "gap-relative offsets with distance caps",
+        "occlusion pull-in before the shot is committed"
+      ],
+      "tags": [
+        "camera",
+        "conversation",
+        "framing",
+        "occlusion"
+      ]
+    },
+    {
+      "id": "combat-round-timing",
+      "node": "combat",
+      "name": "Combat round timing",
+      "summary": "Three second rounds split at the half mark, with duel appends and a post-round combat tail",
+      "behavior": "Registering an attack starts a round keyed by the attacker. An attack against someone already mid-round is folded in as the second attack of that round only when the roles are reversed and the round has not yet passed half its duration, which marks the exchange as a duel and gives both sides one resolution in the same round. Round time advances with the frame delta and clamps at the round duration. The first attack's result applies at the half mark, where the projectile is removed, an off-hand attack may resolve, and a queued second attack starts; the second result applies at the round duration. Ranged attacks launch their projectile a short delay after each half begins. Finishing a round completes the queued action, clears the attack target and the movement restriction, schedules combat deactivation eight seconds later and runs the end-round script.",
+      "constants": [
+        {
+          "name": "roundDuration",
+          "value": 3,
+          "unit": "seconds, advanced by the frame delta",
+          "source": "src/libs/game/combat.cpp:35"
+        },
+        {
+          "name": "projectileDelay",
+          "value": 0.5,
+          "unit": "seconds after each half-round mark, advanced by the frame delta",
+          "source": "src/libs/game/combat.cpp:36"
+        },
+        {
+          "name": "combatDeactivateDelay",
+          "value": 8,
+          "unit": "seconds, counted down by the frame delta",
+          "source": "src/libs/game/combat.cpp:37"
+        },
+        {
+          "name": "duelAppendWindowFraction",
+          "value": 0.5,
+          "unit": "fraction of the round duration, compared once per attack registration",
+          "source": "src/libs/game/combat.cpp:57"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 57
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 60
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 77
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 107
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 120
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 148
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 201
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 202
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 203
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 204
+        }
+      ],
+      "capabilities": [
+        "half-round resolution split for two attackers",
+        "duel append window before the half mark",
+        "delayed combat deactivation after the round",
+        "one round per attacker with per-update time clamp"
+      ],
+      "tags": [
+        "combat",
+        "round",
+        "timing",
+        "duel"
+      ]
+    },
+    {
+      "id": "attack-roll",
+      "node": "combat",
+      "name": "Attack roll and critical threat",
+      "summary": "Single d20 against defense with automatic hit, automatic miss and a confirming threat roll",
+      "behavior": "Defense comes from the target creature when the target is a creature, and falls back to a flat ten for doors, placeables and other objects. The attack rolls one twenty-sided die: twenty always hits, one always misses, and every other result hits only when the roll plus the attacker's attack bonus reaches defense. A successful attack then checks the weapon's critical threat window: when the roll exceeds twenty minus the weapon's threat value, a second die plus the main-hand attack bonus is compared against defense to upgrade the hit into a critical. Unarmed attacks carry a threat of one, so a critical needs a roll of twenty and still has to confirm.",
+      "constants": [
+        {
+          "name": "rollMinimum",
+          "value": 1,
+          "unit": "die face, one roll per attack",
+          "source": "src/libs/game/combat.cpp:239"
+        },
+        {
+          "name": "rollMaximum",
+          "value": 20,
+          "unit": "die face, one roll per attack",
+          "source": "src/libs/game/combat.cpp:239"
+        },
+        {
+          "name": "nonCreatureDefense",
+          "value": 10,
+          "unit": "defense points, compared once per attack",
+          "source": "src/libs/game/combat.cpp:235"
+        },
+        {
+          "name": "unarmedCriticalThreat",
+          "value": 1,
+          "unit": "threat points, one comparison per successful attack",
+          "source": "src/libs/game/combat.cpp:253"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 227
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 232
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 235
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 239
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 240
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 242
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 255
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 257
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 258
+        }
+      ],
+      "capabilities": [
+        "automatic hit on twenty and automatic miss on one",
+        "flat defense for non-creature targets",
+        "weapon threat window with a confirming roll"
+      ],
+      "tags": [
+        "combat",
+        "attack roll",
+        "critical",
+        "defense"
+      ]
+    },
+    {
+      "id": "defense-from-abilities",
+      "node": "combat",
+      "name": "Defense and attack bonus from abilities",
+      "summary": "Defense as ten plus the Dexterity modifier, and attack bonus from class table, ability and hand usage",
+      "behavior": "Defense is ten plus the Dexterity modifier, and the modifier halves the difference between the ability score and ten using integer division, so a score of eight yields a penalty of one while a score of nine truncates to zero. An ability score that was never assigned defaults to eight. Attack bonus aggregates the class attack-bonus table over all class levels, then adds the Strength modifier for melee attacks or the Dexterity modifier for ranged attacks, and subtracts the handedness penalties when a weapon occupies the off hand. The same ability modifier is added to both ends of the damage range reported for the equipped weapon, so a high Strength shifts the whole spread rather than only its maximum.",
+      "constants": [
+        {
+          "name": "baseDefense",
+          "value": 10,
+          "unit": "defense points, recomputed per defense query",
+          "source": "src/libs/game/d20/attributes.cpp:30"
+        },
+        {
+          "name": "abilityBaseline",
+          "value": 10,
+          "unit": "ability points, applied once per modifier query",
+          "source": "src/libs/game/d20/attributes.cpp:40"
+        },
+        {
+          "name": "abilityDivisor",
+          "value": 2,
+          "unit": "integer divisor, applied once per modifier query",
+          "source": "src/libs/game/d20/attributes.cpp:40"
+        },
+        {
+          "name": "defaultAbilityScore",
+          "value": 8,
+          "unit": "ability points, fixed when no score was assigned",
+          "source": "src/libs/game/d20/attributes.cpp:26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/d20/attributes.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/libs/game/d20/attributes.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/libs/game/d20/attributes.cpp",
+          "line": 30
+        },
+        {
+          "path": "src/libs/game/d20/attributes.cpp",
+          "line": 38
+        },
+        {
+          "path": "src/libs/game/d20/attributes.cpp",
+          "line": 40
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 622
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 624
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 635
+        }
+      ],
+      "capabilities": [
+        "truncated ability modifier around a ten point baseline",
+        "melee uses Strength while ranged uses Dexterity",
+        "class table attack bonus summed across levels"
+      ],
+      "tags": [
+        "combat",
+        "abilities",
+        "defense",
+        "attack bonus"
+      ]
+    },
+    {
+      "id": "damage-dice",
+      "node": "combat",
+      "name": "Damage dice and multiplier",
+      "summary": "Weapon dice rolled per hit, floored at one and scaled by the critical multiplier",
+      "behavior": "A weapon contributes a dice pool built from its die count and die size, and every die is rolled between one and its size; an unarmed strike reports a flat one point. The rolled total is floored at one so an attack always registers, then multiplied by the critical multiplier, which is two by default and otherwise comes from the weapon. Hits that arrive with a pre-computed amount skip the dice entirely and apply that amount, and critical hits with a pre-computed amount multiply it. Damage is applied as an instant effect that subtracts from current hit points with a floor of zero, raised to one when the target is flagged to keep at least one hit point.",
+      "constants": [
+        {
+          "name": "minimumRolledDamage",
+          "value": 1,
+          "unit": "hit points, floored once per damage roll",
+          "source": "src/libs/game/combat.cpp:397"
+        },
+        {
+          "name": "defaultCriticalMultiplier",
+          "value": 2,
+          "unit": "multiplier on rolled damage, applied once per critical hit",
+          "source": "src/libs/game/combat.cpp:336"
+        },
+        {
+          "name": "dieMinimumFace",
+          "value": 1,
+          "unit": "die face, one draw per die",
+          "source": "src/libs/game/combat.cpp:393"
+        },
+        {
+          "name": "unarmedBaseDamage",
+          "value": 1,
+          "unit": "hit points, fixed per unarmed strike",
+          "source": "src/libs/game/object/creature.cpp:650"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 336
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 386
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 392
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 393
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 397
+        },
+        {
+          "path": "src/libs/game/effect/damage.cpp",
+          "line": 30
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 646
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 650
+        }
+      ],
+      "capabilities": [
+        "dice pool sized by the equipped weapon",
+        "damage floor so every hit registers",
+        "critical multiplier applied after the floor",
+        "hit point floor with a keep-alive target flag"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "dice",
+        "critical"
+      ]
+    },
+    {
+      "id": "two-weapon-attacks",
+      "node": "combat",
+      "name": "Two-weapon penalties and off-hand strike",
+      "summary": "Fixed handedness penalties plus a second resolution from the off-hand weapon each round",
+      "behavior": "When both weapon slots are filled, the attack bonus takes a fixed penalty of six points on the main hand and ten points on the off hand before the level and ability contributions are added. Any weapon in the left slot marks the creature as two-weapon fighting, which makes every successful half-round resolution follow up with a second attack roll against the off-hand weapon and its own critical threat window, using the off-hand penalty and the off-hand critical multiplier. The off-hand strike resolves immediately after the main attack in the same update, so both land inside one round. Dueling and two-weapon feats are not modelled in this revision, so the penalties never shrink, and extra attacks from feats or force powers are not added.",
+      "constants": [
+        {
+          "name": "mainHandPenalty",
+          "value": 6,
+          "unit": "attack points deducted, fixed while both hands hold a weapon",
+          "source": "src/libs/game/object/creature.cpp:630"
+        },
+        {
+          "name": "offHandPenalty",
+          "value": 10,
+          "unit": "attack points deducted, fixed while both hands hold a weapon",
+          "source": "src/libs/game/object/creature.cpp:630"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 122
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 125
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 126
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 127
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 595
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 596
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 615
+        },
+        {
+          "path": "src/libs/game/object/creature.cpp",
+          "line": 630
+        }
+      ],
+      "capabilities": [
+        "asymmetric main-hand and off-hand penalties",
+        "second attack roll in the same half round",
+        "off-hand critical threat and multiplier"
+      ],
+      "tags": [
+        "combat",
+        "two weapon",
+        "penalty",
+        "off hand"
+      ]
+    },
+    {
+      "id": "projectile-flight",
+      "node": "combat",
+      "name": "Projectile launch and flight",
+      "summary": "Ranged rounds spawn a projectile at a weapon hook and advance it toward a target attachment",
+      "behavior": "A ranged round resolves the attacker's right-hand weapon and the ammunition type it fires, takes the weapon attachment's bullet hook as the launch point when that node exists, and aims at the target model's impact attachment, falling back to the model origins when either node is absent. The resulting direction is normalized, and the projectile model is attached to the scene root after signalling a detonate event by name. Each update moves the projectile along that fixed direction at sixteen world units per second and yaws it to face its travel direction, derived from the arc tangent of the direction components. The projectile is removed just before the attack result is applied at the half-round mark, so travel time never gates whether the hit lands.",
+      "constants": [
+        {
+          "name": "projectileSpeed",
+          "value": 16,
+          "unit": "world units per second, integrated with the frame delta",
+          "source": "src/libs/game/combat.cpp:40"
+        },
+        {
+          "name": "projectileLaunchDelay",
+          "value": 0.5,
+          "unit": "seconds after the half-round mark, advanced by the frame delta",
+          "source": "src/libs/game/combat.cpp:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 403
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 423
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 432
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 438
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 443
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 453
+        },
+        {
+          "path": "src/libs/game/combat.cpp",
+          "line": 455
+        }
+      ],
+      "capabilities": [
+        "launch point from a weapon attachment node",
+        "aim point from a target attachment node",
+        "constant-speed travel with facing from the direction",
+        "projectile removed before damage resolves"
+      ],
+      "tags": [
+        "combat",
+        "projectile",
+        "ranged",
+        "attachments"
+      ]
+    },
+    {
+      "id": "creature-perception",
+      "node": "perception",
+      "name": "Sight and hearing sweeps",
+      "summary": "One second perception sweep with a hearing radius, a sight radius, a facing cone and an occlusion probe",
+      "behavior": "A timer runs the perception sweep once per second. For every living creature the sweep measures the planar squared distance to each other creature and compares it against the squared hearing and sight ranges taken from the range table: hearing is pure distance, while sight additionally requires the planar direction to the target to fall within sixty degrees of the creature's facing and a clear segment between two eye points, each raised above the object position. Entering and leaving each set fires a first-heard, inaudible, first-seen or vanished notification that scripts can react to, so each transition fires once rather than every sweep. Hostility used for combat orders and cursor feedback is a separate lookup that compares a faction reputation value against a neutral midpoint.",
+      "constants": [
+        {
+          "name": "perceptionInterval",
+          "value": 1,
+          "unit": "seconds between sweeps, counted down with the frame delta",
+          "source": "src/libs/game/object/area.cpp:72"
+        },
+        {
+          "name": "eyeHeight",
+          "value": 1.7,
+          "unit": "world units added to both ends of the sight probe, one probe per candidate per sweep",
+          "source": "src/libs/game/object/area.cpp:73"
+        },
+        {
+          "name": "sightHalfAngle",
+          "value": 60,
+          "unit": "degrees from facing in the ground plane, one comparison per candidate per sweep",
+          "source": "src/libs/game/object/area.cpp:74"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 72
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 74
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 723
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 730
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 733
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 1186
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 1188
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 1198
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 1202
+        },
+        {
+          "path": "src/libs/game/object/area.cpp",
+          "line": 1210
+        },
+        {
+          "path": "src/libs/game/reputes.cpp",
+          "line": 72
+        }
+      ],
+      "capabilities": [
+        "separate hearing and sight ranges per creature",
+        "planar facing cone combined with an occlusion probe",
+        "transition-only notifications instead of per-sweep polling"
+      ],
+      "tags": [
+        "perception",
+        "sight",
+        "hearing",
+        "line of sight",
+        "stealth"
+      ]
+    },
+    {
+      "id": "party-follow",
+      "node": "party",
+      "name": "Party roster and follow steering",
+      "summary": "Leader-first roster with leader rotation and script-issued follow actions that steer behind the leader",
+      "behavior": "The roster keeps at most three members and always holds the leader first, refusing a fourth member. Asking for a different leader by identity reorders the list so that member becomes first, while the quick rotate control swaps positions, using separate two-member and three-member orderings, then clears every member's queued actions and re-runs the leader-moved hook so room visibility and the camera target follow the new leader. Following is never automatic: a script routine queues a follow-leader action, and each update that action reads the leader position and steers toward a five unit follow distance, switching to run once the squared planar distance to the leader exceeds the walk threshold, which puts the effective run range near two units. A separate follow-object action steers toward an arbitrary object with a script-supplied distance and compares squared distance against the squared walk threshold.",
+      "constants": [
+        {
+          "name": "maxPartyMembers",
+          "value": 3,
+          "unit": "members, fixed roster limit",
+          "source": "src/libs/game/party.cpp:29"
+        },
+        {
+          "name": "followDistance",
+          "value": 5,
+          "unit": "world units from the leader, re-evaluated once per action update",
+          "source": "include/reone/game/types.h:28"
+        },
+        {
+          "name": "walkThreshold",
+          "value": 4,
+          "unit": "squared world units on the ground plane, compared once per action update",
+          "source": "src/libs/game/object.cpp:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/action/follow.cpp",
+          "line": 31
+        },
+        {
+          "path": "src/libs/game/action/followleader.cpp",
+          "line": 28
+        },
+        {
+          "path": "src/libs/game/action/followleader.cpp",
+          "line": 32
+        },
+        {
+          "path": "src/libs/game/action/followleader.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 49
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 78
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 94
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 118
+        },
+        {
+          "path": "src/libs/game/party.cpp",
+          "line": 123
+        },
+        {
+          "path": "src/libs/game/script/routine/impl/action.cpp",
+          "line": 713
+        }
+      ],
+      "capabilities": [
+        "leader-first roster capped at three members",
+        "leader rotation clearing member action queues",
+        "follow steering with a run threshold and follow distance"
+      ],
+      "tags": [
+        "party",
+        "follow",
+        "steering",
+        "leader"
+      ]
+    },
+    {
+      "id": "door-transition",
+      "node": "world-objects",
+      "name": "Door state and module transition",
+      "summary": "Door click routing, walkmesh swaps on open and close, and the module change a linked door schedules",
+      "behavior": "Clicking a door routes to a transition handler: a door linked to another module schedules a module change using the door's linked module name and entry tag and returns without opening anything, while an unlinked door that is still closed queues an open action for the party leader. A door carries three walkmeshes taken from its model, one closed variant and two open variants; opening plays the opening animation, enables the first open variant and disables the closed mesh and the second open variant, and closing plays the closing animation and reverses those toggles. The open action approaches to the shared interaction distance of two units, and a locked door runs its fail-to-open script instead of opening unless the actor is the door itself. Door placement keeps the vertical axis upright and uses only the stored bearing as a yaw rotation.",
+      "constants": [
+        {
+          "name": "doorUprightTilt",
+          "value": 0,
+          "unit": "radians on the two horizontal axes, applied once when a door loads its transform",
+          "source": "src/libs/game/object/door.cpp:106"
+        },
+        {
+          "name": "objectInteractionDistance",
+          "value": 2,
+          "unit": "world units, re-tested once per action update",
+          "source": "src/libs/game/object.cpp:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/game/action/opendoor.cpp",
+          "line": 37
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 80
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 93
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 106
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 115
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 121
+        },
+        {
+          "path": "src/libs/game/object/door.cpp",
+          "line": 133
+        },
+        {
+          "path": "src/libs/game/object/module.cpp",
+          "line": 247
+        },
+        {
+          "path": "src/libs/game/object/module.cpp",
+          "line": 249
+        },
+        {
+          "path": "src/libs/game/object/module.cpp",
+          "line": 252
+        },
+        {
+          "path": "src/libs/game/object/module.cpp",
+          "line": 255
+        }
+      ],
+      "capabilities": [
+        "linked door schedules a module change instead of opening",
+        "closed and open walkmesh variants toggled with the animation",
+        "locked door defers to a fail-to-open script",
+        "yaw-only door placement on an upright axis"
+      ],
+      "tags": [
+        "door",
+        "transition",
+        "walkmesh",
+        "module"
+      ]
+    }
+  ]
+}

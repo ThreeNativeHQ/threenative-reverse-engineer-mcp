@@ -1,0 +1,1909 @@
+{
+  "version": 1,
+  "id": "halo-combat-evolved-opence",
+  "title": "Halo: Combat Evolved (OpenCE)",
+  "repo": "https://github.com/OpenCommunityEdition/OpenCE",
+  "sha": "337b05cfdf203e7c3e3d8af0b1b37894c0b5b057",
+  "nodes": [
+    {
+      "id": "simulation-clock",
+      "name": "Simulation clock and tick loop",
+      "purpose": "Turns display frame time into whole 30 Hz simulation ticks, carries the remainder between frames, and exposes the fraction of a tick for rendering between steps.",
+      "paths": [
+        "source/game/game_time.c",
+        "source/cseries/cseries.h"
+      ],
+      "functions": [
+        {
+          "name": "game_time_update",
+          "path": "source/game/game_time.c",
+          "lines": [
+            393,
+            542
+          ]
+        },
+        {
+          "name": "game_time_get_tick_fraction",
+          "path": "source/game/game_time.c",
+          "lines": [
+            279,
+            288
+          ]
+        },
+        {
+          "name": "game_time_start",
+          "path": "source/game/game_time.c",
+          "lines": [
+            358,
+            391
+          ]
+        },
+        {
+          "name": "game_time_set_speed",
+          "path": "source/game/game_time.c",
+          "lines": [
+            302,
+            315
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-input",
+      "name": "Player input to control flags",
+      "purpose": "Samples controller, keyboard and mouse state, marks unit control flags, builds the script-visible action bits and converts look input into per-tick facing deltas.",
+      "paths": [
+        "source/game/player_control.c"
+      ],
+      "functions": [
+        {
+          "name": "get_local_player_input_blob",
+          "path": "source/game/player_control.c",
+          "lines": [
+            1079,
+            1618
+          ]
+        },
+        {
+          "name": "handle_one_player_input",
+          "path": "source/game/player_control.c",
+          "lines": [
+            624,
+            849
+          ]
+        },
+        {
+          "name": "player_control_modify_desired_angles",
+          "path": "source/game/player_control.c",
+          "lines": [
+            1960,
+            2119
+          ]
+        },
+        {
+          "name": "player_control_action_test_note",
+          "path": "source/game/player_control.c",
+          "lines": [
+            1749,
+            1806
+          ]
+        }
+      ],
+      "dependsOn": [
+        "simulation-clock"
+      ]
+    },
+    {
+      "id": "biped-locomotion",
+      "name": "Biped locomotion, jumping and airborne state",
+      "purpose": "Maps throttle to ground and air velocity targets, gate and apply the jump impulse, and track airborne ticks, landing and support surfaces.",
+      "paths": [
+        "source/units/bipeds.c"
+      ],
+      "functions": [
+        {
+          "name": "biped_update_moving",
+          "path": "source/units/bipeds.c",
+          "lines": [
+            3510,
+            4142
+          ]
+        },
+        {
+          "name": "biped_jump",
+          "path": "source/units/bipeds.c",
+          "lines": [
+            1836,
+            1911
+          ]
+        },
+        {
+          "name": "biped_update_jumping",
+          "path": "source/units/bipeds.c",
+          "lines": [
+            2199,
+            2281
+          ]
+        },
+        {
+          "name": "biped_update_physics",
+          "path": "source/units/bipeds.c",
+          "lines": [
+            2347,
+            3073
+          ]
+        },
+        {
+          "name": "biped_find_nearby_support_surface",
+          "path": "source/units/bipeds.c",
+          "lines": [
+            2283,
+            2345
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-input",
+        "physics-collision"
+      ]
+    },
+    {
+      "id": "physics-collision",
+      "name": "Rigid body physics and collision",
+      "purpose": "Per-tick integration of forces on mass points, ground contact springs, capsule depenetration, and the collision responses that move objects apart.",
+      "paths": [
+        "source/physics/physics.c",
+        "source/physics/collisions.c"
+      ],
+      "functions": [
+        {
+          "name": "physics_compute_new",
+          "path": "source/physics/physics.c",
+          "lines": [
+            775,
+            1057
+          ]
+        },
+        {
+          "name": "physics_update_new",
+          "path": "source/physics/physics.c",
+          "lines": [
+            1422,
+            1663
+          ]
+        },
+        {
+          "name": "physics_update",
+          "path": "source/physics/physics.c",
+          "lines": [
+            2232,
+            2331
+          ]
+        },
+        {
+          "name": "physics_compute_biped_collision",
+          "path": "source/physics/physics.c",
+          "lines": [
+            1059,
+            1196
+          ]
+        },
+        {
+          "name": "compute_ground_plane",
+          "path": "source/physics/physics.c",
+          "lines": [
+            671,
+            717
+          ]
+        },
+        {
+          "name": "collision_fix_pill",
+          "path": "source/physics/collisions.c",
+          "lines": [
+            986,
+            1137
+          ]
+        },
+        {
+          "name": "collision_move_point",
+          "path": "source/physics/collisions.c",
+          "lines": [
+            1273,
+            1551
+          ]
+        }
+      ],
+      "dependsOn": [
+        "simulation-clock"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Camera director and view smoothing",
+      "purpose": "Chooses the local camera, produces camera commands for first-person and boom views, and smooths every change with a bounded polynomial transition.",
+      "paths": [
+        "source/camera/observer.c",
+        "source/camera/director.c",
+        "source/camera/first_person_camera.c",
+        "source/camera/following_camera.c"
+      ],
+      "functions": [
+        {
+          "name": "observer_update",
+          "path": "source/camera/observer.c",
+          "lines": [
+            1304,
+            1345
+          ]
+        },
+        {
+          "name": "observer_update_polynomial",
+          "path": "source/camera/observer.c",
+          "lines": [
+            761,
+            839
+          ]
+        },
+        {
+          "name": "observer_update_accelerations",
+          "path": "source/camera/observer.c",
+          "lines": [
+            518,
+            583
+          ]
+        },
+        {
+          "name": "observer_check_penetration",
+          "path": "source/camera/observer.c",
+          "lines": [
+            1038,
+            1144
+          ]
+        },
+        {
+          "name": "first_person_camera_update",
+          "path": "source/camera/first_person_camera.c",
+          "lines": [
+            133,
+            155
+          ]
+        },
+        {
+          "name": "following_camera_update",
+          "path": "source/camera/following_camera.c",
+          "lines": [
+            192,
+            328
+          ]
+        },
+        {
+          "name": "director_update",
+          "path": "source/camera/director.c",
+          "lines": [
+            989,
+            1073
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-input",
+        "biped-locomotion"
+      ]
+    },
+    {
+      "id": "combat-damage",
+      "name": "Damage model and aim assist",
+      "purpose": "Splits a hit between shields and body health, applies headshots and region damage, regenerates shields, and biases the player's shot toward a scored target.",
+      "paths": [
+        "source/objects/damage.c",
+        "source/game/aim_assist.c"
+      ],
+      "functions": [
+        {
+          "name": "object_cause_damage",
+          "path": "source/objects/damage.c",
+          "lines": [
+            1426,
+            1943
+          ]
+        },
+        {
+          "name": "object_damage_shield",
+          "path": "source/objects/damage.c",
+          "lines": [
+            822,
+            1019
+          ]
+        },
+        {
+          "name": "object_damage_body",
+          "path": "source/objects/damage.c",
+          "lines": [
+            1167,
+            1424
+          ]
+        },
+        {
+          "name": "object_damage_aftermath",
+          "path": "source/objects/damage.c",
+          "lines": [
+            1032,
+            1165
+          ]
+        },
+        {
+          "name": "object_damage_update",
+          "path": "source/objects/damage.c",
+          "lines": [
+            1981,
+            2186
+          ]
+        },
+        {
+          "name": "local_player_aim_assist",
+          "path": "source/game/aim_assist.c",
+          "lines": [
+            656,
+            719
+          ]
+        },
+        {
+          "name": "compute_attenuation",
+          "path": "source/game/aim_assist.c",
+          "lines": [
+            145,
+            162
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-collision",
+        "player-input"
+      ]
+    },
+    {
+      "id": "ai-behavior",
+      "name": "AI perception, steering and combat",
+      "purpose": "Scores what an actor can see, steers it around obstacles with weighted probe rays, and schedules its bursts and grenade throws in ticks.",
+      "paths": [
+        "source/ai/actor_perception.c",
+        "source/ai/actor_moving.c",
+        "source/ai/actor_combat.c"
+      ],
+      "functions": [
+        {
+          "name": "actor_get_vision_distances",
+          "path": "source/ai/actor_perception.c",
+          "lines": [
+            1348,
+            1430
+          ]
+        },
+        {
+          "name": "actor_move_vector_avoidance",
+          "path": "source/ai/actor_moving.c",
+          "lines": [
+            1386,
+            1829
+          ]
+        },
+        {
+          "name": "actor_move_update",
+          "path": "source/ai/actor_moving.c",
+          "lines": [
+            3003,
+            3544
+          ]
+        },
+        {
+          "name": "actor_get_stopping_distances",
+          "path": "source/ai/actor_moving.c",
+          "lines": [
+            1098,
+            1179
+          ]
+        },
+        {
+          "name": "actor_start_burst",
+          "path": "source/ai/actor_combat.c",
+          "lines": [
+            1196,
+            1517
+          ]
+        },
+        {
+          "name": "actor_start_pause",
+          "path": "source/ai/actor_combat.c",
+          "lines": [
+            586,
+            620
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-collision",
+        "combat-damage"
+      ]
+    },
+    {
+      "id": "vehicles",
+      "name": "Vehicle physics and suspension",
+      "purpose": "Drives hovering and wheeled vehicles through per-tick force and torque terms, and animates suspension compression from downward probes.",
+      "paths": [
+        "source/units/vehicles.c"
+      ],
+      "functions": [
+        {
+          "name": "vehicle_update",
+          "path": "source/units/vehicles.c",
+          "lines": [
+            2449,
+            2756
+          ]
+        },
+        {
+          "name": "update_suspension",
+          "path": "source/units/vehicles.c",
+          "lines": [
+            1619,
+            1742
+          ]
+        },
+        {
+          "name": "update_human_plane_physics",
+          "path": "source/units/vehicles.c",
+          "lines": [
+            1492,
+            1617
+          ]
+        },
+        {
+          "name": "update_human_jeep_physics",
+          "path": "source/units/vehicles.c",
+          "lines": [
+            2065,
+            2103
+          ]
+        },
+        {
+          "name": "vehicle_is_flipped",
+          "path": "source/units/vehicles.c",
+          "lines": [
+            393,
+            399
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-collision"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "tick-clock",
+      "node": "simulation-clock",
+      "name": "Fixed 30 Hz simulation tick",
+      "summary": "Frame time is accumulated and converted into whole simulation ticks at a fixed 30 Hz rate; the fractional remainder is carried into the next frame and the number of ticks a single frame may run is capped.",
+      "behavior": "The clock keeps an accumulator of unspent real time. Each update adds the frame's seconds to the accumulator, multiplies by the tick rate (30 times the time scale) and floors the product to obtain the number of ticks to run. Only whole ticks advance the world: each one runs the game tick, advances the local and server tick counters and stores a render-interpolation snapshot. The fractional part is kept as leftover time so no time is lost between frames. The tick count is bounded: a single-machine game may run at most 7 ticks in one update while a networked game or film playback may run up to 30, and when the bound is hit the surplus real time is discarded rather than carried, so a frame that fell far behind cannot fast-forward the world. A separate ceiling of 1000 ticks guards the conversion itself. Simulation time is therefore an integer count of 30 Hz steps, and one wall-clock second of smooth play buys exactly 30 ticks.",
+      "constants": [
+        {
+          "name": "ticksPerSecond",
+          "value": 30,
+          "unit": "ticks per second of simulation time at time scale 1; each tick is 1/30 s and is the only simulation step",
+          "source": "source/cseries/cseries.h:34"
+        },
+        {
+          "name": "maximumTicksPerUpdateSingleMachine",
+          "value": 7,
+          "unit": "ticks per frame update (30 Hz base rate) in a single-machine game; surplus frame time is discarded",
+          "source": "source/game/game_time.c:434"
+        },
+        {
+          "name": "tickConversionCeiling",
+          "value": 1000,
+          "unit": "ticks per frame update, the absolute ceiling applied to the floored tick count before the per-mode clamp",
+          "source": "source/game/game_time.c:93"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/game_time.c",
+          "line": 402
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 444
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 454
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 510
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "frame to tick accumulator",
+        "tick budget clamp"
+      ],
+      "tags": [
+        "simulation",
+        "timing",
+        "fixed timestep"
+      ]
+    },
+    {
+      "id": "frames-between-ticks",
+      "node": "simulation-clock",
+      "name": "Frames drawn between ticks",
+      "summary": "Frames that run no tick report zero elapsed game time, and the clock publishes a fraction of the next tick so rendering can interpolate between the two most recent poses.",
+      "behavior": "The native builds draw at the display refresh while the world advances in 30 Hz steps, so many frames run no tick. Two values bridge the gap. The elapsed-tick count reported to the frame, which drives HUD flashes, titles, impulses and camera shake, is cleared at the start of every update and only written back when at least one tick ran, so a frame that ran nothing does not replay the previous frame's ticks and the effects do not speed up with the frame rate. The tick fraction multiplies the leftover accumulator by the time scale and by 30, clamps the result to 0..1, and returns 1 when the clock is inactive or paused. Rendering uses that fraction to place objects and effects between the snapshot taken by the previous tick and the one taken by the newest tick, and all frames that share a tick share the fraction. A debug fixed-step mode instead runs exactly one tick on any frame with positive time, so per-frame code such as aiming always sees a clock that moved.",
+      "constants": [
+        {
+          "name": "maximumTickFraction",
+          "value": 1,
+          "unit": "fraction of one 30 Hz tick, the unitless clamp ceiling; 0 means the newest tick's pose",
+          "source": "source/game/game_time.c:287"
+        },
+        {
+          "name": "fixedStepTicks",
+          "value": 1,
+          "unit": "ticks per frame update in the debug fixed-step mode at 30 Hz",
+          "source": "source/game/game_time.c:463"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/game_time.c",
+          "line": 279
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 412
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 523
+        }
+      ],
+      "capabilities": [
+        "render interpolation",
+        "tick fraction",
+        "per-frame elapsed ticks"
+      ],
+      "tags": [
+        "simulation",
+        "timing",
+        "rendering"
+      ]
+    },
+    {
+      "id": "time-scale",
+      "node": "simulation-clock",
+      "name": "Game speed multiplier",
+      "summary": "A global speed value rescales how many 30 Hz ticks one second of real time buys; it is bounded to 0..100, defaults to one and is ignored by network clients.",
+      "behavior": "The clock multiplies the 30 Hz base rate by a speed value before converting frame time into ticks, so a speed of 2 makes each tick half a wall-clock frame long and a speed of 0 stops the world because zero ticks per second makes every update a no-op. Values that are negative, above 100 or not a number are rejected by the setter and the previous speed stays; a NaN fails both comparisons, so a bad script value cannot stop time permanently. The speed is set to exactly 1 when the game clock starts and can be put back to 1 later. A client of the distributed netcode ignores its own value and reports 1 so it cannot drift away from the host, and the per-frame callback is handed real seconds multiplied by the same value so frame-paced effects keep matching the tick budget.",
+      "constants": [
+        {
+          "name": "maximumTimeScale",
+          "value": 100,
+          "unit": "time-scale multiplier; ticks per second become 30 times this, tested per frame update",
+          "source": "source/game/game_time.c:310"
+        },
+        {
+          "name": "defaultTimeScale",
+          "value": 1,
+          "unit": "time-scale multiplier at 30 Hz, restored when the game clock starts or the speed is reset",
+          "source": "source/game/game_time.c:368"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/game_time.c",
+          "line": 302
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 402
+        },
+        {
+          "path": "source/game/game_time.c",
+          "line": 326
+        }
+      ],
+      "capabilities": [
+        "time scale",
+        "slow motion",
+        "pause through zero speed"
+      ],
+      "tags": [
+        "simulation",
+        "timing",
+        "debug"
+      ]
+    },
+    {
+      "id": "look-scaling",
+      "node": "player-input",
+      "name": "Mouse and stick look scaling",
+      "summary": "Mouse motion becomes radians directly, stick deflection becomes a per-tick angular rate scaled by the ticks the frame covers, and diagonal stick input is renormalised so it does not turn faster than a single axis.",
+      "behavior": "Two paths feed one facing delta. A mouse delta is multiplied by a radians-per-count scale of pi/1000 on each axis, so a thousand counts turn the aim by about 3.14 radians, while the port's direct mouse-aim path divides its delta by the weapon's magnification when scoped. Stick look is a rate: the axis value is multiplied by the player's or the seat's configured degrees per second, converted to radians and divided by 30 to become radians per tick, then multiplied by the frame's elapsed ticks to reach this frame's delta. When both stick axes exceed 0.1 the pair is rescaled so the larger axis reaches 1 and the smaller keeps its ratio, and the two are then recombined through the vector length, which keeps a diagonal push from turning the view up to 1.41 times faster than a pure axis. Body stun scales the delta down, a pegged stick ramps through the map's look acceleration, and weapon magnetism then blends part of a target's angular velocity into the delta before it is added to the desired angles, which are wrapped and clamped to the pitch limits.",
+      "constants": [
+        {
+          "name": "mouseYawRadiansPerCount",
+          "value": 0.0031415927,
+          "unit": "radians per mouse count on the yaw axis, applied per input sample (pi/1000)",
+          "source": "source/game/player_control.c:243"
+        },
+        {
+          "name": "mousePitchRadiansPerCount",
+          "value": 0.0031415927,
+          "unit": "radians per mouse count on the pitch axis, applied per input sample (pi/1000)",
+          "source": "source/game/player_control.c:244"
+        },
+        {
+          "name": "diagonalNormalisationThreshold",
+          "value": 0.1,
+          "unit": "normalised stick axis magnitude above which both axes are renormalised, tested per input sample",
+          "source": "source/game/player_control.c:1149"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/player_control.c",
+          "line": 1109
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 1149
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 1338
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 1353
+        }
+      ],
+      "capabilities": [
+        "mouse sensitivity",
+        "stick look rate",
+        "diagonal input normalisation",
+        "zoom-scaled look"
+      ],
+      "tags": [
+        "input",
+        "camera",
+        "aiming"
+      ]
+    },
+    {
+      "id": "pitch-limits",
+      "node": "player-input",
+      "name": "Pitch clamp and auto-levelling",
+      "summary": "Aim pitch is clamped near 85.5 degrees from level, the clamp itself eases toward seat camera bounds by a fixed angle per tick, and auto-levelling pulls the pitch back toward level at a rate set by the pitch error and the unit's speed.",
+      "behavior": "Desired aim is stored as yaw plus pitch. Yaw is clamped into the seat's firing arc when the unit occupies a turret seat, wrapped into one full turn, and pitch is clamped between limits that begin at plus and minus 85.5 degrees and then ease toward the camera tag's own limits by pi/256 radians for every tick the frame covers, so a seat with a narrow vertical arc never snaps the view. When the camera block asks for auto-levelling, the pitch error to the levelled value is normalised by 2/pi, which maps a quarter turn of error to one, scaled by the same tick count, and multiplied either by a fixed factor with the unit's speed or by the map's autolevel scale with speed; the pitch is then interpolated toward the target by that amount. Levelling therefore speeds up with both distance from level and movement speed and slows to almost nothing when nearly level. Passengers are clamped to their seat's weapon arc through the same call.",
+      "constants": [
+        {
+          "name": "maximumAimPitchDegrees",
+          "value": 85.5,
+          "unit": "degrees from level, the engine-wide pitch clamp, applied once per tick at 30 Hz",
+          "source": "source/game/player_control.c:1972"
+        },
+        {
+          "name": "pitchErrorNormalisation",
+          "value": 0.63661975,
+          "unit": "2/pi normaliser turning a quarter turn of pitch error into 1.0, applied per tick",
+          "source": "source/game/player_control.c:2078"
+        },
+        {
+          "name": "autolevelRate",
+          "value": 0.08,
+          "unit": "unitless autolevel interpolation weight per tick at 30 Hz, multiplied by the unit's speed",
+          "source": "source/game/player_control.c:2090"
+        },
+        {
+          "name": "limitStepDivisor",
+          "value": 256,
+          "unit": "denominator of the pitch-limit approach step of pi/256 radians per tick at 30 Hz",
+          "source": "source/game/player_control.c:2107"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/player_control.c",
+          "line": 1960
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 2068
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 2078
+        },
+        {
+          "path": "source/game/player_control.c",
+          "line": 2107
+        }
+      ],
+      "capabilities": [
+        "pitch clamp",
+        "auto-level",
+        "turret firing arc"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "input"
+      ]
+    },
+    {
+      "id": "ground-locomotion",
+      "node": "biped-locomotion",
+      "name": "Ground movement from throttle",
+      "summary": "Throttle is blended between crouched sneak speeds and standing run speeds, converted from per-second authoring values to per-tick velocity, and a grounded biped's velocity is set to that target rather than accelerated toward it.",
+      "behavior": "On the ground the throttle vector becomes a target velocity. The code picks sneak or run forwards and sideways speeds from the sign of the forward axis, then blends the standing and crouched sets by the crouch fraction, so a half crouch trades forward run speed against the sideways run speed. Stun scales the target by one minus body stun times the map's stun penalty, times the player's speed multiplier, and alert-stance animation states fall back to walking speed with no strafe. Map values are authored in world units per second, so speeds and accelerations are divided by 30 to become per-tick quantities. A grounded, non-slipping biped whose tag does not set the player-physics flag, or that is playing a user animation, has its horizontal velocity assigned the target directly and receives an unlimited acceleration budget, which is why ground movement answers instantly; the accelerated physics path takes over for player-physics bipeds, while airborne, while slipping, and for flying bipeds. Throttles below a magnitude of 0.1 are zeroed each tick so stick noise cannot produce a slow drift.",
+      "constants": [
+        {
+          "name": "fallbackWalkingSpeed",
+          "value": 0.51200002,
+          "unit": "world units per second (divided by 30 for units per tick); used while a cinematic runs or for the old player physics flag",
+          "source": "source/units/bipeds.c:3774"
+        },
+        {
+          "name": "fallbackRunForwardSpeed",
+          "value": 2.25,
+          "unit": "world units per second (divided by 30 for units per tick); used while a cinematic runs",
+          "source": "source/units/bipeds.c:3775"
+        },
+        {
+          "name": "fallbackRunAcceleration",
+          "value": 0.31999999,
+          "unit": "world units per second squared, divided by 30 for acceleration per tick",
+          "source": "source/units/bipeds.c:3778"
+        },
+        {
+          "name": "throttleDeadzone",
+          "value": 0.1,
+          "unit": "unitless throttle magnitude, tested per tick at 30 Hz; below it the throttle vector is zeroed",
+          "source": "source/units/bipeds.c:4277"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/units/bipeds.c",
+          "line": 3816
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 3864
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 3744
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 4277
+        }
+      ],
+      "capabilities": [
+        "crouch speed blend",
+        "per-second to per-tick conversion",
+        "instant ground response",
+        "throttle deadzone"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "movement feel"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "biped-locomotion",
+      "name": "Jump impulse and recovery gate",
+      "summary": "A jump raises the biped's velocity along its own up vector to the rated jump speed, but only after a short recovery delay and only while it is neither airborne nor landing.",
+      "behavior": "The jump input bit is sampled once per tick. While the biped is not airborne and not in the landing state, a recovery counter increments each tick and the jump only fires once that counter has passed 5, which stops a held button from re-firing on consecutive ticks and sets a minimum interval between jumps; a freshly created biped starts the counter at its maximum, so its first jump needs no wait. Firing projects the current velocity onto the biped's up vector: if the upward component already meets the rated jump speed nothing changes, otherwise the velocity is extended along up by the shortfall, so jumping off a rising platform or a moving lift does not add two impulses. The rating comes from the biped tag and is reduced by body stun times the map's stun turning penalty; a debug cheat multiplies it by 4. A successful jump marks the biped airborne, recycles the recovery counter, clears the support surface and plays the jump footstep effects. The same rating feeds fall prediction, where remaining drop height times gravity times 2 plus vertical velocity squared is compared against the square of the map's maximum safe landing velocity.",
+      "constants": [
+        {
+          "name": "jumpRecoveryTicks",
+          "value": 5,
+          "unit": "ticks at 30 Hz that must pass after the previous jump before the jump input can fire again",
+          "source": "source/units/bipeds.c:2213"
+        },
+        {
+          "name": "superJumpMultiplier",
+          "value": 4,
+          "unit": "multiplier on the rated jump velocity while the super-jump cheat is active, applied per jump",
+          "source": "source/units/bipeds.c:1864"
+        },
+        {
+          "name": "fallPredictionFactor",
+          "value": 2,
+          "unit": "multiplier on drop height times gravity when predicting impact speed, evaluated per fall warning at 30 Hz",
+          "source": "source/units/bipeds.c:1724"
+        },
+        {
+          "name": "fallWarningAirborneTicks",
+          "value": 30,
+          "unit": "ticks at 30 Hz (one second) airborne before an AI actor calls out a fall",
+          "source": "source/units/bipeds.c:1701"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/units/bipeds.c",
+          "line": 1836
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 2213
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 1864
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 1724
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "jump recovery",
+        "vertical impulse",
+        "fall damage prediction"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "airborne-leap",
+      "node": "biped-locomotion",
+      "name": "Airborne counter and leaping actors",
+      "summary": "An airborne counter accumulates until landing and drives several behaviours, and a leaping AI actor keeps a much tighter steering budget for its first 22 airborne ticks.",
+      "behavior": "An airborne biped increments a small counter every tick, saturating at the integer maximum, and the counter clears the moment the biped is grounded again. It gates fall warnings, the falling-damage conversation lines and other airborne rules. While airborne with an actor attached, and only for the first 22 ticks, a leap animation state replaces the normal air control with a much smaller ground tangential velocity ceiling and a tighter steering angle, which keeps a leap on its scripted path instead of letting the actor steer away mid-flight. After those ticks normal air acceleration returns. Landing clears the counter and can start landing animations, footsteps and falling damage, and slipping is tracked as a separate flag that also blocks the direct grounded velocity assignment.",
+      "constants": [
+        {
+          "name": "leapControlTicks",
+          "value": 22,
+          "unit": "ticks at 30 Hz after leaving the ground during which a leaping actor keeps the reduced steering budget",
+          "source": "source/units/bipeds.c:3889"
+        },
+        {
+          "name": "leapTangentialVelocityMax",
+          "value": 0.1,
+          "unit": "world units per tick at 30 Hz, the ground tangential velocity ceiling for a leaping actor",
+          "source": "source/units/bipeds.c:3893"
+        },
+        {
+          "name": "leapTangentialAngle",
+          "value": 0.5,
+          "unit": "radians (about 28.6 degrees) of tangential steering allowed per tick for a leaping actor at 30 Hz",
+          "source": "source/units/bipeds.c:3894"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/units/bipeds.c",
+          "line": 4282
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 3889
+        },
+        {
+          "path": "source/units/bipeds.c",
+          "line": 3893
+        }
+      ],
+      "capabilities": [
+        "airborne counter",
+        "leap steering budget",
+        "landing state"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "ai"
+      ]
+    },
+    {
+      "id": "gravity-ground-force",
+      "node": "physics-collision",
+      "name": "Gravity and the ground contact spring",
+      "summary": "One global gravity value is added to vertical velocity every tick, and grounded mass points receive a spring-damper normal force proportional to how far they are pressed into the surface.",
+      "behavior": "Physics is semi-implicit Euler once per tick: force divided by mass gives an acceleration that is added to the current velocity, and the velocity is added to the position with no tick-length factor anywhere, so every velocity and every force in the physics code is expressed per tick. Gravity is therefore a velocity increment per tick, not a per-second acceleration: 0.0035651792 world units per tick added each tick is about 0.107 units per tick after one second of free fall. The global air and water densities sit beside it and feed the point physics used by projectiles and effects, while submerged mass points use their own physics block's water density; the global collision depth supplies a default contact band thickness for physics blocks that give none. Each mass point probes down for a ground plane; the penetration below that plane becomes the spring compression, and the normal force is the mass times (gravity divided by the surface ground depth times penetration, minus the normal velocity times the damping fraction). Surface materials can scale friction, ground depth and damping, but bodies heavier than 7500 units ignore the material friction scale so a large vehicle does not slide as if it were light.",
+      "constants": [
+        {
+          "name": "gravityPerTick",
+          "value": 0.0035651792,
+          "unit": "world units per tick added to vertical velocity each tick at 30 Hz (about 0.107 units per tick, or 3.2 units per second of gained velocity, after one second of fall)",
+          "source": "source/physics/physics.c:287"
+        },
+        {
+          "name": "airDensity",
+          "value": 0.0011,
+          "unit": "density multiplier used for buoyancy in the integration, evaluated per tick at 30 Hz",
+          "source": "source/physics/physics.c:289"
+        },
+        {
+          "name": "defaultCollisionDepth",
+          "value": 0.2,
+          "unit": "world units of contact band thickness used when a physics block gives none, evaluated per tick",
+          "source": "source/physics/physics.c:290"
+        },
+        {
+          "name": "materialFrictionMassLimit",
+          "value": 7500,
+          "unit": "physics mass units; above it a surface material's ground friction scale is ignored, evaluated per tick",
+          "source": "source/physics/physics.c:858"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/physics/physics.c",
+          "line": 775
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 1422
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 871
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 679
+        }
+      ],
+      "capabilities": [
+        "per-tick gravity",
+        "mass point ground spring",
+        "material scaling",
+        "semi-implicit integration"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "depenetration-search",
+      "node": "physics-collision",
+      "name": "Capsule depenetration search",
+      "summary": "A character capsule that starts inside geometry is pushed out by testing 17 fixed directions around it and sliding the capsule onto the nearest accepting ground surface.",
+      "behavior": "Character collision uses a vertical capsule, a base point plus height and width. The resolver tests the base point first and leaves the position alone when it is clear. Otherwise it walks a fixed table of 17 unit offsets in order: four horizontal axis directions, four horizontal diagonals with components of cos 45 degrees, one vertical axis direction, four vertical diagonals, and four body diagonals with components of 1/sqrt 3. For each offset it builds a candidate one radius argument along that direction, which the caller sets to twice the capsule width, and tests the whole capsule there. A candidate that is clear is then probed downward for ground, and the capsule is moved to the surface hit only when the ground normal's vertical component exceeds the cosine of about 40 degrees. The first accepted candidate wins, so the result is deterministic and biased toward the earlier entries in the table. If no candidate finds ground, the first clear candidate is used with the ground probe run from the original position, so a character in a corner still ends up outside geometry even when the floor is not directly under any escape direction.",
+      "constants": [
+        {
+          "name": "depenetrationDirections",
+          "value": 17,
+          "unit": "candidate directions tested per resolution attempt, per tick at 30 Hz when a capsule is embedded",
+          "source": "source/physics/collisions.c:999"
+        },
+        {
+          "name": "diagonalComponent",
+          "value": 0.70710677,
+          "unit": "unit-vector component (cosine of 45 degrees) of the horizontal and vertical diagonal candidates",
+          "source": "source/physics/collisions.c:1006"
+        },
+        {
+          "name": "bodyDiagonalComponent",
+          "value": 0.57735026,
+          "unit": "unit-vector component (1/sqrt 3) of the four body-diagonal candidates",
+          "source": "source/physics/collisions.c:1015"
+        },
+        {
+          "name": "minimumGroundNormalK",
+          "value": 0.76604444,
+          "unit": "cosine of the steepest accepted ground slope (about 40 degrees from vertical), tested per resolution at 30 Hz",
+          "source": "source/physics/collisions.c:1086"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/physics/collisions.c",
+          "line": 986
+        },
+        {
+          "path": "source/physics/collisions.c",
+          "line": 1006
+        },
+        {
+          "path": "source/physics/collisions.c",
+          "line": 1086
+        },
+        {
+          "path": "source/physics/collisions.c",
+          "line": 1273
+        }
+      ],
+      "capabilities": [
+        "capsule depenetration",
+        "ordered fallback directions",
+        "slope acceptance test"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "vehicle-biped-impact",
+      "node": "physics-collision",
+      "name": "Vehicle pushing a biped",
+      "summary": "When a vehicle's collision model overlaps a biped capsule the biped is shoved along a blended vehicle direction and takes damage, unless the contact is slow and the biped only just left that vehicle.",
+      "behavior": "The test uses the vehicle's own collision model against the biped capsule, with the feature width floored at 1/64 of a world unit so a razor-thin feature cannot slip through. On overlap the vector from the vehicle's centre to the biped's centre is normalized, tilted upward by 0.8, renormalized, scaled to the larger of 0.1 and the vehicle's current speed, added to the vehicle's velocity and halved. That vector accelerates the biped and also displaces the fallback base position by twice its length before the depenetration pass. Damage is suppressed when the overlapping vehicle is the one the biped left less than 90 ticks ago and the vehicle is slower than 0.0667 units per tick and the squared difference between the vehicle's and the biped's velocity vectors is under 0.00111, which is the case of a parked vehicle nudging its own former driver. Otherwise the map's vehicle-collision damage effect is applied at the biped and its killed-unit effect at the vehicle.",
+      "constants": [
+        {
+          "name": "minimumFeatureWidth",
+          "value": 0.015625,
+          "unit": "world units (1/64), the floor on the capsule feature width used in the contact test, per tick at 30 Hz",
+          "source": "source/physics/physics.c:1086"
+        },
+        {
+          "name": "impactUpTilt",
+          "value": 0.8,
+          "unit": "unitless vertical term added to the normalized push direction before renormalising, per impact",
+          "source": "source/physics/physics.c:1112"
+        },
+        {
+          "name": "formerDriverGraceTicks",
+          "value": 90,
+          "unit": "ticks at 30 Hz since the biped exited that vehicle during which a slow contact deals no damage",
+          "source": "source/physics/physics.c:1137"
+        },
+        {
+          "name": "damageSpeedThreshold",
+          "value": 0.06666667,
+          "unit": "world units per tick at 30 Hz (2/30) of vehicle speed, below which a grace-period contact deals no damage",
+          "source": "source/physics/physics.c:1138"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/physics/physics.c",
+          "line": 1059
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 1112
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 1137
+        },
+        {
+          "path": "source/physics/physics.c",
+          "line": 1141
+        }
+      ],
+      "capabilities": [
+        "vehicle impact push",
+        "grace period after exiting",
+        "collision damage"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "vehicles",
+        "damage"
+      ]
+    },
+    {
+      "id": "camera-transition",
+      "node": "camera",
+      "name": "Bounded quintic camera transitions",
+      "summary": "Camera parameters blend to a requested state through a fifth-order polynomial that matches value, velocity and acceleration at both ends, and a transition whose required acceleration is too large is abandoned.",
+      "behavior": "Every camera command carries a per-parameter timer and target values. When a timed command arrives, the observer inverts the remaining seconds and solves coefficients from the current displacement, velocity and acceleration so the polynomial ends at the requested state with its first two derivatives matching. The focus position additionally folds the requested final velocity, stored per tick and multiplied by 30 to become per-second, into the higher-order terms, which is what lets the camera arrive while already moving with the player. Each update evaluates the polynomial value and its first derivative for the time remaining, and separately evaluates its second derivative against a per-parameter acceleration ceiling: 1500 units per second squared for focus position and offset, and 100000 for focus distance, field of view and orientation. If the second derivative exceeds the ceiling the transition is cancelled outright: the timers of every parameter sharing that timer are zeroed, so the camera jumps to the target instead of overshooting it. When a timer expires and the command is still valid, each parameter is snapped straight to its target value; with no valid command the parameters drift by the negated velocity times the frame time instead, which is what produces the slow settle seen after a command goes away.",
+      "constants": [
+        {
+          "name": "positionAccelerationCeiling",
+          "value": 1500,
+          "unit": "world units per second squared ceiling for the focus position and focus offset parameters, evaluated per frame",
+          "source": "source/camera/observer.c:294"
+        },
+        {
+          "name": "angularAccelerationCeiling",
+          "value": 100000,
+          "unit": "radians per second squared ceiling for focus distance, field of view and orientation, evaluated per frame",
+          "source": "source/camera/observer.c:296"
+        },
+        {
+          "name": "finalVelocityScale",
+          "value": 30,
+          "unit": "multiplier turning a requested focus velocity in world units per tick at 30 Hz into the per-second final velocity used by the polynomial",
+          "source": "source/camera/observer.c:816"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/camera/observer.c",
+          "line": 761
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 518
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 585
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 490
+        }
+      ],
+      "capabilities": [
+        "polynomial camera transition",
+        "velocity-matched arrival",
+        "acceleration ceiling cancellation"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "camera feel"
+      ]
+    },
+    {
+      "id": "camera-pull-in",
+      "node": "camera",
+      "name": "Camera pull-in against geometry",
+      "summary": "A third-person camera shortens its boom until the eye point is clear, probing a few directions and then bisecting the obstruction fraction in ten steps.",
+      "behavior": "The focus point stays with the target; the boom length is what shortens. The check casts from the focus point back along the view direction for the requested distance plus a small safety margin, then repeats the cast with four lateral perturbations, two perpendicular directions at plus and minus a step that is a fixed sine of the boom length, and keeps the earliest hit. It then bisects between the current and best solution for ten iterations, accepting a hit only while the hit fraction keeps moving by at least 0.1, and finally scales the boom by the surviving clear fraction. With no hit anywhere the boom keeps its first clear fraction. This keeps the camera out of walls without giving it a physics body, quantises the result to the bisection tolerance, and runs every frame rather than only on ticks. The same routine leaves the boom alone when the command asks for obstructions to be ignored, and the focus point is separately kept inside the world bounds and lifted out of shallow water.",
+      "constants": [
+        {
+          "name": "safeDistance",
+          "value": 0.02,
+          "unit": "world units added to the boom length for the obstruction cast and used as the near tolerance, per frame",
+          "source": "source/camera/observer.c:1195"
+        },
+        {
+          "name": "bisectionIterations",
+          "value": 10,
+          "unit": "bisection steps per camera pull-in, per frame",
+          "source": "source/camera/observer.c:1111"
+        },
+        {
+          "name": "hitTolerance",
+          "value": 0.1,
+          "unit": "fraction of the boom; a hit that moves less than this between steps ends the bisection, per frame",
+          "source": "source/camera/observer.c:1123"
+        },
+        {
+          "name": "probeStepSine",
+          "value": 0.174,
+          "unit": "sine of about 10 degrees: lateral probe step as a fraction of the boom length, per frame",
+          "source": "source/camera/observer.c:302"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/camera/observer.c",
+          "line": 1038
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 1076
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 1111
+        },
+        {
+          "path": "source/camera/observer.c",
+          "line": 1123
+        }
+      ],
+      "capabilities": [
+        "camera obstruction avoidance",
+        "boom shortening",
+        "bisection"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "camera feel"
+      ]
+    },
+    {
+      "id": "first-person-view",
+      "node": "camera",
+      "name": "First-person view",
+      "summary": "The first-person camera sits at the unit's eye, looks along the player's facing, defaults to a 70-degree field of view, and blends any field-of-view change over 0.18 seconds.",
+      "behavior": "The camera takes the unit's eye position and the player's desired facing vector, derives an orthonormal up vector from it, and copies the unit's velocity for effects that ride the view. When the unit occupies a seat flagged as a first-person view, the camera is relocated to the seat's weapon marker and takes that marker's orientation, so the view rides a turret or a gunner position instead of the body. Field of view comes from the player control path, which derives it from the current weapon zoom, and any change is tagged with a 0.18 second transition time so the observer interpolates it rather than snapping. A deterministic variant used for aim assist and for authoritative aim uses the unit's aiming vector instead of the display facing, which is why a passenger's borrowed camera cannot steer assist, and why a host's aim is computed from the same values a client would produce.",
+      "constants": [
+        {
+          "name": "defaultFieldOfView",
+          "value": 70,
+          "unit": "degrees of field of view set before the player's zoom-derived value replaces it, per camera update",
+          "source": "source/camera/first_person_camera.c:169"
+        },
+        {
+          "name": "fieldOfViewTransition",
+          "value": 0.18,
+          "unit": "seconds of blend applied when the field of view changes (about 5.4 ticks at 30 Hz)",
+          "source": "source/camera/first_person_camera.c:149"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/camera/first_person_camera.c",
+          "line": 133
+        },
+        {
+          "path": "source/camera/first_person_camera.c",
+          "line": 149
+        },
+        {
+          "path": "source/camera/first_person_camera.c",
+          "line": 169
+        },
+        {
+          "path": "source/camera/first_person_camera.c",
+          "line": 75
+        }
+      ],
+      "capabilities": [
+        "first-person camera",
+        "seat camera",
+        "field-of-view blend"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "view"
+      ]
+    },
+    {
+      "id": "third-person-boom",
+      "node": "camera",
+      "name": "Third-person boom from the camera track",
+      "summary": "The follow camera samples the unit's camera track at the current pitch to obtain its boom offset, projects that offset onto the facing basis, floors the boom length, and asks for a minimum transition when the stance or the orbit changes.",
+      "behavior": "The follow camera maps the current pitch to a track parameter by shifting it a quarter turn and dividing by a half turn, then samples a spline through the camera track's control points for an offset in camera space; a track with fewer than the four control points the curve wants is sampled between the points it has, and a track with none yields no offset at all. The offset is projected onto the facing basis: its forward and vertical terms are combined with the cosine and sine of the pitch, its lateral term is taken with the sign flipped, and the whole boom is scaled by the camera's distance scale, which is one for this camera. The resulting boom length is floored at 0.6 units so the camera never sits inside the character, and the offset is handed to the observer, which shortens it further when walls intrude. A crouch change raises the observer's transition timer to at least 0.5 seconds and free orbiting raises it to at least 0.4 seconds, so the framing eases instead of jumping; orbit input is ignored for a passenger outside their weapon arc, and the facing offset is clamped to plus and minus 90 degrees of pitch.",
+      "constants": [
+        {
+          "name": "minimumBoomLength",
+          "value": 0.6,
+          "unit": "world units, floor on the follow-camera boom length, per camera update",
+          "source": "source/camera/following_camera.c:279"
+        },
+        {
+          "name": "distanceScale",
+          "value": 1,
+          "unit": "unitless multiplier on the track-derived boom, the value this camera is created with, per camera update",
+          "source": "source/camera/following_camera.c:149"
+        },
+        {
+          "name": "trackControlPoints",
+          "value": 4,
+          "unit": "control points the camera-track curve samples; a shorter track is sampled between the points it has",
+          "source": "source/camera/following_camera.c:418"
+        },
+        {
+          "name": "crouchTransition",
+          "value": 0.5,
+          "unit": "seconds, minimum transition requested when the unit crouches or stands (about 15 ticks at 30 Hz)",
+          "source": "source/camera/following_camera.c:236"
+        },
+        {
+          "name": "orbitTransition",
+          "value": 0.4,
+          "unit": "seconds, minimum transition requested while the player orbits the view (about 12 ticks at 30 Hz)",
+          "source": "source/camera/following_camera.c:245"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/camera/following_camera.c",
+          "line": 192
+        },
+        {
+          "path": "source/camera/following_camera.c",
+          "line": 371
+        },
+        {
+          "path": "source/camera/following_camera.c",
+          "line": 279
+        },
+        {
+          "path": "source/camera/following_camera.c",
+          "line": 236
+        }
+      ],
+      "capabilities": [
+        "camera track sampling",
+        "boom length floor",
+        "stance transition",
+        "orbit input"
+      ],
+      "tags": [
+        "camera",
+        "third person",
+        "camera feel"
+      ]
+    },
+    {
+      "id": "shield-absorption",
+      "node": "combat-damage",
+      "name": "Shields absorb damage first",
+      "summary": "A hit fills the shield before the body, leaks a material-dependent fraction to health, and passes the overflow of a collapsing shield to body vitality within the same hit.",
+      "behavior": "The damage effect's lower and upper bounds are blended by the hit's scale and multiplied by the effect's multiplier to give a total; a multiplayer gametype damage multiplier then applies, or, in a campaign, an enemy hit is multiplied by the map's enemy-damage difficulty value. If the object still has shield, the shield's share is one minus the material's shield leak fraction times that total, unless the hit is friendly and the resistance block says friendly damage always reaches shields; the material's shield damage multiplier then converts the share into vitality. Once shield vitality sits at or below the resistance's failure threshold, a transition function is evaluated on that ratio and the share is rescaled between full strength and the maximum failure value, which is how a collapsing shield starts leaking more. An overcharged shield absorbs everything and leaves nothing for the body. If the scaled shield damage exceeds what the shield holds, the excess is added to the body damage and the shield is emptied; otherwise vitality drops by the normalized amount and a one-shot low-shield effect fires when it crosses its threshold. Any hit at or above the minimum shield-stun damage, or any hit on a broken shield, sets a stun timer of the resistance block's seconds converted at 30 ticks per second, and shields do not recharge while that timer runs.",
+      "constants": [
+        {
+          "name": "shieldStunTicksPerSecond",
+          "value": 30,
+          "unit": "ticks per second at 30 Hz, used to convert a resistance block's shield stun duration in seconds into ticks",
+          "source": "source/cseries/cseries.h:34"
+        },
+        {
+          "name": "shieldShareBase",
+          "value": 1,
+          "unit": "unitless base of the shield share, which is this minus the material's shield leak fraction, evaluated per hit",
+          "source": "source/objects/damage.c:865"
+        },
+        {
+          "name": "shieldDamageAccumulatorCeiling",
+          "value": 1,
+          "unit": "unitless ceiling on the current and recent shield damage accumulators, clamped per tick at 30 Hz",
+          "source": "source/objects/damage.c:994"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/objects/damage.c",
+          "line": 822
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 865
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 943
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 1013
+        }
+      ],
+      "capabilities": [
+        "shield leak fraction",
+        "shield overflow to health",
+        "shield stun"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "shields"
+      ]
+    },
+    {
+      "id": "body-vitality",
+      "node": "combat-damage",
+      "name": "Body vitality, headshots and region damage",
+      "summary": "Body health is a 0..1 fraction, a headshot either kills outright or doubles the damage depending on the mode, and per-region damage accumulates in a 0..255 byte.",
+      "behavior": "Body damage is the material's body multiplier times the remaining damage, reduced for friendly fire by the resistance fraction, divided by maximum body vitality and multiplied by the effect's material modifier, so every comparison happens in normalized health. When the hit lands in a material flagged as the head, an effect allowed to cause headshots kills the target instantly; a multiplayer-only effect instead doubles the damage before it is applied and flags a hard hit when that exceeds remaining health. The aftermath turns the hit into an impulse on the victim: the damage direction is tilted upward by 0.45 and normalized, then scaled by the effect's instantaneous acceleration times the object's own acceleration scale times 1/30 to become a per-tick velocity change, and a vehicle takes twice that when the effect is flagged as detonating explosives. Region damage is kept as a byte per region, incremented by the damage times 255, and a region is destroyed once that byte times 1/255 passes the region's threshold, so limb damage is quantised in 1/255 steps.",
+      "constants": [
+        {
+          "name": "multiplayerHeadshotMultiplier",
+          "value": 2,
+          "unit": "multiplier on body damage for a multiplayer headshot, per hit",
+          "source": "source/objects/damage.c:1264"
+        },
+        {
+          "name": "regionDamageLevels",
+          "value": 255,
+          "unit": "byte levels per unit of health for the per-region damage accumulators, per hit",
+          "source": "source/objects/damage.c:1301"
+        },
+        {
+          "name": "impactUpTilt",
+          "value": 0.45,
+          "unit": "unitless vertical term added to the normalized damage direction before the impulse is applied, per hit",
+          "source": "source/objects/damage.c:1056"
+        },
+        {
+          "name": "accelerationPerTickFactor",
+          "value": 0.033333335,
+          "unit": "1/30, converts a damage effect's per-second instantaneous acceleration into world units per tick at 30 Hz",
+          "source": "source/objects/damage.c:1061"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/objects/damage.c",
+          "line": 1167
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 1264
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 1301
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 1056
+        }
+      ],
+      "capabilities": [
+        "headshot rules",
+        "normalized vitality",
+        "region damage bytes",
+        "damage impulse"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "health"
+      ]
+    },
+    {
+      "id": "shield-recharge",
+      "node": "combat-damage",
+      "name": "Shield recharge and overcharge decay",
+      "summary": "A broken shield recharges at the resistance block's per-tick velocity once its stun timer expires, while an overcharged shield slowly drains at a fixed fraction per tick.",
+      "behavior": "Shield state is updated once per tick. While the shield stun timer runs nothing regenerates, and the timer decrements one per tick. Once it reaches zero, shield vitality grows by the resistance block's recharge velocity scaled by the map's difficulty value for the owner's team, the depleted flag clears and the recharge effect fires on the first tick of regeneration; the value is clamped to full, which also clears the charging flag. Overcharge is a separate state: vitality climbs by 1/30 of full capacity per tick up to three times normal, taking three seconds to fill from full, and when overcharge is no longer active any amount above full drains by 0.00074074074 per tick, which is 1/1350 of full capacity per tick, so a small leftover overcharge bleeds off in a few seconds. Because every step is per tick, these are tick rates that do not change with the frame rate.",
+      "constants": [
+        {
+          "name": "overchargeDrainPerTick",
+          "value": 0.00074074074,
+          "unit": "fraction of full shield capacity removed per tick at 30 Hz (1/1350), about 2.2 percent per second",
+          "source": "source/objects/damage.c:2085"
+        },
+        {
+          "name": "overchargeGainPerTick",
+          "value": 0.033333335,
+          "unit": "fraction of full shield capacity added per tick at 30 Hz (1/30) while overcharging, filling to 3x in 90 ticks",
+          "source": "source/objects/damage.c:2061"
+        },
+        {
+          "name": "overchargeCeiling",
+          "value": 3,
+          "unit": "multiple of full shield capacity that an overcharge can reach, checked per tick at 30 Hz",
+          "source": "source/objects/damage.c:2064"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/objects/damage.c",
+          "line": 1981
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 2061
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 2064
+        },
+        {
+          "path": "source/objects/damage.c",
+          "line": 2092
+        }
+      ],
+      "capabilities": [
+        "shield recharge",
+        "shield stun countdown",
+        "overcharge decay"
+      ],
+      "tags": [
+        "combat",
+        "shields",
+        "regeneration"
+      ]
+    },
+    {
+      "id": "aim-assist",
+      "node": "combat-damage",
+      "name": "Autoaim and bullet magnetism",
+      "summary": "Targets inside a weapon's cone are scored by a linear distance-and-angle attenuation, sorted by priority, and the shot is blended toward the best one and then pinned inside a deviation cone.",
+      "behavior": "The weapon block supplies an autoaim angle and distance and a magnetism angle and distance. Zooming divides both angles by the magnification and multiplies both distances by it, so a scoped weapon keeps roughly the same cone on screen while reaching farther. Each candidate gets a composite attenuation in which distance and angle are scored separately: a value of 1 inside half the limit, falling linearly to 0 at the limit and 0 beyond it, with the two factors multiplied. Candidates are ordered by autoaim level, then magnetism level, then distance, then angle, then object index, so equal scores always resolve the same way, and the first candidate with a clear line of sight wins. At fire time the engine traces from the camera to the player's unit and then 128 world units further along the camera direction against projectile collision, blends the resulting direction toward the autoaim target by the autoaim level, and finally pins the result inside a cone of the weapon's deviation angle using that angle's sine and cosine, which caps how far assist can bend a shot.",
+      "constants": [
+        {
+          "name": "attenuationHalfLimit",
+          "value": 0.5,
+          "unit": "fraction of a weapon's autoaim or magnetism limit inside which the attenuation stays at 1, evaluated per candidate and per frame",
+          "source": "source/game/aim_assist.c:149"
+        },
+        {
+          "name": "cameraTraceLength",
+          "value": 128,
+          "unit": "world units traced from the camera along the view direction when resolving a shot, per shot",
+          "source": "source/game/aim_assist.c:615"
+        },
+        {
+          "name": "fullAttenuation",
+          "value": 1,
+          "unit": "unitless attenuation inside the half-limit band, per candidate scored",
+          "source": "source/game/aim_assist.c:158"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/game/aim_assist.c",
+          "line": 656
+        },
+        {
+          "path": "source/game/aim_assist.c",
+          "line": 145
+        },
+        {
+          "path": "source/game/aim_assist.c",
+          "line": 191
+        },
+        {
+          "path": "source/game/aim_assist.c",
+          "line": 615
+        }
+      ],
+      "capabilities": [
+        "autoaim cone",
+        "bullet magnetism",
+        "target scoring",
+        "deviation cone pin"
+      ],
+      "tags": [
+        "combat",
+        "aiming",
+        "weapons"
+      ]
+    },
+    {
+      "id": "ai-vision",
+      "node": "ai-behavior",
+      "name": "AI vision distances",
+      "summary": "An actor judges a target against two radii, a longer notice distance and a shorter full-visibility distance, both interpolated by how far the target sits from the centre of its vision cone.",
+      "behavior": "An actor's perception block supplies a maximum vision angle, a central vision angle, a peripheral angle and a maximum peripheral distance, and the map can scale the range with a perception factor. A target beyond the peripheral angle is not seen at all. Inside the maximum vision angle the notice distance stays at the scaled maximum vision distance; between the maximum vision angle and the central angle it falls linearly to the scaled peripheral distance; beyond the central angle it is the peripheral distance itself. The full-visibility radius is 0.7 times the notice distance while the target is within 0.8 times the maximum vision angle, then falls linearly to 0.7 times the peripheral distance at the central angle boundary, and that inner figure is capped at 3.5 world units so an actor cannot fully track something at the very edge of its notice range. Both radii are recomputed on perception refreshes rather than per frame, so a target stays classified between refreshes.",
+      "constants": [
+        {
+          "name": "fullDistanceFraction",
+          "value": 0.7,
+          "unit": "fraction of the maximum or peripheral vision distance used as the full-visibility radius, evaluated per perception refresh at 30 Hz",
+          "source": "source/ai/actor_perception.c:1374"
+        },
+        {
+          "name": "peripheralMinimumCap",
+          "value": 3.5,
+          "unit": "world units, ceiling on the 0.7-scaled peripheral full-visibility radius, per perception refresh",
+          "source": "source/ai/actor_perception.c:1377"
+        },
+        {
+          "name": "fullVisionAngleFraction",
+          "value": 0.8,
+          "unit": "fraction of the maximum vision angle inside which the full distance is granted, evaluated per perception refresh",
+          "source": "source/ai/actor_perception.c:1389"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/ai/actor_perception.c",
+          "line": 1348
+        },
+        {
+          "path": "source/ai/actor_perception.c",
+          "line": 1374
+        },
+        {
+          "path": "source/ai/actor_perception.c",
+          "line": 1377
+        },
+        {
+          "path": "source/ai/actor_perception.c",
+          "line": 1389
+        }
+      ],
+      "capabilities": [
+        "vision cone",
+        "notice versus full visibility",
+        "angle interpolation"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "stealth"
+      ]
+    },
+    {
+      "id": "ai-avoidance",
+      "node": "ai-behavior",
+      "name": "AI avoidance rays and hysteresis",
+      "summary": "Actors probe eight directions with two rays each out to a fixed distance, weight clear directions by how long they have been clear, and bias toward the previous choice so they do not oscillate.",
+      "behavior": "Each tick an actor casts eight candidate directions, two rays per direction, from a point offset around the body, with each ray reaching a fraction of a 12 unit avoid distance and the probe width set to one world unit. A ray reports clear, blocked by structure or blocked by an object; a blocked ray subtracts weight proportional to how close the hit was, twice the remaining distance fraction capped at one, and a clear ray adds its share only if it has been clear long enough, ramping from nothing at 75 clear ticks to full once the clear time is several times that. Each ray's clear counter resets on a hit. A direction's weight is also shared with the two neighbouring directions on each side at 0.8 and 0.5, which smooths the selection grid into a continuous steer, and the direction chosen on the previous tick is given a standing bias so the actor keeps its line. When the actor is already rotating above a small angular speed, extra weight is folded toward its current motion so a committed turn is not reversed.",
+      "constants": [
+        {
+          "name": "avoidDistance",
+          "value": 12,
+          "unit": "world units, the reference avoidance probe distance that each ray scales, evaluated per tick at 30 Hz",
+          "source": "source/ai/actor_moving.c:1436"
+        },
+        {
+          "name": "avoidWidth",
+          "value": 1,
+          "unit": "world units, lateral offset of the avoidance probe origin, evaluated per tick at 30 Hz",
+          "source": "source/ai/actor_moving.c:1437"
+        },
+        {
+          "name": "clearBiasTicks",
+          "value": 75,
+          "unit": "ticks at 30 Hz (2.5 s) of continuous clearance before a clear ray contributes weight",
+          "source": "source/ai/actor_moving.c:451"
+        },
+        {
+          "name": "previousDirectionBias",
+          "value": 0.4,
+          "unit": "unitless weight added to the direction chosen on the previous tick, evaluated per tick at 30 Hz",
+          "source": "source/ai/actor_moving.c:1453"
+        },
+        {
+          "name": "adjacentDirectionShare",
+          "value": 0.8,
+          "unit": "fraction of a direction's weight shared with its immediate neighbours, evaluated per tick",
+          "source": "source/ai/actor_moving.c:454"
+        },
+        {
+          "name": "rayLengthFraction",
+          "value": 0.7,
+          "unit": "fraction of the avoid distance each direction ray reaches, evaluated per tick",
+          "source": "source/ai/actor_moving.c:412"
+        },
+        {
+          "name": "rotationHysteresisSpeed",
+          "value": 0.02,
+          "unit": "world units per tick of body angular speed below which the motion bias is not applied, evaluated per tick at 30 Hz",
+          "source": "source/ai/actor_moving.c:1572"
+        },
+        {
+          "name": "rotationBiasScale",
+          "value": 12.5,
+          "unit": "per-unit-of-angular-speed scale on the motion bias weight, capped at 1 and multiplied by 0.8, evaluated per tick",
+          "source": "source/ai/actor_moving.c:1574"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/ai/actor_moving.c",
+          "line": 1386
+        },
+        {
+          "path": "source/ai/actor_moving.c",
+          "line": 1436
+        },
+        {
+          "path": "source/ai/actor_moving.c",
+          "line": 451
+        },
+        {
+          "path": "source/ai/actor_moving.c",
+          "line": 1534
+        }
+      ],
+      "capabilities": [
+        "weighted probe rays",
+        "clear-time hysteresis",
+        "direction smoothing"
+      ],
+      "tags": [
+        "ai",
+        "navigation",
+        "steering"
+      ]
+    },
+    {
+      "id": "ai-bursts",
+      "node": "ai-behavior",
+      "name": "AI burst timing and error",
+      "summary": "Burst separation and duration come from the actor variant in seconds and are converted to whole ticks at 30 Hz, and playfighting shortens bursts while widening the error cone.",
+      "behavior": "An actor's firing variant supplies burst separation bounds, burst duration bounds, a per-shot projectile error angle and optional firing-pattern modifiers. Separation is drawn from its range, scaled by the difficulty's burst-separation value, multiplied by the pattern modifier when that is nonzero, and converted to ticks by multiplying by 30 and truncating, so 0.3 seconds becomes 9 ticks; playfighting multiplies the separation by 1.7. Duration is drawn the same way, shortens to 0.6 of its value in playfighting, and is likewise stored in ticks. Error starts at the variant's error angle, scales by difficulty and the pattern modifier, and in playfighting becomes twice the error plus one extra degree. For grenades the actor tests whether the desired throw direction is within the cosine of 30 degrees of the weapon's forward; when it is not, the throw direction is rebuilt 30 degrees off the weapon vector using the stored sine and cosine, so a lobbed grenade leaves at a fixed offset instead of pointing straight at the target.",
+      "constants": [
+        {
+          "name": "playfightSeparationMultiplier",
+          "value": 1.7,
+          "unit": "multiplier on burst separation, in seconds before the 30 Hz tick conversion, while an actor is playfighting",
+          "source": "source/ai/actor_combat.c:614"
+        },
+        {
+          "name": "playfightDurationMultiplier",
+          "value": 0.6,
+          "unit": "multiplier on burst duration, in seconds before the 30 Hz tick conversion, while playfighting",
+          "source": "source/ai/actor_combat.c:1261"
+        },
+        {
+          "name": "grenadeConeCosine",
+          "value": 0.8660254,
+          "unit": "cosine of 30 degrees, the half-angle of the grenade throw adjustment test, per grenade throw",
+          "source": "source/ai/actor_combat.c:233"
+        },
+        {
+          "name": "playfightErrorMultiplier",
+          "value": 2,
+          "unit": "multiplier on the projectile error angle in radians in playfighting, plus one extra degree, per burst",
+          "source": "source/ai/actor_combat.c:1280"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/ai/actor_combat.c",
+          "line": 586
+        },
+        {
+          "path": "source/ai/actor_combat.c",
+          "line": 1196
+        },
+        {
+          "path": "source/ai/actor_combat.c",
+          "line": 1280
+        },
+        {
+          "path": "source/ai/actor_combat.c",
+          "line": 1155
+        }
+      ],
+      "capabilities": [
+        "burst scheduling in ticks",
+        "difficulty scaling",
+        "grenade lob offset"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "weapons"
+      ]
+    },
+    {
+      "id": "vehicle-suspension",
+      "node": "vehicles",
+      "name": "Suspension compression",
+      "summary": "Each suspension probes along the mass point normal it is bound to, turns the surviving clearance into a 0..1 compression value stored as a byte, and smooths it against the previous value so the animation does not jitter.",
+      "behavior": "A vehicle's animation block lists suspensions, each bound to a physics mass point and an animation index. Per tick the code builds the vehicle's local-to-world matrix, places the wheel point from the mass point's position and normal, starts a probe offset below the mass point along that normal and extends it by twice the suspension extent, then tests it against the world. The collision fraction along that probe gives the remaining clearance, which is doubled and clamped to 0..1 as the target compression. The stored value is quantised into a byte and the new value is the average of the target and the previous compression, which halves the jitter at the cost of one tick of lag. The largest increase over the previous value drives a suspension sound whose volume is the amount above 0.3 remapped over the 0.3 to 0.9 band, so only hard compressions are audible. A vehicle whose up vector tips below 0.2 world units of vertical component is treated as flipped.",
+      "constants": [
+        {
+          "name": "compressionLevels",
+          "value": 255,
+          "unit": "byte levels per unit of suspension compression, stored per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1697"
+        },
+        {
+          "name": "smoothingWeight",
+          "value": 0.5,
+          "unit": "blend weight between the new target compression and the stored value, applied per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1725"
+        },
+        {
+          "name": "soundThreshold",
+          "value": 0.3,
+          "unit": "unitless compression above which the suspension sound plays, evaluated per tick",
+          "source": "source/units/vehicles.c:1729"
+        },
+        {
+          "name": "soundFullScale",
+          "value": 0.9,
+          "unit": "unitless compression at which the suspension sound reaches full volume, evaluated per tick",
+          "source": "source/units/vehicles.c:1733"
+        },
+        {
+          "name": "flippedUpThreshold",
+          "value": 0.2,
+          "unit": "unitless vertical component of the vehicle's up vector below which it counts as flipped, tested per query",
+          "source": "source/units/vehicles.c:398"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1619
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1697
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1725
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1729
+        }
+      ],
+      "capabilities": [
+        "suspension probes",
+        "byte pushdown",
+        "compression smoothing"
+      ],
+      "tags": [
+        "vehicles",
+        "animation",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "vehicle-hover",
+      "node": "vehicles",
+      "name": "Hover thrust and lift",
+      "summary": "A hovering vehicle derives lift from gravity and its eased hover amount, drive from the error between commanded and actual forward speed, and corrective torque from the error to its desired orientation, all as per-tick terms.",
+      "behavior": "On the aircraft-style path the commanded forward speed is clamped to the vehicle's maximum, normalized by it, squared, and multiplied by the driver seat's power to give thrust. A hover factor eases each tick toward a target built from seat power and a gating factor that depends on the vehicle's hover flags and on one minus throttle, so a vehicle under power lowers its hover lift. Drive force is the difference between commanded and actual forward speed times thrust times mass times 0.05, and lift is the absolute forward speed over maximum times 1.05 plus hover times 1.3, all times gravity times mass. The desired up vector is world up with the forward component projected out, so the bank follows yaw only. Yaw is applied by rotating the desired basis by an angle proportional to the horizontal cross product of the velocity and the desired forward, divided by the maximum forward speed and scaled by a quarter turn, and the rotation error to the desired orientation becomes a torque after scaling by 1/30 for a per-tick angular unit and by radius squared times mass times 0.05. Because every term is a per-tick force or torque, the handling is tied to the 30 Hz step.",
+      "constants": [
+        {
+          "name": "driveScale",
+          "value": 0.05,
+          "unit": "unitless scale on the commanded-versus-actual speed error force, applied per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1540"
+        },
+        {
+          "name": "hoverLiftScale",
+          "value": 1.3,
+          "unit": "gravity multiple of the hover lift term, applied per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1541"
+        },
+        {
+          "name": "speedLiftScale",
+          "value": 1.05,
+          "unit": "gravity multiple of the forward-speed lift term, applied per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1542"
+        },
+        {
+          "name": "angularErrorDivisor",
+          "value": 30,
+          "unit": "denominator of the per-tick angular error scale: the orientation error divided by 30 is the per-tick angular target",
+          "source": "source/units/vehicles.c:1580"
+        },
+        {
+          "name": "torqueScale",
+          "value": 0.05,
+          "unit": "unitless scale on radius squared times mass in the corrective torque, applied per tick at 30 Hz",
+          "source": "source/units/vehicles.c:1581"
+        },
+        {
+          "name": "hoverBlend",
+          "value": 0.05,
+          "unit": "per-tick blend of the hover value toward its target at 30 Hz",
+          "source": "source/units/vehicles.c:1522"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1492
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1518
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1540
+        },
+        {
+          "path": "source/units/vehicles.c",
+          "line": 1580
+        }
+      ],
+      "capabilities": [
+        "hover lift",
+        "speed-error drive force",
+        "orientation torque"
+      ],
+      "tags": [
+        "vehicles",
+        "physics",
+        "physics feel"
+      ]
+    }
+  ]
+}

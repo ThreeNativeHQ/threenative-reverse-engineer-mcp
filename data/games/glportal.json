@@ -1,0 +1,1138 @@
+{
+  "version": 1,
+  "id": "glportal",
+  "title": "GlPortal",
+  "repo": "https://github.com/GlPortal/glPortal",
+  "sha": "d0d801044666d3baa147a10dc26e7c27342c0574",
+  "nodes": [
+    {
+      "id": "game-loop",
+      "name": "Game loop and frame timing",
+      "purpose": "Boot, the fixed order of per-frame stages, conversion of the wall-clock frame gap into a simulation delta, and the world start hook that attaches renderers",
+      "paths": [
+        "source/Main.cpp",
+        "source/Game.cpp"
+      ],
+      "functions": [
+        {
+          "name": "main",
+          "path": "source/Main.cpp",
+          "lines": [
+            11,
+            31
+          ]
+        },
+        {
+          "name": "Game::onPreStartWorld",
+          "path": "source/Game.cpp",
+          "lines": [
+            19,
+            25
+          ]
+        },
+        {
+          "name": "Game::update",
+          "path": "source/Game.cpp",
+          "lines": [
+            48,
+            51
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input",
+      "name": "Input channels and pause state",
+      "purpose": "Press-edge dispatch of the two portal fire channels plus the pause and start channels, and the frozen-player pause state they drive",
+      "paths": [
+        "source/input/InputManager.cpp",
+        "include/glPortal/input/InputManager.hpp",
+        "source/GameController.cpp",
+        "include/glPortal/GameController.hpp"
+      ],
+      "functions": [
+        {
+          "name": "InputManager::channelChanged",
+          "path": "source/input/InputManager.cpp",
+          "lines": [
+            13,
+            37
+          ]
+        },
+        {
+          "name": "GameController::togglePause",
+          "path": "source/GameController.cpp",
+          "lines": [
+            44,
+            50
+          ]
+        },
+        {
+          "name": "GameController::handleRunning",
+          "path": "source/GameController.cpp",
+          "lines": [
+            52,
+            62
+          ]
+        }
+      ],
+      "dependsOn": [
+        "game-loop"
+      ]
+    },
+    {
+      "id": "portal",
+      "name": "Portal entity",
+      "purpose": "Surface placement and orientation, rim collision pieces, the walk-through volume, and the eased opening animation of one portal",
+      "paths": [
+        "source/Portal.cpp",
+        "include/glPortal/Portal.hpp"
+      ],
+      "functions": [
+        {
+          "name": "Portal::placeWrapperPiece",
+          "path": "source/Portal.cpp",
+          "lines": [
+            44,
+            63
+          ]
+        },
+        {
+          "name": "Portal::placeOnWall",
+          "path": "source/Portal.cpp",
+          "lines": [
+            65,
+            116
+          ]
+        },
+        {
+          "name": "Portal::addUncollider",
+          "path": "source/Portal.cpp",
+          "lines": [
+            118,
+            129
+          ]
+        },
+        {
+          "name": "Portal::getScaleMult",
+          "path": "source/Portal.cpp",
+          "lines": [
+            135,
+            155
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "portal-teleport",
+      "name": "Portal teleport trigger",
+      "purpose": "Custom trigger type that hands the player to the destination recorded for the paired portal, copying position and facing",
+      "paths": [
+        "source/trigger/PortalTeleport.cpp",
+        "include/glPortal/trigger/PortalTeleport.hpp"
+      ],
+      "functions": [
+        {
+          "name": "PortalTeleport::PortalTeleport",
+          "path": "source/trigger/PortalTeleport.cpp",
+          "lines": [
+            11,
+            18
+          ]
+        },
+        {
+          "name": "PortalTeleport::setAction",
+          "path": "source/trigger/PortalTeleport.cpp",
+          "lines": [
+            20,
+            33
+          ]
+        }
+      ],
+      "dependsOn": [
+        "portal"
+      ]
+    },
+    {
+      "id": "portal-world",
+      "name": "Portal shots and pair management",
+      "purpose": "Camera ray shots, on-demand allocation of the portal pair, trigger and destination bookkeeping, and closing both halves",
+      "paths": [
+        "source/WorldHelper.cpp",
+        "include/glPortal/WorldHelper.hpp"
+      ],
+      "functions": [
+        {
+          "name": "WorldHelper::shootPortal",
+          "path": "source/WorldHelper.cpp",
+          "lines": [
+            18,
+            78
+          ]
+        },
+        {
+          "name": "WorldHelper::getPortalPair",
+          "path": "source/WorldHelper.cpp",
+          "lines": [
+            80,
+            88
+          ]
+        },
+        {
+          "name": "WorldHelper::closePortals",
+          "path": "source/WorldHelper.cpp",
+          "lines": [
+            90,
+            103
+          ]
+        }
+      ],
+      "dependsOn": [
+        "portal",
+        "portal-teleport"
+      ]
+    },
+    {
+      "id": "render-scene",
+      "name": "Scene and portal rendering",
+      "purpose": "Scene pass with recursive portal views, mirrored virtual cameras, the coloured portal sheet with its occlusion query, and the player body proxy",
+      "paths": [
+        "source/renderer/GameRenderer.cpp",
+        "include/glPortal/renderer/GameRenderer.hpp"
+      ],
+      "functions": [
+        {
+          "name": "GameRenderer::renderSceneFromPortal",
+          "path": "source/renderer/GameRenderer.cpp",
+          "lines": [
+            109,
+            140
+          ]
+        },
+        {
+          "name": "GameRenderer::renderPortals",
+          "path": "source/renderer/GameRenderer.cpp",
+          "lines": [
+            330,
+            372
+          ]
+        },
+        {
+          "name": "GameRenderer::renderStencilPortal",
+          "path": "source/renderer/GameRenderer.cpp",
+          "lines": [
+            374,
+            401
+          ]
+        },
+        {
+          "name": "GameRenderer::renderPlayer",
+          "path": "source/renderer/GameRenderer.cpp",
+          "lines": [
+            420,
+            433
+          ]
+        },
+        {
+          "name": "GameRenderer::setCameraInPortal",
+          "path": "source/renderer/GameRenderer.cpp",
+          "lines": [
+            435,
+            455
+          ]
+        }
+      ],
+      "dependsOn": [
+        "portal",
+        "game-loop"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "frame-time-delta",
+      "node": "game-loop",
+      "name": "Wall-clock frame delta",
+      "summary": "Each pass of the main loop measures the gap between the previous and current frame in milliseconds, converts it to seconds, and hands that one scalar to the whole simulation.",
+      "behavior": "The loop runs its stages in a fixed order: pre-frame bookkeeping, input processing, world update, render, post-frame work. The update stage derives the delta first and then calls into the engine update, so every simulation and the physics step advance by the same real elapsed time. Nothing clamps or subdivides that delta, so a slow frame becomes one large step instead of several small ones and the run has no fixed tick rate; gameplay that needs stable stepping has to add its own accumulator. Because the value is expressed in seconds, gravity, velocity and animation durations elsewhere in the engine can be authored directly in seconds.",
+      "constants": [
+        {
+          "name": "Milliseconds per second",
+          "value": 1000,
+          "unit": "milliseconds per second of wall clock, applied once per frame update",
+          "source": "source/Game.cpp:49"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Game.cpp",
+          "line": 49
+        },
+        {
+          "path": "source/Game.cpp",
+          "line": 50
+        },
+        {
+          "path": "source/Main.cpp",
+          "line": 21
+        }
+      ],
+      "capabilities": [
+        "variable-length frame step",
+        "seconds-based simulation clock",
+        "no fixed timestep"
+      ],
+      "tags": [
+        "timing",
+        "game loop",
+        "delta time"
+      ]
+    },
+    {
+      "id": "portal-fire-channels",
+      "node": "input",
+      "name": "Fire channels drive the two portal slots",
+      "summary": "Primary and secondary fire are separate channels; each press issues exactly one portal shot addressed to its own slot of the pair.",
+      "behavior": "The input handler first lets the engine react to the channel, then acts only on the press edge and never on the release. Primary fire requests a shot for slot one, secondary fire requests a shot for slot two, so this mapping is the only thing that decides which portal of the pair is replaced. The same switch routes a pause channel to a pause toggle and a start channel to the resume path, and both of those only swap screen overlays and the player's frozen flag, leaving simulation state alone. Swapping the two slot values would simply swap which portal the primary fire re-places.",
+      "constants": [
+        {
+          "name": "Primary fire slot selector",
+          "value": 1,
+          "unit": "slot index passed to the shot routine, no physical unit; consumed once per channel press",
+          "source": "source/input/InputManager.cpp:20"
+        },
+        {
+          "name": "Secondary fire slot selector",
+          "value": 2,
+          "unit": "slot index passed to the shot routine, no physical unit; consumed once per channel press",
+          "source": "source/input/InputManager.cpp:24"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/input/InputManager.cpp",
+          "line": 17
+        },
+        {
+          "path": "source/input/InputManager.cpp",
+          "line": 20
+        },
+        {
+          "path": "source/input/InputManager.cpp",
+          "line": 24
+        },
+        {
+          "path": "source/input/InputManager.cpp",
+          "line": 27
+        },
+        {
+          "path": "source/input/InputManager.cpp",
+          "line": 32
+        }
+      ],
+      "capabilities": [
+        "press-edge routing",
+        "two independent portal channels",
+        "pause and resume channels"
+      ],
+      "tags": [
+        "input",
+        "portal",
+        "dispatch"
+      ]
+    },
+    {
+      "id": "portal-shot-raycast",
+      "node": "portal-world",
+      "name": "Camera ray chooses the portal surface",
+      "summary": "A shot is one ray cast from the current camera position along the view direction, and the nearest hit carrying a portal-capable material becomes the placement surface.",
+      "behavior": "The ray starts at the camera rather than at a weapon model, so in first person the crosshair and the shot always agree. Its far endpoint is the camera position advanced ten thousand scene units along the view direction, far beyond any plausible playable distance, so the ray effectively stops only at geometry; the reach is a property of the shot, not of the surface. The physics world returns the closest collision object, the game looks up the owning entity, requires a drawable material flagged as portalable, and silently drops the shot otherwise. Placement consumes the world-space hit point and the world-space hit normal, so the result does not depend on the scale or rotation of the prop that was hit.",
+      "constants": [
+        {
+          "name": "Shot ray reach",
+          "value": 10000,
+          "unit": "scene units along the view direction from the camera, computed once per fire event",
+          "source": "source/WorldHelper.cpp:21"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 19
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 21
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 22
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 25
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 27
+        }
+      ],
+      "capabilities": [
+        "camera-anchored ray",
+        "closest-hit selection",
+        "portalable material gate"
+      ],
+      "tags": [
+        "portal",
+        "raycast",
+        "collision"
+      ]
+    },
+    {
+      "id": "portal-trigger-volume",
+      "node": "portal-world",
+      "name": "Trigger volume fitted to the portal",
+      "summary": "Every placement gives its portal a trigger box kept at the portal scale, centred a little off the hit point, and records the matching exit transform.",
+      "behavior": "The first shot that uses a portal creates its trigger on the spot; every later shot reuses that same trigger entity. The trigger is rescaled to the portal's own scale and then centred at the hit point moved along the portal's inward axis by the portal scale divided per axis by 1.15, so the volume sits a little behind the contact point instead of straddling the wall surface. The destination entry for that portal stores the hit point advanced by one portal direction, a zero rotation offset and the portal orientation, and that entry is the exit transform other code reads.",
+      "constants": [
+        {
+          "name": "Trigger fit divisor",
+          "value": 1.15,
+          "unit": "dimensionless divisor applied per axis to the portal scale, recomputed once per portal placement",
+          "source": "source/WorldHelper.cpp:49"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 45
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 46
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 48
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 49
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 50
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 52
+        }
+      ],
+      "capabilities": [
+        "lazy trigger creation",
+        "scale-matched trigger box",
+        "stored exit transform"
+      ],
+      "tags": [
+        "portal",
+        "trigger",
+        "volume"
+      ]
+    },
+    {
+      "id": "portal-pair-slots",
+      "node": "portal-world",
+      "name": "Portal pair allocated on demand",
+      "summary": "The world holds a list of portal couples that starts empty; the first shot that needs slot zero creates a couple of portal entities and later shots reuse them.",
+      "behavior": "When a world starts, the game inserts an empty list under a fixed pair name. A request for a slot compares that slot number with the last valid index, which is the list length minus one, and appends one fresh couple of portal entities when the request is past the end. Because the shipped game always asks for slot zero, the couple is created on the first shot and every later shot edits the same two entities. Each portal in the couple owns its own meshes, colour, light, trigger, open flag and open timestamp, so re-placing one half never disturbs the other.",
+      "constants": [
+        {
+          "name": "First pair slot",
+          "value": 0,
+          "unit": "list index of the portal couple, no physical unit; requested once per portal shot",
+          "source": "source/WorldHelper.cpp:36"
+        },
+        {
+          "name": "Pair list growth",
+          "value": 1,
+          "unit": "index step per allocation, one couple appended when a slot is out of range",
+          "source": "source/WorldHelper.cpp:81"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 36
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 80
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 81
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 82
+        },
+        {
+          "path": "source/Game.cpp",
+          "line": 24
+        }
+      ],
+      "capabilities": [
+        "lazy pair allocation",
+        "entity reuse",
+        "independent portal state"
+      ],
+      "tags": [
+        "portal",
+        "entity lifecycle",
+        "world"
+      ]
+    },
+    {
+      "id": "portal-surface-placement",
+      "node": "portal",
+      "name": "Fitting the frame to a wall hit",
+      "summary": "The portal takes the hit normal as its forward direction and a scale of one unit wide by two units tall, then shifts itself a hundredth of a unit off the surface.",
+      "behavior": "Direction is the normalized hit normal. Hits whose normal matches the frame's own default direction are handled by explicit branches, because the general normal-to-rotation formula degenerates there: one branch keeps the identity rotation and the opposite branch uses a half turn about the vertical axis. Every other hit builds a quaternion from the fixed default direction and the normal through a half vector, which maps one axis onto the surface without introducing roll. The frame is then scaled to one unit across and two up, placed at the hit point advanced by 0.01 along its own direction, and given the frame orientation and its two meshes, so the sheet sits just clear of the wall instead of fighting with it for depth.",
+      "constants": [
+        {
+          "name": "Surface clearance",
+          "value": 0.01,
+          "unit": "scene units along the portal direction, added once per placement and kept for the portal lifetime",
+          "source": "source/Portal.cpp:23"
+        },
+        {
+          "name": "Frame height multiplier",
+          "value": 2,
+          "unit": "scene units of height per unit of width, applied once per placement",
+          "source": "source/Portal.cpp:68"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Portal.cpp",
+          "line": 69
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 74
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 77
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 90
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 108
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 109
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 113
+        }
+      ],
+      "capabilities": [
+        "normal-driven orientation",
+        "degenerate-normal branches",
+        "depth-safe surface offset"
+      ],
+      "tags": [
+        "portal",
+        "placement",
+        "orientation"
+      ]
+    },
+    {
+      "id": "portal-floor-ceiling-tilt",
+      "node": "portal",
+      "name": "Floor and ceiling openings tilt flat",
+      "summary": "Surfaces that face up or down get the frame pitched a quarter turn so the opening lies in the horizontal plane, with its in-plane heading taken from the shooter's position.",
+      "behavior": "For an upward-facing hit the frame is pitched a quarter turn and rolled by the horizontal angle from the shot origin to the hit point, computed with an arc tangent over the two horizontal axes. A downward-facing hit runs the same computation with the opposite pitch and the opposite roll. The result is that floor portals open upward like hatches while ceiling portals open downward like pits, and the shooter's position around the hit decides which way the flat opening is turned. The same four collision pieces are then rebuilt in that tilted orientation, so the rim stays solid whichever way the surface faces.",
+      "constants": [
+        {
+          "name": "Floor pitch",
+          "value": 90,
+          "unit": "degrees of pitch, applied once per placement on upward-facing surfaces",
+          "source": "source/Portal.cpp:81"
+        },
+        {
+          "name": "Ceiling pitch",
+          "value": -90,
+          "unit": "degrees of pitch, applied once per placement on downward-facing surfaces",
+          "source": "source/Portal.cpp:85"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Portal.cpp",
+          "line": 78
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 80
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 81
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 82
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 84
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "quarter-turn frame pitch",
+        "heading from shooter position",
+        "horizontal openings"
+      ],
+      "tags": [
+        "portal",
+        "placement",
+        "rotation"
+      ]
+    },
+    {
+      "id": "portal-collision-frame",
+      "node": "portal",
+      "name": "Four static bars around the opening",
+      "summary": "The portal keeps four thin static boxes at its rim, rebuilt whenever it moves, so the edge of the opening stays solid while the middle stays empty.",
+      "behavior": "Two horizontal bars for the top and bottom and two vertical bars for the sides are built from two shared box shapes: the vertical pair uses half extents of a tenth of a unit across, one unit tall and half a unit deep, and the horizontal pair swaps the first two axes. Each piece gets its own motion state and a body with zero mass, so it is static and never reacts to pushes. The pieces attach at offsets of 1.076 up and down and 0.576 left and right, pushed 0.501 along the frame depth axis, which puts the bar slab just outside the sheet while leaving the middle of the opening free. Re-placing a portal removes each old body before adding the new one, so no stale collision lingers in the physics world.",
+      "constants": [
+        {
+          "name": "Bar half thickness",
+          "value": 0.1,
+          "unit": "scene units of box half extent across the bar, built once per placement",
+          "source": "source/Portal.cpp:31"
+        },
+        {
+          "name": "Bar half height",
+          "value": 1,
+          "unit": "scene units of box half extent along the vertical bar, built once per placement",
+          "source": "source/Portal.cpp:31"
+        },
+        {
+          "name": "Bottom bar offset",
+          "value": -1.076,
+          "unit": "scene units from the portal centre along the frame up axis, applied once per placement",
+          "source": "source/Portal.cpp:100"
+        },
+        {
+          "name": "Side bar offset",
+          "value": 0.576,
+          "unit": "scene units from the portal centre along the frame right axis, applied once per placement",
+          "source": "source/Portal.cpp:104"
+        },
+        {
+          "name": "Bar depth offset",
+          "value": 0.501,
+          "unit": "scene units along the frame depth axis, applied once per placement",
+          "source": "source/Portal.cpp:104"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Portal.cpp",
+          "line": 30
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 31
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 32
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 52
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 58
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 99
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 100
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 102
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 104
+        }
+      ],
+      "capabilities": [
+        "rim collision pieces",
+        "static bodies with zero mass",
+        "rebuild on placement"
+      ],
+      "tags": [
+        "portal",
+        "collision",
+        "rigid body"
+      ]
+    },
+    {
+      "id": "portal-open-animation",
+      "node": "portal",
+      "name": "Eased opening sweep",
+      "summary": "A newly placed portal grows from nothing to full size over a quarter of a second on a symmetric ease-in-out curve driven by the world clock.",
+      "behavior": "Placement stores the current world time. Whenever the renderer needs a size it subtracts that stamp, divides by one million to turn the microsecond clock into seconds, and compares the result with the open duration. Past the duration the multiplier is exactly one. Before it, progress is rescaled so the whole sweep spans two units, then squared and halved below the midpoint and folded back above it; the curve therefore starts and ends with zero slope and grows fastest exactly in the middle, reaching a factor of one half at the midpoint. The multiplier scales both the stencil silhouette and the coloured sheet, so the opening appears to grow out of the surface while the collision bars and the trigger sit at full size from the first frame.",
+      "constants": [
+        {
+          "name": "Open duration",
+          "value": 250,
+          "unit": "milliseconds of world clock time, read on every rendered frame after placement",
+          "source": "source/Portal.cpp:22"
+        },
+        {
+          "name": "Clock divisor",
+          "value": 1000000,
+          "unit": "microsecond ticks per second of world clock, applied once per frame query",
+          "source": "source/Portal.cpp:136"
+        },
+        {
+          "name": "Midpoint factor",
+          "value": 0.5,
+          "unit": "dimensionless eased scale at the midpoint of the sweep, evaluated per frame",
+          "source": "source/Portal.cpp:148"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Portal.cpp",
+          "line": 136
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 137
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 146
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 148
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 151
+        }
+      ],
+      "capabilities": [
+        "clock-driven animation",
+        "symmetric ease-in-out",
+        "shared visual and stencil size"
+      ],
+      "tags": [
+        "portal",
+        "animation",
+        "timing"
+      ]
+    },
+    {
+      "id": "portal-uncollider",
+      "node": "portal",
+      "name": "Uncollider volume lets the player step through",
+      "summary": "While both portals of the pair are open, each registers a box the size of its opening in a shared list of volumes that collision response skips.",
+      "behavior": "The box is built from half the portal scale on every axis and its centre is pushed 0.499 along the frame depth axis, so its near face sits all but exactly on the portal plane and the volume reaches about one portal width forward. It is stored in a shared list that the physics stage consults, and removed again when the pair closes. Gating on both halves being open matters: a lone portal keeps its wall solid, and only a matched pair turns the drawn opening into a hole a player can walk into. Without this subtraction the surface that was shot would block the player at the very place the opening is drawn.",
+      "constants": [
+        {
+          "name": "Uncollider depth offset",
+          "value": 0.499,
+          "unit": "scene units along the frame depth axis, set each time both portals are open",
+          "source": "source/Portal.cpp:122"
+        },
+        {
+          "name": "Uncollider half-size divisor",
+          "value": 2,
+          "unit": "divisor applied to the portal scale for the box half extents, set each time both portals are open",
+          "source": "source/Portal.cpp:123"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/Portal.cpp",
+          "line": 118
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 122
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 123
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 127
+        },
+        {
+          "path": "source/Portal.cpp",
+          "line": 128
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 71
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 72
+        }
+      ],
+      "capabilities": [
+        "collision subtraction volume",
+        "paired gating",
+        "list-based registration and removal"
+      ],
+      "tags": [
+        "portal",
+        "collision",
+        "physics"
+      ]
+    },
+    {
+      "id": "portal-teleport-destination",
+      "node": "portal-teleport",
+      "name": "Trigger handoff between the pair",
+      "summary": "Entering a portal's trigger moves the player to the exit recorded for the other portal, copying both the exit position and the exit facing.",
+      "behavior": "The game registers a custom trigger type under a fixed name. When a portal is placed, that portal's trigger action is rewritten to point at the destination key of the opposite portal, so each half sends the player out of the other. On overlap the action looks the key up in the world destination table, writes the stored position to the player, and copies the stored orientation into both the body orientation and the head orientation, which keeps the camera facing out of the exit instead of snapping back to the old heading. Velocity and angular state are left untouched, so speed carried into the entry is preserved through the exit.",
+      "constants": [
+        {
+          "name": "Trigger type name",
+          "value": "portalTeleport",
+          "unit": "registry key string, no numeric unit; bound once when the trigger type is built and matched on every map load",
+          "source": "source/trigger/PortalTeleport.cpp:12"
+        },
+        {
+          "name": "First destination key",
+          "value": "portal1",
+          "unit": "table key string, no numeric unit; written once per portal shot and read on each overlap",
+          "source": "source/WorldHelper.cpp:56"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 13
+        },
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 20
+        },
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 21
+        },
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 28
+        },
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 29
+        },
+        {
+          "path": "source/trigger/PortalTeleport.cpp",
+          "line": 30
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 52
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 56
+        },
+        {
+          "path": "source/WorldHelper.cpp",
+          "line": 57
+        }
+      ],
+      "capabilities": [
+        "named destination table",
+        "position and facing copy",
+        "overlap-driven action"
+      ],
+      "tags": [
+        "portal",
+        "teleport",
+        "trigger"
+      ]
+    },
+    {
+      "id": "portal-view-recursion",
+      "node": "render-scene",
+      "name": "Recursive views through portals",
+      "summary": "Each open portal renders the scene again from a mirrored camera, and that view can contain the other portal, so drawing recurses with a hard depth limit.",
+      "behavior": "The pass starts from the player camera, builds a virtual camera inside one portal, and inside the stencil region draws the entities, the player proxy and the other portal. Every nested level raises both the stencil reference and the occlusion query slot by one, so a view that reaches through several openings is masked to the correct intersection and its visibility test waits on its own query. The call returns immediately once the nesting counter passes three, which caps the chain at four portal views beyond the direct view and stops two facing portals from recursing without end. Only the depth buffer is cleared between levels, so each nested view keeps the colour written by its parent while starting its own depth ordering.",
+      "constants": [
+        {
+          "name": "Nesting threshold",
+          "value": 3,
+          "unit": "nested portal views per frame, compared once per recursive call",
+          "source": "source/renderer/GameRenderer.cpp:116"
+        },
+        {
+          "name": "Stencil step",
+          "value": 1,
+          "unit": "stencil reference and query slot increment per nesting level, one step per recursion",
+          "source": "source/renderer/GameRenderer.cpp:138"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 109
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 116
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 121
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 124
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 131
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 135
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 137
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 138
+        }
+      ],
+      "capabilities": [
+        "recursive portal views",
+        "stencil masking per level",
+        "depth cap"
+      ],
+      "tags": [
+        "portal",
+        "rendering",
+        "stencil"
+      ]
+    },
+    {
+      "id": "portal-camera-transform",
+      "node": "render-scene",
+      "name": "Virtual camera through the pair",
+      "summary": "A portal view is the player's view carried through the entry frame, turned half a turn, and re-anchored at the paired frame.",
+      "behavior": "For each portal the renderer composes a matrix from its position and orientation. The virtual view is the player view multiplied by the entry matrix, then by a half turn about the vertical axis, then by the inverse of the exit matrix, which is the usual way to place a camera behind a hole so the reflected scene lines up with the opening. Projection, aspect ratio and vertical field of view are copied from the player camera, but the near plane is set to the current distance between the camera and the entry portal. That clips away anything between the eye and the opening, so a wall the player is pressed against cannot appear inside the reflected view.",
+      "constants": [
+        {
+          "name": "Turn through the pair",
+          "value": 180,
+          "unit": "degrees of yaw about the vertical axis, composed once per portal per frame",
+          "source": "source/renderer/GameRenderer.cpp:445"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 438
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 445
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 448
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 450
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 451
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 452
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 453
+        }
+      ],
+      "capabilities": [
+        "matrix composition",
+        "near plane at portal distance",
+        "projection copy"
+      ],
+      "tags": [
+        "portal",
+        "camera",
+        "rendering"
+      ]
+    },
+    {
+      "id": "portal-overlay-draw",
+      "node": "render-scene",
+      "name": "Portal sheet and visibility query",
+      "summary": "The coloured sheet is drawn a hair larger than the stencil opening, and each portal's sheet is wrapped in a samples-passed query used to skip its reflected scene when hidden.",
+      "behavior": "Each portal draws a quad in its own colour with an unshaded material and depth writes off, at the eased size plus five hundredths of a unit on every axis; the slight oversize hides the seam between the sheet and its stencil silhouette. The draw is bounded by a samples-passed query held in a dedicated array slot per portal, and the second portal uses slot five so nested levels can take the slots in between. Each portal also owns a fixed stencil number, one and four, so the two openings never share a mask value and a view through one cannot leak into the other. The reflected scene is then submitted inside a conditional render that waits on the query, which turns an occluded portal into a cheap query instead of a full scene pass.",
+      "constants": [
+        {
+          "name": "Sheet oversize",
+          "value": 0.05,
+          "unit": "scene units added to each sheet axis, rebuilt every frame",
+          "source": "source/renderer/GameRenderer.cpp:392"
+        },
+        {
+          "name": "Second query slot",
+          "value": 5,
+          "unit": "query array index, assigned once per frame",
+          "source": "source/renderer/GameRenderer.cpp:346"
+        },
+        {
+          "name": "Second stencil value",
+          "value": 4,
+          "unit": "stencil buffer reference value, written once per frame",
+          "source": "source/renderer/GameRenderer.cpp:360"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 345
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 346
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 355
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 359
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 360
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 391
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 392
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 396
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 398
+        }
+      ],
+      "capabilities": [
+        "oversized portal sheet",
+        "per-portal occlusion query",
+        "distinct stencil ids"
+      ],
+      "tags": [
+        "portal",
+        "rendering",
+        "occlusion"
+      ]
+    },
+    {
+      "id": "player-body-proxy",
+      "node": "render-scene",
+      "name": "Body proxy at the eye position",
+      "summary": "A placeholder body is drawn from the player transform, dropped slightly below the eye and scaled up so the player has a visible torso in first person and in portal views.",
+      "behavior": "The proxy reuses the player's position and orientation, shifted down half a unit so the camera looks over it, and uniformly scaled so a stock humanoid mesh matches the player's height. It is drawn with a flat diffuse shader and a fixed texture, so it needs no animation rig or skeletal setup. Because it shares the player transform it appears correctly in the mirrored view of a portal, which is what makes the player's own body visible while standing in front of an opening. Removing the proxy would leave the camera as a free floating eye with nothing to anchor it in the 3D world.",
+      "constants": [
+        {
+          "name": "Body proxy scale",
+          "value": 1.3,
+          "unit": "uniform scale multiplier applied every frame",
+          "source": "source/renderer/GameRenderer.cpp:426"
+        }
+      ],
+      "sources": [
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 421
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 423
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 424
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 426
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 428
+        },
+        {
+          "path": "source/renderer/GameRenderer.cpp",
+          "line": 432
+        }
+      ],
+      "capabilities": [
+        "first-person body proxy",
+        "transform reuse",
+        "visible in reflected views"
+      ],
+      "tags": [
+        "player",
+        "rendering",
+        "first person"
+      ]
+    }
+  ]
+}
