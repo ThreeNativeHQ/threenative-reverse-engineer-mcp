@@ -1,0 +1,1710 @@
+{
+  "version": 1,
+  "id": "crash-team-racing",
+  "title": "Crash Team Racing",
+  "repo": "https://github.com/CTR-tools/CTR-ModSDK",
+  "sha": "e3f19686fb07d62847836ae77c733573a54d3534",
+  "nodes": [
+    {
+      "id": "veh-physics-core",
+      "name": "Kart drive physics",
+      "purpose": "Per-update integration for every kart on the track: throttle and braking taken from the pad, grip and counter-steer from the surface, gravity and hop launches, angular velocity from the steering ramp, and the final velocity-to-position step.",
+      "paths": [
+        "decompile/General/Vehicle/VehPhysGeneral_0_PhysAngular.c",
+        "decompile/General/Vehicle/VehPhysGeneral_3_JumpGetVelY.c",
+        "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+        "decompile/General/Vehicle/VehPhysGeneral_6_GetBaseSpeed.c",
+        "decompile/General/Vehicle/VehPhysForce_0_ConvertSpeedToVec.c",
+        "decompile/General/Vehicle/VehPhysForce_1_OnGravity.c",
+        "decompile/General/Vehicle/VehPhysForce_2_OnApplyForces.c",
+        "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c",
+        "decompile/General/Vehicle/VehPhysProc_00_Driving_PhysLinear.c",
+        "decompile/General/Vehicle/VehPhysProc_02_Driving_Update.c",
+        "decompile/General/Vehicle/VehCalc_0_InterpBySpeed.c",
+        "decompile/General/Vehicle/VehCalc_1_MapToRange.c",
+        "decompile/General/Vehicle/VehCalc_2_SteerAccel.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_VehPhysGeneral_PhysAngular",
+          "path": "decompile/General/Vehicle/VehPhysGeneral_0_PhysAngular.c",
+          "lines": [
+            6,
+            399
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysGeneral_JumpGetVelY",
+          "path": "decompile/General/Vehicle/VehPhysGeneral_3_JumpGetVelY.c",
+          "lines": [
+            3,
+            34
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysGeneral_JumpAndFriction",
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "lines": [
+            16,
+            463
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysGeneral_GetBaseSpeed",
+          "path": "decompile/General/Vehicle/VehPhysGeneral_6_GetBaseSpeed.c",
+          "lines": [
+            3,
+            95
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysForce_ConvertSpeedToVec",
+          "path": "decompile/General/Vehicle/VehPhysForce_0_ConvertSpeedToVec.c",
+          "lines": [
+            6,
+            20
+          ]
+        },
+        {
+          "name": "VehPhysForce_OnGravity",
+          "path": "decompile/General/Vehicle/VehPhysForce_1_OnGravity.c",
+          "lines": [
+            3,
+            35
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysForce_OnApplyForces",
+          "path": "decompile/General/Vehicle/VehPhysForce_2_OnApplyForces.c",
+          "lines": [
+            3,
+            55
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysForce_CounterSteer",
+          "path": "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c",
+          "lines": [
+            3,
+            28
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_Driving_PhysLinear",
+          "path": "decompile/General/Vehicle/VehPhysProc_00_Driving_PhysLinear.c",
+          "lines": [
+            12,
+            1200
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_Driving_Update",
+          "path": "decompile/General/Vehicle/VehPhysProc_02_Driving_Update.c",
+          "lines": [
+            3,
+            61
+          ]
+        },
+        {
+          "name": "DECOMP_VehCalc_InterpBySpeed",
+          "path": "decompile/General/Vehicle/VehCalc_0_InterpBySpeed.c",
+          "lines": [
+            3,
+            21
+          ]
+        },
+        {
+          "name": "DECOMP_VehCalc_MapToRange",
+          "path": "decompile/General/Vehicle/VehCalc_1_MapToRange.c",
+          "lines": [
+            3,
+            25
+          ]
+        },
+        {
+          "name": "DECOMP_VehCalc_SteerAccel",
+          "path": "decompile/General/Vehicle/VehCalc_2_SteerAccel.c",
+          "lines": [
+            3,
+            46
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-stat-tables"
+      ]
+    },
+    {
+      "id": "veh-stat-tables",
+      "name": "Engine stat and physics tables",
+      "purpose": "One table seeds every kart with 65 handling numbers - gravity, hop impulse, three friction coefficients, free and boosted acceleration, top speed, turning rates and boost ceilings - indexed by engine class, plus the copy loop that stamps them onto a driver when it is created.",
+      "paths": [
+        "decompile/General/zGlobal_DATA.c",
+        "decompile/General/Vehicle/VehBirth_3_SetConsts.c",
+        "mods/Levels/PS1_TrackROM/src/engine_stats.c",
+        "include/namespace_Vehicle.h"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_VehBirth_SetConsts",
+          "path": "decompile/General/Vehicle/VehBirth_3_SetConsts.c",
+          "lines": [
+            7,
+            42
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "power-slide",
+      "parent": "veh-physics-core",
+      "name": "Power-slide charge and release",
+      "purpose": "The drifting state: the entry condition, the boost meter that fills while the slide is held, the graded release that pays boost back, the steering that is granted inside the slide, and the spin-out that punishes holding it too long.",
+      "paths": [
+        "decompile/General/Vehicle/VehPhysProc_09_PowerSlide_PhysAngular.c",
+        "decompile/General/Vehicle/VehPhysProc_10_PowerSlide_Finalize.c",
+        "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+        "decompile/General/Vehicle/VehPhysProc_12_PowerSlide_PhysLinear.c",
+        "decompile/General/Vehicle/VehPhysProc_13_PowerSlide_InitSetUpdate.c",
+        "decompile/General/Vehicle/VehPhysProc_14_PowerSlide_Init.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_PhysAngular",
+          "path": "decompile/General/Vehicle/VehPhysProc_09_PowerSlide_PhysAngular.c",
+          "lines": [
+            3,
+            448
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_Finalize",
+          "path": "decompile/General/Vehicle/VehPhysProc_10_PowerSlide_Finalize.c",
+          "lines": [
+            3,
+            6
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_Update",
+          "path": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+          "lines": [
+            7,
+            176
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_PhysLinear",
+          "path": "decompile/General/Vehicle/VehPhysProc_12_PowerSlide_PhysLinear.c",
+          "lines": [
+            3,
+            7
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_InitSetUpdate",
+          "path": "decompile/General/Vehicle/VehPhysProc_13_PowerSlide_InitSetUpdate.c",
+          "lines": [
+            3,
+            10
+          ]
+        },
+        {
+          "name": "DECOMP_VehPhysProc_PowerSlide_Init",
+          "path": "decompile/General/Vehicle/VehPhysProc_14_PowerSlide_Init.c",
+          "lines": [
+            8,
+            42
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-physics-core",
+        "turbo-reserves"
+      ]
+    },
+    {
+      "id": "turbo-reserves",
+      "name": "Boost reserves and flame",
+      "purpose": "The reserve pool every boost spends, the speed ceiling a boost raises, the flame model size that reports the payout, and the per-update drain that returns the kart to its class top speed.",
+      "paths": [
+        "decompile/General/Vehicle/VehFire_1_Increment.c",
+        "decompile/General/Vehicle/VehTurbo_1_ThDestroy.c",
+        "decompile/General/Vehicle/VehTurbo_2_ThTick.c",
+        "decompile/General/Vehicle/VehPhysProc_00_Driving_PhysLinear.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_VehFire_Increment",
+          "path": "decompile/General/Vehicle/VehFire_1_Increment.c",
+          "lines": [
+            12,
+            374
+          ]
+        },
+        {
+          "name": "DECOMP_VehTurbo_ThDestroy",
+          "path": "decompile/General/Vehicle/VehTurbo_1_ThDestroy.c",
+          "lines": [
+            3,
+            13
+          ]
+        },
+        {
+          "name": "DECOMP_VehTurbo_ThTick",
+          "path": "decompile/General/Vehicle/VehTurbo_2_ThTick.c",
+          "lines": [
+            7,
+            310
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-stat-tables"
+      ]
+    },
+    {
+      "id": "terrain-grip",
+      "name": "Surface and terrain grip",
+      "purpose": "The table that turns a level surface type into grip, counter-steer ratio, a speed cap for loose ground and the particle set for the tyres, plus the guarded lookups the kart physics calls every update.",
+      "paths": [
+        "decompile/General/zGlobal_DATA.c",
+        "decompile/General/Vehicle/VehAfterColl_0_GetSurface.c",
+        "decompile/General/Vehicle/VehAfterColl_1_GetTerrain.c",
+        "include/regionsEXE.h"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_VehAfterColl_GetSurface",
+          "path": "decompile/General/Vehicle/VehAfterColl_0_GetSurface.c",
+          "lines": [
+            3,
+            10
+          ]
+        },
+        {
+          "name": "DECOMP_VehAfterColl_GetTerrain",
+          "path": "decompile/General/Vehicle/VehAfterColl_1_GetTerrain.c",
+          "lines": [
+            3,
+            12
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "collision-quad",
+      "name": "Quadblock collision search",
+      "purpose": "How the world mesh answers a moving sphere: bounding-box rejection against the level collision blocks, low and high detail triangle split, and the sweeping search the kart runs each update to find the ground it stands on and the walls it scrapes.",
+      "paths": [
+        "decompile/General/COLL/COLL_11_FIXED_QUADBLK_TestTriangles.c",
+        "decompile/General/COLL/COLL_12_FIXED_BSPLEAF_TestQuadblocks.c",
+        "decompile/General/COLL/COLL_14_FIXED_QUADBLK_GetNormVecs_HiLOD.c",
+        "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c"
+      ],
+      "functions": [
+        {
+          "name": "COLL_FIXED_QUADBLK_TestTriangles",
+          "path": "decompile/General/COLL/COLL_11_FIXED_QUADBLK_TestTriangles.c",
+          "lines": [
+            3,
+            55
+          ]
+        },
+        {
+          "name": "DECOMP_COLL_FIXED_BSPLEAF_TestQuadblocks",
+          "path": "decompile/General/COLL/COLL_12_FIXED_BSPLEAF_TestQuadblocks.c",
+          "lines": [
+            3,
+            27
+          ]
+        },
+        {
+          "name": "DECOMP_COLL_FIXED_QUADBLK_GetNormVecs_HiLOD",
+          "path": "decompile/General/COLL/COLL_14_FIXED_QUADBLK_GetNormVecs_HiLOD.c",
+          "lines": [
+            3,
+            46
+          ]
+        },
+        {
+          "name": "DECOMP_COLL_MOVED_PlayerSearch",
+          "path": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c",
+          "lines": [
+            12,
+            396
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "chase-camera",
+      "name": "Chase camera",
+      "purpose": "Places the third-person camera behind the kart: heading offset, pull-back distance derived from speed, height above the chassis, the reverse view, the look-down when the kart is hit, and the slow spin-around shot.",
+      "paths": [
+        "decompile/General/CAMERA/CAM_15_FollowDriver_Spin360.c",
+        "decompile/General/CAMERA/CAM_16_SetDesiredPosRot.c",
+        "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c",
+        "decompile/General/zGlobal_DATA.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_CAM_FollowDriver_Spin360",
+          "path": "decompile/General/CAMERA/CAM_15_FollowDriver_Spin360.c",
+          "lines": [
+            3,
+            32
+          ]
+        },
+        {
+          "name": "DECOMP_CAM_SetDesiredPosRot",
+          "path": "decompile/General/CAMERA/CAM_16_SetDesiredPosRot.c",
+          "lines": [
+            3,
+            20
+          ]
+        },
+        {
+          "name": "DECOMP_CAM_FollowDriver_Normal",
+          "path": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c",
+          "lines": [
+            3,
+            720
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-physics-core"
+      ]
+    },
+    {
+      "id": "ai-opponents",
+      "name": "Opponent driving",
+      "purpose": "Computer drivers follow a baked navigation path: one of three path slots per level is loaded, a heading is derived by comparing kart position with the next node, and contact between two computer karts is resolved by rank.",
+      "paths": [
+        "decompile/General/BOTS/BOTS_00_SetGlobalNavData.c",
+        "decompile/General/BOTS/BOTS_01_InitNavPath.c",
+        "decompile/General/BOTS/BOTS_06_SetRotation.c",
+        "decompile/General/BOTS/BOTS_13_CollideWithOtherAI.c",
+        "decompile/WorkInProgress/src/BOTS/BOTS_11_ThTick_Drive.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_BOTS_SetGlobalNavData",
+          "path": "decompile/General/BOTS/BOTS_00_SetGlobalNavData.c",
+          "lines": [
+            3,
+            14
+          ]
+        },
+        {
+          "name": "DECOMP_BOTS_InitNavPath",
+          "path": "decompile/General/BOTS/BOTS_01_InitNavPath.c",
+          "lines": [
+            3,
+            57
+          ]
+        },
+        {
+          "name": "DECOMP_BOTS_SetRotation",
+          "path": "decompile/General/BOTS/BOTS_06_SetRotation.c",
+          "lines": [
+            3,
+            60
+          ]
+        },
+        {
+          "name": "DECOMP_BOTS_CollideWithOtherAI",
+          "path": "decompile/General/BOTS/BOTS_13_CollideWithOtherAI.c",
+          "lines": [
+            3,
+            81
+          ]
+        },
+        {
+          "name": "BOTS_ThTick_Drive",
+          "path": "decompile/WorkInProgress/src/BOTS/BOTS_11_ThTick_Drive.c",
+          "lines": [
+            5,
+            2004
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-physics-core"
+      ]
+    },
+    {
+      "id": "weapons-and-states",
+      "name": "Weapons and damage states",
+      "purpose": "Projectiles and thrown hazards: which victim a homing shot picks, how a hit is routed to the kart, and the timed states - spin, blast, shield hold - a kart enters before it regains control of its own physics.",
+      "paths": [
+        "decompile/General/231/231_006_RB_Hazard_HurtDriver.c",
+        "decompile/General/231/231_016_RB_GenericMine_ThTick.c",
+        "decompile/General/231/231_055_RB_GetThread_ClosestTracker.c",
+        "decompile/General/Vehicle/VehPickState_0_NewState.c",
+        "decompile/General/Vehicle/VehPickupItem_4_ShootNow.c"
+      ],
+      "functions": [
+        {
+          "name": "DECOMP_RB_Hazard_HurtDriver",
+          "path": "decompile/General/231/231_006_RB_Hazard_HurtDriver.c",
+          "lines": [
+            3,
+            29
+          ]
+        },
+        {
+          "name": "DECOMP_RB_GenericMine_ThTick",
+          "path": "decompile/General/231/231_016_RB_GenericMine_ThTick.c",
+          "lines": [
+            3,
+            401
+          ]
+        },
+        {
+          "name": "DECOMP_RB_GetThread_ClosestTracker",
+          "path": "decompile/General/231/231_055_RB_GetThread_ClosestTracker.c",
+          "lines": [
+            3,
+            47
+          ]
+        },
+        {
+          "name": "DECOMP_VehPickState_NewState",
+          "path": "decompile/General/Vehicle/VehPickState_0_NewState.c",
+          "lines": [
+            6,
+            236
+          ]
+        },
+        {
+          "name": "DECOMP_VehPickupItem_ShootNow",
+          "path": "decompile/General/Vehicle/VehPickupItem_4_ShootNow.c",
+          "lines": [
+            7,
+            728
+          ]
+        }
+      ],
+      "dependsOn": [
+        "veh-physics-core",
+        "turbo-reserves"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "engine-speed-class",
+      "node": "veh-stat-tables",
+      "name": "Class top speed per engine",
+      "summary": "The shared physics table holds a column per engine class, and each class gets its own top speed and speedometer scale; the numbers are stored in 256ths of a kilometre per hour.",
+      "behavior": "Every kart is stamped with a 65-entry block of handling numbers at creation, and the entry holding top speed differs per engine class. The block carries five columns even though the retail build only exposes four of them. Speed is carried as an integer where 256 units equal one kilometre per hour, so the fastest class tops out a little over 54 km/h while the slowest sits near 50 km/h. A separate entry scales the speedometer and is larger than the class top speed for every engine, so the needle has headroom it only uses while a boost is being spent. The speed resolver finally clamps the sum of class speed, collected-fruit bonus and boost bonus, so stacking every source cannot push a kart far past the fastest class.",
+      "constants": [
+        {
+          "name": "Top speed, engine 0",
+          "value": 13140,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms)",
+          "source": "decompile/General/zGlobal_DATA.c:7617"
+        },
+        {
+          "name": "Top speed, engine 1",
+          "value": 13520,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms)",
+          "source": "decompile/General/zGlobal_DATA.c:7617"
+        },
+        {
+          "name": "Top speed, engine 2",
+          "value": 13900,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms)",
+          "source": "decompile/General/zGlobal_DATA.c:7617"
+        },
+        {
+          "name": "Top speed, engine 3",
+          "value": 12950,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms)",
+          "source": "decompile/General/zGlobal_DATA.c:7617"
+        },
+        {
+          "name": "Speedometer full scale, engine 0",
+          "value": 14640,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms)",
+          "source": "decompile/General/zGlobal_DATA.c:7618"
+        },
+        {
+          "name": "Speed units per kilometre per hour",
+          "value": 256,
+          "unit": "dimensionless divisor applied when a speed is shown to the player; recomputed every UI update at 30 Hz",
+          "source": "mods/Levels/PS1_TrackROM/src/engine_stats.c:5"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7617
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7618
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7600
+        },
+        {
+          "path": "mods/Levels/PS1_TrackROM/src/engine_stats.c",
+          "line": 5
+        },
+        {
+          "path": "decompile/General/Vehicle/VehBirth_3_SetConsts.c",
+          "line": 18
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_6_GetBaseSpeed.c",
+          "line": 91
+        }
+      ],
+      "capabilities": [
+        "top-speed differencing between engine classes",
+        "display speed from an internal integer",
+        "ceiling on stacked speed bonuses"
+      ],
+      "tags": [
+        "stats",
+        "speed",
+        "tuning"
+      ]
+    },
+    {
+      "id": "acceleration-response",
+      "node": "veh-physics-core",
+      "name": "Acceleration curve",
+      "summary": "Throttle does not add a fixed force: free acceleration is a per-class value, spending a boost swaps in a much larger one, and standing on a boost surface substitutes a single large constant instead.",
+      "behavior": "Each update the drive step decides which of three accelerations to use. While the kart is on a boost surface the drive step branches to one large constant and gives up on the gentle curve, so speed climbs as fast as the cap allows. Otherwise the class acceleration value is used, and while a boost is being spent it is replaced by a value a little over twice as large. A surface that limits top speed scales the acceleration down proportionally, which is why loose ground feels sluggish rather than merely slow. The chosen acceleration is multiplied by the milliseconds that elapsed since the previous update and shifted down five places, so a frame that takes twice as long adds twice the speed instead of the same amount. The resulting delta is projected onto the kart heading and added to the velocity vector. A friction term then removes the part of the velocity magnitude that exceeds the signed base speed, capped at the acceleration this frame granted, which is what makes a kart coast back down once the throttle is released.",
+      "constants": [
+        {
+          "name": "Free acceleration, engine 0",
+          "value": 480,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7615"
+        },
+        {
+          "name": "Free acceleration, engine 1",
+          "value": 544,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7615"
+        },
+        {
+          "name": "Free acceleration, engine 2",
+          "value": 448,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7615"
+        },
+        {
+          "name": "Free acceleration, engine 3",
+          "value": 512,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7615"
+        },
+        {
+          "name": "Acceleration while a boost is being spent",
+          "value": 1152,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7616"
+        },
+        {
+          "name": "Acceleration while standing on a boost surface",
+          "value": 8000,
+          "unit": "internal speed units per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c:264"
+        },
+        {
+          "name": "Acceleration integration shift",
+          "value": 5,
+          "unit": "right shift applied to acceleration times elapsed milliseconds, equivalent to dividing by 32, once per 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c:267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7615
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7616
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 264
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 267
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 253
+        }
+      ],
+      "capabilities": [
+        "per-class acceleration feel",
+        "boost-surface speed ramp",
+        "frame-rate independent speed gain"
+      ],
+      "tags": [
+        "physics",
+        "acceleration",
+        "tuning"
+      ]
+    },
+    {
+      "id": "jump-and-gravity",
+      "node": "veh-physics-core",
+      "name": "Hop impulse and gravity",
+      "summary": "A hop is a single vertical impulse added on the first update of the jump, after which gravity is the only vertical force; both are constants per engine class, and one flag on the block underneath scales gravity down.",
+      "behavior": "Pressing the hop button does not start an animation that carries the kart upward - it hands the kart one upward velocity value on the first update and then gets out of the way. Every update afterwards subtracts a gravity constant from the vertical velocity, and that subtraction is scaled by elapsed milliseconds so a slow frame falls further. Blocks flagged for reduced gravity replace the constant with a fraction of it, which is how the floaty sections of a track are authored without touching the kart. A scripted or hazard-driven hop is expressed as a multiple of the same impulse, so a forced launch of three times the normal strength uses the identical code path. Horizontal speed is untouched by the hop: only the vertical component of the velocity vector changes, which keeps the line the kart takes through the air predictable.",
+      "constants": [
+        {
+          "name": "Hop impulse",
+          "value": 4596,
+          "unit": "internal velocity units in 8.8 fixed point, so 256 units move the kart one world unit per update; added once per update at 30 Hz; written into the vertical velocity on the first update of the hop only",
+          "source": "decompile/General/zGlobal_DATA.c:7607"
+        },
+        {
+          "name": "Downward acceleration",
+          "value": 900,
+          "unit": "internal velocity units subtracted from vertical velocity per update at 30 Hz, scaled by elapsed milliseconds over 32",
+          "source": "decompile/General/zGlobal_DATA.c:7606"
+        },
+        {
+          "name": "Reduced-gravity surface scale",
+          "value": 41,
+          "unit": "percent of the normal gravity constant, applied on every update while the kart rests on a low-gravity surface",
+          "source": "decompile/General/Vehicle/VehPhysForce_1_OnGravity.c:17"
+        },
+        {
+          "name": "Gravity fraction denominator",
+          "value": 100,
+          "unit": "percent, the denominator of the reduced-gravity fraction; evaluated on every update at 30 Hz",
+          "source": "decompile/General/Vehicle/VehPhysForce_1_OnGravity.c:17"
+        },
+        {
+          "name": "Forced hop multiplier",
+          "value": 3,
+          "unit": "multiple of the hop impulse, applied once on the update a forced hop begins",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c:204"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7606
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7607
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysForce_1_OnGravity.c",
+          "line": 17
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 181
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 204
+        }
+      ],
+      "capabilities": [
+        "single-impulse hopping",
+        "constant downward acceleration",
+        "per-surface gravity scaling",
+        "scripted launch strength"
+      ],
+      "tags": [
+        "jump",
+        "physics",
+        "gravity"
+      ]
+    },
+    {
+      "id": "ramp-launch-vector",
+      "node": "veh-physics-core",
+      "name": "Ramp launch from surface normals",
+      "summary": "Driving off a sloped face converts forward speed into upward speed by projecting the velocity onto the triangle normal, so a flat face launches nothing and a steep face launches hard.",
+      "behavior": "When a kart leaves the ground the engine looks at the normal of the triangle it just left and asks how much of the kart horizontal velocity points along that normal. A face with no horizontal gradient has a vertical normal only, the projection collapses to zero, and the kart simply falls. A face tilted along the direction of travel returns a large positive number, and dividing that by the vertical component of the normal turns it into an upward velocity in the same units as the rest of the physics. Faces so nearly flat that the projected value is under a small threshold are treated as flat, which stops the kart from being nudged upward by seams between blocks. The larger of that ramp projection and the surface-normal jump projection is then combined with the hop impulse in quadrature, so hopping just before a ramp adds to the launch instead of discarding it. A per-level ceiling caps the launch and can be raised or lowered by the level, and the vertical velocity is clamped upward to the chosen value rather than added to.",
+      "constants": [
+        {
+          "name": "Minimum normal tilt that launches",
+          "value": 20,
+          "unit": "units of the surface normal vertical component; compared on the update the kart leaves the face",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_3_JumpGetVelY.c:14"
+        },
+        {
+          "name": "Default launch ceiling",
+          "value": "0x3700",
+          "unit": "internal vertical velocity units, applied once on the update of the launch when the level does not override it",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c:413"
+        },
+        {
+          "name": "Maximum launch ceiling",
+          "value": "0x5000",
+          "unit": "internal vertical velocity units, the upper bound a level may author; applied once on the update of the launch",
+          "source": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c:416"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_3_JumpGetVelY.c",
+          "line": 14
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_3_JumpGetVelY.c",
+          "line": 34
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 411
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 413
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_4_JumpAndFriction.c",
+          "line": 423
+        }
+      ],
+      "capabilities": [
+        "ramp launches from geometry alone",
+        "flat-face rejection",
+        "per-level launch strength"
+      ],
+      "tags": [
+        "jump",
+        "ramp",
+        "physics"
+      ]
+    },
+    {
+      "id": "steering-response",
+      "node": "veh-physics-core",
+      "name": "Steering rate ramp",
+      "summary": "Steering is an angular velocity that ramps up over a handful of frames, holds briefly, then decays; the class turn stat sets the ceiling and the surface friction scales how fast it is reached.",
+      "behavior": "Holding a direction does not snap the kart to a turn rate. The requested rate from the stick is scaled by the class turn stat and by the turning multiplier, then the current angular rate is moved toward it in fixed steps whose size comes from the class turn-input delay and the surface friction. Steering is therefore slower to bite on low-grip ground even though the ceiling is the same. A separate ramp modulates how much steering authority has been granted since the stick went over: it climbs across the first few frames, holds through a short plateau, then falls away over a longer window, which is what makes a quick tap feel sharp and a long hold feel stable. Once the window has passed the ramp contributes nothing and the angular rate simply stays where it is. Braking and accelerating together halves the rate ceiling and lengthens the steps, so a kart cannot be steered as tightly under combined input.",
+      "constants": [
+        {
+          "name": "Turning stat, engine 0",
+          "value": 28,
+          "unit": "steering ceiling scale in internal angular-rate units; consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7624"
+        },
+        {
+          "name": "Turning stat, engine 1",
+          "value": 26,
+          "unit": "steering ceiling scale in internal angular-rate units; consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7624"
+        },
+        {
+          "name": "Turning stat, engine 2",
+          "value": 24,
+          "unit": "steering ceiling scale in internal angular-rate units; consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7624"
+        },
+        {
+          "name": "Turning stat, engine 3",
+          "value": 30,
+          "unit": "steering ceiling scale in internal angular-rate units; consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7624"
+        },
+        {
+          "name": "Backward turn rate",
+          "value": 48,
+          "unit": "internal angular-rate units at which turning is taken away as the stick swings to the other side; evaluated on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7625"
+        },
+        {
+          "name": "Turn decrease rate, engine 0",
+          "value": 4080,
+          "unit": "far end of the map that converts turn state into a speed reduction, in internal speed units; consulted on every 30 Hz update",
+          "source": "decompile/General/zGlobal_DATA.c:7626"
+        },
+        {
+          "name": "Turn input delay, engine 0",
+          "value": 5000,
+          "unit": "angular-rate units added per update toward the requested rate at 30 Hz, scaled by surface friction",
+          "source": "decompile/General/zGlobal_DATA.c:7627"
+        },
+        {
+          "name": "Steering ramp, first stage length",
+          "value": 4,
+          "unit": "frames at 30 Hz during which granted steering climbs from nothing",
+          "source": "decompile/General/zGlobal_DATA.c:7632"
+        },
+        {
+          "name": "Steering ramp, second stage length",
+          "value": 8,
+          "unit": "frames at 30 Hz of held maximum authority after the first stage",
+          "source": "decompile/General/zGlobal_DATA.c:7633"
+        },
+        {
+          "name": "Steering ramp, fourth stage start",
+          "value": 64,
+          "unit": "frames at 30 Hz after which granted authority has decayed to nothing",
+          "source": "decompile/General/zGlobal_DATA.c:7631"
+        },
+        {
+          "name": "Maximum granted steer acceleration",
+          "value": 3072,
+          "unit": "angular-rate units per frame, the plateau the ramp holds at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7634"
+        },
+        {
+          "name": "Turn-rate step while below the request",
+          "value": 3000,
+          "unit": "angular-rate units per unit of elapsed time, added on every update at 30 Hz while the rate climbs toward the stick",
+          "source": "decompile/General/zGlobal_DATA.c:7652"
+        },
+        {
+          "name": "Turn-rate step while above the request",
+          "value": 500,
+          "unit": "angular-rate units per unit of elapsed time, subtracted on every update at 30 Hz while the rate falls back",
+          "source": "decompile/General/zGlobal_DATA.c:7653"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7624
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7625
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7626
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7627
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7632
+        },
+        {
+          "path": "decompile/General/Vehicle/VehCalc_2_SteerAccel.c",
+          "line": 17
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_0_PhysAngular.c",
+          "line": 176
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysGeneral_0_PhysAngular.c",
+          "line": 229
+        }
+      ],
+      "capabilities": [
+        "steering that ramps instead of snapping",
+        "grip-dependent steering response",
+        "reduced authority under brake and throttle",
+        "per-class turn rates"
+      ],
+      "tags": [
+        "steering",
+        "physics",
+        "game-feel"
+      ]
+    },
+    {
+      "id": "velocity-and-counter-steer",
+      "node": "veh-physics-core",
+      "name": "Velocity from heading and counter-steer",
+      "summary": "A single signed speed plus two angles becomes a three-dimensional velocity vector each update, and a lateral acceleration derived from the surface ratio pushes back against the direction the kart is turning.",
+      "behavior": "The kart keeps one scalar speed rather than a free 3D vector. Each update that scalar is multiplied by the sine and cosine of the yaw angle to get a horizontal component, which is then split again by the sine and cosine of the pitch, producing the three world-space velocity terms. Because the scalar is signed, reversing simply flips every component at once. Alongside that, a counter-steer force is computed from the difference between the current and previous steering angle, clamped to a per-kart limit and looked up through a sine table, then scaled by the surface counter-steer ratio and a small negative strength constant. The force is rotated into world space and added to the acceleration buffer, so a hard surface pushes back harder than a slippery one and a ratio of zero disables the effect entirely. The effect is skipped below a small speed, while warping, while crashed and while the chassis is not touching ground, which keeps it out of the recovery states.",
+      "constants": [
+        {
+          "name": "Counter-steer strength",
+          "value": -8,
+          "unit": "internal acceleration units in 8.8 fixed point per unit of surface ratio, added on every 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c:22"
+        },
+        {
+          "name": "Counter-steer dead zone",
+          "value": 3,
+          "unit": "kilometres per hour, held in 256ths internally; tested on every 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c:10"
+        },
+        {
+          "name": "Counter-steer ratio, plain road",
+          "value": 256,
+          "unit": "8.8 fixed-point surface ratio where 256 is full strength and 0 disables the effect, consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7358"
+        },
+        {
+          "name": "Counter-steer ratio, ice",
+          "value": 0,
+          "unit": "8.8 fixed-point surface ratio where 256 is full strength and 0 disables the effect, consumed on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7424"
+        },
+        {
+          "name": "Chassis radius used to find the model centre",
+          "value": 25,
+          "unit": "world units along the kart up axis, applied on every 30 Hz update before forces are integrated",
+          "source": "decompile/General/Vehicle/VehPhysForce_2_OnApplyForces.c:12"
+        },
+        {
+          "name": "Mud sink floor",
+          "value": -1,
+          "unit": "world units of height, held in 4.12 fixed point; the depth at which sinking stops, tested on every 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysForce_2_OnApplyForces.c:5"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/Vehicle/VehPhysForce_0_ConvertSpeedToVec.c",
+          "line": 17
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c",
+          "line": 22
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysForce_6_CounterSteer.c",
+          "line": 17
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysForce_2_OnApplyForces.c",
+          "line": 12
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7358
+        }
+      ],
+      "capabilities": [
+        "signed-speed locomotion",
+        "surface-driven counter-steer",
+        "mud sinking"
+      ],
+      "tags": [
+        "physics",
+        "vectors",
+        "surface"
+      ]
+    },
+    {
+      "id": "power-slide-charge",
+      "node": "power-slide",
+      "name": "Power-slide charge and graded release",
+      "summary": "Holding a hop button through a hard turn starts a slide with a fixed-length boost meter; the meter fills with elapsed time, and releasing it in the last half second pays boost in up to three chained steps.",
+      "behavior": "A slide begins when the stick is far enough over, the hop button is down, the kart is off the brake and the speed is above half the class top speed. The slide installs its own set of update and angle functions, resets a boost meter to full length and starts two counters recording how long the slide has run. While the button is held the meter drains with elapsed milliseconds; when it reaches empty a chime fires and the driver is locked out of any further charge until the button is released. Releasing while the meter is in its last stretch converts the remaining length into reserves through a linear map, so releasing exactly as the meter empties gives the largest payout and releasing early gives less. The payout also scales with how many chained boosts have already been taken in the same slide, and each chain step raises the flame level used for the effect, up to three in a row. Releasing while the meter is still in its green stretch gives nothing but a small visual reset. Once the reserves are granted the flame persists for a fixed slice of elapsed time rather than a fixed number of frames.",
+      "constants": [
+        {
+          "name": "Boost meter length",
+          "value": 30,
+          "unit": "meter units of 32 ms each, so a full bar takes one second of sliding at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7662"
+        },
+        {
+          "name": "Release window length",
+          "value": 15,
+          "unit": "meter units of 32 ms each at 30 Hz, measured back from the empty end; the graded release region",
+          "source": "decompile/General/zGlobal_DATA.c:7663"
+        },
+        {
+          "name": "Chained boosts per slide",
+          "value": 3,
+          "unit": "boosts, counted on every 30 Hz update while the slide is held",
+          "source": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c:24"
+        },
+        {
+          "name": "Flame level step per chain",
+          "value": 6,
+          "unit": "left shift applied to the chain counter when the boost fires; evaluated on the update of the release at 30 Hz",
+          "source": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c:101"
+        },
+        {
+          "name": "Chained flame persistence",
+          "value": 15,
+          "unit": "multiples of 32 ms, so about 480 ms of flame at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7665"
+        },
+        {
+          "name": "Meter storage shift",
+          "value": 5,
+          "unit": "left shift converting meter units to 32 ms ticks; applied once when the slide starts",
+          "source": "decompile/General/Vehicle/VehPhysProc_14_PowerSlide_Init.c:29"
+        },
+        {
+          "name": "Slide entry speed floor",
+          "value": 1,
+          "unit": "halving shift applied to the class top speed, sampled on every 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysProc_02_Driving_Update.c:28"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7662
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7663
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+          "line": 88
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+          "line": 114
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_14_PowerSlide_Init.c",
+          "line": 29
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_02_Driving_Update.c",
+          "line": 17
+        }
+      ],
+      "capabilities": [
+        "timed drift charge meter",
+        "graded boost release",
+        "chained boost escalation",
+        "flame persistence in milliseconds"
+      ],
+      "tags": [
+        "drift",
+        "boost",
+        "game-feel"
+      ]
+    },
+    {
+      "id": "drift-spinout-limit",
+      "node": "power-slide",
+      "name": "Drift angle and spin-out limit",
+      "summary": "A slide is also a steering resource: the longer it is held the more steering is granted, and holding it past a fixed count of updates spins the kart out and takes the controls away.",
+      "behavior": "Inside a slide the angular rate is built from two parts: a mapped term that grows with time spent sliding and rewards the driver with sharper turning, plus a term from the stick that is scaled by one of two different steering speeds depending on whether the stick agrees or disagrees with the slide direction. That second term is what makes leaning into a slide different from fighting it. A counter records how long the slide has been held in the current direction; swinging to the other side runs it back toward zero before it starts accumulating on the other sign, and with no stick input it is interpolated back to neutral one unit at a time. The moment the counter passes the class drift limit the controls are locked out and a spin state takes over, and swinging the other way past the negative of the same limit does the same, so a switchback slide has its own budget. Past half the limit the game starts a near-spin warning: a small oscillating offset is added to the kart heading and the tyres make noise, which is the cue to release. Slide time is also capped so the steering reward saturates rather than growing without bound.",
+      "constants": [
+        {
+          "name": "Slide updates before spin-out",
+          "value": 60,
+          "unit": "updates at 30 Hz, so two seconds of continuous sliding in one direction",
+          "source": "decompile/General/zGlobal_DATA.c:7651"
+        },
+        {
+          "name": "Slide time cap",
+          "value": 60,
+          "unit": "multiples of 32 ms, so the steering reward saturates after about 1.9 seconds of slide time at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7650"
+        },
+        {
+          "name": "Near-spin warning point",
+          "value": 1,
+          "unit": "right shift applied to the slide limit, so the warning begins at half the spin-out count; checked on every 30 Hz update",
+          "source": "decompile/General/Vehicle/VehPhysProc_09_PowerSlide_PhysAngular.c:339"
+        },
+        {
+          "name": "Spin-out control lockout",
+          "value": "0x3c0",
+          "unit": "internal ticks, 32 of which pass per 30 Hz update, so 960 ticks is one second; ~1 second of no steering input at 30 Hz",
+          "source": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c:134"
+        },
+        {
+          "name": "Drift boost pitch rate",
+          "value": 36,
+          "unit": "multiples of elapsed milliseconds over 32, added to the kart pitch axis on every update at 30 Hz while a drift boost is alive",
+          "source": "decompile/General/zGlobal_DATA.c:7666"
+        },
+        {
+          "name": "Slide camera spin rate",
+          "value": 384,
+          "unit": "target yaw offset for the camera during a slide, in 4096-per-turn units; re-evaluated on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7654"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7650
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7651
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_09_PowerSlide_PhysAngular.c",
+          "line": 339
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_09_PowerSlide_PhysAngular.c",
+          "line": 245
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+          "line": 137
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_11_PowerSlide_Update.c",
+          "line": 134
+        }
+      ],
+      "capabilities": [
+        "drift hold limit",
+        "switchback slide budget",
+        "near-spin warning cue",
+        "spin-out on overholding"
+      ],
+      "tags": [
+        "drift",
+        "risk-reward",
+        "game-feel"
+      ]
+    },
+    {
+      "id": "turbo-reserves-and-flame",
+      "node": "turbo-reserves",
+      "name": "Reserve pool and flame payout",
+      "summary": "Every boost in the game writes into the same reserve pool and raises the same speed ceiling in fixed steps; the flame model size reports which step was reached and the pool drains with elapsed time.",
+      "behavior": "A boost is not a fixed-duration state. It adds a quantity of reserve and raises a speed ceiling that lasts until the reserve runs out, which is why a long slide chain or a boost pad followed by another pad stacks so well. The ceiling is built from a base single-boost value plus eight units per flame level, so the payout is graded rather than binary. The flame model is chosen from the flame level with a size floor of four and a ceiling of eight, so the visual is clamped while the arithmetic is not. Reserves are decremented by the elapsed milliseconds of each update, and when they reach nothing the speed ceiling is recomputed back down to the class value, which is what produces the gentle fall back to normal speed. Boosts that come from a pad top up an outside timer instead of the reserve pool, so sitting on a pad keeps the effect alive frame by frame instead of stacking a single large amount.",
+      "constants": [
+        {
+          "name": "Single-boost speed ceiling",
+          "value": 2048,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); added to the class speed while reserves remain",
+          "source": "decompile/General/zGlobal_DATA.c:7619"
+        },
+        {
+          "name": "Strongest boost speed ceiling",
+          "value": 4096,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); the ceiling reachable only by the top boost tier",
+          "source": "decompile/General/zGlobal_DATA.c:7620"
+        },
+        {
+          "name": "Reserve speed ceiling",
+          "value": 5120,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); the cap applied to the reserve contribution itself",
+          "source": "decompile/General/zGlobal_DATA.c:7621"
+        },
+        {
+          "name": "Speed added per flame level",
+          "value": 8,
+          "unit": "internal speed units added to the ceiling per flame level; recomputed on the update the boost fires at 30 Hz",
+          "source": "decompile/General/Vehicle/VehFire_1_Increment.c:256"
+        },
+        {
+          "name": "Flame model size floor",
+          "value": 4,
+          "unit": "eighths of the model scale, clamped on every update at 30 Hz",
+          "source": "decompile/General/Vehicle/VehTurbo_2_ThTick.c:90"
+        },
+        {
+          "name": "Flame model size ceiling",
+          "value": 8,
+          "unit": "eighths of the model scale, clamped on every update at 30 Hz",
+          "source": "decompile/General/Vehicle/VehTurbo_2_ThTick.c:86"
+        },
+        {
+          "name": "Flame level shift for model size",
+          "value": 6,
+          "unit": "right shift converting flame level to a model size step, applied once when the flame is created",
+          "source": "decompile/General/Vehicle/VehFire_1_Increment.c:304"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7619
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7620
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7621
+        },
+        {
+          "path": "decompile/General/Vehicle/VehFire_1_Increment.c",
+          "line": 246
+        },
+        {
+          "path": "decompile/General/Vehicle/VehFire_1_Increment.c",
+          "line": 328
+        },
+        {
+          "path": "decompile/General/Vehicle/VehTurbo_2_ThTick.c",
+          "line": 85
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPhysProc_00_Driving_PhysLinear.c",
+          "line": 96
+        }
+      ],
+      "capabilities": [
+        "pooled boost reserves",
+        "graded speed ceilings",
+        "flame size from payout",
+        "milliseconds-based drain"
+      ],
+      "tags": [
+        "boost",
+        "tuning",
+        "effects"
+      ]
+    },
+    {
+      "id": "surface-grip-table",
+      "node": "terrain-grip",
+      "name": "Surface grip and speed caps",
+      "summary": "Each surface type carries its own steering friction, an optional top-speed cap, a counter-steer ratio and its tyre particles, and the kart reads the record for the block it is standing on every update.",
+      "behavior": "The physics never asks what a surface looks like, only for a record indexed by a small surface id. That record holds a friction value where 256 is neutral, a speed cap the kart is dragged down to on loose ground, a counter-steer ratio used by the lateral force, a lean multiplier for the drift camera and two particle emitters for the tyres. Plain road, stone and hardpack all use neutral friction and no cap, so on those the surface alone never changes how the kart feels. Ice is the outlier: friction falls to an eighth, so every steering step taken on it is an eighth of the normal one, the speed cap drops, and the lean multiplier is halved on top. Loose ground such as dirt and mud works the other way and keeps full friction while capping the speed, which is why a kart there crawls instead of sliding. Mud also sinks the chassis: the force step clamps the vertical velocity so the kart settles toward a floor instead of falling through it. A separate short table describes what happens on contact with a wall or a soft obstacle, and both lookups fall back to the first entry when handed an unknown id.",
+      "constants": [
+        {
+          "name": "Road steering friction",
+          "value": 256,
+          "unit": "8.8 fixed-point multiplier where 256 is neutral, scaling the steering-rate step on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7360"
+        },
+        {
+          "name": "Dirt speed cap",
+          "value": 180,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); the kart is held at or below this while in contact, checked every 30 Hz update",
+          "source": "decompile/General/zGlobal_DATA.c:7369"
+        },
+        {
+          "name": "Ice steering friction",
+          "value": 32,
+          "unit": "8.8 fixed-point multiplier where 256 is neutral, scaling the steering-rate step on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7426"
+        },
+        {
+          "name": "Ice speed cap",
+          "value": 100,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); the ceiling while on ice, checked every 30 Hz update",
+          "source": "decompile/General/zGlobal_DATA.c:7424"
+        },
+        {
+          "name": "Ice forward-lean multiplier",
+          "value": 128,
+          "unit": "8.8 fixed-point multiplier where 256 is neutral, scaling the kart forward-lean target on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:7426"
+        },
+        {
+          "name": "Mud speed cap",
+          "value": 180,
+          "unit": "internal speed units, where 256 units are one kilometre per hour; evaluated on every update at 30 Hz (one update is 32 ms); the kart is held at or below this while in contact, checked every 30 Hz update",
+          "source": "decompile/General/zGlobal_DATA.c:7512"
+        },
+        {
+          "name": "Surface record count",
+          "value": "0x15",
+          "unit": "surface records in the table, indexed at most once per 30 Hz update per kart",
+          "source": "include/regionsEXE.h:2546"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7352
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 7421
+        },
+        {
+          "path": "decompile/General/Vehicle/VehAfterColl_1_GetTerrain.c",
+          "line": 8
+        },
+        {
+          "path": "decompile/General/Vehicle/VehAfterColl_0_GetSurface.c",
+          "line": 7
+        },
+        {
+          "path": "include/regionsEXE.h",
+          "line": 68
+        }
+      ],
+      "capabilities": [
+        "per-surface steering friction",
+        "speed caps on loose ground",
+        "surface-specific tyre particles",
+        "fallback for unknown surfaces"
+      ],
+      "tags": [
+        "surface",
+        "traction",
+        "tuning"
+      ]
+    },
+    {
+      "id": "chassis-collision-sphere",
+      "node": "collision-quad",
+      "name": "Chassis collision sphere and triangle split",
+      "summary": "The kart is a sphere of a fixed radius swept through the level mesh; the search rejects blocks by bounding box, then splits each candidate into two or eight triangles depending on how many players are on screen.",
+      "behavior": "Collision starts from a sphere around the chassis with a radius chosen to fit the kart, and the same radius is handed both to the generic search and to the block search so the two never disagree. A block is skipped outright unless its bounding box overlaps the sphere box on all three axes, which removes almost the entire mesh before any triangle maths runs. Candidates are then split differently by player count: with one or two players each block is split into eight triangles for a fine-grained normal, while with three or four players only two triangles are used, trading shape accuracy for the extra cars on screen. A flat quad is tested once as two triangles, but a block whose fourth vertex differs is tested as two halves so the fold is respected. Triangle tests are skipped unless the block carries one of the wanted layer bits and none of the ignored ones, which is how a search asks for ground only, walls only, or both.",
+      "constants": [
+        {
+          "name": "Chassis collision radius",
+          "value": 25,
+          "unit": "world units; swept and re-tested on every 30 Hz update",
+          "source": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c:28"
+        },
+        {
+          "name": "Wanted block layers",
+          "value": "0x3000",
+          "unit": "bit mask of the ground and wall layers, tested on every block examined each 30 Hz update",
+          "source": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c:42"
+        },
+        {
+          "name": "Player count that switches to coarse blocks",
+          "value": 3,
+          "unit": "karts on screen; the detail level is chosen once per update at 30 Hz",
+          "source": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c:50"
+        },
+        {
+          "name": "Coarse triangles per block",
+          "value": 2,
+          "unit": "triangles tested per candidate block, per 30 Hz update",
+          "source": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c:46"
+        },
+        {
+          "name": "Fine triangles per block",
+          "value": 8,
+          "unit": "triangles tested per candidate block, per 30 Hz update",
+          "source": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c:52"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c",
+          "line": 28
+        },
+        {
+          "path": "decompile/WorkInProgress/src/COLL/COLL_MOVED_PlayerSearch.c",
+          "line": 42
+        },
+        {
+          "path": "decompile/General/COLL/COLL_11_FIXED_QUADBLK_TestTriangles.c",
+          "line": 26
+        },
+        {
+          "path": "decompile/General/COLL/COLL_14_FIXED_QUADBLK_GetNormVecs_HiLOD.c",
+          "line": 16
+        },
+        {
+          "path": "include/ctr/lev.h",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "sphere-versus-mesh collision",
+        "bounding-box rejection",
+        "level-of-detail by player count",
+        "layer masking for ground and walls"
+      ],
+      "tags": [
+        "collision",
+        "level",
+        "performance"
+      ]
+    },
+    {
+      "id": "chase-camera-framing",
+      "node": "chase-camera",
+      "name": "Chase camera framing",
+      "summary": "The camera hangs behind the kart at a distance mapped from speed, rises a fixed height above it, and adds a half-turn offset plus the kart yaw; holding the rear-view button flips that offset by the same half turn.",
+      "behavior": "Framing is built from three numbers: a yaw that follows the kart heading with a fixed half-turn offset, a distance that the engine maps from the smoothed camera speed into a range between a near and a far value, and a height above the chassis. As the kart speeds up the camera is pulled back until the distance saturates, and it eases back in when the kart slows, so the framing breathes with the race instead of snapping. The pitch is nudged downward when the kart is undamaged and back to level while it is in a hit state, which is what gives a clean chase view normally and a looser view when the driver has lost control. Boost stretches the pull-back briefly and then decays, giving the sensation of acceleration without a permanent zoom-out. A transition between camera modes sets a destination and blends toward it over a full second, and the rear-view button simply adds the same half-turn used for the forward offset so the camera swings all the way around. A separate shot orbits the kart on a sine and cosine pair at a fixed radius, used when the race wants to show the kart from every side.",
+      "constants": [
+        {
+          "name": "Heading half-turn offset",
+          "value": "0x800",
+          "unit": "angular units in 4096-per-turn scale, added to the kart yaw on every update at 30 Hz",
+          "source": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c:210"
+        },
+        {
+          "name": "Reverse view yaw flip",
+          "value": "0x800",
+          "unit": "angular units in 4096-per-turn scale, applied on the single update the rear-view button changes state",
+          "source": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c:55"
+        },
+        {
+          "name": "Nearest pull-back distance",
+          "value": "0xB3",
+          "unit": "world units behind the kart, chosen on every update at 30 Hz from the speed map",
+          "source": "decompile/General/zGlobal_DATA.c:461"
+        },
+        {
+          "name": "Farthest pull-back distance",
+          "value": "0xE0",
+          "unit": "world units behind the kart, chosen on every update at 30 Hz from the speed map",
+          "source": "decompile/General/zGlobal_DATA.c:462"
+        },
+        {
+          "name": "Camera height above the chassis",
+          "value": "0x40",
+          "unit": "world units, added on every update at 30 Hz",
+          "source": "decompile/General/zGlobal_DATA.c:470"
+        },
+        {
+          "name": "Distance easing, retained fraction",
+          "value": "0xF0",
+          "unit": "8.8 fixed-point fraction of the previous camera distance carried into the next one, per 30 Hz update",
+          "source": "decompile/General/zGlobal_DATA.c:465"
+        },
+        {
+          "name": "Mode transition length",
+          "value": 1,
+          "unit": "seconds; the code stores 30 updates at 30 Hz, so a new camera mode takes a second to settle",
+          "source": "decompile/General/CAMERA/CAM_16_SetDesiredPosRot.c:15"
+        },
+        {
+          "name": "Damage pitch step",
+          "value": 8,
+          "unit": "angular units of camera pitch moved per update at 30 Hz; the frame-rate macro is an identity at 30 Hz",
+          "source": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c:221"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c",
+          "line": 210
+        },
+        {
+          "path": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c",
+          "line": 127
+        },
+        {
+          "path": "decompile/General/CAMERA/CAM_17_FollowDriver_Normal.c",
+          "line": 55
+        },
+        {
+          "path": "decompile/General/CAMERA/CAM_16_SetDesiredPosRot.c",
+          "line": 15
+        },
+        {
+          "path": "decompile/General/CAMERA/CAM_15_FollowDriver_Spin360.c",
+          "line": 24
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 459
+        }
+      ],
+      "capabilities": [
+        "speed-dependent chase distance",
+        "reverse view",
+        "mode blending over one second",
+        "orbit shot"
+      ],
+      "tags": [
+        "camera",
+        "game-feel",
+        "framing"
+      ]
+    },
+    {
+      "id": "opponent-nav-driving",
+      "node": "ai-opponents",
+      "name": "Opponent path following",
+      "summary": "Computer drivers do not steer by feel: they read a baked chain of navigation nodes, compare their position with the next node and turn toward the heading that difference implies.",
+      "behavior": "Each level supplies navigation paths in three slots, selected by an index, stored as a header plus an array of nodes. The header carries a count and a validity tag, and the loader checks the tag before trusting the count so an out-of-date path silently collapses to zero nodes instead of walking off the end of a stale array. A driver tracks its position in 8.8 fixed point and shifts it down to whole world units before comparing with the node position, so the comparison happens in whole world units, where squared distances stay small. The heading between kart and node is built from the horizontal distance and the height difference, converted to a rotation, and then offset by a half turn to point the model the other way. Two computer karts in contact are separated using race rank to decide which one is treated as the leader rather than using momentum, which keeps a pack of them from locking together.",
+      "constants": [
+        {
+          "name": "Position fixed-point shift",
+          "value": 8,
+          "unit": "right shift turning 8.8 fixed-point world coordinates into whole world units; applied on every 30 Hz update",
+          "source": "decompile/General/BOTS/BOTS_06_SetRotation.c:13"
+        },
+        {
+          "name": "Heading angle scale",
+          "value": "0x1000",
+          "unit": "vertical exaggeration factor in the heading lookup, evaluated once per 30 Hz update",
+          "source": "decompile/General/BOTS/BOTS_06_SetRotation.c:34"
+        },
+        {
+          "name": "Heading half-turn offset",
+          "value": "0x800",
+          "unit": "angular units in 4096-per-turn scale, applied once per 30 Hz update when the node heading is stored",
+          "source": "decompile/General/BOTS/BOTS_06_SetRotation.c:43"
+        },
+        {
+          "name": "Navigation path slots",
+          "value": 3,
+          "unit": "paths per level, one per route; resolved once when the level loads",
+          "source": "include/regionsEXE.h:4479"
+        },
+        {
+          "name": "Path validity tag",
+          "value": "-0x1303",
+          "unit": "sentinel compared once when the path is loaded; a mismatch zeroes the node count rather than reading stale data",
+          "source": "decompile/General/BOTS/BOTS_01_InitNavPath.c:24"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/BOTS/BOTS_01_InitNavPath.c",
+          "line": 24
+        },
+        {
+          "path": "decompile/General/BOTS/BOTS_06_SetRotation.c",
+          "line": 34
+        },
+        {
+          "path": "decompile/General/BOTS/BOTS_13_CollideWithOtherAI.c",
+          "line": 9
+        },
+        {
+          "path": "decompile/WorkInProgress/src/BOTS/BOTS_11_ThTick_Drive.c",
+          "line": 5
+        },
+        {
+          "path": "decompile/General/zGlobal_DATA.c",
+          "line": 120
+        }
+      ],
+      "capabilities": [
+        "navigation path following",
+        "route-specific opponent lines",
+        "rank-based kart separation",
+        "stale-path rejection"
+      ],
+      "tags": [
+        "ai",
+        "opponents",
+        "paths"
+      ]
+    },
+    {
+      "id": "weapon-impact-and-recovery",
+      "node": "weapons-and-states",
+      "name": "Hits, lockouts and shields",
+      "summary": "A weapon hit is routed through one entry point that refuses to touch an invulnerable or shielded kart, and otherwise installs a state whose control lockout is a different length for each damage kind.",
+      "behavior": "Every hazard funnels its hit through the same state picker, which first checks whether the victim is already holding a protective effect or has temporary invulnerability and, if so, plays a taunt and returns without changing anything. A held shield is not a separate code path - it is consumed inside the same function, granting a longer invulnerability window and popping the bubble before the hit is discarded. Each damage kind then maps to a concrete state and a lockout length: a spin costs about a second of control, a blast costs about two and a half seconds and hands the kart to a tumbling state, and lighter kinds return without touching the state at all. The lockout is stored in a timer that the drive step decrements by elapsed milliseconds, which is why a kart hit on a slow frame recovers on roughly the same clock time as one hit on a fast frame. Thrown hazards carry their own short cooldown after release so a dropped object does not immediately re-arm and hit the kart that dropped it.",
+      "constants": [
+        {
+          "name": "Spin-out lockout",
+          "value": "0x3c0",
+          "unit": "internal ticks, 32 of which pass per 30 Hz update, so 960 ticks is one second; about one second of no input at 30 Hz",
+          "source": "decompile/General/Vehicle/VehPickState_0_NewState.c:56"
+        },
+        {
+          "name": "Blast lockout",
+          "value": "0x960",
+          "unit": "internal ticks, 32 of which pass per 30 Hz update, so 960 ticks is one second; about two and a half seconds of no input at 30 Hz",
+          "source": "decompile/General/Vehicle/VehPickState_0_NewState.c:79"
+        },
+        {
+          "name": "Shield invulnerability window",
+          "value": "0x2a0",
+          "unit": "internal ticks, 32 of which pass per 30 Hz update, so 960 ticks is one second; granted on the update the shield absorbs a hit",
+          "source": "decompile/General/Vehicle/VehPickState_0_NewState.c:40"
+        },
+        {
+          "name": "Thrown hazard cooldown",
+          "value": "0xf0",
+          "unit": "internal ticks, 32 of which pass per 30 Hz update, so 960 ticks is one second; counted down by elapsed milliseconds on every 30 Hz update",
+          "source": "decompile/General/231/231_016_RB_GenericMine_ThTick.c:33"
+        },
+        {
+          "name": "Stronger boost item fruit threshold",
+          "value": 10,
+          "unit": "collected fruit; checked once when the item is used",
+          "source": "decompile/General/Vehicle/VehPickupItem_4_ShootNow.c:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/Vehicle/VehPickState_0_NewState.c",
+          "line": 21
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPickState_0_NewState.c",
+          "line": 56
+        },
+        {
+          "path": "decompile/General/Vehicle/VehPickState_0_NewState.c",
+          "line": 79
+        },
+        {
+          "path": "decompile/General/231/231_006_RB_Hazard_HurtDriver.c",
+          "line": 15
+        },
+        {
+          "path": "decompile/General/231/231_016_RB_GenericMine_ThTick.c",
+          "line": 33
+        }
+      ],
+      "capabilities": [
+        "single hit entry point",
+        "shield consumption",
+        "per-hit control lockouts",
+        "hazard re-arm delay"
+      ],
+      "tags": [
+        "combat",
+        "states",
+        "timers"
+      ]
+    },
+    {
+      "id": "missile-targeting",
+      "node": "weapons-and-states",
+      "name": "Homing target selection",
+      "summary": "A homing shot reserves a slot in a fixed global budget, picks the victim by the smallest planar distance among its own projectiles, and clears the on-screen target marker when it detonates.",
+      "behavior": "Firing a homing projectile first checks a global counter and refuses outright once a fixed number are already in flight, which caps how many tracking objects the engine will ever simulate at once. The victim is whatever the aim step picked rather than the race leader, so the launch stores that driver as the projectile target and the projectile never re-picks. Every projectile that shares a target compares itself against the others using the squared horizontal distance between the projectile and its target, so no square root is taken during the search and the comparison is monotonic. The winner is the one closest on the ground plane, and the height difference is deliberately ignored so a projectile cannot be ignored simply because it has been thrown high. On impact the projectile kills its own thread, mutes its flight audio and clears the marker that was drawn on the victim screen, so the target display is clean again as soon as the shot lands.",
+      "constants": [
+        {
+          "name": "Tracked projectiles in flight",
+          "value": 12,
+          "unit": "projectiles; the counter is checked once when a shot is fired",
+          "source": "decompile/General/Vehicle/VehPickupItem_4_ShootNow.c:46"
+        },
+        {
+          "name": "Distance search initial value",
+          "value": "0x3fffffff",
+          "unit": "squared world units; the search sentinel re-armed on every evaluation of a projectile pair",
+          "source": "decompile/General/231/231_055_RB_GetThread_ClosestTracker.c:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "decompile/General/Vehicle/VehPickupItem_4_ShootNow.c",
+          "line": 46
+        },
+        {
+          "path": "decompile/General/231/231_055_RB_GetThread_ClosestTracker.c",
+          "line": 37
+        },
+        {
+          "path": "decompile/General/231/231_010_RB_Hazard_ThCollide_Missile.c",
+          "line": 13
+        },
+        {
+          "path": "decompile/WorkInProgress/src/231/231_030_RB_Warpball_GetDriverTarget.c",
+          "line": 3
+        }
+      ],
+      "capabilities": [
+        "fixed projectile budget",
+        "planar distance target search",
+        "target marker cleanup"
+      ],
+      "tags": [
+        "combat",
+        "projectiles",
+        "targeting"
+      ]
+    }
+  ]
+}

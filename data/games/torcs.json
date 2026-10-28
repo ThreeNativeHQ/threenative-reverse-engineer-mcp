@@ -1,0 +1,2612 @@
+{
+  "version": 1,
+  "id": "torcs",
+  "title": "TORCS",
+  "repo": "https://github.com/jeremybennett/torcs",
+  "sha": "ccf4fe6aa90ba629ec4782e87169c46bddc5f6ee",
+  "nodes": [
+    {
+      "id": "sim-loop",
+      "name": "Simulation step",
+      "purpose": "Fixed 500 Hz physics step that sanitizes driver commands and runs every car subsystem in a fixed order, driven by the race engine with robots polled at 50 Hz",
+      "paths": [
+        "src/modules/simu/simuv2/simu.cpp",
+        "src/interfaces/raceman.h"
+      ],
+      "functions": [
+        {
+          "name": "ctrlCheck",
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "lines": [
+            47,
+            115
+          ]
+        },
+        {
+          "name": "SimUpdate",
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "lines": [
+            323,
+            457
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "car-body",
+      "name": "Chassis rigid body",
+      "purpose": "Six-degree-of-freedom chassis: sums wheel, aero and gravity forces in the body frame, adds rolling resistance and integrates velocity and pose",
+      "paths": [
+        "src/modules/simu/simuv2/car.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimCarConfig",
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "lines": [
+            29,
+            139
+          ]
+        },
+        {
+          "name": "SimCarUpdateForces",
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "lines": [
+            143,
+            242
+          ]
+        },
+        {
+          "name": "SimCarUpdateSpeed",
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "lines": [
+            245,
+            272
+          ]
+        },
+        {
+          "name": "SimCarUpdatePos",
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "lines": [
+            298,
+            329
+          ]
+        },
+        {
+          "name": "SimCarUpdate",
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "lines": [
+            409,
+            424
+          ]
+        }
+      ],
+      "dependsOn": [
+        "sim-loop"
+      ]
+    },
+    {
+      "id": "tyres",
+      "name": "Tyre model",
+      "purpose": "Per-wheel slip, magic-formula force with load sensitivity, camber and surface friction, skill-level grip help, wheel spin integration and the optional thermal and wear model",
+      "paths": [
+        "src/modules/simu/simuv2/wheel.cpp",
+        "src/modules/simu/simuv2/categories.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimWheelConfig",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            27,
+            135
+          ]
+        },
+        {
+          "name": "SimWheelUpdateRide",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            167,
+            207
+          ]
+        },
+        {
+          "name": "SimWheelUpdateForce",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            212,
+            344
+          ]
+        },
+        {
+          "name": "SimWheelUpdateRotation",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            348,
+            363
+          ]
+        },
+        {
+          "name": "SimUpdateFreeWheels",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            367,
+            393
+          ]
+        },
+        {
+          "name": "SimWheelUpdateTire",
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "lines": [
+            396,
+            475
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-body"
+      ]
+    },
+    {
+      "id": "suspension",
+      "name": "Suspension and axles",
+      "purpose": "Coil spring with preload, two-slope bump and rebound dampers, travel stops, bellcrank ratio, anti-roll bar and third spring per axle",
+      "paths": [
+        "src/modules/simu/simuv2/susp.cpp",
+        "src/modules/simu/simuv2/axle.cpp"
+      ],
+      "functions": [
+        {
+          "name": "damperForce",
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "lines": [
+            41,
+            72
+          ]
+        },
+        {
+          "name": "springForce",
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "lines": [
+            80,
+            93
+          ]
+        },
+        {
+          "name": "SimSuspCheckIn",
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "lines": [
+            98,
+            114
+          ]
+        },
+        {
+          "name": "SimSuspUpdate",
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "lines": [
+            119,
+            132
+          ]
+        },
+        {
+          "name": "SimSuspConfig",
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "lines": [
+            137,
+            155
+          ]
+        },
+        {
+          "name": "SimAxleConfig",
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "lines": [
+            24,
+            47
+          ]
+        },
+        {
+          "name": "SimAxleUpdate",
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "lines": [
+            67,
+            93
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyres"
+      ]
+    },
+    {
+      "id": "aero",
+      "name": "Aerodynamics",
+      "purpose": "Quadratic body drag with damage and slipstream terms, ride-height ground effect and wing forces driven by angle of attack",
+      "paths": [
+        "src/modules/simu/simuv2/aero.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimAeroConfig",
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "lines": [
+            24,
+            35
+          ]
+        },
+        {
+          "name": "SimAeroUpdate",
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "lines": [
+            38,
+            107
+          ]
+        },
+        {
+          "name": "SimWingConfig",
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "lines": [
+            111,
+            129
+          ]
+        },
+        {
+          "name": "SimWingUpdate",
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "lines": [
+            148,
+            164
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-body"
+      ]
+    },
+    {
+      "id": "drivetrain",
+      "name": "Engine and drivetrain",
+      "purpose": "Torque curve with engine braking and rev limiter, clutch and sequential gearbox with shift time, and free, limited-slip, viscous and locked differentials",
+      "paths": [
+        "src/modules/simu/simuv2/engine.cpp",
+        "src/modules/simu/simuv2/transmission.cpp",
+        "src/modules/simu/simuv2/differential.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimEngineConfig",
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "lines": [
+            24,
+            97
+          ]
+        },
+        {
+          "name": "SimEngineUpdateTq",
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "lines": [
+            101,
+            134
+          ]
+        },
+        {
+          "name": "SimEngineUpdateRpm",
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "lines": [
+            151,
+            198
+          ]
+        },
+        {
+          "name": "SimTransmissionConfig",
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "lines": [
+            25,
+            155
+          ]
+        },
+        {
+          "name": "SimGearboxUpdate",
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "lines": [
+            215,
+            297
+          ]
+        },
+        {
+          "name": "SimTransmissionUpdate",
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "lines": [
+            300,
+            342
+          ]
+        },
+        {
+          "name": "SimDifferentialConfig",
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "lines": [
+            22,
+            50
+          ]
+        },
+        {
+          "name": "SimDifferentialUpdate",
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "lines": [
+            143,
+            273
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyres"
+      ]
+    },
+    {
+      "id": "steer-brake",
+      "name": "Steering and brakes",
+      "purpose": "Rate-limited steering with Ackermann geometry and a hydraulic brake system split front to rear into disc torque",
+      "paths": [
+        "src/modules/simu/simuv2/steer.cpp",
+        "src/modules/simu/simuv2/brake.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimSteerConfig",
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "lines": [
+            22,
+            29
+          ]
+        },
+        {
+          "name": "SimSteerUpdate",
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "lines": [
+            42,
+            68
+          ]
+        },
+        {
+          "name": "SimBrakeConfig",
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "lines": [
+            22,
+            33
+          ]
+        },
+        {
+          "name": "SimBrakeUpdate",
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "lines": [
+            36,
+            44
+          ]
+        },
+        {
+          "name": "SimBrakeSystemConfig",
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "lines": [
+            47,
+            53
+          ]
+        },
+        {
+          "name": "SimBrakeSystemUpdate",
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "lines": [
+            70,
+            78
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyres"
+      ]
+    },
+    {
+      "id": "collisions",
+      "name": "Collisions and damage",
+      "purpose": "Ground contact of the body, track barrier response by car corners, and impulse-based car-to-car and wall contacts, each adding damage points",
+      "paths": [
+        "src/modules/simu/simuv2/collide.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SimCarCollideZ",
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "lines": [
+            25,
+            93
+          ]
+        },
+        {
+          "name": "SimCarCollideXYScene",
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "lines": [
+            101,
+            192
+          ]
+        },
+        {
+          "name": "SimCarCollideResponse",
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "lines": [
+            195,
+            371
+          ]
+        },
+        {
+          "name": "SimCarWallCollideResponse",
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "lines": [
+            376,
+            491
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-body"
+      ]
+    },
+    {
+      "id": "robot-driver",
+      "name": "Robot opponent driver",
+      "purpose": "Reference opponent robot: corner speed from track radius, aero-aware braking distance, lookahead steering, overtaking offset, collision filters, driver aids and stuck recovery",
+      "paths": [
+        "src/drivers/bt/driver.cpp",
+        "src/drivers/bt/opponent.cpp"
+      ],
+      "functions": [
+        {
+          "name": "drive",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            171,
+            197
+          ]
+        },
+        {
+          "name": "computeRadius",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            225,
+            254
+          ]
+        },
+        {
+          "name": "getAllowedSpeed",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            258,
+            278
+          ]
+        },
+        {
+          "name": "getAccel",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            293,
+            307
+          ]
+        },
+        {
+          "name": "getBrake",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            324,
+            355
+          ]
+        },
+        {
+          "name": "getGear",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            359,
+            378
+          ]
+        },
+        {
+          "name": "getClutch",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            395,
+            426
+          ]
+        },
+        {
+          "name": "getTargetPoint",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            429,
+            493
+          ]
+        },
+        {
+          "name": "getOffset",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            497,
+            631
+          ]
+        },
+        {
+          "name": "isStuck",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            672,
+            687
+          ]
+        },
+        {
+          "name": "filterBrakeSpeed",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            733,
+            739
+          ]
+        },
+        {
+          "name": "filterSColl",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            818,
+            895
+          ]
+        },
+        {
+          "name": "filterABS",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            899,
+            912
+          ]
+        },
+        {
+          "name": "filterTCL",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            916,
+            923
+          ]
+        },
+        {
+          "name": "filterTrk",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            967,
+            1000
+          ]
+        },
+        {
+          "name": "brakedist",
+          "path": "src/drivers/bt/driver.cpp",
+          "lines": [
+            1004,
+            1011
+          ]
+        },
+        {
+          "name": "update",
+          "path": "src/drivers/bt/opponent.cpp",
+          "lines": [
+            40,
+            129
+          ]
+        },
+        {
+          "name": "updateOverlapTimer",
+          "path": "src/drivers/bt/opponent.cpp",
+          "lines": [
+            144,
+            165
+          ]
+        }
+      ],
+      "dependsOn": [
+        "sim-loop"
+      ]
+    },
+    {
+      "id": "race-manager",
+      "name": "Race manager",
+      "purpose": "Race clock and step scheduling, lap counting, standings sort, race rules and penalties, and pit stop service time",
+      "paths": [
+        "src/libs/raceengineclient/raceengine.cpp",
+        "src/interfaces/raceman.h"
+      ],
+      "functions": [
+        {
+          "name": "ReUpdtPitTime",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            52,
+            83
+          ]
+        },
+        {
+          "name": "ReManage",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            127,
+            361
+          ]
+        },
+        {
+          "name": "ReSortCars",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            364,
+            399
+          ]
+        },
+        {
+          "name": "ReRaceRules",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            404,
+            611
+          ]
+        },
+        {
+          "name": "ReOneStep",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            615,
+            667
+          ]
+        },
+        {
+          "name": "ReUpdate",
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "lines": [
+            710,
+            778
+          ]
+        }
+      ],
+      "dependsOn": [
+        "sim-loop"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "sim-timestep",
+      "node": "sim-loop",
+      "name": "Fixed physics step and robot rate",
+      "summary": "Physics advances in fixed 2 millisecond steps, robots decide every 20 milliseconds, and the frame loop catches up with a step cap",
+      "behavior": "The race engine runs the physics in fixed steps of 0.002 seconds, so the simulation runs at 500 Hz whatever the frame rate. Each render frame runs as many steps as the wall clock requires, up to 2000 steps, and then gives up the backlog. Inside a step, robots are polled only when at least 0.02 seconds of race time passed since the last poll, so opponents and players send commands at 50 Hz. Each car step runs in a fixed order: atmosphere, command checks, steering, gearbox, engine torque, wheel positions, brakes, aero, wings, ride, axles, tyre forces and wear, transmission, wheel spin and chassis. Car-to-car contact runs after all cars move, then lap and rule bookkeeping runs.",
+      "constants": [
+        {
+          "name": "physicsStep",
+          "value": 0.002,
+          "unit": "seconds per simulation step",
+          "source": "src/interfaces/raceman.h:56"
+        },
+        {
+          "name": "robotStep",
+          "value": 0.02,
+          "unit": "seconds per robot update",
+          "source": "src/interfaces/raceman.h:57"
+        },
+        {
+          "name": "maxCatchUpSteps",
+          "value": 2000,
+          "unit": "simulation steps per render frame",
+          "source": "src/libs/raceengineclient/raceengine.cpp:716"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 644
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 657
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 726
+        },
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 330
+        },
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 361
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "subsystem order",
+        "catch-up cap"
+      ],
+      "tags": [
+        "physics",
+        "timestep"
+      ]
+    },
+    {
+      "id": "command-sanitizing",
+      "node": "sim-loop",
+      "name": "Driver command limits and retirement coasting",
+      "summary": "Pedals and steering are clamped to valid ranges, while broken, retired or finished cars get scripted inputs",
+      "behavior": "Every step rejects invalid numbers and clamps throttle, brake and clutch to the range 0 to 1 and steering to the range minus 1 to 1. Clutch engagement is one minus the clutch pedal. A broken or eliminated car drops to neutral, lifts off, holds 0.1 brake and steers 0.1 toward the nearer track edge to pull off the racing line. After the flag a car is held to 0.2 throttle and gets at least 0.05 brake above 30 meters per second, so it cruises a cool-down lap.",
+      "constants": [
+        {
+          "name": "retiredBrake",
+          "value": 0.1,
+          "unit": "brake pedal fraction",
+          "source": "src/modules/simu/simuv2/simu.cpp:68"
+        },
+        {
+          "name": "retiredSteer",
+          "value": 0.1,
+          "unit": "steering fraction",
+          "source": "src/modules/simu/simuv2/simu.cpp:71"
+        },
+        {
+          "name": "cooldownThrottle",
+          "value": 0.2,
+          "unit": "throttle pedal fraction",
+          "source": "src/modules/simu/simuv2/simu.cpp:86"
+        },
+        {
+          "name": "cooldownSpeed",
+          "value": 30,
+          "unit": "meters per second",
+          "source": "src/modules/simu/simuv2/simu.cpp:87"
+        },
+        {
+          "name": "cooldownBrake",
+          "value": 0.05,
+          "unit": "brake pedal fraction",
+          "source": "src/modules/simu/simuv2/simu.cpp:88"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 59
+        },
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 66
+        },
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 93
+        },
+        {
+          "path": "src/modules/simu/simuv2/simu.cpp",
+          "line": 114
+        }
+      ],
+      "capabilities": [
+        "input clamp",
+        "retirement",
+        "cool-down lap"
+      ],
+      "tags": [
+        "input",
+        "race"
+      ]
+    },
+    {
+      "id": "chassis-integration",
+      "node": "car-body",
+      "name": "Chassis forces and integration",
+      "summary": "Box-inertia rigid body under rotated gravity with explicit Euler steps, a yaw-rate cap and a 60 degree tilt limit",
+      "behavior": "Inertia comes from the car as a solid box of its length, width and height, with an extra factor on the yaw axis from the car data. Mass is the car mass plus the fuel on board, 1500 kilograms and 80 liters by default. Gravity is rotated into the body frame and added to the four wheel forces, the body drag, the wing forces and the axle lift, with moments from wheel positions, roll centers and ride height. Rolling resistance acts against velocity and yaw but is clamped so it can stop the car without pushing it backward in one step. Velocity and pose are integrated with explicit Euler steps, yaw rate is capped at 9 radians per second, and roll and pitch are clamped to 1.04 radians.",
+      "constants": [
+        {
+          "name": "defaultMass",
+          "value": 1500,
+          "unit": "kilograms",
+          "source": "src/modules/simu/simuv2/car.cpp:44"
+        },
+        {
+          "name": "defaultTank",
+          "value": 80,
+          "unit": "liters",
+          "source": "src/modules/simu/simuv2/car.cpp:52"
+        },
+        {
+          "name": "boxInertiaFactor",
+          "value": 12,
+          "unit": "divisor of mass times size squared",
+          "source": "src/modules/simu/simuv2/car.cpp:66"
+        },
+        {
+          "name": "yawRateCap",
+          "value": 9,
+          "unit": "radians per second, checked per simulation step at 500 Hz",
+          "source": "src/modules/simu/simuv2/car.cpp:256"
+        },
+        {
+          "name": "tiltLimit",
+          "value": 1.04,
+          "unit": "radians",
+          "source": "src/modules/simu/simuv2/car.cpp:26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 153
+        },
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 171
+        },
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 209
+        },
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 228
+        },
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 247
+        },
+        {
+          "path": "src/modules/simu/simuv2/car.cpp",
+          "line": 315
+        }
+      ],
+      "capabilities": [
+        "rigid body",
+        "rolling resistance",
+        "euler integration"
+      ],
+      "tags": [
+        "physics",
+        "movement"
+      ]
+    },
+    {
+      "id": "tyre-magic-formula",
+      "node": "tyres",
+      "name": "Combined-slip magic formula",
+      "summary": "Longitudinal and lateral slip are merged into one slip magnitude that drives a simplified Pacejka curve",
+      "behavior": "Each wheel measures its velocity in the steered wheel frame. Longitudinal slip is the gap between road speed and rim speed over road speed, and lateral slip is the sine of the slip angle. Both are zero while the wheel is in the air. The two combine into one slip magnitude, capped at 1.5, which feeds a magic-formula curve. The shape factor comes from the tyre peak ratio, the stiffness from the cornering coefficient over the shape, and the curvature directly from the car data, with defaults of 30, 0.8 and 0.7. The resulting force is split back along the two slip directions, so a wheel spinning hard loses cornering grip. Both force components are then blended half and half with the previous step.",
+      "constants": [
+        {
+          "name": "slipCap",
+          "value": 1.5,
+          "unit": "combined slip",
+          "source": "src/modules/simu/simuv2/wheel.cpp:302"
+        },
+        {
+          "name": "defaultStiffness",
+          "value": 30,
+          "unit": "dimensionless",
+          "source": "src/modules/simu/simuv2/wheel.cpp:47"
+        },
+        {
+          "name": "defaultPeakRatio",
+          "value": 0.8,
+          "unit": "dimensionless",
+          "source": "src/modules/simu/simuv2/wheel.cpp:48"
+        },
+        {
+          "name": "defaultCurvature",
+          "value": 0.7,
+          "unit": "dimensionless",
+          "source": "src/modules/simu/simuv2/wheel.cpp:49"
+        },
+        {
+          "name": "forceRelaxation",
+          "value": 50,
+          "unit": "percent of new value kept per simulation step at 500 Hz",
+          "source": "src/modules/simu/simuv2/wheel.cpp:323"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 264
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 275
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 306
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 319
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 88
+        }
+      ],
+      "capabilities": [
+        "magic formula",
+        "combined slip",
+        "friction circle"
+      ],
+      "tags": [
+        "tyres",
+        "grip",
+        "handling"
+      ]
+    },
+    {
+      "id": "tyre-load-sensitivity",
+      "node": "tyres",
+      "name": "Load sensitivity, camber and surface",
+      "summary": "Friction falls off with vertical load along an exponential, rises slightly with negative camber and scales with the track surface",
+      "behavior": "The friction coefficient is the tyre mu times a load factor that starts at 1.6 for a light wheel and decays toward 0.8 as load grows past the operating load, which defaults to 1.2 times the static wheel weight. The tyre force is that friction times the vertical force, times the surface friction of the current track segment, times a camber term of plus or minus 5 percent that peaks when the effective camber angle times 18 reaches a quarter turn. Steering adds camber through the caster angle. Vertical force is zero when the wheel pulls away from the road, so the ground can push the car up but cannot pull it down.",
+      "constants": [
+        {
+          "name": "lightLoadFactor",
+          "value": 1.6,
+          "unit": "friction multiplier",
+          "source": "src/modules/simu/simuv2/wheel.cpp:50"
+        },
+        {
+          "name": "heavyLoadFactor",
+          "value": 0.8,
+          "unit": "friction multiplier",
+          "source": "src/modules/simu/simuv2/wheel.cpp:51"
+        },
+        {
+          "name": "operatingLoadShare",
+          "value": 1.2,
+          "unit": "multiplier on static wheel weight",
+          "source": "src/modules/simu/simuv2/wheel.cpp:52"
+        },
+        {
+          "name": "camberGain",
+          "value": 0.05,
+          "unit": "friction fraction",
+          "source": "src/modules/simu/simuv2/wheel.cpp:311"
+        },
+        {
+          "name": "camberFrequency",
+          "value": 18,
+          "unit": "per radian",
+          "source": "src/modules/simu/simuv2/wheel.cpp:311"
+        },
+        {
+          "name": "defaultTyreMu",
+          "value": 1,
+          "unit": "friction coefficient",
+          "source": "src/modules/simu/simuv2/wheel.cpp:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 309
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 311
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 292
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 246
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 92
+        }
+      ],
+      "capabilities": [
+        "load sensitivity",
+        "camber",
+        "surface friction"
+      ],
+      "tags": [
+        "tyres",
+        "grip"
+      ]
+    },
+    {
+      "id": "skill-grip-help",
+      "node": "tyres",
+      "name": "Skill-level grip help and skid feedback",
+      "summary": "Easier driver skill levels gain extra tyre force at high slip, and a skid value drives tyre sound",
+      "behavior": "The tyre force is multiplied by one plus slip times a factor picked by skill level: 0.4 for the easiest level, then 0.35 and 0.3, and none for the two hardest levels. A sliding car on an easy level therefore keeps more grip than the curve alone would give. Above 2 meters per second each wheel also reports a skid level of slip times vertical load times 0.0002, capped at 1, for sound and smoke, and zero below that speed.",
+      "constants": [
+        {
+          "name": "rookieSkidFactor",
+          "value": 0.4,
+          "unit": "grip gain per unit slip",
+          "source": "src/modules/simu/simuv2/categories.cpp:32"
+        },
+        {
+          "name": "amateurSkidFactor",
+          "value": 0.35,
+          "unit": "grip gain per unit slip",
+          "source": "src/modules/simu/simuv2/categories.cpp:32"
+        },
+        {
+          "name": "semiProSkidFactor",
+          "value": 0.3,
+          "unit": "grip gain per unit slip",
+          "source": "src/modules/simu/simuv2/categories.cpp:32"
+        },
+        {
+          "name": "skidSoundGain",
+          "value": 0.0002,
+          "unit": "per newton of load per unit slip",
+          "source": "src/modules/simu/simuv2/wheel.cpp:288"
+        },
+        {
+          "name": "skidSoundMinSpeed",
+          "value": 2,
+          "unit": "meters per second",
+          "source": "src/modules/simu/simuv2/wheel.cpp:285"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 306
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 285
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 288
+        }
+      ],
+      "capabilities": [
+        "difficulty levels",
+        "skid sound"
+      ],
+      "tags": [
+        "tyres",
+        "difficulty",
+        "effects"
+      ]
+    },
+    {
+      "id": "tyre-thermal-wear",
+      "node": "tyres",
+      "name": "Tyre heat, pressure, wear and graining",
+      "summary": "At the hardest skill level with tyre rules on, tyres heat from slip, cool by convection, wear and grain, and grip peaks near an ideal temperature",
+      "behavior": "Heat input is load times rim speed times a hysteresis term of 0.05 for rolling, scaled by remaining tread and pressure, plus 0.5 times slip. Heat loss is convection of 5.9 plus 3.7 per meter per second of speed, times the temperature gap and the tyre surface. The heat capacity combines rubber, whose specific heat changes with temperature, and the nitrogen fill, and pressure follows temperature at constant volume. Wear grows with pressure, slip, speed and load. Graining builds when the tyre runs below three quarters of the way from ambient to the ideal temperature, 95 degrees Celsius by default. Grip is between 75 and 100 percent depending on the distance from the ideal temperature, and graining removes up to a further tenth.",
+      "constants": [
+        {
+          "name": "rollingHysteresis",
+          "value": 0.05,
+          "unit": "energy fraction",
+          "source": "src/modules/simu/simuv2/wheel.cpp:414"
+        },
+        {
+          "name": "slipHysteresis",
+          "value": 0.5,
+          "unit": "energy fraction per unit slip",
+          "source": "src/modules/simu/simuv2/wheel.cpp:414"
+        },
+        {
+          "name": "convectionBase",
+          "value": 5.9,
+          "unit": "watts per square meter per kelvin",
+          "source": "src/modules/simu/simuv2/wheel.cpp:422"
+        },
+        {
+          "name": "convectionPerSpeed",
+          "value": 3.7,
+          "unit": "watts per square meter per kelvin per meter per second",
+          "source": "src/modules/simu/simuv2/wheel.cpp:422"
+        },
+        {
+          "name": "idealTemperatureCelsius",
+          "value": 95,
+          "unit": "degrees Celsius",
+          "source": "src/modules/simu/simuv2/wheel.cpp:105"
+        },
+        {
+          "name": "grainingMaxLoss",
+          "value": 10,
+          "unit": "divisor on graining",
+          "source": "src/modules/simu/simuv2/wheel.cpp:474"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 397
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 417
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 450
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 454
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 460
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 474
+        }
+      ],
+      "capabilities": [
+        "tyre temperature",
+        "tyre wear",
+        "graining"
+      ],
+      "tags": [
+        "tyres",
+        "strategy",
+        "simulation"
+      ]
+    },
+    {
+      "id": "suspension-spring-damper",
+      "node": "suspension",
+      "name": "Spring, damper and wheel hop",
+      "summary": "Each corner has a preloaded push-only spring, two-slope dampers and a separately integrated wheel mass",
+      "behavior": "Spring force is stiffness times compression from rest plus preload, and it never pulls. Bump and rebound dampers each use a slow slope below a threshold velocity of 0.5 meters per second and a fast slope above it, with the damper speed capped at 10 meters per second. The total force passes through the bellcrank ratio and is zero when negative. Travel stops at the packers and at the maximum course, 0.5 meters by default, and the default spring rate is 175000 newtons per meter. The wheel has its own mass, 20 kilograms by default, integrated against the suspension force. The wheel counts as airborne when the road lies below its full extension.",
+      "constants": [
+        {
+          "name": "defaultSpringRate",
+          "value": 175000,
+          "unit": "newtons per meter",
+          "source": "src/modules/simu/simuv2/susp.cpp:139"
+        },
+        {
+          "name": "defaultTravel",
+          "value": 0.5,
+          "unit": "meters",
+          "source": "src/modules/simu/simuv2/susp.cpp:140"
+        },
+        {
+          "name": "damperKneeSpeed",
+          "value": 0.5,
+          "unit": "meters per second",
+          "source": "src/modules/simu/simuv2/susp.cpp:147"
+        },
+        {
+          "name": "damperSpeedCap",
+          "value": 10,
+          "unit": "meters per second",
+          "source": "src/modules/simu/simuv2/susp.cpp:50"
+        },
+        {
+          "name": "defaultWheelMass",
+          "value": 20,
+          "unit": "kilograms",
+          "source": "src/modules/simu/simuv2/wheel.cpp:53"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "line": 63
+        },
+        {
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/modules/simu/simuv2/susp.cpp",
+          "line": 121
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 186
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 236
+        }
+      ],
+      "capabilities": [
+        "suspension",
+        "damping",
+        "wheel hop"
+      ],
+      "tags": [
+        "physics",
+        "suspension"
+      ]
+    },
+    {
+      "id": "anti-roll-third-spring",
+      "node": "suspension",
+      "name": "Anti-roll bar and third spring",
+      "summary": "Each axle couples its two wheels through an anti-roll bar on the travel difference and a third spring on the mean travel",
+      "behavior": "Per axle, the anti-roll force is the bar stiffness times the difference between left and right suspension travel, added to one wheel and subtracted from the other. A third spring and damper act on the average travel of the two wheels, and half of its force goes to each wheel while it sits inside its travel. Axle inertia and roll center height both default to 0.15. The bar stiffness defaults to zero, so the bar only works when the car data sets it.",
+      "constants": [
+        {
+          "name": "defaultAxleInertia",
+          "value": 0.15,
+          "unit": "kilogram square meters",
+          "source": "src/modules/simu/simuv2/axle.cpp:32"
+        },
+        {
+          "name": "defaultRollCenter",
+          "value": 0.15,
+          "unit": "meters",
+          "source": "src/modules/simu/simuv2/axle.cpp:33"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "line": 78
+        },
+        {
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "line": 81
+        },
+        {
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "line": 85
+        },
+        {
+          "path": "src/modules/simu/simuv2/axle.cpp",
+          "line": 90
+        }
+      ],
+      "capabilities": [
+        "anti-roll bar",
+        "third spring",
+        "roll center"
+      ],
+      "tags": [
+        "suspension",
+        "handling"
+      ]
+    },
+    {
+      "id": "aero-drag-ground-effect",
+      "node": "aero",
+      "name": "Body drag and ground effect",
+      "summary": "Drag grows with the square of speed and with damage, and body lift turns into downforce that fades as ride height rises",
+      "behavior": "The drag area is 0.645 times the drag coefficient times frontal area, with defaults of 0.4 and 2.5 square meters. Drag is that area times forward airspeed squared, raised by damage points over 10000, times the square of the slipstream factor. Front and rear body lift use their own coefficients times speed squared times a ground-effect factor. That factor is 2 times the exponential of minus 3 times the fourth power of 1.5 times the summed ride heights, so lowering the car raises downforce sharply. Lift also scales with how much the car travels forward and not sideways.",
+      "constants": [
+        {
+          "name": "dragAreaFactor",
+          "value": 0.645,
+          "unit": "kilograms per cubic meter scale",
+          "source": "src/modules/simu/simuv2/aero.cpp:33"
+        },
+        {
+          "name": "defaultDragCoefficient",
+          "value": 0.4,
+          "unit": "dimensionless",
+          "source": "src/modules/simu/simuv2/aero.cpp:29"
+        },
+        {
+          "name": "defaultFrontalArea",
+          "value": 2.5,
+          "unit": "square meters",
+          "source": "src/modules/simu/simuv2/aero.cpp:30"
+        },
+        {
+          "name": "damageDragDivisor",
+          "value": 10000,
+          "unit": "damage points",
+          "source": "src/modules/simu/simuv2/aero.cpp:99"
+        },
+        {
+          "name": "groundEffectDecay",
+          "value": -3,
+          "unit": "exponent scale",
+          "source": "src/modules/simu/simuv2/aero.cpp:104"
+        },
+        {
+          "name": "rideHeightScale",
+          "value": 1.5,
+          "unit": "multiplier on summed ride heights",
+          "source": "src/modules/simu/simuv2/aero.cpp:101"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 86
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 99
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 105
+        }
+      ],
+      "capabilities": [
+        "aerodynamic drag",
+        "ground effect",
+        "damage drag"
+      ],
+      "tags": [
+        "aero",
+        "speed",
+        "grip"
+      ]
+    },
+    {
+      "id": "slipstream",
+      "node": "aero",
+      "name": "Slipstream and lead-car drag",
+      "summary": "Following closely behind a car cuts drag, and a car close behind also slightly cuts drag of the car ahead",
+      "behavior": "Above 10 meters per second each car checks every other car that also moves above 10 and whose heading is within 0.1396 radians of its own. When the other car is ahead within 10 degrees of straight ahead, the drag factor drops to one minus the exponential of minus 2 times the gap over that car drag area times its speed. When the other car is close behind within 8 degrees, the factor drops by at most 15 percent along a faster exponential. The smallest factor wins, and because drag uses its square the tow effect is strong at short range.",
+      "constants": [
+        {
+          "name": "slipstreamMinSpeed",
+          "value": 10,
+          "unit": "meters per second",
+          "source": "src/modules/simu/simuv2/aero.cpp:53"
+        },
+        {
+          "name": "headingTolerance",
+          "value": 0.1396,
+          "unit": "radians",
+          "source": "src/modules/simu/simuv2/aero.cpp:67"
+        },
+        {
+          "name": "behindCone",
+          "value": 2.9671,
+          "unit": "radians from the rear direction",
+          "source": "src/modules/simu/simuv2/aero.cpp:68"
+        },
+        {
+          "name": "trailingDecay",
+          "value": 2,
+          "unit": "exponent scale",
+          "source": "src/modules/simu/simuv2/aero.cpp:70"
+        },
+        {
+          "name": "leadReduction",
+          "value": 0.15,
+          "unit": "drag fraction",
+          "source": "src/modules/simu/simuv2/aero.cpp:77"
+        },
+        {
+          "name": "leadDecay",
+          "value": 8,
+          "unit": "exponent scale",
+          "source": "src/modules/simu/simuv2/aero.cpp:77"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 67
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 72
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 99
+        }
+      ],
+      "capabilities": [
+        "drafting",
+        "tow"
+      ],
+      "tags": [
+        "aero",
+        "racing",
+        "ai"
+      ]
+    },
+    {
+      "id": "wings",
+      "node": "aero",
+      "name": "Front and rear wings",
+      "summary": "Wing force grows with speed squared and the sine of the angle of attack, with downforce four times the drag",
+      "behavior": "Each wing gets a drag constant of minus 1.23 times its area and a downforce constant four times larger. The angle of attack is the wing angle plus the pitch of the airflow from vertical and forward speed. While moving forward, the wing drag is the drag constant times airspeed squared times the sine of that angle, raised by damage, and the downforce uses the larger constant. Both are zero when the car rolls backward. The rear wing angle also adds to the body drag coefficient, and a pit setup change recomputes it.",
+      "constants": [
+        {
+          "name": "wingDragFactor",
+          "value": -1.23,
+          "unit": "kilograms per cubic meter scale per square meter",
+          "source": "src/modules/simu/simuv2/aero.cpp:123"
+        },
+        {
+          "name": "downforceToDrag",
+          "value": 4,
+          "unit": "multiplier",
+          "source": "src/modules/simu/simuv2/aero.cpp:124"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 153
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 159
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 160
+        },
+        {
+          "path": "src/modules/simu/simuv2/aero.cpp",
+          "line": 127
+        }
+      ],
+      "capabilities": [
+        "wings",
+        "downforce",
+        "setup"
+      ],
+      "tags": [
+        "aero",
+        "grip",
+        "setup"
+      ]
+    },
+    {
+      "id": "engine-torque",
+      "node": "drivetrain",
+      "name": "Engine torque, braking and rev limiter",
+      "summary": "Torque comes from a piecewise-linear curve, blends into engine braking off-throttle, and cuts at the rev limiter",
+      "behavior": "The torque curve is linear between data points, and peak torque and peak power are searched between idle and the limiter. Engine output is the curve torque times throttle times one plus the braking share, minus the braking share. The braking share is the braking coefficient, 0.33 by default, scaled from zero at idle to full at maximum revs. Above the limiter the engine is held at the limiter with zero torque. An empty tank or a broken car stops the engine. Defaults are a limiter of 800, a maximum of 1000 and an idle of 150 radians per second, with 0.2423 kilogram square meters of inertia.",
+      "constants": [
+        {
+          "name": "defaultRevLimiter",
+          "value": 800,
+          "unit": "radians per second",
+          "source": "src/modules/simu/simuv2/engine.cpp:39"
+        },
+        {
+          "name": "defaultMaxRevs",
+          "value": 1000,
+          "unit": "radians per second",
+          "source": "src/modules/simu/simuv2/engine.cpp:41"
+        },
+        {
+          "name": "defaultIdle",
+          "value": 150,
+          "unit": "radians per second",
+          "source": "src/modules/simu/simuv2/engine.cpp:43"
+        },
+        {
+          "name": "defaultEngineInertia",
+          "value": 0.2423,
+          "unit": "kilogram square meters",
+          "source": "src/modules/simu/simuv2/engine.cpp:44"
+        },
+        {
+          "name": "defaultEngineBraking",
+          "value": 0.33,
+          "unit": "torque fraction",
+          "source": "src/modules/simu/simuv2/engine.cpp:46"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 113
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 120
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 122
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 126
+        }
+      ],
+      "capabilities": [
+        "torque curve",
+        "engine braking",
+        "rev limiter",
+        "fuel use"
+      ],
+      "tags": [
+        "engine",
+        "acceleration"
+      ]
+    },
+    {
+      "id": "clutch-gearbox",
+      "node": "drivetrain",
+      "name": "Clutch and gear shifts",
+      "summary": "A shift starts a clutch release timer, cuts throttle, and blends engine speed with wheel speed through a steep clutch curve",
+      "behavior": "Requesting a higher or lower gear inside the gearbox range changes gear at once and starts the clutch release time, 0.2 seconds by default. While that timer runs, a clutch that reads above 0.99 engagement is forced open and throttle is capped at 0.1, which gives the shift its torque gap. Drive torque reaching the differential is engine torque times the overall ratio times three times clutch engagement, capped at 1. Engine speed is blended between wheel-driven speed and free-revving speed by the fourth power of engagement, and held between idle and maximum revs. Driveline inertia is also blended between the coupled and free values.",
+      "constants": [
+        {
+          "name": "defaultShiftTime",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "src/modules/simu/simuv2/transmission.cpp:41"
+        },
+        {
+          "name": "clutchForceOpenAbove",
+          "value": 0.99,
+          "unit": "clutch engagement fraction",
+          "source": "src/modules/simu/simuv2/transmission.cpp:242"
+        },
+        {
+          "name": "shiftThrottleCap",
+          "value": 0.1,
+          "unit": "throttle fraction",
+          "source": "src/modules/simu/simuv2/transmission.cpp:245"
+        },
+        {
+          "name": "clutchTorqueGain",
+          "value": 3,
+          "unit": "multiplier on engagement",
+          "source": "src/modules/simu/simuv2/transmission.cpp:305"
+        },
+        {
+          "name": "clutchSlipFloor",
+          "value": 0.01,
+          "unit": "clutch engagement fraction",
+          "source": "src/modules/simu/simuv2/engine.cpp:183"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "line": 236
+        },
+        {
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "line": 250
+        },
+        {
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "line": 273
+        },
+        {
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "line": 310
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 184
+        },
+        {
+          "path": "src/modules/simu/simuv2/engine.cpp",
+          "line": 186
+        }
+      ],
+      "capabilities": [
+        "clutch",
+        "gear shift",
+        "driveline inertia"
+      ],
+      "tags": [
+        "gears",
+        "engine",
+        "transmission"
+      ]
+    },
+    {
+      "id": "differentials",
+      "node": "drivetrain",
+      "name": "Differential types",
+      "summary": "Rear, front or four-wheel drive with free, limited-slip, viscous or locked differentials",
+      "behavior": "A free differential splits drive torque in half and adds the spider torque from the difference between the two wheel reactions. A limited-slip unit allows a speed ratio between the wheels that shrinks as drive torque grows. Beyond that ratio it pulls the wheel speeds together and biases torque. Above the locking torque, 3000 newton meters by default or 0.33 of that under braking, it acts as a locked spool. A viscous coupler sends the minimum bias, 0.05 by default, until the wheels differ, then adds up to the maximum bias, 0.8 by default, along an exponential of the speed difference. Four-wheel drive feeds a center differential that drives the front and rear units. Wheel brake torque is applied after drive and may stop a wheel but never reverses it.",
+      "constants": [
+        {
+          "name": "defaultLockingTorque",
+          "value": 3000,
+          "unit": "newton meters",
+          "source": "src/modules/simu/simuv2/differential.cpp:31"
+        },
+        {
+          "name": "brakeLockingShare",
+          "value": 0.33,
+          "unit": "fraction of locking torque",
+          "source": "src/modules/simu/simuv2/differential.cpp:32"
+        },
+        {
+          "name": "defaultMinBias",
+          "value": 0.05,
+          "unit": "torque fraction",
+          "source": "src/modules/simu/simuv2/differential.cpp:27"
+        },
+        {
+          "name": "defaultMaxBias",
+          "value": 0.8,
+          "unit": "torque fraction",
+          "source": "src/modules/simu/simuv2/differential.cpp:28"
+        },
+        {
+          "name": "defaultSlipBias",
+          "value": 0.03,
+          "unit": "wheel speed ratio",
+          "source": "src/modules/simu/simuv2/differential.cpp:30"
+        },
+        {
+          "name": "freeSplit",
+          "value": 0.5,
+          "unit": "torque fraction",
+          "source": "src/modules/simu/simuv2/differential.cpp:176"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "line": 173
+        },
+        {
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "line": 181
+        },
+        {
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "line": 194
+        },
+        {
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "line": 220
+        },
+        {
+          "path": "src/modules/simu/simuv2/differential.cpp",
+          "line": 242
+        },
+        {
+          "path": "src/modules/simu/simuv2/transmission.cpp",
+          "line": 325
+        }
+      ],
+      "capabilities": [
+        "limited slip",
+        "viscous coupler",
+        "four-wheel drive"
+      ],
+      "tags": [
+        "drivetrain",
+        "traction",
+        "handling"
+      ]
+    },
+    {
+      "id": "steering",
+      "node": "steer-brake",
+      "name": "Rate-limited Ackermann steering",
+      "summary": "The steering command maps to a lock angle, moves at a capped rate, and the inner wheel turns more than the outer",
+      "behavior": "The command of minus 1 to 1 is multiplied by the steering lock, 0.43 radians by default. The road-wheel angle can change by at most the steering speed, 1 radian per second by default, so a robot or a keyboard cannot flick the wheels instantly. The outer wheel takes the steered angle and the inner wheel gets a sharper angle from the wheelbase and track width, which gives Ackermann geometry and a clean low-speed turn.",
+      "constants": [
+        {
+          "name": "defaultSteerLock",
+          "value": 0.43,
+          "unit": "radians",
+          "source": "src/modules/simu/simuv2/steer.cpp:26"
+        },
+        {
+          "name": "defaultSteerRate",
+          "value": 1,
+          "unit": "radians per second",
+          "source": "src/modules/simu/simuv2/steer.cpp:27"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "line": 50
+        },
+        {
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "line": 53
+        },
+        {
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "line": 59
+        },
+        {
+          "path": "src/modules/simu/simuv2/steer.cpp",
+          "line": 61
+        }
+      ],
+      "capabilities": [
+        "steering lock",
+        "steering rate",
+        "ackermann"
+      ],
+      "tags": [
+        "steering",
+        "input"
+      ]
+    },
+    {
+      "id": "brakes",
+      "node": "steer-brake",
+      "name": "Brake pressure, balance and heat",
+      "summary": "Brake pedal sets line pressure split by the brake balance, and each disc turns pressure into torque and heat",
+      "behavior": "Brake pedal times the system pressure, 1000000 pascal by default, gives line pressure. The front axle gets the repartition share, half by default, and the rear the rest. Each disc torque is the diameter times 0.5 times pad area times pad friction times pressure, with defaults of 0.2 meters, 0.002 square meters and 0.3. Brake temperature falls each step by 0.0001 per meter per second of speed plus 0.0002, and rises with pressure, disc radius and wheel speed, held between 0 and 1. On undriven wheels the brake torque may stop the wheel but never spins it backward.",
+      "constants": [
+        {
+          "name": "defaultLinePressure",
+          "value": 1000000,
+          "unit": "pascal at full pedal",
+          "source": "src/modules/simu/simuv2/brake.cpp:52"
+        },
+        {
+          "name": "defaultFrontShare",
+          "value": 0.5,
+          "unit": "fraction",
+          "source": "src/modules/simu/simuv2/brake.cpp:51"
+        },
+        {
+          "name": "defaultDiscDiameter",
+          "value": 0.2,
+          "unit": "meters",
+          "source": "src/modules/simu/simuv2/brake.cpp:26"
+        },
+        {
+          "name": "defaultPadArea",
+          "value": 0.002,
+          "unit": "square meters",
+          "source": "src/modules/simu/simuv2/brake.cpp:27"
+        },
+        {
+          "name": "defaultPadFriction",
+          "value": 0.3,
+          "unit": "friction coefficient",
+          "source": "src/modules/simu/simuv2/brake.cpp:28"
+        },
+        {
+          "name": "brakeCoolingBase",
+          "value": 0.0002,
+          "unit": "temperature units per simulation step at 500 Hz",
+          "source": "src/modules/simu/simuv2/brake.cpp:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "line": 38
+        },
+        {
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "line": 42
+        },
+        {
+          "path": "src/modules/simu/simuv2/brake.cpp",
+          "line": 76
+        },
+        {
+          "path": "src/modules/simu/simuv2/wheel.cpp",
+          "line": 386
+        }
+      ],
+      "capabilities": [
+        "brake balance",
+        "disc torque",
+        "brake temperature"
+      ],
+      "tags": [
+        "braking",
+        "setup"
+      ]
+    },
+    {
+      "id": "ground-contact",
+      "node": "collisions",
+      "name": "Body ground contact",
+      "summary": "Car corners and body that sink below the track surface correct the tilt and lose their downward velocity, with damage on hard landings",
+      "behavior": "Each step the four body corners are compared with the track height below them. A corner under the surface tilts the car pitch and roll back toward the surface. When the body center sinks under the road, the velocity component into the surface normal is removed, which makes a fully inelastic landing. A landing faster than 5 meters per second into the surface raises a crash flag. Unless the car has finished, it adds damage from the surface damage factor times the impact speed, scaled by the rules and the skill level.",
+      "constants": [
+        {
+          "name": "crashImpactSpeed",
+          "value": -5,
+          "unit": "meters per second along the surface normal",
+          "source": "src/modules/simu/simuv2/collide.cpp:28"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 53
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 77
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 89
+        }
+      ],
+      "capabilities": [
+        "ground collision",
+        "landing",
+        "damage"
+      ],
+      "tags": [
+        "collision",
+        "jump",
+        "damage"
+      ]
+    },
+    {
+      "id": "barrier-contact",
+      "node": "collisions",
+      "name": "Track barrier contact",
+      "summary": "A car corner past the track edge is pushed back, loses normal speed through barrier friction and rebound, and gets a yaw kick",
+      "behavior": "For each body corner outside the left or right edge, the car is moved back inside along the barrier normal. Velocity into the barrier is reduced by the barrier friction, and the corner lever arm turns that into a yaw change divided by 10 and capped at 6 radians per second. Damage is the barrier damage factor times half the squared normal impact speed, plus 0.005 times the glancing term times speed. The normal velocity then bounces by the barrier rebound factor. Wall hits can also void the lap time under the race rules.",
+      "constants": [
+        {
+          "name": "yawKickScale",
+          "value": 10,
+          "unit": "divisor",
+          "source": "src/modules/simu/simuv2/collide.cpp:163"
+        },
+        {
+          "name": "yawKickCap",
+          "value": 6,
+          "unit": "radians per second",
+          "source": "src/modules/simu/simuv2/collide.cpp:164"
+        },
+        {
+          "name": "impactDamageShare",
+          "value": 0.5,
+          "unit": "damage per squared meter per second",
+          "source": "src/modules/simu/simuv2/collide.cpp:173"
+        },
+        {
+          "name": "scrapeDamageShare",
+          "value": 0.005,
+          "unit": "damage per meter per second",
+          "source": "src/modules/simu/simuv2/collide.cpp:173"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 123
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 138
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 158
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 165
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 179
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 436
+        }
+      ],
+      "capabilities": [
+        "wall collision",
+        "rebound",
+        "damage"
+      ],
+      "tags": [
+        "collision",
+        "damage"
+      ]
+    },
+    {
+      "id": "car-contact",
+      "node": "collisions",
+      "name": "Car-to-car impulse contact",
+      "summary": "Cars that overlap separate a few centimeters and exchange an elastic impulse, with extra damage for frontal hits",
+      "behavior": "A collision library reports the contact points between car shapes. The two cars are pushed apart along the contact normal by up to 0.05 meters, and no impulse applies when they already move apart. The impulse uses a restitution of 1 and acts on both linear and yaw velocity through the inverse mass and yaw inertia. Damage is 0.1 times the impulse magnitude, scaled by 1.5 when the hit lands within 60 degrees of the car nose, and by the rules and skill factors. A similar impulse handles solid wall shapes, with damage on the square of the impulse.",
+      "constants": [
+        {
+          "name": "separationCap",
+          "value": 0.05,
+          "unit": "meters per simulation step at 500 Hz",
+          "source": "src/modules/simu/simuv2/collide.cpp:285"
+        },
+        {
+          "name": "restitution",
+          "value": 1,
+          "unit": "dimensionless",
+          "source": "src/modules/simu/simuv2/collide.cpp:312"
+        },
+        {
+          "name": "carDamageScale",
+          "value": 0.1,
+          "unit": "damage points per newton second",
+          "source": "src/modules/simu/simuv2/collide.cpp:22"
+        },
+        {
+          "name": "frontalDamageFactor",
+          "value": 1.5,
+          "unit": "multiplier",
+          "source": "src/modules/simu/simuv2/collide.cpp:328"
+        },
+        {
+          "name": "wallImpulseDamage",
+          "value": 0.00002,
+          "unit": "damage points per squared newton second",
+          "source": "src/modules/simu/simuv2/collide.cpp:459"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 285
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 314
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 326
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 335
+        },
+        {
+          "path": "src/modules/simu/simuv2/collide.cpp",
+          "line": 461
+        }
+      ],
+      "capabilities": [
+        "car collision",
+        "impulse response",
+        "damage"
+      ],
+      "tags": [
+        "collision",
+        "racing"
+      ]
+    },
+    {
+      "id": "ai-corner-speed",
+      "node": "robot-driver",
+      "name": "Robot corner speed",
+      "summary": "The robot derives a safe speed for each track segment from its radius, friction and aero downforce",
+      "behavior": "At race start the robot assigns each straight an infinite radius and each turn its radius plus half the width, divided by how much of a quarter turn the whole corner covers, so short kinks get a larger effective radius. The allowed speed is the square root of friction times gravity times radius over one minus radius times downforce coefficient times friction over mass. The friction is the surface friction times the weakest tyre mu times a safety factor, 0.69 by default. A learning module adjusts the radius lap by lap. The robot uses full throttle while the allowed speed exceeds its speed by more than 1 meter per second, and otherwise holds the throttle that matches the allowed speed in the current gear.",
+      "constants": [
+        {
+          "name": "defaultMuFactor",
+          "value": 0.69,
+          "unit": "friction multiplier",
+          "source": "src/drivers/bt/driver.cpp:120"
+        },
+        {
+          "name": "fullThrottleMargin",
+          "value": 1,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:27"
+        },
+        {
+          "name": "gravity",
+          "value": 9.81,
+          "unit": "meters per second squared",
+          "source": "src/drivers/bt/driver.cpp:26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 243
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 249
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 277
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 297
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 302
+        }
+      ],
+      "capabilities": [
+        "corner speed",
+        "track radius",
+        "downforce aware"
+      ],
+      "tags": [
+        "ai",
+        "speed",
+        "racing"
+      ]
+    },
+    {
+      "id": "ai-braking",
+      "node": "robot-driver",
+      "name": "Robot braking distance",
+      "summary": "The robot looks ahead by its stopping distance and brakes fully when a slower segment comes within aero-aware braking range",
+      "behavior": "If the car goes faster than the current segment allows, brake rises by the speed excess over 1 meter per second. Otherwise the robot walks ahead segment by segment up to the distance needed to stop on the current friction. For each slower segment it computes the closed-form braking distance with drag and downforce, the log of the ratio of friction plus aero terms at the two speeds. It brakes fully when that distance exceeds the gap. Brake pedal is then scaled by the current grip over the grip at 84 meters per second, so braking is gentler at low speed where downforce is small. Opponent and pit filters can also force full braking.",
+      "constants": [
+        {
+          "name": "brakeScaleSpeed",
+          "value": 84,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:44"
+        },
+        {
+          "name": "reverseBrakeSpeed",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:24"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 334
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 338
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 346
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 1010
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 736
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 808
+        }
+      ],
+      "capabilities": [
+        "braking point",
+        "lookahead",
+        "aero braking"
+      ],
+      "tags": [
+        "ai",
+        "braking"
+      ]
+    },
+    {
+      "id": "ai-steering-overtake",
+      "node": "robot-driver",
+      "name": "Robot steering and overtaking",
+      "summary": "The robot steers at a point a speed-scaled distance ahead, shifted sideways to pass slower cars and let faster ones by",
+      "behavior": "The aim point is 17 meters plus 0.33 seconds of travel ahead along the track center, never closer than the previous point minus travel, and steering is the yaw error over the steering lock. A lateral offset moves the aim point at 5 meters per second, faster at low speed by up to 5 times. When a slower car ahead is within the catch distance, capped at 10 times its gap, the robot moves to the side that the opponent leaves open. With the opponent centered, it picks the inside of the next corner, keeping 0.5 meters from the edge of the usable third of the width. A lapping car behind for more than 5 seconds makes the robot move aside and lift to half throttle. A car alongside closer than 3 meters blends in a steer away from it.",
+      "constants": [
+        {
+          "name": "lookaheadBase",
+          "value": 17,
+          "unit": "meters",
+          "source": "src/drivers/bt/driver.cpp:35"
+        },
+        {
+          "name": "lookaheadPerSpeed",
+          "value": 0.33,
+          "unit": "seconds",
+          "source": "src/drivers/bt/driver.cpp:36"
+        },
+        {
+          "name": "offsetSpeed",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:40"
+        },
+        {
+          "name": "catchFactor",
+          "value": 10,
+          "unit": "multiplier on gap",
+          "source": "src/drivers/bt/driver.cpp:50"
+        },
+        {
+          "name": "letPassWait",
+          "value": 5,
+          "unit": "seconds",
+          "source": "src/drivers/bt/opponent.cpp:31"
+        },
+        {
+          "name": "sideMargin",
+          "value": 3,
+          "unit": "meters",
+          "source": "src/drivers/bt/driver.cpp:38"
+        },
+        {
+          "name": "letPassThrottle",
+          "value": 0.5,
+          "unit": "throttle fraction",
+          "source": "src/drivers/bt/driver.cpp:316"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 445
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 390
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 527
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 546
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 609
+        },
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 126
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 869
+        }
+      ],
+      "capabilities": [
+        "path following",
+        "overtaking",
+        "blue flags"
+      ],
+      "tags": [
+        "ai",
+        "steering",
+        "racing"
+      ]
+    },
+    {
+      "id": "ai-driver-aids",
+      "node": "robot-driver",
+      "name": "Robot ABS, traction control and shifting",
+      "summary": "The robot trims brake and throttle on wheel slip, shifts near redline with hysteresis and launches with a timed clutch",
+      "behavior": "Above 3 meters per second, brake is reduced by slip beyond 2 meters per second over a 5 meter per second range, using average wheel speed against car speed. Throttle is reduced by driven-wheel slip beyond 2 meters per second over a 10 meter per second range. Throttle is also cut when the car runs wide of the usable track on a straight or the outside of a turn. The robot upshifts once the speed passes 90 percent of the redline speed in the current gear, and downshifts only when the lower gear would stay 4 meters per second clear of that point. In first gear the clutch closes over 2 seconds, faster once engine speed passes half of redline.",
+      "constants": [
+        {
+          "name": "absMinSpeed",
+          "value": 3,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:32"
+        },
+        {
+          "name": "absSlip",
+          "value": 2,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:30"
+        },
+        {
+          "name": "absRange",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:31"
+        },
+        {
+          "name": "tclRange",
+          "value": 10,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:34"
+        },
+        {
+          "name": "shiftPoint",
+          "value": 0.9,
+          "unit": "fraction of redline speed",
+          "source": "src/drivers/bt/driver.cpp:28"
+        },
+        {
+          "name": "shiftHysteresis",
+          "value": 4,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:29"
+        },
+        {
+          "name": "launchClutchTime",
+          "value": 2,
+          "unit": "seconds",
+          "source": "src/drivers/bt/driver.cpp:51"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 901
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 919
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 368
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 373
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 403
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 978
+        }
+      ],
+      "capabilities": [
+        "abs",
+        "traction control",
+        "auto gearbox",
+        "launch"
+      ],
+      "tags": [
+        "ai",
+        "traction",
+        "gears"
+      ]
+    },
+    {
+      "id": "ai-stuck-recovery",
+      "node": "robot-driver",
+      "name": "Robot stuck recovery",
+      "summary": "A robot that sits slow, sideways and off the center line for two seconds reverses out with counter-steer",
+      "behavior": "The robot counts as stuck when its angle to the track exceeds 15 degrees, it moves slower than 5 meters per second and it sits more than 3 meters from the center line. Once that holds for 2 seconds, counted in robot updates, and the car points away from the center, it selects reverse with full throttle, no brake and the clutch closed. It steers by the negative of its track angle over the steering lock until the condition clears. Rolling backward faster than 5 meters per second in the normal state triggers full brake.",
+      "constants": [
+        {
+          "name": "stuckAngle",
+          "value": 15,
+          "unit": "degrees",
+          "source": "src/drivers/bt/driver.cpp:22"
+        },
+        {
+          "name": "stuckTime",
+          "value": 2,
+          "unit": "seconds",
+          "source": "src/drivers/bt/driver.cpp:23"
+        },
+        {
+          "name": "stuckSpeed",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/drivers/bt/driver.cpp:24"
+        },
+        {
+          "name": "stuckOffCenter",
+          "value": 3,
+          "unit": "meters",
+          "source": "src/drivers/bt/driver.cpp:25"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 674
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 677
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 179
+        },
+        {
+          "path": "src/drivers/bt/driver.cpp",
+          "line": 128
+        }
+      ],
+      "capabilities": [
+        "stuck detection",
+        "reverse recovery"
+      ],
+      "tags": [
+        "ai",
+        "recovery"
+      ]
+    },
+    {
+      "id": "ai-opponent-awareness",
+      "node": "robot-driver",
+      "name": "Robot opponent classification",
+      "summary": "Each robot update tags every other car as ahead, behind, alongside, faster ahead, colliding or asking to pass",
+      "behavior": "Opponent distance is measured along the track from the start line and wrapped to half a lap. Only cars between 70 meters behind and 200 meters ahead count. A slower car ahead is tagged as ahead, its gap reduced by the longer car length and a 3 meter margin, and measured to its nearest corner once under 12 meters. It is also tagged colliding when the lateral gap falls under 1 meter. A faster car behind within 5 meters per second is tagged as behind, an overlapping car as alongside, and a faster car ahead separately. A lapping car builds a timer while behind or alongside, which resets to minus 30 seconds when it falls ahead.",
+      "constants": [
+        {
+          "name": "frontRange",
+          "value": 200,
+          "unit": "meters",
+          "source": "src/drivers/bt/opponent.cpp:25"
+        },
+        {
+          "name": "backRange",
+          "value": 70,
+          "unit": "meters",
+          "source": "src/drivers/bt/opponent.cpp:26"
+        },
+        {
+          "name": "lengthMargin",
+          "value": 3,
+          "unit": "meters",
+          "source": "src/drivers/bt/opponent.cpp:27"
+        },
+        {
+          "name": "sideCollisionMargin",
+          "value": 1,
+          "unit": "meters",
+          "source": "src/drivers/bt/opponent.cpp:28"
+        },
+        {
+          "name": "exactDistance",
+          "value": 12,
+          "unit": "meters",
+          "source": "src/drivers/bt/opponent.cpp:29"
+        },
+        {
+          "name": "lappedPenalty",
+          "value": -30,
+          "unit": "seconds",
+          "source": "src/drivers/bt/opponent.cpp:30"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 55
+        },
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 106
+        },
+        {
+          "path": "src/drivers/bt/opponent.cpp",
+          "line": 150
+        }
+      ],
+      "capabilities": [
+        "opponent tracking",
+        "collision prediction"
+      ],
+      "tags": [
+        "ai",
+        "racing"
+      ]
+    },
+    {
+      "id": "laps-standings",
+      "node": "race-manager",
+      "name": "Lap counting and standings",
+      "summary": "Laps count on crossing the start line forward, a backward-crossing guard prevents cheats, and standings sort by distance raced",
+      "behavior": "A lap counts when a car moves from the last segment into the first segment. Crossing the other way raises a guard counter that a later forward crossing only clears, so reversing over the line earns nothing. Each lap records the lap time, a best lap that rule breaks can void, and gaps to the leader and to the car ahead. Distance raced is completed laps times track length plus distance from the line. Every step an insertion sort orders unfinished cars by distance raced. The race moves to finishing when the leader runs out of laps, and ends when every car has finished.",
+      "constants": [
+        {
+          "name": "practiceSpeedReport",
+          "value": 3.6,
+          "unit": "kilometers per hour per meter per second",
+          "source": "src/libs/raceengineclient/raceengine.cpp:286"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 242
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 245
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 248
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 262
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 360
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 382
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 308
+        }
+      ],
+      "capabilities": [
+        "lap timing",
+        "standings",
+        "race finish"
+      ],
+      "tags": [
+        "race",
+        "rules",
+        "ui"
+      ]
+    },
+    {
+      "id": "race-rules",
+      "node": "race-manager",
+      "name": "Race rules and penalties",
+      "summary": "Robots that lap far too slowly retire, corner cuts void laps or add time, and pit-lane speeding earns a drive-through",
+      "behavior": "A robot whose current lap time exceeds 84.5 seconds plus one second per 10 meters of track length is eliminated. In a turn, a car whose inner track edge distance drops below minus 0.7 of its width counts as cutting. Cutting voids the lap time when that rule is on. In a race it adds penalty time from speed, step length and depth over the inner radius. At the hardest skill level, speeding in the pit lane queues a drive-through penalty, and entering or leaving the pit lane away from its entry and exit queues a stop-and-go. The car is eliminated if it does not serve that penalty within 5 laps.",
+      "constants": [
+        {
+          "name": "slowLapBase",
+          "value": 84.5,
+          "unit": "seconds",
+          "source": "src/libs/raceengineclient/raceengine.cpp:420"
+        },
+        {
+          "name": "slowLapPerLength",
+          "value": 10,
+          "unit": "meters of track per extra second",
+          "source": "src/libs/raceengineclient/raceengine.cpp:420"
+        },
+        {
+          "name": "cuttingLimit",
+          "value": 0.7,
+          "unit": "fraction of car width",
+          "source": "src/libs/raceengineclient/raceengine.cpp:479"
+        },
+        {
+          "name": "penaltyLapWindow",
+          "value": 5,
+          "unit": "laps",
+          "source": "src/libs/raceengineclient/raceengine.cpp:607"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 423
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 480
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 491
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 600
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 504
+        }
+      ],
+      "capabilities": [
+        "penalties",
+        "track limits",
+        "pit speed limit"
+      ],
+      "tags": [
+        "race",
+        "rules"
+      ]
+    },
+    {
+      "id": "pit-stop",
+      "node": "race-manager",
+      "name": "Pit stop service",
+      "summary": "A car that asked to pit stops in its box below 1 meter per second, and service time adds base, fuel, repair and penalty time",
+      "behavior": "Once a car has requested a stop, it enters service only inside its pit window, close enough to the pit wall, and with both speed components under 1 meter per second. The driver or robot then chooses fuel and repair. Service time is the base stop time plus fuel over the refuel rate plus repair points times the repair factor plus pending penalty time. A full tyre change adds time at the hardest skill level with tyre rules on. Setup changes are applied to the car when service starts. A stop-and-go penalty holds the car only for the penalty time.",
+      "constants": [
+        {
+          "name": "pitStopSpeed",
+          "value": 1,
+          "unit": "meters per second",
+          "source": "src/libs/raceengineclient/raceengine.cpp:209"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 190
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 208
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 59
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 63
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/libs/raceengineclient/raceengine.cpp",
+          "line": 78
+        }
+      ],
+      "capabilities": [
+        "pit stops",
+        "refuel",
+        "repair"
+      ],
+      "tags": [
+        "race",
+        "strategy"
+      ]
+    }
+  ]
+}

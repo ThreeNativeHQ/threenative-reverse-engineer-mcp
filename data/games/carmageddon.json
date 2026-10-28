@@ -1,0 +1,2468 @@
+{
+  "version": 1,
+  "id": "carmageddon",
+  "title": "Carmageddon",
+  "repo": "https://github.com/Dethrace-labs/dethrace",
+  "sha": "166dd93cf3dd985d027095c29d236e38bd9ae5b8",
+  "nodes": [
+    {
+      "id": "car-physics",
+      "name": "Fixed-step vehicle simulation",
+      "purpose": "The per-tick mechanics pass that turns accumulated forces and torques into an updated car transform, together with the rotation, translation and drag helpers it calls in sequence for every active car",
+      "paths": [
+        "src/DETHRACE/common/car.c",
+        "src/DETHRACE/constants.h"
+      ],
+      "functions": [
+        {
+          "name": "ApplyPhysicsToCars",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1293,
+            1424
+          ]
+        },
+        {
+          "name": "MoveAndCollideCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1566,
+            1600
+          ]
+        },
+        {
+          "name": "RotateCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2019,
+            2044
+          ]
+        },
+        {
+          "name": "RotateCarSecondOrder",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1935,
+            1968
+          ]
+        },
+        {
+          "name": "TranslateCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2774,
+            2783
+          ]
+        },
+        {
+          "name": "ApplyTorque",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2765,
+            2770
+          ]
+        },
+        {
+          "name": "AddDrag",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2131,
+            2154
+          ]
+        },
+        {
+          "name": "FinishCars",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1099,
+            1160
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "suspension",
+      "parent": "car-physics",
+      "name": "Wheel contact and suspension",
+      "purpose": "Ray-casting each wheel to the ground, converting the resulting compression into spring and damper forces with matching pitch and roll torques, and deriving the per-car spring rates from mass and suspension give at setup time",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "CalcForce",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2192,
+            2695
+          ]
+        },
+        {
+          "name": "SetCarSuspGiveAndHeight",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            7358,
+            7388
+          ]
+        },
+        {
+          "name": "DoBumpiness",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2158,
+            2188
+          ]
+        },
+        {
+          "name": "MultiFindFloorInBoxM",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3829,
+            3844
+          ]
+        },
+        {
+          "name": "FindFloorInBoxBU2",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3938,
+            3979
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-physics"
+      ]
+    },
+    {
+      "id": "tyre-model",
+      "parent": "car-physics",
+      "name": "Tyre grip budget",
+      "purpose": "Turning each wheel's vertical load into a friction limit, sharing that limit between cornering and driving through a friction ellipse, and flagging a wheel as slipping once its budget is exceeded",
+      "paths": [
+        "src/DETHRACE/common/car.c",
+        "src/DETHRACE/constants.h"
+      ],
+      "functions": [
+        {
+          "name": "CalcForce",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2192,
+            2695
+          ]
+        },
+        {
+          "name": "SkidNoise",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3334,
+            3387
+          ]
+        },
+        {
+          "name": "StopSkid",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3391,
+            3403
+          ]
+        },
+        {
+          "name": "ScrapeNoise",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3301,
+            3334
+          ]
+        }
+      ],
+      "dependsOn": [
+        "suspension"
+      ]
+    },
+    {
+      "id": "drivetrain",
+      "parent": "car-physics",
+      "name": "Engine, gearbox and brakes",
+      "purpose": "Producing engine torque from throttle and engine speed, integrating engine speed from the load at the wheels, choosing a gear automatically, and building the brake force that is later split between the axles",
+      "paths": [
+        "src/DETHRACE/common/car.c",
+        "src/DETHRACE/constants.h"
+      ],
+      "functions": [
+        {
+          "name": "CalcEngineForce",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            971,
+            1055
+          ]
+        },
+        {
+          "name": "DoRevs",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2699,
+            2761
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-physics"
+      ]
+    },
+    {
+      "id": "steering",
+      "parent": "car-physics",
+      "name": "Steering input",
+      "purpose": "Converting digital and analogue steering input into an accumulated path curvature, clamping it to the car's handling limit, and bleeding it away again when the driver lets go",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "ControlCar1",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1867,
+            1898
+          ]
+        },
+        {
+          "name": "ControlCar2",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1678,
+            1717
+          ]
+        },
+        {
+          "name": "ControlCar3",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1721,
+            1754
+          ]
+        },
+        {
+          "name": "ControlCar4",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1758,
+            1808
+          ]
+        },
+        {
+          "name": "ControlCar5",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1812,
+            1863
+          ]
+        },
+        {
+          "name": "SteeringSelfCentre",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2048,
+            2075
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-physics"
+      ]
+    },
+    {
+      "id": "wall-collision",
+      "parent": "car-physics",
+      "name": "Car against level geometry",
+      "purpose": "Gathering nearby level faces, sweeping the car's box and its extra points against them, and resolving the resulting contact points with a simultaneous impulse solve plus tangential friction",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "GetFacesInBox",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            726,
+            845
+          ]
+        },
+        {
+          "name": "CollideCarWithWall",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            1625,
+            1648
+          ]
+        },
+        {
+          "name": "CollCheck",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            2787,
+            3192
+          ]
+        },
+        {
+          "name": "AddCollPoint",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3654,
+            3675
+          ]
+        },
+        {
+          "name": "AddFriction",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3196,
+            3235
+          ]
+        },
+        {
+          "name": "FindFloorInBoxBU",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3903,
+            3938
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-physics"
+      ]
+    },
+    {
+      "id": "car-car-collision",
+      "name": "Car against car",
+      "purpose": "Testing pairs of cars for box overlap, collecting matched contact points between them, solving both bodies as one coupled impulse problem, and handing the resulting impulses to the damage and crush systems",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "CrashCarsTogether",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6079,
+            6101
+          ]
+        },
+        {
+          "name": "CrashCarsTogetherSinglePass",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6105,
+            6332
+          ]
+        },
+        {
+          "name": "DoCollide",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6913,
+            7219
+          ]
+        },
+        {
+          "name": "AddFrictionCarToCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3239,
+            3297
+          ]
+        },
+        {
+          "name": "ModifyCarsMass",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6889,
+            6897
+          ]
+        },
+        {
+          "name": "BringCarToAGrindingHalt",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6336,
+            6343
+          ]
+        },
+        {
+          "name": "CrashCarsTogetherSinglePass",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            6105,
+            6332
+          ]
+        }
+      ],
+      "dependsOn": [
+        "wall-collision"
+      ]
+    },
+    {
+      "id": "crush-damage",
+      "name": "Crumple deformation",
+      "purpose": "Deforming the render mesh around an impact point within per-vertex limits, propagating the displacement to neighbouring vertices, and reshrinking the collision box to match the deformed body",
+      "paths": [
+        "src/DETHRACE/common/crush.c",
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "CrushModel",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            273,
+            311
+          ]
+        },
+        {
+          "name": "CrushModelPoint",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            157,
+            269
+          ]
+        },
+        {
+          "name": "CrushAndDamageCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3431,
+            3538
+          ]
+        },
+        {
+          "name": "CrushBoundingBox",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3590,
+            3650
+          ]
+        },
+        {
+          "name": "ExpandBoundingBox",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            3542,
+            3586
+          ]
+        },
+        {
+          "name": "SetModelForUpdate",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            324,
+            335
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-car-collision"
+      ]
+    },
+    {
+      "id": "vehicle-damage",
+      "name": "Damage, breakdown and repair",
+      "purpose": "Classifying where an impact landed, matching the car's own damage rules against that classification, applying the result to named subsystems, deciding when a car is wrecked, and stepping the mesh back toward its undamaged shape over time",
+      "paths": [
+        "src/DETHRACE/common/crush.c",
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "DamageSystems",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            706,
+            904
+          ]
+        },
+        {
+          "name": "DoDamage",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            615,
+            626
+          ]
+        },
+        {
+          "name": "DamageUnit2",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            567,
+            593
+          ]
+        },
+        {
+          "name": "SetKnackeredFlag",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            541,
+            563
+          ]
+        },
+        {
+          "name": "RepairModel",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            365,
+            409
+          ]
+        },
+        {
+          "name": "RepairCar2",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            413,
+            434
+          ]
+        },
+        {
+          "name": "DoWheelDamage",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            1303,
+            1361
+          ]
+        },
+        {
+          "name": "DoPratcamHit",
+          "path": "src/DETHRACE/common/crush.c",
+          "lines": [
+            676,
+            702
+          ]
+        }
+      ],
+      "dependsOn": [
+        "crush-damage"
+      ]
+    },
+    {
+      "id": "opponent-ai",
+      "name": "Opponent drivers",
+      "purpose": "The per-frame opponent tick that scores objectives, grows and decays a grudge against the player, decides whether to chase or race, and drives the pursuit, flee and recovery behaviour of each AI car",
+      "paths": [
+        "src/DETHRACE/common/opponent.c"
+      ],
+      "functions": [
+        {
+          "name": "MungeOpponents",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            2506,
+            2584
+          ]
+        },
+        {
+          "name": "NewObjective",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            501,
+            532
+          ]
+        },
+        {
+          "name": "ChooseNewObjective",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            1613,
+            1801
+          ]
+        },
+        {
+          "name": "ProcessThisOpponent",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            1805,
+            1829
+          ]
+        },
+        {
+          "name": "ProcessPursueAndTwat",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            1054,
+            1240
+          ]
+        },
+        {
+          "name": "ProcessRunAway",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            1244,
+            1299
+          ]
+        },
+        {
+          "name": "RematerialiseOpponent",
+          "path": "src/DETHRACE/common/opponent.c",
+          "lines": [
+            2116,
+            2244
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "opponent-path",
+      "parent": "opponent-ai",
+      "name": "Opponent path following",
+      "purpose": "The route-following controller that turns path sections into throttle, brake and curvature commands, including the corner-speed lookahead and the damage-degraded thrust limits",
+      "paths": [
+        "src/DETHRACE/common/oppoproc.c"
+      ],
+      "functions": [
+        {
+          "name": "ProcessFollowPath",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            132,
+            487
+          ]
+        },
+        {
+          "name": "FollowCheatyPath",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            491,
+            618
+          ]
+        },
+        {
+          "name": "MaxCurvatureForCarSpeed",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            89,
+            98
+          ]
+        },
+        {
+          "name": "CornerFudge",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            82,
+            85
+          ]
+        },
+        {
+          "name": "GetStraight",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            123,
+            128
+          ]
+        },
+        {
+          "name": "StraightestArcForCorner2D",
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "lines": [
+            12,
+            24
+          ]
+        }
+      ],
+      "dependsOn": [
+        "opponent-ai"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "name": "External chase camera",
+      "purpose": "Positioning, swinging, aiming and collision-avoiding the third-person camera that follows the car being driven",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "NormalPositionExternalCamera",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5383,
+            5502
+          ]
+        },
+        {
+          "name": "MoveWithWheels",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5506,
+            5536
+          ]
+        },
+        {
+          "name": "SwingCamera",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5540,
+            5654
+          ]
+        },
+        {
+          "name": "PointCameraAtCar",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5658,
+            5699
+          ]
+        },
+        {
+          "name": "CollideCamera2",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5729,
+            5854
+          ]
+        },
+        {
+          "name": "CollideCameraWithOtherCars",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5871,
+            5904
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "incident-camera",
+      "parent": "chase-camera",
+      "name": "Incident and panning cameras",
+      "purpose": "The automatic cut to a nearby crash or pedestrian strike, the framing rules that decide where that camera stands, and the slow panning fallback used when there is nothing worth cutting to",
+      "paths": [
+        "src/DETHRACE/common/car.c"
+      ],
+      "functions": [
+        {
+          "name": "IncidentCam",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5013,
+            5152
+          ]
+        },
+        {
+          "name": "MoveCamToIncident",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5156,
+            5231
+          ]
+        },
+        {
+          "name": "PanningExternalCamera",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5235,
+            5256
+          ]
+        },
+        {
+          "name": "SetUpPanningCamera",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5273,
+            5355
+          ]
+        },
+        {
+          "name": "PointCamera",
+          "path": "src/DETHRACE/common/car.c",
+          "lines": [
+            5703,
+            5725
+          ]
+        }
+      ],
+      "dependsOn": [
+        "chase-camera"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-step-simulation",
+      "node": "car-physics",
+      "name": "Fixed mechanics tick",
+      "summary": "Forty-millisecond mechanics ticks with a bounded catch-up, a single scale between the physics space and the world, and drag that depends on volume",
+      "behavior": "The simulation does not advance at the display rate. Mechanics move in fixed ticks of forty milliseconds, and one rendered frame may consume at most five of them, so a slow frame is caught up as several separate advances rather than one long one. A frame that arrives before the next tick boundary only interpolates between the previous and next car transforms, which is what keeps motion smooth when the frame rate and the tick rate disagree. Positions and velocities live in a finer internal space and are divided by a single factor of 6.9 whenever they cross into or out of the mechanics pass, and that one factor is what makes the rest of the model's numbers readable. Gravity is a constant ten in that space, applied along whichever body axis currently points down, so a car on a steep bank feels gravity through its own frame rather than the world's. Every tick also bleeds velocity and spin by a drag term proportional to speed, and a car that can operate underwater keeps only sixty percent of the drag it would otherwise suffer inside a viscous volume.",
+      "constants": [
+        {
+          "name": "tickMilliseconds",
+          "value": 40,
+          "unit": "milliseconds of simulated time per mechanics tick",
+          "source": "src/DETHRACE/constants.h:912"
+        },
+        {
+          "name": "catchUpTicksPerFrame",
+          "value": 5,
+          "unit": "mechanics ticks per rendered frame",
+          "source": "src/DETHRACE/common/car.c:235"
+        },
+        {
+          "name": "gravity",
+          "value": 10,
+          "unit": "world units per second squared per tick",
+          "source": "src/DETHRACE/constants.h:914"
+        },
+        {
+          "name": "engineSpaceScale",
+          "value": 6.9,
+          "unit": "engine units per world unit applied at the mechanics boundary",
+          "source": "src/DETHRACE/constants.h:905"
+        },
+        {
+          "name": "dragCoefficient",
+          "value": 0.0005,
+          "unit": "inverse milliseconds per tick",
+          "source": "src/DETHRACE/constants.h:901"
+        },
+        {
+          "name": "underwaterDragShare",
+          "value": 0.6,
+          "unit": "share of the water gravity reduction kept by a car that can drive underwater, per tick",
+          "source": "src/DETHRACE/common/car.c:2312"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1293
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1344
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2138
+        },
+        {
+          "path": "src/DETHRACE/constants.h",
+          "line": 912
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "frame interpolation",
+        "body-axis gravity",
+        "speed-squared drag"
+      ],
+      "tags": [
+        "physics",
+        "timestep",
+        "integration",
+        "feel"
+      ]
+    },
+    {
+      "id": "angular-integration",
+      "node": "car-physics",
+      "name": "Spin integration and substeps",
+      "summary": "Large angular velocities are broken into short rotational substeps and tiny ones are skipped entirely",
+      "behavior": "Rotating the body is handled separately from moving it. Each tick the squared magnitude of the body's spin is compared against two thresholds. Below the lower one the body does not rotate at all, so a car at rest cannot creep. Above the higher one the tick is cut into a number of equal pieces roughly proportional to the square root of the excess spin, so a violent impact that would otherwise wrap the transform visibly is resolved as several small rotations, capped at twenty pieces. Under the threshold a single first-order step is used; over it the integrator rotates by half the angle, re-derives the spin from the inverse inertia tensor, and then rotates by the remaining full angle, which stops an airborne wreck from gaining energy it never had. After the tick, any body whose spin on any axis passes ten thousand in either direction has its velocity and its spin zeroed outright, a guard against a numeric blow-up turning into a car leaving the map.",
+      "constants": [
+        {
+          "name": "negligibleSpin",
+          "value": ".0000001",
+          "unit": "squared radians scaled by the tick",
+          "source": "src/DETHRACE/common/car.c:2027"
+        },
+        {
+          "name": "substepSpinTrigger",
+          "value": ".008",
+          "unit": "squared radians scaled by the tick",
+          "source": "src/DETHRACE/common/car.c:2031"
+        },
+        {
+          "name": "substepSpinDivisor",
+          "value": ".032",
+          "unit": "squared radians per substep",
+          "source": "src/DETHRACE/common/car.c:2032"
+        },
+        {
+          "name": "substepCap",
+          "value": 20,
+          "unit": "substeps per update",
+          "source": "src/DETHRACE/common/car.c:2035"
+        },
+        {
+          "name": "runawaySpinLimit",
+          "value": 10000,
+          "unit": "radians per second per update",
+          "source": "src/DETHRACE/common/car.c:1107"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2019
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1935
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2024
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1099
+        }
+      ],
+      "capabilities": [
+        "tumbling",
+        "rotation substepping",
+        "numeric guard"
+      ],
+      "tags": [
+        "physics",
+        "rotation",
+        "tumbling",
+        "stability"
+      ]
+    },
+    {
+      "id": "suspension-contact",
+      "node": "suspension",
+      "name": "Wheel contact and suspension travel",
+      "summary": "Each wheel rays to the ground and pushes back with a spring-damper pair that levers pitch and roll through its offset from the centre of mass",
+      "behavior": "All four wheel positions are transformed into the world and each is cast against the floor surface. A wheel counts as touching when the measured distance falls between a small allowance for penetration and that axle's full suspension travel, widened by the wheel's own damage offset. A wheel outside that band contributes nothing and its stored compression is reset to full extension. While touching, the wheel pushes along the surface normal with a stiffness term proportional to how far it is compressed from rest, minus a damping term proportional to how quickly that compression is changing over the tick, and the damping never pulls the car down. The push is summed into the vertical force and simultaneously converted into pitch and roll torque through the wheel's lever arm from the centre of mass, which is why a car landing on one front corner rotates instead of sinking flat. Standing on all four wheels no single wheel may carry more than a quarter of twice the body weight, and the stiffness and damping themselves are derived at setup time from the body mass split by the front-to-rear lever ratio, divided by the tuning suspension give, with the damper using the square root of the same factor so a soft spring is not paired with a hard damper.",
+      "constants": [
+        {
+          "name": "contactAllowance",
+          "value": -0.5,
+          "unit": "world units of penetration still counted as contact per tick",
+          "source": "src/DETHRACE/common/car.c:2284"
+        },
+        {
+          "name": "restingLoadWeightShare",
+          "value": 2,
+          "unit": "multiples of body weight allowed at a resting wheel",
+          "source": "src/DETHRACE/common/car.c:2291"
+        },
+        {
+          "name": "restingLoadDivisor",
+          "value": 4,
+          "unit": "divisor across the four wheels",
+          "source": "src/DETHRACE/common/car.c:2291"
+        },
+        {
+          "name": "stiffnessMassFactor",
+          "value": 5,
+          "unit": "stiffness multipliers applied to body mass per unit of suspension give",
+          "source": "src/DETHRACE/common/car.c:7365"
+        },
+        {
+          "name": "stiffnessBiasOffset",
+          "value": 1,
+          "unit": "unit added to the axle mass split before stiffness is divided",
+          "source": "src/DETHRACE/common/car.c:7373"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2284
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2288
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 7358
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 7373
+        }
+      ],
+      "capabilities": [
+        "raycast wheels",
+        "spring damper",
+        "load transfer",
+        "damaged ride height"
+      ],
+      "tags": [
+        "physics",
+        "suspension",
+        "wheels",
+        "contact"
+      ]
+    },
+    {
+      "id": "surface-bumpiness",
+      "node": "suspension",
+      "name": "Procedural surface bumpiness",
+      "summary": "A hashed lattice turns a material's bumpiness value into an extra displacement at each wheel contact",
+      "behavior": "Rough ground is not modelled as geometry. Each contacting wheel's world position is multiplied by 512 and folded modulo 2048 on the two horizontal axes, producing a pair of triangular-wave coordinates inside half that period. The folded values are summed and remapped so the result peaks once per period and falls away in a diamond around the peak, then a constant of 400 is subtracted and the remainder is floored at zero, which opens a flat plateau between peaks. What survives is multiplied by the material's own bumpiness value and divided by 42400 before being added to the contact distance along the surface normal. The effect is a repeatable but irregular shake at a scale far below the collision mesh, and because the four wheels sample different phases of the same lattice the body pitches and rolls rather than bouncing evenly. A material with zero bumpiness is perfectly flat, so the same suspension reads as glassy on tarmac and loose on gravel without any change to the car itself.",
+      "constants": [
+        {
+          "name": "sampleScale",
+          "value": 512,
+          "unit": "samples per world unit",
+          "source": "src/DETHRACE/common/car.c:2169"
+        },
+        {
+          "name": "latticePeriod",
+          "value": 2048,
+          "unit": "samples per lattice repeat",
+          "source": "src/DETHRACE/common/car.c:2169"
+        },
+        {
+          "name": "foldHalfPeriod",
+          "value": 1024,
+          "unit": "samples in half a lattice period",
+          "source": "src/DETHRACE/common/car.c:2172"
+        },
+        {
+          "name": "plateauOffset",
+          "value": 400,
+          "unit": "samples subtracted before displacement is applied",
+          "source": "src/DETHRACE/common/car.c:2183"
+        },
+        {
+          "name": "heightNormaliser",
+          "value": 42400,
+          "unit": "samples per unit of surface height",
+          "source": "src/DETHRACE/common/car.c:2187"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2158
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2169
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2187
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2281
+        }
+      ],
+      "capabilities": [
+        "procedural roughness",
+        "material driven",
+        "contact offset"
+      ],
+      "tags": [
+        "physics",
+        "surfaces",
+        "feel",
+        "off-road"
+      ]
+    },
+    {
+      "id": "tyre-grip-limit",
+      "node": "tyre-model",
+      "name": "Tyre grip and the friction ellipse",
+      "summary": "Grip grows with tyre load and is shared between cornering and driving, so a tyre that is turning has nothing left to accelerate with",
+      "behavior": "A wheel's available friction is the local coefficient multiplied by the square root of the load pressing it down, so a wheel lifting off loses grip quickly and a loaded one gains it. The coefficient blends a per-car grip multiplier, an oil contamination factor and the surface's own tyre friction, and where the car is sliding sideways the blend is pushed toward a higher sliding value by a fraction of the lateral wheel speed divided by ten, capped at one, so a sliding tyre never becomes frictionless. The lateral and longitudinal demands are then combined into a single vector whose length is half their sum, and the per-axle budget is applied to that length; surplus is simply lost, which is what makes a car understeer out of a corner instead of cornering and accelerating at once. Rear and front are budgeted and clamped independently. A wheel that exceeds its budget is flagged as slipping, which drives the skid marks, the skid audio and the loss of steering authority, and traction control trims the engine impulse to a hundredth over the exact limit rather than cutting it, with a floor of four tenths of the available grip kept while the engine speed is above target.",
+      "constants": [
+        {
+          "name": "lateralGripBlendDivisor",
+          "value": 10,
+          "unit": "world units per second of lateral speed per unit of blend",
+          "source": "src/DETHRACE/common/car.c:2436"
+        },
+        {
+          "name": "lateralGripBlendCap",
+          "value": 1,
+          "unit": "fraction of the blend applied",
+          "source": "src/DETHRACE/common/car.c:2437"
+        },
+        {
+          "name": "frictionVectorDivisor",
+          "value": 2,
+          "unit": "divisor when combining the two force components",
+          "source": "src/DETHRACE/common/car.c:2423"
+        },
+        {
+          "name": "forceFloor",
+          "value": 0.0001,
+          "unit": "normalised force fraction below which no rescale is applied",
+          "source": "src/DETHRACE/common/car.c:2489"
+        },
+        {
+          "name": "skidSlipPlayer",
+          "value": 20,
+          "unit": "normalised slip units for the car being driven",
+          "source": "src/DETHRACE/constants.h:921"
+        },
+        {
+          "name": "skidSlipOther",
+          "value": 60,
+          "unit": "normalised slip units for every other car",
+          "source": "src/DETHRACE/constants.h:922"
+        },
+        {
+          "name": "tractionControlOvershoot",
+          "value": 1.01,
+          "unit": "multiplier on the corrected engine impulse",
+          "source": "src/DETHRACE/common/car.c:2450"
+        },
+        {
+          "name": "gripFloorAboveTarget",
+          "value": 0.4,
+          "unit": "fraction of grip retained while engine speed exceeds target",
+          "source": "src/DETHRACE/common/car.c:2464"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2442
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2496
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2506
+        },
+        {
+          "path": "src/DETHRACE/constants.h",
+          "line": 921
+        }
+      ],
+      "capabilities": [
+        "load sensitive grip",
+        "combined slip",
+        "wheel slip flags",
+        "skid feedback"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "grip",
+        "handling"
+      ]
+    },
+    {
+      "id": "engine-torque",
+      "node": "drivetrain",
+      "name": "Engine torque and throttle",
+      "summary": "Torque starts negative from engine braking, gains a throttle demand, and is cut down as the engine takes damage",
+      "behavior": "The torque at any instant begins as a loss, a term that grows with the square of engine speed divided by a hundred million minus a small constant, so a car coasts down when the throttle is released. Holding the throttle adds a demand of 1.2 for a digital input; on an analogue axis the demand is the raw value divided by 54613. When the car is in a low gear, turning hard and traction control is already intervening, the demand is trimmed to 0.7 so the rear tyres do not light up mid-corner. The demand is multiplied by a per-car power factor and by whichever power-up level the driver has collected, then reduced by one percent per damage level once the engine has taken more than ten levels. The result is divided by the current gear number before it becomes an impulse at the wheels, so a tall gear accelerates gently. Where engine speed is chasing the speed the car is really doing, an extra term corrects toward the target against a fixed two-hundred-microsecond inertia, which is what makes the response feel elastic instead of instant.",
+      "constants": [
+        {
+          "name": "engineBrakeDivisor",
+          "value": 100000000,
+          "unit": "engine speed squared per unit of torque",
+          "source": "src/DETHRACE/common/car.c:1004"
+        },
+        {
+          "name": "engineBrakeBaseline",
+          "value": 0.2,
+          "unit": "torque units",
+          "source": "src/DETHRACE/common/car.c:1004"
+        },
+        {
+          "name": "tractionTrimThrottle",
+          "value": 0.7,
+          "unit": "throttle units",
+          "source": "src/DETHRACE/common/car.c:1007"
+        },
+        {
+          "name": "analogueThrottleDivisor",
+          "value": 54613,
+          "unit": "raw axis units per unit of throttle",
+          "source": "src/DETHRACE/common/car.c:1009"
+        },
+        {
+          "name": "digitalThrottle",
+          "value": 1.2,
+          "unit": "throttle units",
+          "source": "src/DETHRACE/common/car.c:1011"
+        },
+        {
+          "name": "damageFreeEngineLevel",
+          "value": 10,
+          "unit": "damage levels before power begins to fall",
+          "source": "src/DETHRACE/common/car.c:1015"
+        },
+        {
+          "name": "damagePowerDivisor",
+          "value": 100,
+          "unit": "damage levels per unit of lost power",
+          "source": "src/DETHRACE/common/car.c:1016"
+        },
+        {
+          "name": "revInertiaDivisor",
+          "value": 0.0002,
+          "unit": "seconds per unit of engine inertia",
+          "source": "src/DETHRACE/common/car.c:1050"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 971
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1004
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1041
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1050
+        }
+      ],
+      "capabilities": [
+        "torque curve",
+        "throttle response",
+        "damage limited power",
+        "analogue input"
+      ],
+      "tags": [
+        "drivetrain",
+        "engine",
+        "acceleration",
+        "tuning"
+      ]
+    },
+    {
+      "id": "gearbox-shifting",
+      "node": "drivetrain",
+      "name": "Automatic gearbox",
+      "summary": "Gear selection follows engine speed with hysteresis, and reverse is flipped into rather than shifted into",
+      "behavior": "The gearbox is automatic and has no clutch input. Engine speed is integrated from the load at the wheels with a fixed inertia step, and the speed the engine would ideally hold is the car's forward speed divided by a per-car speed-to-revs ratio and by the gear number, so the same engine speed means a higher road speed in a taller gear. A gear engages only once the free-revving engine passes a thousand with the throttle held; at that moment first or reverse is chosen depending on which way the driver asked to go. An upshift needs both the target and the actual engine speed above six thousand and the rear wheels not slipping, which stops a wheelspin from being read as acceleration. A downshift happens when the target drops below three thousand. Sliding back to neutral needs both speeds under two hundred with no throttle, so a car settles to idle on its own. Braking while in first or second and still rolling slower than one unit flips the sign of the gear, which is how reverse is reached without a dedicated control. Traction control pins engine speed to the target whenever it would overshoot, so the tachometer cannot run away while the tyres are scrabbling, and a fresh change is held locked for a moment until the speeds match again.",
+      "constants": [
+        {
+          "name": "shiftUpSpeed",
+          "value": 6000,
+          "unit": "engine speed units",
+          "source": "src/DETHRACE/common/car.c:2746"
+        },
+        {
+          "name": "shiftDownSpeed",
+          "value": 3000,
+          "unit": "engine speed units",
+          "source": "src/DETHRACE/common/car.c:2749"
+        },
+        {
+          "name": "driveEngageSpeed",
+          "value": 1000,
+          "unit": "engine speed units",
+          "source": "src/DETHRACE/common/car.c:2722"
+        },
+        {
+          "name": "neutralSpeed",
+          "value": 200,
+          "unit": "engine speed units",
+          "source": "src/DETHRACE/common/car.c:2752"
+        },
+        {
+          "name": "reverseGearCeiling",
+          "value": 2,
+          "unit": "gear index up to which a brake press flips direction",
+          "source": "src/DETHRACE/common/car.c:2731"
+        },
+        {
+          "name": "revInertiaStep",
+          "value": 0.0002,
+          "unit": "seconds per unit of engine inertia",
+          "source": "src/DETHRACE/common/car.c:2735"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2699
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2735
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2746
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2749
+        }
+      ],
+      "capabilities": [
+        "automatic gears",
+        "shift hysteresis",
+        "reverse engagement",
+        "traction control"
+      ],
+      "tags": [
+        "drivetrain",
+        "gearbox",
+        "tuning",
+        "feel"
+      ]
+    },
+    {
+      "id": "brake-and-handbrake",
+      "node": "drivetrain",
+      "name": "Brake ramp, axle split and handbrake",
+      "summary": "Brake force ramps to a cap, is divided between axles by their grip, and is eaten away by brake damage",
+      "behavior": "Braking is not an instant force. Pressing the pedal jumps the force to the car's per-car initial value and then climbs at a second per-car rate until it reaches their sum; releasing it drops back to nothing at once, so a tap gives a short pulse and a hold gives full stopping power. The total is then split between rear and front axles in proportion to their grip coefficients weighted by the friction ellipse, so a car with more grip at the back brakes harder at the back and stays straighter under heavy braking. Brake damage is averaged per axle and, past one fifth of the damage scale, reduces that axle's share with a squared falloff that reaches nothing at full damage, so a car with ruined rear brakes can barely stop. The handbrake takes the whole remaining retardation, applies it to the rear alone, and knocks the car into neutral so the throttle cannot fight it. It stops working altogether once either rear brake unit has taken sixty levels of damage.",
+      "constants": [
+        {
+          "name": "brakeDamageGraceDivisor",
+          "value": 5,
+          "unit": "fifths of the damage scale before braking degrades",
+          "source": "src/DETHRACE/common/car.c:2394"
+        },
+        {
+          "name": "brakeDamageSpan",
+          "value": 4,
+          "unit": "quarters of the damage scale over which braking fades to nothing",
+          "source": "src/DETHRACE/common/car.c:2395"
+        },
+        {
+          "name": "handbrakeFailureDamage",
+          "value": 60,
+          "unit": "damage levels at which the handbrake stops working",
+          "source": "src/DETHRACE/constants.h:920"
+        },
+        {
+          "name": "handbrakeNeutralGear",
+          "value": 0,
+          "unit": "gear index selected by the handbrake",
+          "source": "src/DETHRACE/common/car.c:2420"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 971
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2394
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2417
+        },
+        {
+          "path": "src/DETHRACE/constants.h",
+          "line": 920
+        }
+      ],
+      "capabilities": [
+        "brake ramp",
+        "axle brake split",
+        "handbrake",
+        "brake damage"
+      ],
+      "tags": [
+        "drivetrain",
+        "braking",
+        "damage",
+        "feel"
+      ]
+    },
+    {
+      "id": "steering-curvature",
+      "node": "steering",
+      "name": "Steering as accumulated curvature",
+      "summary": "Input builds a path curvature toward a per-car limit, and that limit is reached more slowly the faster the car is going",
+      "behavior": "The driver does not command a steering angle, they command a curvature: how tightly the driven path bends. Holding a direction moves curvature toward the per-car maximum at one of two rates. When the input opposes the direction the car is already turning, the correction is a flat 0.01 normalised by the tick; when it agrees, or the car is running straight, the rate is proportional to 0.05 divided by five plus current speed, so at a crawl the wheels go lock to lock quickly and at racing speed the same key press takes noticeably longer. Two of the alternative control schemes reshape this: one triples the counter-steering correction while keeping three quarters of the entry rate, and another drives a steering velocity that is integrated into curvature and zeroed whenever the driver reverses direction, which damps the wheel without the counter-steer boost. The analogue stick is read as a squared curve normalised by a little over four billion raw units, so the first third of travel hardly turns the car and the last third does almost everything. Everything is finally clamped to the per-car maximum, so no scheme can exceed the car's own handling limit.",
+      "constants": [
+        {
+          "name": "counterSteerRate",
+          "value": 0.01,
+          "unit": "curvature units per second of flat correction",
+          "source": "src/DETHRACE/common/car.c:1878"
+        },
+        {
+          "name": "tickNormaliser",
+          "value": 0.04,
+          "unit": "seconds used to normalise a correction to one tick",
+          "source": "src/DETHRACE/common/car.c:1878"
+        },
+        {
+          "name": "speedSteerNumerator",
+          "value": 0.05,
+          "unit": "curvature units per second",
+          "source": "src/DETHRACE/common/car.c:1880"
+        },
+        {
+          "name": "speedSteerOffset",
+          "value": 5,
+          "unit": "speed units added to the rate divisor",
+          "source": "src/DETHRACE/common/car.c:1880"
+        },
+        {
+          "name": "counterSteerScale",
+          "value": 3,
+          "unit": "multiplier on the flat correction when steering against the turn",
+          "source": "src/DETHRACE/common/car.c:1728"
+        },
+        {
+          "name": "entryRateScale",
+          "value": 0.75,
+          "unit": "multiplier on the speed dependent entry rate",
+          "source": "src/DETHRACE/common/car.c:1730"
+        },
+        {
+          "name": "stickCurveDivisor",
+          "value": 4294967300,
+          "unit": "raw axis units squared per curvature unit",
+          "source": "src/DETHRACE/common/car.c:1798"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1867
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1721
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1758
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 1869
+        }
+      ],
+      "capabilities": [
+        "curvature steering",
+        "speed sensitive rate",
+        "analogue curve",
+        "handling limit"
+      ],
+      "tags": [
+        "steering",
+        "handling",
+        "input",
+        "feel"
+      ]
+    },
+    {
+      "id": "steering-self-centre",
+      "node": "steering",
+      "name": "Steering self-centring",
+      "summary": "With no input the curvature bleeds away in step with the yaw the car is already carrying",
+      "behavior": "Releasing the steering does not snap the wheels straight. While a direction is held, or while the handbrake is down, self-centring is skipped entirely, and it only runs once the rear wheels have come off their rest height, which is the condition for the car being airborne or tipped. When it runs it compares two candidate corrections: one that would cancel the body's current spin about the surface normal, projected over the front-to-rear axle separation, and one that would cancel the whole remaining curvature. It applies whichever is smaller in magnitude, or the one of opposite sign, and then clamps the result so curvature cannot be pushed back across zero. The consequence is that a car sliding sideways keeps a self-aligning torque proportional to its yaw rate rather than to the driver's input, which is what makes a slide recoverable instead of snapping back, while a car in the air keeps whatever steering it left the ground with.",
+      "constants": [
+        {
+          "name": "straightCurvature",
+          "value": 0,
+          "unit": "curvature units the alignment clamps back to",
+          "source": "src/DETHRACE/common/car.c:2073"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2048
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2055
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2076
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2328
+        }
+      ],
+      "capabilities": [
+        "self-aligning torque",
+        "yaw rate feedback",
+        "airborne steering lock"
+      ],
+      "tags": [
+        "steering",
+        "handling",
+        "feel"
+      ]
+    },
+    {
+      "id": "wall-contact-solver",
+      "node": "wall-collision",
+      "name": "Wall contact response",
+      "summary": "Contact points are found by sweeping the car's box against nearby level faces and resolved with a simultaneous multi-point impulse solve",
+      "behavior": "Before a car moves, the level faces that could possibly touch it are gathered into a list capped at fifty, so the collision pass never has to consider the whole world. The car's box corners, plus a handful of extra points that stand proud of the box, are swept from their previous position to their current one and cast against those faces; the resulting hit distances become the contact points, with at most four kept and the most distant rejected. Each contact contributes a row to a small matrix built from the contact normal, the lever arm and the body's inverse inertia tensor, and the whole system is solved at once so that fixing one corner does not fight the next. The solved impulses are nudged up by a fraction of a percent so contact does not sit exactly on the boundary, and up to twenty re-collide attempts are made inside one tick before the car is simply stopped. Tangential friction takes thirty-five percent of the normal impulse, scaled by the material's car-wall friction, so a car grinds along a wall rather than sticking to it or sliding freely. If at least three points are in contact and the summed force points back through the wall with a vertical component inside a band between ninety and a hundred and ten units of acceleration, the car is launched: nearly-head-on cases pivot it about its own front axis at half a radian per second, and everything else is stopped dead.",
+      "constants": [
+        {
+          "name": "faceListCap",
+          "value": 50,
+          "unit": "level faces considered per car per tick",
+          "source": "src/DETHRACE/common/car.c:2884"
+        },
+        {
+          "name": "contactPointCap",
+          "value": 4,
+          "unit": "contact points kept per car per tick",
+          "source": "src/DETHRACE/common/car.c:2950"
+        },
+        {
+          "name": "sweepInset",
+          "value": 0.0072463769,
+          "unit": "engine units of inset along the sweep direction",
+          "source": "src/DETHRACE/common/car.c:2926"
+        },
+        {
+          "name": "reCollideAttempts",
+          "value": 20,
+          "unit": "collision passes per tick",
+          "source": "src/DETHRACE/common/car.c:1631"
+        },
+        {
+          "name": "impulseScale",
+          "value": 1.001,
+          "unit": "multiplier on the solved impulse",
+          "source": "src/DETHRACE/common/car.c:3054"
+        },
+        {
+          "name": "wallFrictionShare",
+          "value": 0.35,
+          "unit": "fraction of the normal impulse available as friction",
+          "source": "src/DETHRACE/common/car.c:3206"
+        },
+        {
+          "name": "impactAnnounceForce",
+          "value": 10,
+          "unit": "squared force units before a loud impact is played",
+          "source": "src/DETHRACE/common/car.c:3068"
+        },
+        {
+          "name": "launchBandMinimum",
+          "value": 90,
+          "unit": "acceleration units per second",
+          "source": "src/DETHRACE/common/car.c:3101"
+        },
+        {
+          "name": "launchBandMaximum",
+          "value": 110,
+          "unit": "acceleration units per second",
+          "source": "src/DETHRACE/common/car.c:3102"
+        },
+        {
+          "name": "launchSpinRate",
+          "value": 0.5,
+          "unit": "radians per second about the front axis",
+          "source": "src/DETHRACE/common/car.c:3118"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2787
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 2884
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 3054
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 3206
+        }
+      ],
+      "capabilities": [
+        "broadphase face list",
+        "swept box contacts",
+        "simultaneous impulse solve",
+        "wall friction",
+        "wall launch"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "world geometry",
+        "crash"
+      ]
+    },
+    {
+      "id": "car-vs-car-solver",
+      "node": "car-car-collision",
+      "name": "Car to car collision",
+      "summary": "Pairs of contact points between two boxes are solved as one coupled impulse problem and rescanned in passes",
+      "behavior": "Two cars are tested first by bounding box and then by their real box geometry, producing matched pairs of contact points and normals, at most four pairs per collision. The solver restores both cars to where they began the tick, measures the closing speed at each pair, and builds one combined matrix from both bodies' inverse masses and inverse inertia tensors, so an impulse accounts for the spin it will induce as well as the slide. The small system is solved directly for one, two, three or four points, with degenerate cases falling back to fewer. Each solved impulse is padded to at least a thousandth and biased upward by a tenth so resting contact separates instead of jittering, and the total is applied as a velocity change only, never as a position fix, so overlap resolves over the following ticks. Tangential friction takes thirty-five percent of the normal impulse, limited by whatever would just stop the relative sliding, and is skipped when the two surfaces are already moving together. The whole set of pairs is rescanned up to five times per tick and if anything remains it is brought to a grinding halt. Each car is then handed the impulse it received for crush and damage processing, and a car flagged as immovable, such as a parked wreck, passes the energy straight back.",
+      "constants": [
+        {
+          "name": "contactPairCap",
+          "value": 4,
+          "unit": "contact point pairs per collision",
+          "source": "src/DETHRACE/common/car.c:6959"
+        },
+        {
+          "name": "solverPasses",
+          "value": 5,
+          "unit": "pair rescan passes per tick",
+          "source": "src/DETHRACE/common/car.c:6095"
+        },
+        {
+          "name": "impulseFloor",
+          "value": 0.001,
+          "unit": "impulse units",
+          "source": "src/DETHRACE/common/car.c:7054"
+        },
+        {
+          "name": "impulseBias",
+          "value": 0.1,
+          "unit": "impulse units added to every solved contact",
+          "source": "src/DETHRACE/common/car.c:7060"
+        },
+        {
+          "name": "contactFrictionShare",
+          "value": 0.35,
+          "unit": "fraction of the normal impulse",
+          "source": "src/DETHRACE/common/car.c:3282"
+        },
+        {
+          "name": "slidingStopFloor",
+          "value": 0.01,
+          "unit": "velocity units below which no friction is applied",
+          "source": "src/DETHRACE/common/car.c:3262"
+        },
+        {
+          "name": "crushForceScale",
+          "value": 5,
+          "unit": "multiplier applied to the impulse before it becomes crush energy",
+          "source": "src/DETHRACE/common/car.c:7212"
+        },
+        {
+          "name": "sparkSpeedShare",
+          "value": 0.25,
+          "unit": "fraction of the summed car velocities given to the spark shower",
+          "source": "src/DETHRACE/common/car.c:7215"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 6079
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 6913
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 7054
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 7212
+        }
+      ],
+      "capabilities": [
+        "coupled impulse solve",
+        "car friction",
+        "multi-pass resolution",
+        "immovable bodies"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "car combat",
+        "feel"
+      ]
+    },
+    {
+      "id": "crush-deformation",
+      "node": "crush-damage",
+      "name": "Crumple deformation",
+      "summary": "Impact energy drags the nearest body vertex and its neighbours inward within per-vertex limits",
+      "behavior": "Body damage is written into the render mesh rather than the collision box, and only for model parts near the view, so an opponent far from the camera is never deformed. The impulse is scaled by the part's own softness and the resulting length is compared with a small floor; below it nothing happens, above it the floor is subtracted so light knocks never accumulate. The vertex nearest the impact in model space takes the whole displacement along its stored soft direction, and each axis is clamped to limits recorded with that vertex; a displacement that would cross a limit is replaced by a small random offset sitting on the limit, so a crushed panel ends up ragged rather than flat-cut. Any component that would move the vertex back against the applied direction is discarded and restored, which is why a bent panel does not spring outward. Neighbouring vertices are then pulled along by a weight taken from their distance to the crush point and are further bent along a pseudorandom axis by a fold factor that grows with that weight and flips sign from a hash of the vertex position, which is where the uneven folded look comes from. The collision box is reshrunk around the deformed mesh so a crumpled nose is physically shorter, and if the reshrunk box cannot be placed clear of geometry the repair is refused and the box restored.",
+      "constants": [
+        {
+          "name": "crushEnergyFloor",
+          "value": 0.06,
+          "unit": "softness scaled energy units per impact",
+          "source": "src/DETHRACE/common/crush.c:292"
+        },
+        {
+          "name": "softnessReference",
+          "value": 0.7,
+          "unit": "softness units used as the reference divisor",
+          "source": "src/DETHRACE/common/crush.c:744"
+        },
+        {
+          "name": "foldFactorHalfScale",
+          "value": 128,
+          "unit": "weight units at which the fold factor reverses",
+          "source": "src/DETHRACE/common/crush.c:184"
+        },
+        {
+          "name": "neighbourDragScale",
+          "value": 256,
+          "unit": "weight units per unit of drag on a neighbouring vertex",
+          "source": "src/DETHRACE/common/crush.c:251"
+        },
+        {
+          "name": "foldSignHashScale",
+          "value": 63,
+          "unit": "multiplier on the coordinate sum when choosing a fold sign",
+          "source": "src/DETHRACE/common/crush.c:187"
+        },
+        {
+          "name": "bendAxisHashScale",
+          "value": 100,
+          "unit": "multiplier on the coordinate sum when choosing a bend axis",
+          "source": "src/DETHRACE/common/crush.c:253"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 273
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 157
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 292
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 3431
+        }
+      ],
+      "capabilities": [
+        "vertex crush",
+        "deformation limits",
+        "neighbour propagation",
+        "box reshrink"
+      ],
+      "tags": [
+        "damage",
+        "deformation",
+        "crash",
+        "visuals"
+      ]
+    },
+    {
+      "id": "impact-damage-routing",
+      "node": "vehicle-damage",
+      "name": "Impact classification and damage routing",
+      "summary": "The impact point is classified against the crushed bounding box and matched against the car's own damage rules",
+      "behavior": "An impact becomes damage through a rule set carried by each car rather than one health number. The impact point is measured against the crushed bounding box and the smallest of the three distances to the nearest pair of faces decides the region: if depth is smallest the hit is front or back, if the lateral distance is smallest it is left or right, and the two remaining proportions along the box become the coordinates the rules test. Each car carries clauses with conditions on those proportions and on the region, and every clause that matches fires its effects with the impact energy as the magnitude and a per-effect weakness factor. For the player the damage is first rolled as a percentage chance proportional to fifteen hundred times the scaled energy and then applied at thirty times that energy; across a network it lands unconditionally at fifteen times; for an opponent it is applied at ten times and scaled upward by the race's suggested rank. The same energy sets how hard the view kicks, with front and rear hits swinging furthest and left and right hits using a shorter, faster wobble.",
+      "constants": [
+        {
+          "name": "networkDamageScale",
+          "value": 15,
+          "unit": "damage levels per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:619"
+        },
+        {
+          "name": "playerDamageChanceScale",
+          "value": 1500,
+          "unit": "percent per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:620"
+        },
+        {
+          "name": "playerDamageScale",
+          "value": 30,
+          "unit": "damage levels per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:621"
+        },
+        {
+          "name": "opponentDamageScale",
+          "value": 10,
+          "unit": "damage levels per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:624"
+        },
+        {
+          "name": "opponentRankFloor",
+          "value": 10,
+          "unit": "suggested rank below which the floor value is used",
+          "source": "src/DETHRACE/common/crush.c:624"
+        },
+        {
+          "name": "opponentRankDivisor",
+          "value": 20,
+          "unit": "suggested rank per unit of extra damage",
+          "source": "src/DETHRACE/common/crush.c:624"
+        },
+        {
+          "name": "shakeAmplitudeMinimum",
+          "value": 50,
+          "unit": "view units per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:863"
+        },
+        {
+          "name": "shakeAmplitudeMaximum",
+          "value": 100,
+          "unit": "view units per unit of energy",
+          "source": "src/DETHRACE/common/crush.c:863"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 706
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 615
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 863
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 3431
+        }
+      ],
+      "capabilities": [
+        "impact region detection",
+        "damage clauses",
+        "character dependent damage",
+        "hit feedback"
+      ],
+      "tags": [
+        "damage",
+        "crash",
+        "feedback",
+        "tuning"
+      ]
+    },
+    {
+      "id": "subsystem-damage",
+      "node": "vehicle-damage",
+      "name": "Subsystem damage, breakdown and repair",
+      "summary": "Damage lands on named parts in whole units, wrecking is threshold based, and repair crawls back vertex by vertex",
+      "behavior": "Damage is not a single bar. It is applied to named parts, covering engine, transmission, driver, four wheels and four brakes, and a hit worth less than five levels is ignored outright, which stops a long scrape from slowly destroying a car. Each part saturates at ninety-nine, and a hit smaller than ten levels cannot push a part across that line, so a car is only finished by a real impact. A car is declared wrecked when the engine, transmission or driver reaches ninety-nine, or when all four wheels do, and it then spills oil, stops smoking the way a running car does and falls silent on the radio. Wheel damage past thirty levels rotates that wheel's model out of true by a per-level wobble on two axes, mirrored onto the opposite-side wheel, and that rotation is measured back as a vertical sag the suspension then has to carry, so a damaged corner both looks and behaves broken — the wobble is skipped when the wheel is far outside the view. Repair runs the crush process backwards: every vertex of every undamaged-vertex record is stepped a tiny fraction toward the shape it once had each millisecond, so a car visibly straightens instead of snapping back. Impacts also drive a reaction in the cockpit view overlay, sorted into three strength bands by the squared length of the hit vector and aimed to the side the force came from.",
+      "constants": [
+        {
+          "name": "minimumDamagePerHit",
+          "value": 5,
+          "unit": "damage levels per hit",
+          "source": "src/DETHRACE/common/crush.c:575"
+        },
+        {
+          "name": "damageCeiling",
+          "value": 99,
+          "unit": "damage levels",
+          "source": "src/DETHRACE/common/crush.c:579"
+        },
+        {
+          "name": "finishingHitMinimum",
+          "value": 10,
+          "unit": "damage levels required to finish a part",
+          "source": "src/DETHRACE/common/crush.c:580"
+        },
+        {
+          "name": "wreckThreshold",
+          "value": 99,
+          "unit": "damage levels on a critical part",
+          "source": "src/DETHRACE/common/crush.c:545"
+        },
+        {
+          "name": "wheelWobbleStart",
+          "value": 30,
+          "unit": "damage levels before a wheel goes out of true",
+          "source": "src/DETHRACE/common/crush.c:1323"
+        },
+        {
+          "name": "wheelWobbleRange",
+          "value": 32,
+          "unit": "world units beyond which the wobble is skipped",
+          "source": "src/DETHRACE/common/crush.c:1324"
+        },
+        {
+          "name": "repairStepPerMillisecond",
+          "value": 0.00005,
+          "unit": "mesh vertex units per millisecond",
+          "source": "src/DETHRACE/common/crush.c:427"
+        },
+        {
+          "name": "strongHitBand",
+          "value": 0.2,
+          "unit": "squared hit magnitude for the strongest reaction",
+          "source": "src/DETHRACE/common/crush.c:682"
+        },
+        {
+          "name": "mediumHitBand",
+          "value": 0.015,
+          "unit": "squared hit magnitude for the middle reaction",
+          "source": "src/DETHRACE/common/crush.c:684"
+        },
+        {
+          "name": "negligibleHitBand",
+          "value": 0.001,
+          "unit": "squared hit magnitude below which nothing reacts",
+          "source": "src/DETHRACE/common/crush.c:686"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 567
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 541
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 427
+        },
+        {
+          "path": "src/DETHRACE/common/crush.c",
+          "line": 1303
+        }
+      ],
+      "capabilities": [
+        "part level damage",
+        "wreck thresholds",
+        "progressive repair",
+        "wheel damage"
+      ],
+      "tags": [
+        "damage",
+        "state machine",
+        "repair",
+        "feedback"
+      ]
+    },
+    {
+      "id": "ai-objectives",
+      "node": "opponent-ai",
+      "name": "Opponent objectives and grudges",
+      "summary": "Each opponent holds one timed objective and picks the next from a grudge that the player builds and time wears down",
+      "behavior": "Opponents are not one racing line with a throttle. Each holds exactly one objective at a time — finish the race, get near the player, pursue and ram the player, run away, return to a start point, wait for a victim, hover, or sit frozen — and each is given a lifespan of a random thirty to a hundred and eighty seconds, with a pursuit extended by another ninety because chasing takes longer than merely driving. Choosing the next objective is largely temperament. Each driver has a nastiness value that raises the base grudge it carries against the player by forty per point plus ten, and any time it rams or is rammed the grudge rises, clamped between a floor and a ceiling. When the player comes into view the chance of switching to pursuit is the grudge minus a standing offset plus thirty per point of nastiness, with a large bonus if the player is heading straight at it, and the grudge also decays on a slow timer so a grudge does not last forever. No more than three opponents will close on the player at once and no more than two will mind the race, which keeps the pressure varied instead of uniformly hostile. A pursuit ends once the grudge falls below a low threshold, and an opponent jammed against a stationary player for a second or two backs off with a burst of reverse thrust and then brakes, rather than grinding.",
+      "constants": [
+        {
+          "name": "objectiveMinSeconds",
+          "value": 30,
+          "unit": "seconds",
+          "source": "src/DETHRACE/common/opponent.c:509"
+        },
+        {
+          "name": "objectiveMaxSeconds",
+          "value": 180,
+          "unit": "seconds",
+          "source": "src/DETHRACE/common/opponent.c:509"
+        },
+        {
+          "name": "objectiveTimeScale",
+          "value": 1000,
+          "unit": "milliseconds per second",
+          "source": "src/DETHRACE/common/opponent.c:509"
+        },
+        {
+          "name": "pursuitExtension",
+          "value": 90000,
+          "unit": "milliseconds added to a pursuit objective",
+          "source": "src/DETHRACE/common/opponent.c:511"
+        },
+        {
+          "name": "pursuitGrudgeFloor",
+          "value": 15,
+          "unit": "grudge units below which pursuit ends",
+          "source": "src/DETHRACE/common/opponent.c:1103"
+        },
+        {
+          "name": "nastinessGrudgeScale",
+          "value": 40,
+          "unit": "grudge units per point of driver nastiness",
+          "source": "src/DETHRACE/common/opponent.c:1680"
+        },
+        {
+          "name": "grudgeBaseline",
+          "value": 10,
+          "unit": "grudge units",
+          "source": "src/DETHRACE/common/opponent.c:1680"
+        },
+        {
+          "name": "grudgeCeiling",
+          "value": 100,
+          "unit": "grudge units",
+          "source": "src/DETHRACE/common/opponent.c:1701"
+        },
+        {
+          "name": "grudgeFloor",
+          "value": 20,
+          "unit": "grudge units",
+          "source": "src/DETHRACE/common/opponent.c:1701"
+        },
+        {
+          "name": "headOnPursuitBonus",
+          "value": 50,
+          "unit": "percent added to the pursuit chance",
+          "source": "src/DETHRACE/common/opponent.c:1743"
+        },
+        {
+          "name": "concurrentPursuers",
+          "value": 3,
+          "unit": "opponents allowed to close on the player",
+          "source": "src/DETHRACE/common/opponent.c:1764"
+        },
+        {
+          "name": "concurrentRacers",
+          "value": 2,
+          "unit": "opponents allowed to mind the race",
+          "source": "src/DETHRACE/common/opponent.c:1769"
+        },
+        {
+          "name": "backupDelay",
+          "value": 2200,
+          "unit": "milliseconds before an opponent backs off",
+          "source": "src/DETHRACE/common/opponent.c:1163"
+        },
+        {
+          "name": "backupBrakeForce",
+          "value": 15,
+          "unit": "body masses per second squared",
+          "source": "src/DETHRACE/common/opponent.c:1165"
+        },
+        {
+          "name": "reverseThrust",
+          "value": -8,
+          "unit": "body masses per second squared",
+          "source": "src/DETHRACE/common/opponent.c:1174"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/opponent.c",
+          "line": 2506
+        },
+        {
+          "path": "src/DETHRACE/common/opponent.c",
+          "line": 501
+        },
+        {
+          "path": "src/DETHRACE/common/opponent.c",
+          "line": 1613
+        },
+        {
+          "path": "src/DETHRACE/common/opponent.c",
+          "line": 1054
+        }
+      ],
+      "capabilities": [
+        "objective state machine",
+        "grudge model",
+        "aggression balancing",
+        "recovery behaviour"
+      ],
+      "tags": [
+        "ai",
+        "opponents",
+        "combat",
+        "tuning"
+      ]
+    },
+    {
+      "id": "ai-path-following",
+      "node": "opponent-path",
+      "name": "Opponent path following",
+      "summary": "A proportional-derivative speed controller chases a per-section target speed, with corner speeds taken from the geometry ahead",
+      "behavior": "An opponent drives by writing the same throttle, brake and curvature values a player's input would produce, from a controller that works on the track's path sections. It projects its position onto the current section's axis, looks a fixed fifteen world units ahead, and decides steering from the sideways error: outside the section's half-width on either side it takes the full available curvature and drops its target speed to six; just inside it nibbles a twentieth of the available curvature while asking for the open-road value; inside it steers straight at the open-road value. Available curvature shrinks inversely with speed above twelve and a half, so the same corner demands more wheel at speed. Ahead of the car it walks up to four further sections, fits a circular arc through each corner, and derives a corner speed from the arc radius times ten and a constant grip fudge of 1.4, clamped by the section's own maximum; whenever the distance to that corner is under speed squared over twenty-four plus one and a half times speed, the target drops to the corner speed. A proportional-derivative loop then turns the error into an acceleration, with a derivative term scaled by the measured frame time and a ceiling of ten body masses per second squared, degraded by engine and transmission damage and cut to nothing once either reaches the dead threshold. A negative demand is written as brake rather than negative throttle, so the opponent slows the way a player does.",
+      "constants": [
+        {
+          "name": "cornerGripFudge",
+          "value": 1.4,
+          "unit": "grip multiplier applied to the corner radius",
+          "source": "src/DETHRACE/common/oppoproc.c:84"
+        },
+        {
+          "name": "cornerSpeedAccel",
+          "value": 10,
+          "unit": "world units per second squared per world unit of radius",
+          "source": "src/DETHRACE/common/oppoproc.c:422"
+        },
+        {
+          "name": "brakingDivisor",
+          "value": 24,
+          "unit": "world units per second squared per world unit of distance",
+          "source": "src/DETHRACE/common/oppoproc.c:405"
+        },
+        {
+          "name": "brakingLead",
+          "value": 1.5,
+          "unit": "seconds of reaction distance",
+          "source": "src/DETHRACE/common/oppoproc.c:405"
+        },
+        {
+          "name": "lowSpeedSteerCutoff",
+          "value": 12.5,
+          "unit": "world units per second",
+          "source": "src/DETHRACE/common/oppoproc.c:92"
+        },
+        {
+          "name": "lookAhead",
+          "value": 15,
+          "unit": "world units along the section",
+          "source": "src/DETHRACE/common/oppoproc.c:315"
+        },
+        {
+          "name": "openRoadSpeed",
+          "value": 80,
+          "unit": "world units per second",
+          "source": "src/DETHRACE/common/oppoproc.c:385"
+        },
+        {
+          "name": "slowCornerSpeed",
+          "value": 6,
+          "unit": "world units per second",
+          "source": "src/DETHRACE/common/oppoproc.c:379"
+        },
+        {
+          "name": "offPathSteerShare",
+          "value": 0.05,
+          "unit": "fraction of available curvature",
+          "source": "src/DETHRACE/common/oppoproc.c:384"
+        },
+        {
+          "name": "maxThrust",
+          "value": 10,
+          "unit": "body masses per second squared",
+          "source": "src/DETHRACE/common/oppoproc.c:460"
+        },
+        {
+          "name": "derivativeGain",
+          "value": 0.1,
+          "unit": "per unit of speed error per second",
+          "source": "src/DETHRACE/common/oppoproc.c:464"
+        },
+        {
+          "name": "derivativeTimeScale",
+          "value": 1000,
+          "unit": "milliseconds per second",
+          "source": "src/DETHRACE/common/oppoproc.c:464"
+        },
+        {
+          "name": "engineDamageGrace",
+          "value": 50,
+          "unit": "damage levels before thrust starts to fall",
+          "source": "src/DETHRACE/common/oppoproc.c:447"
+        },
+        {
+          "name": "engineDamageThrustLoss",
+          "value": 0.0125,
+          "unit": "fraction of thrust per damage level",
+          "source": "src/DETHRACE/common/oppoproc.c:448"
+        },
+        {
+          "name": "transmissionDamageThrustLoss",
+          "value": 0.00625,
+          "unit": "fraction of thrust per damage level",
+          "source": "src/DETHRACE/common/oppoproc.c:453"
+        },
+        {
+          "name": "deadEngineThrustLoss",
+          "value": 0.6,
+          "unit": "fraction of thrust removed outright",
+          "source": "src/DETHRACE/common/oppoproc.c:450"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "line": 132
+        },
+        {
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "line": 405
+        },
+        {
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "line": 422
+        },
+        {
+          "path": "src/DETHRACE/common/oppoproc.c",
+          "line": 460
+        }
+      ],
+      "capabilities": [
+        "path following",
+        "corner speed planning",
+        "PD speed control",
+        "damage degraded driving"
+      ],
+      "tags": [
+        "ai",
+        "driving",
+        "pathing",
+        "tuning"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "node": "chase-camera",
+      "name": "Chase camera follow",
+      "summary": "The camera trails a distance derived from the zoom, keeps a damped height, and swings around behind the car",
+      "behavior": "The external camera sits behind the car at the square root of the zoom setting plus a small bias, so zooming out costs little at first and a great deal later. Its height is not the car's height: one height value is blended toward the car's own at a rate of five per second, and after five seconds of continuous frames it snaps to the car instead of trailing, which is what stops a long fall leaving the camera in the sky. If the car is pitching upward the camera is also pushed down by the vertical part of the facing direction, so a car climbing a ramp does not have its rear end fill the frame. The view direction is the car's facing direction while stationary and its actual velocity at speed, and a swing routine rotates that direction toward the car's heading at 0.03 degrees per millisecond, accelerating to a ceiling of 0.1 degrees per millisecond while the car is spinning, then skipping the swing altogether when the car is nearly stopped. The camera is finally aimed with a fixed downward tilt of a fifth of the field of view plus whatever extra angle is needed to look at the car's origin, and while the car is spinning the camera keeps whichever side of it the view was already on instead of swapping over.",
+      "constants": [
+        {
+          "name": "distanceBias",
+          "value": 4,
+          "unit": "world units added to the square root of the zoom",
+          "source": "src/DETHRACE/common/car.c:5429"
+        },
+        {
+          "name": "heightBias",
+          "value": 0.3,
+          "unit": "world units added to the squared zoom",
+          "source": "src/DETHRACE/common/car.c:5466"
+        },
+        {
+          "name": "heightFollowRate",
+          "value": 5,
+          "unit": "per second",
+          "source": "src/DETHRACE/common/car.c:5475"
+        },
+        {
+          "name": "heightSnapWindow",
+          "value": 5000,
+          "unit": "milliseconds before the height is snapped to the car",
+          "source": "src/DETHRACE/common/car.c:5469"
+        },
+        {
+          "name": "swingRate",
+          "value": 0.03,
+          "unit": "degrees per millisecond",
+          "source": "src/DETHRACE/common/car.c:5631"
+        },
+        {
+          "name": "swingRateCeiling",
+          "value": 0.1,
+          "unit": "degrees per millisecond",
+          "source": "src/DETHRACE/common/car.c:5642"
+        },
+        {
+          "name": "swingExhaustion",
+          "value": 500,
+          "unit": "milliseconds of swing before the camera flips over",
+          "source": "src/DETHRACE/common/car.c:5583"
+        },
+        {
+          "name": "movementThreshold",
+          "value": 0.0006,
+          "unit": "world units per second below which the view direction is the car's facing",
+          "source": "src/DETHRACE/common/car.c:5419"
+        },
+        {
+          "name": "aimTiltShare",
+          "value": 5,
+          "unit": "divisor applied to the field of view for the downward tilt",
+          "source": "src/DETHRACE/common/car.c:5671"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5383
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5429
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5540
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5658
+        }
+      ],
+      "capabilities": [
+        "trailing boom",
+        "damped height",
+        "view direction blending",
+        "aiming tilt"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "third person"
+      ]
+    },
+    {
+      "id": "camera-collision",
+      "node": "chase-camera",
+      "name": "Camera collision avoidance",
+      "summary": "The camera shortens its boom against level geometry and other cars, and lifts itself clear when it is jammed",
+      "behavior": "The chase camera is never allowed to sit inside the world. From the car it sweeps a search vector a fifth longer than the actual car-to-camera offset and takes the nearest face hit; if that hit is closer than the full boom the camera is pulled in to just inside the surface plus three times the camera's near plane, and the whole test is skipped or reverted while the car is spinning rather than driving. A second pass tests a small box around the camera against the nearby faces and pushes it out along their normals, merging two nearly parallel faces first so a corner does not shove the camera twice. A separate pass tests the camera against every active car's box and, if the camera is inside one, slides it out to that box's surface inflated by three hundredths of a unit. Finally, if the shortened camera would come closer to the car than the configured minimum, it is lifted along the surface normal by a quadratic solve until it clears, and the lift is only attempted when the surface is not upside down relative to the camera, which is what keeps the car visible when the camera is jammed into a wall.",
+      "constants": [
+        {
+          "name": "probeScale",
+          "value": 1.2,
+          "unit": "multiplier on the car-to-camera search vector",
+          "source": "src/DETHRACE/common/car.c:5761"
+        },
+        {
+          "name": "hitherScale",
+          "value": 3,
+          "unit": "multiples of the near plane used as the pushout margin",
+          "source": "src/DETHRACE/common/car.c:5756"
+        },
+        {
+          "name": "rollAvoidanceLimit",
+          "value": -0.7,
+          "unit": "surface normal Y component above which the lift is allowed",
+          "source": "src/DETHRACE/common/car.c:5781"
+        },
+        {
+          "name": "separationMargin",
+          "value": 0.03,
+          "unit": "world units of separation kept from geometry",
+          "source": "src/DETHRACE/common/car.c:5802"
+        },
+        {
+          "name": "parallelFaceDot",
+          "value": 0.95,
+          "unit": "normalised dot product above which two faces are merged",
+          "source": "src/DETHRACE/common/car.c:5832"
+        },
+        {
+          "name": "carBoxMargin",
+          "value": 0.03,
+          "unit": "world units of margin kept from other cars",
+          "source": "src/DETHRACE/common/car.c:5896"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5729
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5756
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5802
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5871
+        }
+      ],
+      "capabilities": [
+        "boom shortening",
+        "surface pushout",
+        "car avoidance",
+        "minimum distance lift"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "third person"
+      ]
+    },
+    {
+      "id": "incident-camera",
+      "node": "incident-camera",
+      "name": "Incident and panning cameras",
+      "summary": "A second camera cuts to a nearby crash or strike, frames it from the side, and hands back when the moment is over",
+      "behavior": "Alongside the chase camera there is an incident camera that takes over when something worth watching happens: a pedestrian struck, a wall hit, or a car-to-car impact. For a car impact it places itself two world units from the other car along the line joining the two, raised by one unit, runs the same collision avoidance, and aims at the other car. For a pedestrian strike it steps sideways from the victim and half a body height up, picking the left or right side at random and lifting a quarter of a unit. The shot ends when two and a half seconds have passed, when the subject has moved further than five world units squared from the camera, or when a wall comes between them, and a car pinned too close to the subject returns the previous camera position rather than clipping through. A guard stops the routine from recursing into itself more than once, and when there is nothing worth cutting to it falls back to a slow panning camera that circles the car looking for an angle with a clear line of sight.",
+      "constants": [
+        {
+          "name": "carSubjectOffset",
+          "value": 2,
+          "unit": "world units along the line between the two cars",
+          "source": "src/DETHRACE/common/car.c:5120"
+        },
+        {
+          "name": "carSubjectHeight",
+          "value": 1,
+          "unit": "world units above the subject",
+          "source": "src/DETHRACE/common/car.c:5122"
+        },
+        {
+          "name": "pedestrianHeightOffset",
+          "value": 0.25,
+          "unit": "world units above the victim",
+          "source": "src/DETHRACE/common/car.c:5079"
+        },
+        {
+          "name": "shotLifetime",
+          "value": 2500,
+          "unit": "milliseconds",
+          "source": "src/DETHRACE/common/car.c:5085"
+        },
+        {
+          "name": "breakDistanceSquared",
+          "value": 25,
+          "unit": "squared world units between camera and subject",
+          "source": "src/DETHRACE/common/car.c:5089"
+        },
+        {
+          "name": "recursionLimit",
+          "value": 1,
+          "unit": "nested incident shots",
+          "source": "src/DETHRACE/common/car.c:5141"
+        },
+        {
+          "name": "panBreakDistanceSquared",
+          "value": 25,
+          "unit": "squared world units on the panning fallback",
+          "source": "src/DETHRACE/common/car.c:5248"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5013
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5156
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5235
+        },
+        {
+          "path": "src/DETHRACE/common/car.c",
+          "line": 5141
+        }
+      ],
+      "capabilities": [
+        "incident framing",
+        "automatic cut",
+        "collision aware framing",
+        "panning fallback"
+      ],
+      "tags": [
+        "camera",
+        "crash",
+        "feedback"
+      ]
+    }
+  ]
+}

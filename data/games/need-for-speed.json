@@ -1,0 +1,1926 @@
+{
+  "version": 1,
+  "id": "need-for-speed",
+  "title": "Need for Speed",
+  "repo": "https://github.com/OpenNFS/OpenNFS",
+  "sha": "dcd9197033272f8be307a839105e74185809f9f9",
+  "nodes": [
+    {
+      "id": "physics-world",
+      "name": "Physics world and stepping",
+      "purpose": "Bullet rigid-body world with standard gravity, the per-frame input and raycast pass, the substepped simulation and the pre-tick hook that drives each car handling model",
+      "paths": [
+        "src/Physics/PhysicsManager.cpp",
+        "src/Physics/Car.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PhysicsManager",
+          "path": "src/Physics/PhysicsManager.cpp",
+          "lines": [
+            33,
+            66
+          ]
+        },
+        {
+          "name": "OnPrePhysicsTick",
+          "path": "src/Physics/PhysicsManager.cpp",
+          "lines": [
+            72,
+            76
+          ]
+        },
+        {
+          "name": "StepSimulation",
+          "path": "src/Physics/PhysicsManager.cpp",
+          "lines": [
+            78,
+            97
+          ]
+        },
+        {
+          "name": "RegisterVehicle",
+          "path": "src/Physics/PhysicsManager.cpp",
+          "lines": [
+            114,
+            156
+          ]
+        },
+        {
+          "name": "PhysicsTick",
+          "path": "src/Physics/Car.cpp",
+          "lines": [
+            61,
+            69
+          ]
+        },
+        {
+          "name": "ApplyAccelerationForce",
+          "path": "src/Physics/Car.cpp",
+          "lines": [
+            71,
+            94
+          ]
+        },
+        {
+          "name": "_ApplyInputs",
+          "path": "src/Physics/Car.cpp",
+          "lines": [
+            255,
+            299
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "nfs4-handling",
+      "name": "High Stakes handling model",
+      "purpose": "Recreated fourth-game PC handling: per-tick input ramps, steering angle, wheel forces summed into a chassis velocity and yaw change, then the stabilizer passes. A port of a community re-implementation, not original code",
+      "paths": [
+        "src/Physics/NFS4VehiclePhysics.cpp",
+        "src/Physics/NFS4VehiclePhysics.h"
+      ],
+      "functions": [
+        {
+          "name": "Update",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1112,
+            1275
+          ]
+        },
+        {
+          "name": "ProcessSteeringInput",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            686,
+            709
+          ]
+        },
+        {
+          "name": "ProcessThrottleInput",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            711,
+            721
+          ]
+        },
+        {
+          "name": "ProcessBrakeInput",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            723,
+            741
+          ]
+        },
+        {
+          "name": "SlipAngleFactor",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            256,
+            286
+          ]
+        },
+        {
+          "name": "CalculateSteeringAngle",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            288,
+            308
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-world"
+      ]
+    },
+    {
+      "id": "nfs4-powertrain",
+      "parent": "nfs4-handling",
+      "name": "Engine, gears and drag",
+      "purpose": "Torque curve lookup, per-gear effective ratio and force clamp, the engine-speed traction state machine, gear shift delay and the cubic drag that sets top speed",
+      "paths": [
+        "src/Physics/NFS4VehiclePhysics.cpp",
+        "src/Physics/NFS4VehiclePhysics.h"
+      ],
+      "functions": [
+        {
+          "name": "TorqueForRPM",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            169,
+            175
+          ]
+        },
+        {
+          "name": "GearEffectiveRatio",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            177,
+            182
+          ]
+        },
+        {
+          "name": "TractionPowertrain",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            184,
+            198
+          ]
+        },
+        {
+          "name": "LongitudinalDragCoefficient",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            200,
+            213
+          ]
+        },
+        {
+          "name": "CalculateDrag",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            215,
+            227
+          ]
+        },
+        {
+          "name": "ProcessGearInput",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            743,
+            753
+          ]
+        },
+        {
+          "name": "ProcessTractionModel",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1277,
+            1491
+          ]
+        },
+        {
+          "name": "ApplyGearChange",
+          "path": "src/Physics/Car.cpp",
+          "lines": [
+            104,
+            110
+          ]
+        }
+      ],
+      "dependsOn": [
+        "nfs4-handling"
+      ]
+    },
+    {
+      "id": "nfs4-tires",
+      "parent": "nfs4-handling",
+      "name": "Tire grip and wheel forces",
+      "purpose": "Per-wheel grip from gravity, slope, surface, weather, front-rear bias, downforce and weight transfer, then the lateral and longitudinal force each wheel delivers, with handbrake and braking variants",
+      "paths": [
+        "src/Physics/NFS4VehiclePhysics.cpp",
+        "src/Physics/NFS4VehiclePhysics.h"
+      ],
+      "functions": [
+        {
+          "name": "TireFactor",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            338,
+            357
+          ]
+        },
+        {
+          "name": "WheelSurfaceGripFactor",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            359,
+            372
+          ]
+        },
+        {
+          "name": "WheelBaseRoadGrip",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            374,
+            381
+          ]
+        },
+        {
+          "name": "WheelDownforceFactor",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            393,
+            416
+          ]
+        },
+        {
+          "name": "gTransferDamp",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            435,
+            452
+          ]
+        },
+        {
+          "name": "SteeringAcceleration",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            469,
+            480
+          ]
+        },
+        {
+          "name": "WheelForce",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            566,
+            633
+          ]
+        },
+        {
+          "name": "BrakeForce",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            635,
+            658
+          ]
+        },
+        {
+          "name": "IncrementHandbrakeAccumulator",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            511,
+            525
+          ]
+        },
+        {
+          "name": "HandbrakeScalingFunction",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            527,
+            535
+          ]
+        },
+        {
+          "name": "HandbrakeLossOfGrip",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            537,
+            564
+          ]
+        },
+        {
+          "name": "IsWheelSlipping",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            132,
+            166
+          ]
+        }
+      ],
+      "dependsOn": [
+        "nfs4-handling"
+      ]
+    },
+    {
+      "id": "nfs4-stabilizers",
+      "parent": "nfs4-handling",
+      "name": "Chassis stabilizers and air time",
+      "purpose": "Velocity and yaw dampers that keep the car planted: lateral slide damping, turning-circle yaw limit, near-stop and neutral decay, stationary burnout lock, airborne drag, spin cap and downforce",
+      "paths": [
+        "src/Physics/NFS4VehiclePhysics.cpp"
+      ],
+      "functions": [
+        {
+          "name": "TurningCircle",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            790,
+            854
+          ]
+        },
+        {
+          "name": "DampLateralVelocity",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            875,
+            899
+          ]
+        },
+        {
+          "name": "ApplyNeutralGearDeceleration",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            912,
+            930
+          ]
+        },
+        {
+          "name": "ApplyNearStopDeceleration",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            941,
+            965
+          ]
+        },
+        {
+          "name": "PreventMovingSideways",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            967,
+            980
+          ]
+        },
+        {
+          "name": "AirborneDrag",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            982,
+            998
+          ]
+        },
+        {
+          "name": "LimitAngularVelocity",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1013,
+            1023
+          ]
+        },
+        {
+          "name": "WentAirborne",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1078,
+            1080
+          ]
+        },
+        {
+          "name": "GoAirborne",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1082,
+            1095
+          ]
+        },
+        {
+          "name": "ApplyDownforce",
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "lines": [
+            1097,
+            1109
+          ]
+        }
+      ],
+      "dependsOn": [
+        "nfs4-handling"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "name": "Follow camera",
+      "purpose": "Third-person camera on a sphere around the car, aimed along the body heading, with scroll zoom, mouse pitch and mouse orbit, plus a spinning showroom mode",
+      "paths": [
+        "src/Camera/CarCamera.cpp",
+        "src/Camera/CarCamera.h"
+      ],
+      "functions": [
+        {
+          "name": "FollowCar",
+          "path": "src/Camera/CarCamera.cpp",
+          "lines": [
+            17,
+            30
+          ]
+        },
+        {
+          "name": "_CalculateCameraPosition",
+          "path": "src/Camera/CarCamera.cpp",
+          "lines": [
+            32,
+            39
+          ]
+        },
+        {
+          "name": "_CalculateZoom",
+          "path": "src/Camera/CarCamera.cpp",
+          "lines": [
+            41,
+            47
+          ]
+        },
+        {
+          "name": "_CalculatePitch",
+          "path": "src/Camera/CarCamera.cpp",
+          "lines": [
+            49,
+            54
+          ]
+        },
+        {
+          "name": "_CalculateAngleAroundCar",
+          "path": "src/Camera/CarCamera.cpp",
+          "lines": [
+            56,
+            78
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-world"
+      ]
+    },
+    {
+      "id": "racer-ai",
+      "name": "Opponent driver",
+      "purpose": "Rule-based opponent that follows the virtual road with a speed-scaled lookahead, steers through a damper, dodges walls with rangefinder rays and recovers when stuck. Original to this engine, not the shipped AI",
+      "paths": [
+        "src/Race/Agents/RacerAgent.cpp",
+        "src/Race/Agents/RacerAgent.h",
+        "src/Physics/Car.cpp",
+        "src/Physics/Car.h"
+      ],
+      "functions": [
+        {
+          "name": "Simulate",
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "lines": [
+            18,
+            96
+          ]
+        },
+        {
+          "name": "_CarSpeedToLookahead",
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "lines": [
+            102,
+            106
+          ]
+        },
+        {
+          "name": "_CarSpeedToSteeringDamper",
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "lines": [
+            108,
+            113
+          ]
+        },
+        {
+          "name": "_UsePrimitiveAI",
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "lines": [
+            115,
+            174
+          ]
+        },
+        {
+          "name": "_GenRaycasts",
+          "path": "src/Physics/Car.cpp",
+          "lines": [
+            384,
+            437
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-world"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "physics-stepping",
+      "node": "physics-world",
+      "name": "Simulation stepping and gravity",
+      "summary": "Substepped rigid-body world under standard gravity, with the handling model run once per substep",
+      "behavior": "The world pulls every body down at 9.81 meters per second squared. Each render frame first copies the chassis transform to the meshes, applies driver input and casts the sensor rays, then advances the solver by the frame time with up to 100 fixed substeps. A hook that fires before each substep runs the selected handling model with the substep length, so the recreated handling runs at the solver rate and not at the render rate. The handling code expresses its rates per 1/32 second tick of the original game and multiplies them by 32 times the substep length. Chassis bodies have zero built-in damping and never sleep.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": -9.81,
+          "unit": "meters per second squared, continuous",
+          "source": "src/Physics/PhysicsManager.cpp:44"
+        },
+        {
+          "name": "maxSubstepsPerFrame",
+          "value": 100,
+          "unit": "substeps per render frame",
+          "source": "src/Physics/PhysicsManager.cpp:84"
+        },
+        {
+          "name": "originalTickRate",
+          "value": 32,
+          "unit": "ticks per second (Hz)",
+          "source": "src/Physics/NFS4VehiclePhysics.h:267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/PhysicsManager.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/Physics/PhysicsManager.cpp",
+          "line": 72
+        },
+        {
+          "path": "src/Physics/PhysicsManager.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 378
+        }
+      ],
+      "capabilities": [
+        "fixed substeps",
+        "pre-tick hook",
+        "gravity"
+      ],
+      "tags": [
+        "physics",
+        "timestep",
+        "gravity"
+      ]
+    },
+    {
+      "id": "arcade-drive",
+      "node": "physics-world",
+      "name": "Simple raycast-vehicle drive",
+      "summary": "Fallback drive model with rear-wheel engine force up to a speed cap and keyboard steering that ramps toward a clamp",
+      "behavior": "In the plain Bullet model the throttle sets a fixed engine force on both rear wheels only while speed sits under the car top speed, and cuts it at or above that speed. Reverse applies the same force backward. Braking applies a fixed brake force to the rear wheels. Steering keys add a per-frame increment to the wheel angle up to a clamp, and the angle walks back toward center by the same increment when no key is held. Opponents always use this model with the top speed forced to 100 kilometers per hour. Each wheel has a suspension spring, damper, friction slip and roll influence copied from the car data.",
+      "constants": [
+        {
+          "name": "opponentTopSpeed",
+          "value": 100,
+          "unit": "kilometers per hour",
+          "source": "src/Race/Agents/RacerAgent.cpp:15"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 74
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 261
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 283
+        },
+        {
+          "path": "src/Physics/PhysicsManager.cpp",
+          "line": 147
+        }
+      ],
+      "capabilities": [
+        "engine force",
+        "speed cap",
+        "steering ramp",
+        "suspension"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "steering",
+        "ai"
+      ]
+    },
+    {
+      "id": "input-ramps",
+      "node": "nfs4-handling",
+      "name": "Pedal and steering ramps",
+      "summary": "Throttle, brake and steering move toward their targets at a fixed rate per tick instead of jumping",
+      "behavior": "Steering lives on a range of plus or minus 128. Each tick it moves toward the target at the turn-in rate, or at the faster turn-out rate when it moves back toward center, and snaps to the target once the remaining gap is smaller than one step. Throttle rises or falls by 16 out of 255 per tick. Brake pressure uses an eight-entry curve indexed by the current pressure, with one curve for pressing and another for releasing. Default car data turns in at 16 and turns out at 32 steering units per tick.",
+      "constants": [
+        {
+          "name": "steeringRange",
+          "value": 128,
+          "unit": "steering units",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:690"
+        },
+        {
+          "name": "throttleStep",
+          "value": 16,
+          "unit": "throttle units out of 255 per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:712"
+        },
+        {
+          "name": "defaultTurnInRate",
+          "value": 16,
+          "unit": "steering units per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.h:67"
+        },
+        {
+          "name": "defaultTurnOutRate",
+          "value": 32,
+          "unit": "steering units per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.h:68"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 694
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 701
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 713
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 724
+        }
+      ],
+      "capabilities": [
+        "input smoothing",
+        "steering return",
+        "brake curve"
+      ],
+      "tags": [
+        "steering",
+        "throttle",
+        "input",
+        "feel"
+      ]
+    },
+    {
+      "id": "speed-sensitive-steering",
+      "node": "nfs4-handling",
+      "name": "Speed-sensitive steering angle",
+      "summary": "Wheel angle shrinks at high speed and while the car already slides in the steered direction",
+      "behavior": "Steering is zero while airborne. On the ground the steering value is multiplied by a slip factor: when the car already slides the same way it steers, the factor becomes twice the slip ratio, capped at 1, once forward speed passes 26.7 meters per second with slip above 0.05, or passes 13.4 with slip above 0.15. With the handbrake held and counter-steer applied, the factor is 0.85 minus 0.0056 per meter per second, floored at 0.55. Above 40 meters per second the value is also divided by 0.015 times speed, held between 1 and 1.5. The result is scaled by the car minimum steering acceleration and clamped to plus or minus one turn fraction.",
+      "constants": [
+        {
+          "name": "highSpeedSlipGate",
+          "value": 26.7,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:258"
+        },
+        {
+          "name": "mediumSpeedSlipGate",
+          "value": 13.4,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:257"
+        },
+        {
+          "name": "counterSteerBase",
+          "value": 0.85,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:281"
+        },
+        {
+          "name": "counterSteerFloor",
+          "value": 0.55,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:282"
+        },
+        {
+          "name": "steeringFalloffSpeed",
+          "value": 40,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:300"
+        },
+        {
+          "name": "steeringFalloffRate",
+          "value": 0.015,
+          "unit": "divisor per meter per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:301"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 256
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 270
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 288
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 302
+        }
+      ],
+      "capabilities": [
+        "speed-sensitive steering",
+        "slip assist",
+        "counter-steer"
+      ],
+      "tags": [
+        "steering",
+        "drift",
+        "handling"
+      ]
+    },
+    {
+      "id": "torque-and-gearing",
+      "node": "nfs4-powertrain",
+      "name": "Torque curve and gear force",
+      "summary": "Engine torque read from a 21-point curve, multiplied by gear ratio and efficiency over mass, then clamped per gear",
+      "behavior": "The torque curve holds one sample every 500 RPM and the engine speed is linearly interpolated between neighbors. The force for the current gear is torque times the gear velocity-to-RPM ratio times the gear efficiency, divided by ten times the car mass. First gear caps that drive acceleration at 10, reverse floors it at minus 6 and every other gear caps it at 8. Default car data weighs 1750 kilograms and revs from 1000 to a 7000 RPM redline.",
+      "constants": [
+        {
+          "name": "torqueSampleSpacing",
+          "value": 500,
+          "unit": "RPM",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:170"
+        },
+        {
+          "name": "firstGearForceCap",
+          "value": 10,
+          "unit": "internal acceleration units per tick, scale unverified",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:191"
+        },
+        {
+          "name": "reverseForceFloor",
+          "value": -6,
+          "unit": "internal acceleration units per tick, scale unverified",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:193"
+        },
+        {
+          "name": "otherGearForceCap",
+          "value": 8,
+          "unit": "internal acceleration units per tick, scale unverified",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:195"
+        },
+        {
+          "name": "defaultMass",
+          "value": 1750,
+          "unit": "kilograms",
+          "source": "src/Physics/NFS4VehiclePhysics.h:53"
+        },
+        {
+          "name": "defaultRedline",
+          "value": 7000,
+          "unit": "RPM",
+          "source": "src/Physics/NFS4VehiclePhysics.h:56"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 169
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 181
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 189
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.h",
+          "line": 45
+        }
+      ],
+      "capabilities": [
+        "torque curve",
+        "gear ratios",
+        "force clamp"
+      ],
+      "tags": [
+        "engine",
+        "acceleration",
+        "gears"
+      ]
+    },
+    {
+      "id": "drag-top-speed",
+      "node": "nfs4-powertrain",
+      "name": "Cubic drag and top speed",
+      "summary": "Drag grows with the cube of forward speed and is calibrated so the top gear tops out at the car rated speed",
+      "behavior": "A drag coefficient is derived from the torque available in top gear at the rated top speed, scaled by 1.5, 0.98 and divided by the cube of that speed times 0.36757159. Drag is that coefficient times 0.2450477 times the cube of forward speed. Past the rated speed an extra 0.01 times the square of the excess is added, which acts as a soft limiter. On the ground drag is subtracted from drive force when moving forward and added twice when rolling backward. In the air the car loses half the drag going forward. Default rated speed is 80 meters per second.",
+      "constants": [
+        {
+          "name": "dragScale",
+          "value": 0.2450477,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:216"
+        },
+        {
+          "name": "dragCalibration",
+          "value": 0.36757159,
+          "unit": "divisor",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:203"
+        },
+        {
+          "name": "overSpeedPenalty",
+          "value": 0.01,
+          "unit": "per meter per second squared",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:224"
+        },
+        {
+          "name": "defaultRatedSpeed",
+          "value": 80,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.h:54"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 200
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 211
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 221
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1475
+        }
+      ],
+      "capabilities": [
+        "aerodynamic drag",
+        "speed limiter"
+      ],
+      "tags": [
+        "speed",
+        "drag",
+        "top speed"
+      ]
+    },
+    {
+      "id": "engine-traction-states",
+      "node": "nfs4-powertrain",
+      "name": "Engine speed and traction states",
+      "summary": "Engine RPM chases a throttle target and decides each tick whether the car accelerates, cruises, engine-brakes or loses grip",
+      "behavior": "Target RPM is redline times throttle, clamped to the idle and redline range. In gear and on the ground, a 500 RPM deadband around the wheel-derived RPM counts as cruising unless the target sits within 300 of redline, and cruising force equals drag. When the engine leads the wheels by more than a sixth of redline in the lower gears, or the car moves against the gear, RPM drops by 125 or by a per-gear step. Lifting the throttle turns drive into engine braking scaled by the gas-off factor. Coasting more than 1.15 times the gear speed ceiling flags lost grip. Accelerating force grows with slip by 0.6 per unit, up to 1.5 times. RPM above four thirds of redline also flags lost grip.",
+      "constants": [
+        {
+          "name": "cruiseDeadband",
+          "value": 500,
+          "unit": "RPM",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1320"
+        },
+        {
+          "name": "overRevDivisor",
+          "value": 6,
+          "unit": "fraction of redline",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1328"
+        },
+        {
+          "name": "overRevDrop",
+          "value": 125,
+          "unit": "RPM per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1342"
+        },
+        {
+          "name": "gearOverSpeedMargin",
+          "value": 1.15,
+          "unit": "multiplier on gear speed ceiling",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1374"
+        },
+        {
+          "name": "slipForceGain",
+          "value": 0.6,
+          "unit": "multiplier per unit slip ratio",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1410"
+        },
+        {
+          "name": "slipForceCap",
+          "value": 1.5,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1411"
+        },
+        {
+          "name": "defaultGasOffFactor",
+          "value": 0.4,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.h:57"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1293
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1287
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1350
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1389
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1396
+        }
+      ],
+      "capabilities": [
+        "engine braking",
+        "rpm model",
+        "wheelspin state"
+      ],
+      "tags": [
+        "engine",
+        "acceleration",
+        "traction"
+      ]
+    },
+    {
+      "id": "gear-shifting",
+      "node": "nfs4-powertrain",
+      "name": "Gear shift delay and rev blips",
+      "summary": "A shift cuts drive for a fixed number of ticks while the engine free-revs, with a rev step on upshift and a blip on downshift",
+      "behavior": "Gear keys step the requested gear between reverse and sixth. A new gear starts a counter equal to the car shift delay, six ticks by default, and drive force is zero until it reaches zero. While out of gear or airborne, RPM rises by 250 per tick toward the target or falls by 150 once above it. During an upshift the code subtracts a negative step, so RPM actually climbs by 50 per tick, or by 75 when the shift delay is under five ticks, doubled above redline, although the stated intent is a drop. During a downshift with throttle the engine gains a per-gear blip. Below the first-gear speed ceiling the gearbox forces anything above third down to third.",
+      "constants": [
+        {
+          "name": "defaultShiftDelay",
+          "value": 6,
+          "unit": "ticks per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.h:70"
+        },
+        {
+          "name": "freeRevRise",
+          "value": 250,
+          "unit": "RPM per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1437"
+        },
+        {
+          "name": "freeRevFall",
+          "value": 150,
+          "unit": "RPM per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1444"
+        },
+        {
+          "name": "upshiftDrop",
+          "value": -50,
+          "unit": "RPM per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1449"
+        },
+        {
+          "name": "quickUpshiftDrop",
+          "value": -75,
+          "unit": "RPM per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1451"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 743
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1296
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1308
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1436
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 104
+        }
+      ],
+      "capabilities": [
+        "manual gears",
+        "shift delay",
+        "rev blip"
+      ],
+      "tags": [
+        "gears",
+        "engine",
+        "transmission"
+      ]
+    },
+    {
+      "id": "tire-grip",
+      "node": "nfs4-tires",
+      "name": "Wheel grip budget",
+      "summary": "Each wheel grip comes from local gravity, slope, surface and weather, split front to rear and scaled by downforce and weight transfer",
+      "behavior": "The base grip is the downward part of gravity in car space times the lateral grip multiplier, 3.5 by default, times a surface factor. The surface factor uses the car tilt clamped to at least 0.75 and the mean of 1 and a 24-entry road table, reduced to 0.9 in rain and 0.8 in snow. Front wheels get the front bias share, 0.5 by default, and rear wheels the rest. The front share loses the damped weight transfer and the rear share gains it. On a dry road a tire factor of one twentieth at the default tire setting, and never above one sixteenth, sets the margin between grip and force before a wheel saturates.",
+      "constants": [
+        {
+          "name": "localGravity",
+          "value": -9.81,
+          "unit": "meters per second squared",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:376"
+        },
+        {
+          "name": "slopeFloor",
+          "value": 0.75,
+          "unit": "cosine of tilt",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:361"
+        },
+        {
+          "name": "rainGrip",
+          "value": 0.9,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:366"
+        },
+        {
+          "name": "snowGrip",
+          "value": 0.8,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:368"
+        },
+        {
+          "name": "defaultLateralGrip",
+          "value": 3.5,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.h:58"
+        },
+        {
+          "name": "defaultFrontGripShare",
+          "value": 0.5,
+          "unit": "fraction",
+          "source": "src/Physics/NFS4VehiclePhysics.h:59"
+        },
+        {
+          "name": "dryTireFloor",
+          "value": 16,
+          "unit": "divisor",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:345"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 359
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 380
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 387
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 418
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.h",
+          "line": 270
+        }
+      ],
+      "capabilities": [
+        "grip model",
+        "surface types",
+        "weather grip"
+      ],
+      "tags": [
+        "grip",
+        "tires",
+        "handling",
+        "weather"
+      ]
+    },
+    {
+      "id": "downforce-weight-transfer",
+      "node": "nfs4-tires",
+      "name": "Downforce and weight transfer",
+      "summary": "Speed-scaled downforce adds grip, more at the rear and more again when a spoiler car brakes, while acceleration shifts grip between axles",
+      "behavior": "Below 10 meters per second each wheel downforce multiplier is one plus the car downforce coefficient, 0.002 by default. Above that, the coefficient is scaled by forward speed and the rear axle takes 1.5 times as much, or 1.75 times when a spoiler car brakes at 0.15 or more. A separate pass pushes the chassis down with an acceleration of the coefficient times speed times 32. Weight transfer is the summed longitudinal wheel force times the transfer factor, 0.5 by default, carried to the next tick. Before use it is scaled by 0.75 when negative, by 0.5 in one flagged case when positive, and slightly in wet weather.",
+      "constants": [
+        {
+          "name": "downforceSpeedGate",
+          "value": 10,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:394"
+        },
+        {
+          "name": "rearDownforceShare",
+          "value": 1.5,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:403"
+        },
+        {
+          "name": "spoilerBrakeDownforce",
+          "value": 1.75,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:406"
+        },
+        {
+          "name": "defaultDownforceCoefficient",
+          "value": 0.002,
+          "unit": "per meter per second",
+          "source": "src/Physics/NFS4VehiclePhysics.h:65"
+        },
+        {
+          "name": "defaultWeightTransfer",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.h:66"
+        },
+        {
+          "name": "negativeTransferDamp",
+          "value": 0.75,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:439"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 393
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1103
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1188
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 435
+        }
+      ],
+      "capabilities": [
+        "downforce",
+        "weight transfer",
+        "spoiler"
+      ],
+      "tags": [
+        "grip",
+        "aero",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "wheel-forces-understeer",
+      "node": "nfs4-tires",
+      "name": "Cornering force and understeer",
+      "summary": "Each wheel pushes against its own sideways slip, front force softened and rear force stiffened by the understeer gradient",
+      "behavior": "Each wheel reads a planar vector of minus half the local velocity per tick, nudged by a yaw-rate term, rotated into the steered wheel frame. Its cornering push is the sine of half the slip angle times the grip margin times 4, or times 2 in reverse, capped at twice the minimum steering acceleration, 18 by default. Below 13.4 meters per second with almost no throttle that push drops to a quarter. Fronts scale it by 0.8 times the understeer gradient and rears by 1.4 divided by it. Wheel forces are halved, scaled by the slope, summed into a velocity change, and front minus rear lateral force makes the yaw torque. In first gear near redline on grippy asphalt the rear wheels lose half their drive to wheelspin.",
+      "constants": [
+        {
+          "name": "frontCorneringShare",
+          "value": 0.8,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:620"
+        },
+        {
+          "name": "rearCorneringShare",
+          "value": 1.4,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:622"
+        },
+        {
+          "name": "lowSpeedSteerCut",
+          "value": 0.25,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:610"
+        },
+        {
+          "name": "slipGain",
+          "value": 4,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:477"
+        },
+        {
+          "name": "defaultMinSteeringAccel",
+          "value": 18,
+          "unit": "internal acceleration units per tick, scale unverified",
+          "source": "src/Physics/NFS4VehiclePhysics.h:63"
+        },
+        {
+          "name": "wheelForceShare",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1174"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 457
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 566
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 604
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1181
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 502
+        }
+      ],
+      "capabilities": [
+        "tire forces",
+        "understeer",
+        "yaw torque",
+        "wheelspin"
+      ],
+      "tags": [
+        "handling",
+        "cornering",
+        "steering",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "handbrake-slide",
+      "node": "nfs4-tires",
+      "name": "Handbrake slide",
+      "summary": "Holding the handbrake builds a counter that bleeds rear lateral grip along an S-curve until the rear steps out",
+      "behavior": "While the handbrake is held or grip is lost, a counter grows by 1 per tick on a dry road, 3 in rain and 4 in snow, up to 384, and resets on release. The rear wheels, and any front wheel whose braking exceeds its grip, then use a sliding force instead of the normal tire force, unless the car moves slower than 2.2351501 meters per second. The sliding force keeps three quarters of the lateral push, or the ratio of grip to speed when speed is higher, times an S-curve of the counter over 384 that falls from about 1 to about 0.2 as the counter fills, times 0.75. Neutral cuts both components to 0.05. The handbrake also moves 0.05 of brake balance to the front.",
+      "constants": [
+        {
+          "name": "dryCounterStep",
+          "value": 1,
+          "unit": "counts per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:515"
+        },
+        {
+          "name": "rainCounterStep",
+          "value": 3,
+          "unit": "counts per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:518"
+        },
+        {
+          "name": "snowCounterStep",
+          "value": 4,
+          "unit": "counts per tick",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:521"
+        },
+        {
+          "name": "counterCap",
+          "value": 384,
+          "unit": "counts",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:524"
+        },
+        {
+          "name": "slideMinimumSpeed",
+          "value": 2.2351501,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:596"
+        },
+        {
+          "name": "slideCurveSteepness",
+          "value": -12.56636,
+          "unit": "exponent scale",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:530"
+        },
+        {
+          "name": "handbrakeFrontBrakeShift",
+          "value": 0.05,
+          "unit": "fraction of brake balance",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:648"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 537
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 552
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 595
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1238
+        }
+      ],
+      "capabilities": [
+        "handbrake",
+        "drift",
+        "oversteer"
+      ],
+      "tags": [
+        "drift",
+        "handbrake",
+        "handling"
+      ]
+    },
+    {
+      "id": "braking",
+      "node": "nfs4-tires",
+      "name": "Brake force and balance",
+      "summary": "Brake pressure times the car maximum deceleration, capped so it cannot reverse the car in one tick, split by brake bias",
+      "behavior": "Brake deceleration is pressure times the maximum braking deceleration, 10 by default, capped at 32 times forward speed so a single tick never pushes the car backward. A spoiler car braking past 0.15 adds speed times the downforce coefficient. Front wheels take the front bias, 0.6 by default, and rears the rest. The result opposes the direction of travel and is subtracted from each wheel drive share, which follows the front-drive ratio. With antilock brakes the longitudinal force is clamped to the wheel grip.",
+      "constants": [
+        {
+          "name": "defaultMaxBrakeDecel",
+          "value": 10,
+          "unit": "meters per second squared",
+          "source": "src/Physics/NFS4VehiclePhysics.h:69"
+        },
+        {
+          "name": "brakeCapPerSpeed",
+          "value": 32,
+          "unit": "ticks per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:638"
+        },
+        {
+          "name": "spoilerBrakeGate",
+          "value": 0.15,
+          "unit": "brake pressure fraction",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:642"
+        },
+        {
+          "name": "defaultFrontBrakeBias",
+          "value": 0.6,
+          "unit": "fraction",
+          "source": "src/Physics/NFS4VehiclePhysics.h:61"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 635
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 651
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 660
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 599
+        }
+      ],
+      "capabilities": [
+        "brake bias",
+        "abs",
+        "brake cap"
+      ],
+      "tags": [
+        "braking",
+        "handling"
+      ]
+    },
+    {
+      "id": "chassis-stabilizers",
+      "node": "nfs4-stabilizers",
+      "name": "Slide and yaw dampers",
+      "summary": "Per-tick multipliers bleed sideways speed and yaw so slides settle and the car stops cleanly",
+      "behavior": "Sideways speed keeps 0.9 of itself per tick below 1 meter per second, 0.99 above 2, and a linear blend between. The turning-circle pass compares yaw rate times the turning radius, 11 meters by default, against the car speed. When yaw outruns that, it scales yaw by speed over that product, capped at 0.98. Otherwise it keeps yaw at 0.95, or 0.99 while sliding. With throttle and brake both low and the car under 5 meters per second, or 4 in reverse, velocity and spin keep 0.8 per tick. Neutral coasting keeps 0.998 per tick, or 0.99 when slow or steering hard. Half throttle or more with heavy brake, hard steer and low speed zeroes velocity, a stationary burnout.",
+      "constants": [
+        {
+          "name": "lowLateralKeep",
+          "value": 0.9,
+          "unit": "multiplier per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:876"
+        },
+        {
+          "name": "highLateralKeep",
+          "value": 0.99,
+          "unit": "multiplier per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:878"
+        },
+        {
+          "name": "yawSpeedRatioCap",
+          "value": 0.98,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:824"
+        },
+        {
+          "name": "defaultTurningRadius",
+          "value": 11,
+          "unit": "meters",
+          "source": "src/Physics/NFS4VehiclePhysics.h:64"
+        },
+        {
+          "name": "nearStopKeep",
+          "value": 0.8,
+          "unit": "multiplier per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:950"
+        },
+        {
+          "name": "nearStopSpeed",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:949"
+        },
+        {
+          "name": "neutralCoastKeep",
+          "value": 0.998,
+          "unit": "multiplier per original 32 Hz tick, scaled by the real substep length",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:921"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 884
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 837
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 955
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 973
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1205
+        }
+      ],
+      "capabilities": [
+        "lateral damping",
+        "yaw limit",
+        "stop assist",
+        "burnout"
+      ],
+      "tags": [
+        "physics feel",
+        "stability",
+        "handling"
+      ]
+    },
+    {
+      "id": "airborne",
+      "node": "nfs4-stabilizers",
+      "name": "Air time",
+      "summary": "The car counts as airborne once suspension reaches 0.6, then keeps its pitch steady, takes quadratic drag and caps its spin",
+      "behavior": "Ground contact comes from the wheel rays, and the car counts as off the ground when the shortest suspension length is 0.6 or more. On the tick it lifts off while moving upward along its own up axis, pitch rate keeps only 0.15 of itself, so ramps do not flip the car. In the air drag is quadratic per world axis, with coefficients 0.006, 0.004 and 0.002 blended by orientation, and every axis of spin is clamped to 2.4 radians per second. Wheel forces and steering are off in the air, and the engine free-revs toward the throttle target plus the first-gear blip.",
+      "constants": [
+        {
+          "name": "airborneSuspensionLength",
+          "value": 0.6,
+          "unit": "meters",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1079"
+        },
+        {
+          "name": "liftoffPitchKeep",
+          "value": 0.15,
+          "unit": "multiplier",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1089"
+        },
+        {
+          "name": "sideAirDrag",
+          "value": 0.006,
+          "unit": "per meter, applied each substep",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:983"
+        },
+        {
+          "name": "spinCap",
+          "value": 2.4,
+          "unit": "radians per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:1014"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1082
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1000
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1230
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1132
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 1431
+        }
+      ],
+      "capabilities": [
+        "jumps",
+        "air drag",
+        "spin cap"
+      ],
+      "tags": [
+        "jump",
+        "airborne",
+        "physics"
+      ]
+    },
+    {
+      "id": "skid-detection",
+      "node": "nfs4-tires",
+      "name": "Wheel slip for skid marks",
+      "summary": "Rules that mark a wheel as slipping so skid marks and effects can follow the handling state",
+      "behavior": "A grounded wheel slips when the handbrake locks it as a rear wheel, when lost grip affects a driven wheel, or on heavy braking. Heavy braking means pressure above 0.8 at more than 5 meters per second. A driven wheel in reverse, first or second also slips at more than half throttle when the engine speed implies a road speed more than 5 meters per second faster than the car really moves. A wheel counts as driven when the front-drive ratio gives its axle more than one percent of the drive.",
+      "constants": [
+        {
+          "name": "burnoutThrottle",
+          "value": 0.5,
+          "unit": "throttle fraction",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:150"
+        },
+        {
+          "name": "burnoutSpeedGap",
+          "value": 5,
+          "unit": "meters per second",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:156"
+        },
+        {
+          "name": "lockupBrake",
+          "value": 0.8,
+          "unit": "brake pressure fraction",
+          "source": "src/Physics/NFS4VehiclePhysics.cpp:162"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 132
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 140
+        },
+        {
+          "path": "src/Physics/NFS4VehiclePhysics.cpp",
+          "line": 149
+        },
+        {
+          "path": "src/Race/SkidMarkSystem.cpp",
+          "line": 81
+        }
+      ],
+      "capabilities": [
+        "skid marks",
+        "wheelspin",
+        "lockup"
+      ],
+      "tags": [
+        "effects",
+        "tires",
+        "drift"
+      ]
+    },
+    {
+      "id": "follow-camera",
+      "node": "chase-camera",
+      "name": "Orbit follow camera",
+      "summary": "Camera sits a fixed distance behind the car heading at a set pitch, with mouse orbit and scroll zoom",
+      "behavior": "The camera keeps no lag or spring: every frame it is placed on a sphere around the car body. Horizontal offset is distance times the cosine of pitch, and height is distance times the sine of pitch above the body. The offset points opposite the body heading plus a user orbit angle, so the view swings rigidly with the car. Defaults are 10 units of distance and 10 degrees of pitch. Each scroll step changes distance by 0.1, right-drag changes pitch by 0.1 degree per pixel, and left-drag orbits by 0.3 degree per pixel. A showroom mode spins the orbit at an angular velocity, 20 degrees per second by default, steered by drag input and limited to 5 to 20 units of zoom.",
+      "constants": [
+        {
+          "name": "defaultDistance",
+          "value": 10,
+          "unit": "world units",
+          "source": "src/Camera/CarCamera.h:23"
+        },
+        {
+          "name": "defaultPitch",
+          "value": 10,
+          "unit": "degrees",
+          "source": "src/Camera/CarCamera.h:25"
+        },
+        {
+          "name": "zoomStep",
+          "value": ".1f",
+          "unit": "world units per scroll step",
+          "source": "src/Camera/CarCamera.cpp:42"
+        },
+        {
+          "name": "orbitRate",
+          "value": 0.3,
+          "unit": "degrees per mouse pixel",
+          "source": "src/Camera/CarCamera.cpp:74"
+        },
+        {
+          "name": "showroomSpin",
+          "value": 20,
+          "unit": "degrees per second",
+          "source": "src/Camera/CarCamera.h:12"
+        },
+        {
+          "name": "showroomMaxZoom",
+          "value": 20,
+          "unit": "world units",
+          "source": "src/Camera/CarCamera.h:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Camera/CarCamera.cpp",
+          "line": 17
+        },
+        {
+          "path": "src/Camera/CarCamera.cpp",
+          "line": 33
+        },
+        {
+          "path": "src/Camera/CarCamera.cpp",
+          "line": 81
+        },
+        {
+          "path": "src/Camera/CarCamera.cpp",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "third-person camera",
+        "orbit",
+        "zoom"
+      ],
+      "tags": [
+        "camera"
+      ]
+    },
+    {
+      "id": "ai-road-following",
+      "node": "racer-ai",
+      "name": "Opponent road following",
+      "summary": "Opponents aim at a virtual-road point further ahead at higher speed and soften steering as they go faster",
+      "behavior": "Each tick the opponent finds its nearest road block and virtual-road node, then picks a target node 2 nodes ahead plus 4 more for each tenth of top speed. Steering is the signed yaw angle to that point times a damper of 0.6 minus the speed ratio, floored at 0.1. The opponent accelerates only when the damped angle is within 0.15 of the raw angle or speed is at or below 20 kilometers per hour. A forward-diagonal ray shorter than 1 meter overrides steering toward the open side, and a forward ray of 1 meter or less brakes. Note that this AI is original to the engine and does not recreate the shipped opponents.",
+      "constants": [
+        {
+          "name": "baseLookahead",
+          "value": 2,
+          "unit": "road nodes",
+          "source": "src/Race/Agents/RacerAgent.cpp:104"
+        },
+        {
+          "name": "lookaheadPerTenth",
+          "value": 4,
+          "unit": "road nodes per tenth of top speed",
+          "source": "src/Race/Agents/RacerAgent.cpp:104"
+        },
+        {
+          "name": "steeringDamper",
+          "value": ".6f",
+          "unit": "multiplier",
+          "source": "src/Race/Agents/RacerAgent.h:40"
+        },
+        {
+          "name": "steeringDamperFloor",
+          "value": 0.1,
+          "unit": "multiplier",
+          "source": "src/Race/Agents/RacerAgent.cpp:112"
+        },
+        {
+          "name": "accelerateAngleTolerance",
+          "value": 0.15,
+          "unit": "radians",
+          "source": "src/Race/Agents/RacerAgent.cpp:160"
+        },
+        {
+          "name": "minimumSpeed",
+          "value": 20,
+          "unit": "kilometers per hour",
+          "source": "src/Race/Agents/RacerAgent.h:41"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 102
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 108
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 153
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 161
+        }
+      ],
+      "capabilities": [
+        "path following",
+        "lookahead",
+        "obstacle avoidance"
+      ],
+      "tags": [
+        "ai",
+        "steering",
+        "racing"
+      ]
+    },
+    {
+      "id": "ai-stuck-recovery",
+      "node": "racer-ai",
+      "name": "Opponent stuck recovery",
+      "summary": "A three-state machine reverses a stuck opponent toward open space and resets it to the road when that fails",
+      "behavior": "An opponent that stays in one road block for more than 200 ticks counts as making no progress. After 60 such ticks it reverses for 60 ticks, up to 4 attempts. While reversing it steers toward the side with more clearance, weighting the forward-diagonal rays 3 times the side rays, scaled to at most half lock. When the sides read about equal it alternates 0.3 left and right per attempt. An upside-down car, a car moving backward through blocks, or a car out of attempts is reset onto the nearest road node with a small random sideways offset.",
+      "constants": [
+        {
+          "name": "noProgressTicks",
+          "value": 200,
+          "unit": "ticks, one per AI update",
+          "source": "src/Race/Agents/RacerAgent.h:39"
+        },
+        {
+          "name": "stuckTicks",
+          "value": 60,
+          "unit": "ticks, one per AI update",
+          "source": "src/Race/Agents/RacerAgent.h:42"
+        },
+        {
+          "name": "reverseTicks",
+          "value": 60,
+          "unit": "ticks, one per AI update",
+          "source": "src/Race/Agents/RacerAgent.h:43"
+        },
+        {
+          "name": "maxReverseAttempts",
+          "value": 4,
+          "unit": "attempts",
+          "source": "src/Race/Agents/RacerAgent.h:44"
+        },
+        {
+          "name": "forwardRayWeight",
+          "value": 3,
+          "unit": "multiplier",
+          "source": "src/Race/Agents/RacerAgent.cpp:131"
+        },
+        {
+          "name": "fallbackReverseSteer",
+          "value": 0.3,
+          "unit": "steering fraction",
+          "source": "src/Race/Agents/RacerAgent.cpp:141"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 36
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 123
+        },
+        {
+          "path": "src/Race/Agents/RacerAgent.cpp",
+          "line": 140
+        }
+      ],
+      "capabilities": [
+        "state machine",
+        "stuck recovery",
+        "respawn"
+      ],
+      "tags": [
+        "ai",
+        "recovery"
+      ]
+    },
+    {
+      "id": "rangefinders",
+      "node": "racer-ai",
+      "name": "Rangefinder sensor fan",
+      "summary": "Nineteen track-only rays fan across the front half of the car, longer straight ahead, plus up and down rays for flip checks",
+      "behavior": "Every frame the car casts 19 rays from its body center, starting at 90 degrees to one side and stepping 10 degrees to the other side. The straight-ahead rays reach 5 meters, falling through 3, 2 and 1.5 to 1 meter at the sides. Rays hit only track geometry and pass through other cars. A miss reads as the far value of 5 meters. One ray up and one down, 1 meter each, detect a flipped car and whether it sits over the road. The same readings feed the rule AI and an unfinished neural-network driver.",
+      "constants": [
+        {
+          "name": "rayCount",
+          "value": 19,
+          "unit": "rays",
+          "source": "src/Physics/Car.h:30"
+        },
+        {
+          "name": "rayFarValue",
+          "value": 5,
+          "unit": "meters",
+          "source": "src/Physics/Car.h:31"
+        },
+        {
+          "name": "raySpacing",
+          "value": 10,
+          "unit": "degrees",
+          "source": "src/Physics/Car.h:32"
+        },
+        {
+          "name": "verticalRayLength",
+          "value": 1,
+          "unit": "meters",
+          "source": "src/Physics/Car.h:33"
+        },
+        {
+          "name": "forwardRayLength",
+          "value": 5,
+          "unit": "meters",
+          "source": "src/Physics/Car.cpp:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 394
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 397
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 404
+        },
+        {
+          "path": "src/Physics/Car.cpp",
+          "line": 427
+        }
+      ],
+      "capabilities": [
+        "raycast sensors",
+        "flip detection"
+      ],
+      "tags": [
+        "ai",
+        "sensors",
+        "collision"
+      ]
+    }
+  ]
+}
