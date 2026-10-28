@@ -178,7 +178,10 @@ export function run(args = process.argv.slice(2)) {
     ]);
     validateCatalog(catalog, games, stubs);
     mkdirSync(path.join(root, '.release'), { recursive: true });
-    writeFileSync(path.join(root, '.release', 'index.json.gz'), gzipSync(JSON.stringify({ version: 1, games: catalog, stubs })));
+    // The engine reference reader rejects unknown fields, so the index carries exactly the five
+    // row fields it declares; rating, genre and kind stay in data/catalog.json.
+    const rows = catalog.map(({ id, title, platform, repo: source, tier }) => ({ id, title, platform, repo: source, tier }));
+    writeFileSync(path.join(root, '.release', 'index.json.gz'), gzipSync(JSON.stringify({ version: 1, games: rows, stubs })));
     for (const game of games) writeFileSync(path.join(root, '.release', `game-${game.id}.json`), JSON.stringify(game));
   }
 }

@@ -142,7 +142,7 @@ test('release assets keep the version-1 contract and exact asset set', t => {
   assert.deepEqual(readdirSync(path.join(dir, '.release')).sort(), ['game-demo.json', 'game-second.json', 'index.json.gz']);
   const index = JSON.parse(gunzipSync(readFileSync(path.join(dir, '.release', 'index.json.gz'))).toString());
   assert.equal(index.version, 1);
-  assert.deepEqual(index.games, config);
+  assert.deepEqual(index.games, config.map(({ id, title, platform, repo, tier }) => ({ id, title, platform, repo, tier })));
   const game = demoGame(source.sha);
   assert.equal(readFileSync(path.join(dir, '.release', 'game-demo.json'), 'utf8'), JSON.stringify(game));
   assert.doesNotThrow(() => validateGame(JSON.parse(readFileSync(path.join(dir, '.release', 'game-demo.json'), 'utf8'))));
