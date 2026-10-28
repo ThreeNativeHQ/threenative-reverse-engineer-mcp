@@ -1,0 +1,2839 @@
+{
+  "version": 1,
+  "id": "librecorsa",
+  "title": "LibreCorsa",
+  "repo": "https://github.com/KhazP/librecorsa",
+  "sha": "b6bd7a419d5f4c12f34254a79e5aec05c74d7867",
+  "nodes": [
+    {
+      "id": "vehicle-dynamics",
+      "name": "Rigid-body car core",
+      "purpose": "One rigid body with four independently suspended wheels, integrated in fixed steps against the scanned circuit surface, with barrier, floor and plank contacts resolved inside the same step",
+      "paths": [
+        "src/lib/sim/f12026-car/VehiclePhysics.ts",
+        "src/lib/f1-physics-2026.ts"
+      ],
+      "functions": [
+        {
+          "name": "step",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1157,
+            1165
+          ]
+        },
+        {
+          "name": "outerStep",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1420,
+            1443
+          ]
+        },
+        {
+          "name": "substep",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1459,
+            1817
+          ]
+        },
+        {
+          "name": "applyPlankContact",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            2300,
+            2322
+          ]
+        },
+        {
+          "name": "step",
+          "path": "src/lib/f1-physics-2026.ts",
+          "lines": [
+            994,
+            1060
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyre-model",
+        "suspension",
+        "aero",
+        "drivetrain",
+        "brakes-electronics"
+      ]
+    },
+    {
+      "id": "tyre-model",
+      "name": "Tyre contact model",
+      "purpose": "Slip-curve and combined-slip force generation, the five-point contact patch, a nine-node thermal network with inflation pressure, wear and damage states, and the wet-road grip reduction",
+      "paths": [
+        "src/lib/sim/ac-tyre.ts",
+        "src/lib/sim/wet-tyres.ts",
+        "src/lib/sim/f12026-car/F12026CarConfig.ts"
+      ],
+      "functions": [
+        {
+          "name": "computeTyreForces",
+          "path": "src/lib/sim/ac-tyre.ts",
+          "lines": [
+            533,
+            716
+          ]
+        },
+        {
+          "name": "updateTyreThermal",
+          "path": "src/lib/sim/ac-tyre.ts",
+          "lines": [
+            860,
+            948
+          ]
+        },
+        {
+          "name": "stepFlatSpot",
+          "path": "src/lib/sim/ac-tyre.ts",
+          "lines": [
+            723,
+            765
+          ]
+        },
+        {
+          "name": "stepGrainBlister",
+          "path": "src/lib/sim/ac-tyre.ts",
+          "lines": [
+            773,
+            795
+          ]
+        },
+        {
+          "name": "advanceDirtyLevel",
+          "path": "src/lib/sim/ac-tyre.ts",
+          "lines": [
+            818,
+            837
+          ]
+        },
+        {
+          "name": "wetGripFactor",
+          "path": "src/lib/sim/wet-tyres.ts",
+          "lines": [
+            140,
+            148
+          ]
+        },
+        {
+          "name": "compoundData",
+          "path": "src/lib/sim/f12026-car/F12026CarConfig.ts",
+          "lines": [
+            586,
+            596
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "suspension",
+      "name": "Double-wishbone kinematics",
+      "purpose": "Solves the live three-dimensional wishbone, upright and tie-rod geometry from wheel travel, and turns it into camber gain, bump steer, caster and scrub radius, roll-centre migration and anti-dive",
+      "paths": [
+        "src/lib/sim/suspension-kinematics.ts"
+      ],
+      "functions": [
+        {
+          "name": "solveCornerKinematics3D",
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "lines": [
+            284,
+            454
+          ]
+        },
+        {
+          "name": "solveAxleKinematics3D",
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "lines": [
+            461,
+            492
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "aero",
+      "name": "Aerodynamic platform",
+      "purpose": "Wing and floor loads from ride height and attitude, drag, the wake a car sheds on the cars behind it, ground-effect loss in roll, and the relative airspeed the bodywork actually sees",
+      "paths": [
+        "src/lib/sim/aero-wake.ts",
+        "src/lib/sim/f12026-car/VehiclePhysics.ts"
+      ],
+      "functions": [
+        {
+          "name": "evaluateAeroWakeDeficit",
+          "path": "src/lib/sim/aero-wake.ts",
+          "lines": [
+            63,
+            142
+          ]
+        },
+        {
+          "name": "evaluateRollAeroFactor",
+          "path": "src/lib/sim/aero-wake.ts",
+          "lines": [
+            149,
+            152
+          ]
+        },
+        {
+          "name": "computeRelativeAirspeed",
+          "path": "src/lib/sim/aero-wake.ts",
+          "lines": [
+            169,
+            194
+          ]
+        },
+        {
+          "name": "applyMapAero",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            2232,
+            2297
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-dynamics"
+      ]
+    },
+    {
+      "id": "drivetrain",
+      "name": "Engine, energy recovery and differential",
+      "purpose": "Combustion torque with turbo lag and engine maps, clutch take-up, the electric machine deploy and harvest budget, the gearbox schedule and the limited-slip differential solved as sequential impulses",
+      "paths": [
+        "src/lib/sim/f12026-car/VehiclePhysics.ts",
+        "src/lib/sim/f12026-car/F12026CarConfig.ts"
+      ],
+      "functions": [
+        {
+          "name": "solveDrivetrain",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1929,
+            2150
+          ]
+        },
+        {
+          "name": "updateDrs",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1370,
+            1414
+          ]
+        },
+        {
+          "name": "autoShiftFor",
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "lines": [
+            1337,
+            1369
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-dynamics"
+      ]
+    },
+    {
+      "id": "brakes-electronics",
+      "name": "Brakes and driver aids",
+      "purpose": "Two-node brake disc thermal network with temperature-dependent pad friction, brake-by-wire bias migration, and the multi-stage traction control and per-wheel antilock system of each car",
+      "paths": [
+        "src/lib/sim/brake-physics.ts",
+        "src/lib/sim/f12026-car/F12026CarSim.ts"
+      ],
+      "functions": [
+        {
+          "name": "evaluateBrakePadMuFactor",
+          "path": "src/lib/sim/brake-physics.ts",
+          "lines": [
+            69,
+            91
+          ]
+        },
+        {
+          "name": "stepBrakeDiscThermal",
+          "path": "src/lib/sim/brake-physics.ts",
+          "lines": [
+            105,
+            162
+          ]
+        },
+        {
+          "name": "computeDynamicBrakeMigration",
+          "path": "src/lib/sim/brake-physics.ts",
+          "lines": [
+            172,
+            181
+          ]
+        },
+        {
+          "name": "driverCommand",
+          "path": "src/lib/sim/f12026-car/F12026CarSim.ts",
+          "lines": [
+            1112,
+            1226
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyre-model"
+      ]
+    },
+    {
+      "id": "surfaces",
+      "name": "Track surface table",
+      "purpose": "The per-surface data table the contact query reads: dry and wet friction, rolling resistance, a sinusoidal ripple with a real wavelength, vibration gain and whether a surface counts for track limits, plus the kerb cross-section",
+      "paths": [
+        "src/lib/sim/track-surfaces.ts",
+        "src/lib/sim/f12026-car/TrackColliderQuery.ts"
+      ],
+      "functions": [
+        {
+          "name": "resolveSurfaceTable",
+          "path": "src/lib/sim/track-surfaces.ts",
+          "lines": [
+            53,
+            68
+          ]
+        },
+        {
+          "name": "kerbProfileM",
+          "path": "src/lib/sim/track-surfaces.ts",
+          "lines": [
+            79,
+            87
+          ]
+        },
+        {
+          "name": "surfaceRippleM",
+          "path": "src/lib/sim/track-surfaces.ts",
+          "lines": [
+            93,
+            96
+          ]
+        },
+        {
+          "name": "wallSweep",
+          "path": "src/lib/sim/f12026-car/TrackColliderQuery.ts",
+          "lines": [
+            781,
+            820
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "weather",
+      "name": "Weather and standing water",
+      "purpose": "Sun and cloud, the water film that rain lays down and that drains and evaporates, the share of it the racing line keeps, and the tyre-side grip loss that follows from film depth and speed",
+      "paths": [
+        "src/lib/sim/weather.ts",
+        "src/lib/sim/wet-tyres.ts"
+      ],
+      "functions": [
+        {
+          "name": "aquaplaneFactor",
+          "path": "src/lib/sim/wet-tyres.ts",
+          "lines": [
+            126,
+            134
+          ]
+        },
+        {
+          "name": "wetPneumaticTrailScale",
+          "path": "src/lib/sim/wet-tyres.ts",
+          "lines": [
+            155,
+            160
+          ]
+        },
+        {
+          "name": "hydrodynamicDragN",
+          "path": "src/lib/sim/wet-tyres.ts",
+          "lines": [
+            167,
+            173
+          ]
+        },
+        {
+          "name": "step",
+          "path": "src/lib/sim/weather.ts",
+          "lines": [
+            664,
+            731
+          ]
+        },
+        {
+          "name": "depositCarPass",
+          "path": "src/lib/sim/weather.ts",
+          "lines": [
+            739,
+            746
+          ]
+        }
+      ],
+      "dependsOn": [
+        "surfaces"
+      ]
+    },
+    {
+      "id": "track-state",
+      "name": "Evolving track and car contacts",
+      "purpose": "Per-sector rubber and marble state with a grip multiplier, rain washing the line back toward green, and the rigid-body oriented-box contact solver used when two cars touch",
+      "paths": [
+        "src/lib/sim/track-evolution.ts"
+      ],
+      "functions": [
+        {
+          "name": "depositCarPass",
+          "path": "src/lib/sim/track-evolution.ts",
+          "lines": [
+            131,
+            171
+          ]
+        },
+        {
+          "name": "weatherWash",
+          "path": "src/lib/sim/track-evolution.ts",
+          "lines": [
+            177,
+            186
+          ]
+        },
+        {
+          "name": "sample",
+          "path": "src/lib/sim/track-evolution.ts",
+          "lines": [
+            193,
+            239
+          ]
+        },
+        {
+          "name": "resolveCarToCarObbCollision",
+          "path": "src/lib/sim/track-evolution.ts",
+          "lines": [
+            341,
+            500
+          ]
+        }
+      ],
+      "dependsOn": [
+        "surfaces"
+      ]
+    },
+    {
+      "id": "ai-field",
+      "name": "Opponent field",
+      "purpose": "The AI grid: a per-car target speed profile with backward braking passes, skill anchors that change pace and error size, traffic planning for following, passing and defending, section learning and the start procedure",
+      "paths": [
+        "src/lib/sim/ai-opponents.ts",
+        "src/lib/sim/ai-tuning.ts",
+        "src/lib/sim/ai-learning.ts"
+      ],
+      "functions": [
+        {
+          "name": "update",
+          "path": "src/lib/sim/ai-opponents.ts",
+          "lines": [
+            650,
+            677
+          ]
+        },
+        {
+          "name": "planTraffic",
+          "path": "src/lib/sim/ai-opponents.ts",
+          "lines": [
+            724,
+            849
+          ]
+        },
+        {
+          "name": "resolveContacts",
+          "path": "src/lib/sim/ai-opponents.ts",
+          "lines": [
+            855,
+            899
+          ]
+        },
+        {
+          "name": "decelEnvelope",
+          "path": "src/lib/sim/ai-tuning.ts",
+          "lines": [
+            424,
+            442
+          ]
+        },
+        {
+          "name": "buildTargetSpeedProfile",
+          "path": "src/lib/sim/ai-tuning.ts",
+          "lines": [
+            456,
+            493
+          ]
+        },
+        {
+          "name": "aiSkillModifiers",
+          "path": "src/lib/sim/ai-tuning.ts",
+          "lines": [
+            245,
+            255
+          ]
+        },
+        {
+          "name": "observe",
+          "path": "src/lib/sim/ai-learning.ts",
+          "lines": [
+            107,
+            168
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vehicle-dynamics"
+      ]
+    },
+    {
+      "id": "driver-input",
+      "name": "Driver input, camera and force feedback",
+      "purpose": "Stick steering assist for pad drivers, the cockpit micro-shake that reports what the suspension is doing, the automatic trackside camera director, and the wheel force-feedback path from steering torque to rim force",
+      "paths": [
+        "src/lib/sim/gamepad-assist.ts",
+        "src/lib/render/camera-rig.ts",
+        "src/lib/input/wheel-ffb.ts",
+        "src/lib/input/webhid-ffb.ts"
+      ],
+      "functions": [
+        {
+          "name": "update",
+          "path": "src/lib/sim/gamepad-assist.ts",
+          "lines": [
+            152,
+            227
+          ]
+        },
+        {
+          "name": "update",
+          "path": "src/lib/render/camera-rig.ts",
+          "lines": [
+            70,
+            158
+          ]
+        },
+        {
+          "name": "update",
+          "path": "src/lib/render/camera-rig.ts",
+          "lines": [
+            405,
+            469
+          ]
+        },
+        {
+          "name": "shapeFfbForce",
+          "path": "src/lib/input/wheel-ffb.ts",
+          "lines": [
+            39,
+            53
+          ]
+        },
+        {
+          "name": "softLockForce",
+          "path": "src/lib/input/wheel-ffb.ts",
+          "lines": [
+            55,
+            60
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "race-control",
+      "name": "Timing, classification and track limits",
+      "purpose": "Race distance and lap clocks, gap and split timing, the final classification, and the referee that judges excursions, advantage gained and the penalties that follow",
+      "paths": [
+        "src/lib/sim/race-session.ts",
+        "src/lib/sim/track-limits.ts"
+      ],
+      "functions": [
+        {
+          "name": "classify",
+          "path": "src/lib/sim/race-session.ts",
+          "lines": [
+            198,
+            225
+          ]
+        },
+        {
+          "name": "update",
+          "path": "src/lib/sim/race-session.ts",
+          "lines": [
+            259,
+            277
+          ]
+        },
+        {
+          "name": "update",
+          "path": "src/lib/sim/track-limits.ts",
+          "lines": [
+            153,
+            208
+          ]
+        },
+        {
+          "name": "strike",
+          "path": "src/lib/sim/track-limits.ts",
+          "lines": [
+            327,
+            350
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-field"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-step-rigid-body",
+      "node": "vehicle-dynamics",
+      "name": "Fixed-step rigid-body stepping",
+      "summary": "A 500 Hz outer step split into four 2 kHz substeps, fed from a capped frame accumulator",
+      "behavior": "In this browser build nothing is integrated at the display rate. Each frame's elapsed time is added to a pool and drained in fixed outer steps, and every outer step is split into four equal substeps, so tyre contact, suspension and drivetrain all solve at two kilohertz whether the tab is running at 30 frames or 144. The pool is capped at a tenth of a second, so a backgrounded tab or a paused debugger cannot bank a second of simulation and then dump it into one frame. Inside a substep the force and torque accumulators are cleared, each wheel's hardpoint is pushed into its current world position and its velocity taken from the body's linear plus rotational motion, gravity is applied to the sprung mass separately from the unsprung wheels, and the linear velocity is advanced before the body is translated and the angular velocity is rotated through the body-frame inertia tensor. The tyre torques a substep produces feed a drivetrain solve that sets the new wheel spin before the body is integrated, and a skid-block contact probes the floor at the front and rear for a stiff spring-damper with sliding friction, which is how a bottoming car is felt to scrape. The second car adapter uses the same half-millisecond outer step but caps catch-up at thirty steps per frame so a long stall cannot spiral.",
+      "constants": [
+        {
+          "name": "fixedOuterStepSeconds",
+          "value": 0.002,
+          "unit": "seconds of simulated time per outer step",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:599"
+        },
+        {
+          "name": "substepsPerOuterStep",
+          "value": 4,
+          "unit": "substeps per outer step",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:600"
+        },
+        {
+          "name": "frameAccumulatorCapSeconds",
+          "value": 0.1,
+          "unit": "seconds of pooled frame time, per frame",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1160"
+        },
+        {
+          "name": "gravityAcceleration",
+          "value": 9.81,
+          "unit": "metres per second squared, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:115"
+        },
+        {
+          "name": "contactSolverIterations",
+          "value": 8,
+          "unit": "iterations per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:120"
+        },
+        {
+          "name": "plankSlidingFriction",
+          "value": 0.35,
+          "unit": "coefficient, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:151"
+        },
+        {
+          "name": "maxCatchUpOuterSteps",
+          "value": 30,
+          "unit": "outer steps per frame",
+          "source": "src/lib/f1-physics-2026.ts:1041"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 599
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1420
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1459
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1784
+        },
+        {
+          "path": "src/lib/f1-physics-2026.ts",
+          "line": 275
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "substep integration",
+        "frame-rate independence",
+        "floor scraping"
+      ],
+      "tags": [
+        "physics",
+        "timestep",
+        "integration",
+        "rigid-body"
+      ]
+    },
+    {
+      "id": "tyre-slip-curve",
+      "node": "tyre-model",
+      "name": "Tyre slip curve and combined slip",
+      "summary": "A normalised slip vector fed through a fitted friction curve, with load sensitivity and a collapsing pneumatic trail",
+      "behavior": "Longitudinal and lateral slip are not used raw. Each is divided by its own peak value, the two are combined into one normalised slip magnitude that is capped, and that magnitude indexes a sine-of-arctangent curve whose slope at zero slip is fixed, which reaches its maximum at one and has fallen to the compound's falloff level by three times the peak. Coupling between the two directions is elliptical with a near-unity coefficient so a pure longitudinal or a pure lateral case stays exact while trail braking and corner-exit power blend smoothly. The available friction itself drops with load through an exponent taken from the compound data, so a heavily loaded tyre gives proportionally less grip, and it is scaled again by sliding speed, surface grip, temperature, pressure, wear and water. Below a few metres per second a carcass damping term fades in so the deflection spring does not ring at a standstill. The self-aligning moment is the lateral force times a pneumatic trail of roughly a sixth of the contact length, which collapses as the slip angle passes its peak and can even reverse slightly, which is what makes a sliding car go light and then pull into the slide through the wheel.",
+      "constants": [
+        {
+          "name": "zeroSlipCurveSlope",
+          "value": 2,
+          "unit": "normalised force per normalised slip, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:183"
+        },
+        {
+          "name": "curveFalloffSlip",
+          "value": 3,
+          "unit": "multiples of peak slip, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:185"
+        },
+        {
+          "name": "storedSlipCap",
+          "value": 5,
+          "unit": "normalised slip, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:179"
+        },
+        {
+          "name": "lowSpeedBlendSpeed",
+          "value": 3,
+          "unit": "metres per second, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:181"
+        },
+        {
+          "name": "lowSpeedCarcassDamping",
+          "value": 3,
+          "unit": "newtons per metre per second per newton of load, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:659"
+        },
+        {
+          "name": "longitudinalLateralCoupling",
+          "value": 0.94,
+          "unit": "fraction, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:646"
+        },
+        {
+          "name": "pneumaticTrailDivisor",
+          "value": 6,
+          "unit": "divisor of the contact length, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:672"
+        },
+        {
+          "name": "defaultPeakSlipAngle",
+          "value": 7.5,
+          "unit": "degrees at the friction limit, per evaluation",
+          "source": "src/lib/sim/f12026-car/F12026CarConfig.ts:427"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 533
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 646
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 672
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 343
+        },
+        {
+          "path": "src/lib/sim/f12026-car/F12026CarConfig.ts",
+          "line": 427
+        }
+      ],
+      "capabilities": [
+        "magic-formula slip curve",
+        "combined slip ellipse",
+        "load-sensitive friction",
+        "pneumatic trail"
+      ],
+      "tags": [
+        "tyres",
+        "grip",
+        "handling",
+        "physics"
+      ]
+    },
+    {
+      "id": "five-point-contact-patch",
+      "node": "tyre-model",
+      "name": "Five-point contact patch and road texture",
+      "summary": "The footprint is sampled at five points so kerbs, camber and road texture reach the tyre as a real surface normal and a pressure centroid",
+      "behavior": "Each tyre does not read a single ground height. Five probes, a centre, front, rear, inner and outer, are laid on the footprint whose half length grows with the square root of radius times deflection and whose half width is a little under half the section width. The effective contact height is a weighted envelope of those probes, mostly the centre with the corners sharing the rest, and the height differences across the footprint become a unit surface normal, a kerb-induced camber angle and a lateral shift of the pressure centroid that turns into an overturning moment. On top of the geometry sits a deterministic multi-octave spatial roughness field, so a lap is repeatable rather than random: a fraction of a millimetre on graded asphalt, several millimetres on grass, gravel and run-off, and on a kerb a fast sawtooth harmonic added to the fine noise. Because the whole thing is a pure function of world position it costs the same on every frame and survives a replay or a peer resync unchanged.",
+      "constants": [
+        {
+          "name": "asphaltRoughnessM",
+          "value": 0.00055,
+          "unit": "metres of peak height, per sample",
+          "source": "src/lib/sim/ac-tyre.ts:228"
+        },
+        {
+          "name": "looseSurfaceRoughnessM",
+          "value": 0.0038,
+          "unit": "metres of peak height, per sample",
+          "source": "src/lib/sim/ac-tyre.ts:225"
+        },
+        {
+          "name": "kerbRumbleAmplitudeM",
+          "value": 0.0022,
+          "unit": "metres of peak height, per sample",
+          "source": "src/lib/sim/ac-tyre.ts:221"
+        },
+        {
+          "name": "footprintHalfLengthMinM",
+          "value": 0.045,
+          "unit": "metres, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:251"
+        },
+        {
+          "name": "footprintHalfLengthMaxM",
+          "value": 0.14,
+          "unit": "metres, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:251"
+        },
+        {
+          "name": "footprintHalfWidthShare",
+          "value": 0.42,
+          "unit": "fraction of section width, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:252"
+        },
+        {
+          "name": "centreProbeWeight",
+          "value": 0.4,
+          "unit": "fraction of the effective height, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:282"
+        },
+        {
+          "name": "centroidShiftGain",
+          "value": 0.35,
+          "unit": "normalised shift per unit height gradient, per evaluation",
+          "source": "src/lib/sim/ac-tyre.ts:301"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 209
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 237
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 282
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 301
+        }
+      ],
+      "capabilities": [
+        "five-point probe",
+        "surface normal from footprint",
+        "deterministic road texture",
+        "kerb camber"
+      ],
+      "tags": [
+        "tyres",
+        "terrain",
+        "feedback",
+        "physics"
+      ]
+    },
+    {
+      "id": "tyre-thermal-pressure",
+      "node": "tyre-model",
+      "name": "Nine-node tyre thermal network and inflation",
+      "summary": "Three tread bands across three layers plus the inflation gas, with grip read off each band's own temperature curve",
+      "behavior": "Heat into a tyre is tracked at nine nodes, an inner, middle and outer band each with a surface, bulk and carcass layer, plus the gas inside. Sliding power goes mostly into the surface nodes and a rolling hysteresis term into bulk and carcass, conduction runs surface to bulk to carcass and laterally between neighbouring bands, and each node loses heat to air, to the road under load and, for the gas, to the rim. Grip is not a single tyre temperature: each band's performance curve is evaluated at a weighted surface-and-bulk temperature, shifted by a viscoelastic frequency correction when the tyre is sliding, and the three results are weighted by each band's share of the contact pressure. That share moves with camber and with the lateral force, so an outer shoulder can be over its window while the inner one is still cold. Pressure comes from the ideal gas law between the measured cold temperature and a reference running temperature, and it feeds back three ways: a share of the radial stiffness scales with it, over-inflation crowns the tread and loads the centre band, and grip is lost with the square of the relative error from the optimum.",
+      "constants": [
+        {
+          "name": "treadBands",
+          "value": 3,
+          "unit": "bands across the tread, per step",
+          "source": "src/lib/sim/ac-tyre.ts:41"
+        },
+        {
+          "name": "coldReferenceC",
+          "value": 20,
+          "unit": "degrees Celsius at which cold pressures are quoted, per step",
+          "source": "src/lib/sim/ac-tyre.ts:187"
+        },
+        {
+          "name": "referenceRunningC",
+          "value": 95,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/ac-tyre.ts:189"
+        },
+        {
+          "name": "pressureStiffnessShare",
+          "value": 0.4,
+          "unit": "fraction of the radial rate, per step",
+          "source": "src/lib/sim/ac-tyre.ts:191"
+        },
+        {
+          "name": "pressureGripLoss",
+          "value": 1.5,
+          "unit": "grip fraction per unit squared relative error, per step",
+          "source": "src/lib/sim/ac-tyre.ts:193"
+        },
+        {
+          "name": "camberBandShift",
+          "value": 7,
+          "unit": "normalised band share per radian, per step",
+          "source": "src/lib/sim/ac-tyre.ts:195"
+        },
+        {
+          "name": "lateralBandShift",
+          "value": 0.22,
+          "unit": "normalised band share per unit load transfer, per step",
+          "source": "src/lib/sim/ac-tyre.ts:197"
+        },
+        {
+          "name": "crownBandGain",
+          "value": 2,
+          "unit": "centre-band share per unit relative over-pressure, per step",
+          "source": "src/lib/sim/ac-tyre.ts:199"
+        },
+        {
+          "name": "surfaceTemperatureWeight",
+          "value": 0.6,
+          "unit": "fraction of the band temperature used for grip, per step",
+          "source": "src/lib/sim/ac-tyre.ts:524"
+        },
+        {
+          "name": "surfaceNodeHeatCapacity",
+          "value": 2600,
+          "unit": "joules per kelvin across the tread, per step",
+          "source": "src/lib/sim/ac-tyre.ts:841"
+        },
+        {
+          "name": "gasHeatCapacity",
+          "value": 80,
+          "unit": "joules per kelvin, per step",
+          "source": "src/lib/sim/ac-tyre.ts:845"
+        },
+        {
+          "name": "surfaceBulkConductance",
+          "value": 95,
+          "unit": "watts per kelvin across the tread, per step",
+          "source": "src/lib/sim/ac-tyre.ts:846"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 518
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 860
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 464
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 841
+        }
+      ],
+      "capabilities": [
+        "nine-node thermal model",
+        "ideal-gas pressure",
+        "band-weighted grip",
+        "camber-sensitive temperature"
+      ],
+      "tags": [
+        "tyres",
+        "temperature",
+        "pressure",
+        "physics"
+      ]
+    },
+    {
+      "id": "tyre-wear-flatspot",
+      "node": "tyre-model",
+      "name": "Tyre wear, flat spots and surface damage",
+      "summary": "Progressive wear loss, sixteen circumferential sectors that remember a lock-up, and graining and blistering windows",
+      "behavior": "Wear accumulates from sliding energy plus a load-and-speed rolling term and is scaled by the session's realism level and by how wet the road is. Grip does not fall linearly with it: a small linear loss applies from new, and a quadratic term only starts past the half-worn knee, so a scrubbed-in tyre holds its grip and then falls away quickly. Sixteen sectors around the circumference each keep their own wear and temperature, so a wheel that locks under braking concentrates its abrasion and heat on the single grounded sector and its two neighbours, and the difference between the most and least worn sectors becomes a flat-spot severity that drops the effective rolling radius and adds a rotation-order vibration through the wheel. Separately, a cold core being sheared by high sliding power raises a graining level that only scrubs clean while the core sits inside its working window, an overheating core raises a blistering level, and driving over grass, gravel or run-off, or over rubber marbles off the line, loads a dirt level that cuts grip until rolling and shear work clean it back toward whatever the local marble density allows.",
+      "constants": [
+        {
+          "name": "wearGripLinearLoss",
+          "value": 0.06,
+          "unit": "grip fraction per unit wear, per step",
+          "source": "src/lib/sim/ac-tyre.ts:201"
+        },
+        {
+          "name": "wearKnee",
+          "value": 0.5,
+          "unit": "unit wear, per step",
+          "source": "src/lib/sim/ac-tyre.ts:202"
+        },
+        {
+          "name": "wearQuadraticLoss",
+          "value": 0.5,
+          "unit": "grip fraction per unit wear squared past the knee, per step",
+          "source": "src/lib/sim/ac-tyre.ts:203"
+        },
+        {
+          "name": "circumferentialSectors",
+          "value": 16,
+          "unit": "sectors around the tread, per step",
+          "source": "src/lib/sim/ac-tyre.ts:43"
+        },
+        {
+          "name": "lockupWearGain",
+          "value": 11,
+          "unit": "multiplier at full lock, per step",
+          "source": "src/lib/sim/ac-tyre.ts:740"
+        },
+        {
+          "name": "flatSpotSeverityGain",
+          "value": 18,
+          "unit": "severity per unit wear spread, per step",
+          "source": "src/lib/sim/ac-tyre.ts:764"
+        },
+        {
+          "name": "grainingCoreThresholdC",
+          "value": 78,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/ac-tyre.ts:783"
+        },
+        {
+          "name": "grainingCleanUpperC",
+          "value": 82,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/ac-tyre.ts:787"
+        },
+        {
+          "name": "blisterCoreThresholdC",
+          "value": 128,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/ac-tyre.ts:791"
+        },
+        {
+          "name": "marblePickupShare",
+          "value": 0.6,
+          "unit": "fraction of local marble density, per step",
+          "source": "src/lib/sim/ac-tyre.ts:830"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 723
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 773
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 818
+        },
+        {
+          "path": "src/lib/sim/ac-tyre.ts",
+          "line": 338
+        }
+      ],
+      "capabilities": [
+        "progressive wear",
+        "sixteen-sector flat spotting",
+        "graining and blistering",
+        "dirt pickup"
+      ],
+      "tags": [
+        "tyres",
+        "wear",
+        "damage",
+        "endurance"
+      ]
+    },
+    {
+      "id": "double-wishbone-kinematics",
+      "node": "suspension",
+      "name": "Live double-wishbone geometry",
+      "summary": "Wheel travel is rotated through the real hardpoints, and camber gain, bump steer, trail and roll centres fall out of the geometry",
+      "behavior": "Suspension travel is not a lookup table of camber against bump. The lower wishbone is rotated about its chassis hinge axis until the upright's lower ball joint has risen by the travel, refined with a few Newton steps, and then the upper wishbone is rotated until the upright keeps its fixed length between the two ball joints. From the solved joints the code reads off the live kingpin axis, so camber gain in bump, kingpin inclination and caster come from the hardpoint positions rather than being authored, and the kingpin's ground intersection gives a scrub radius clamped to a physically plausible band and a caster trail that adds the kinematic change to the car's static figure. The tie rods give a mildly non-linear Ackermann split, and the mismatch between the tie-rod arc and the lower wishbone arc produces a small kinematic bump steer that is clamped to a few thousandths of a radian. On the axle, the front-view instant centres of the two corners put the roll centre where the contact-patch lines meet, and the side-view slopes give an anti-dive and anti-squat fraction, both within hard bounds; a rocker progressivity term stretches the motion ratio away from static ride height.",
+      "constants": [
+        {
+          "name": "bumpTravelClamp",
+          "value": 0.08,
+          "unit": "metres, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:292"
+        },
+        {
+          "name": "upperWishboneIterations",
+          "value": 4,
+          "unit": "Newton iterations, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:349"
+        },
+        {
+          "name": "scrubRadiusMin",
+          "value": 0.008,
+          "unit": "metres, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:381"
+        },
+        {
+          "name": "scrubRadiusMax",
+          "value": 0.042,
+          "unit": "metres, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:381"
+        },
+        {
+          "name": "casterTrailChangeRange",
+          "value": 0.015,
+          "unit": "metres of kinematic change, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:386"
+        },
+        {
+          "name": "ackermannCoefficient",
+          "value": 0.14,
+          "unit": "dimensionless, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:390"
+        },
+        {
+          "name": "bumpSteerCap",
+          "value": 0.006,
+          "unit": "radians, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:399"
+        },
+        {
+          "name": "motionRatioMin",
+          "value": 0.85,
+          "unit": "ratio to static, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:434"
+        },
+        {
+          "name": "motionRatioMax",
+          "value": 1.28,
+          "unit": "ratio to static, per solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:434"
+        },
+        {
+          "name": "rollCentreHeightCapShare",
+          "value": 0.65,
+          "unit": "share of the loaded radius, per axle solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:487"
+        },
+        {
+          "name": "antiPitchMax",
+          "value": 0.35,
+          "unit": "fraction, per axle solve",
+          "source": "src/lib/sim/suspension-kinematics.ts:490"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "line": 284
+        },
+        {
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "line": 461
+        },
+        {
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "line": 402
+        },
+        {
+          "path": "src/lib/sim/suspension-kinematics.ts",
+          "line": 487
+        }
+      ],
+      "capabilities": [
+        "three-dimensional wishbone solve",
+        "live camber and bump steer",
+        "roll-centre migration",
+        "anti-dive"
+      ],
+      "tags": [
+        "suspension",
+        "geometry",
+        "handling",
+        "setup"
+      ]
+    },
+    {
+      "id": "dirty-air-slipstream",
+      "node": "aero",
+      "name": "Downforce, drag and dirty air",
+      "summary": "Wing and floor loads from ride height and attitude, plus the wake a leading car leaves for the car behind",
+      "behavior": "Downforce is generated per wing and per floor element. Each one reads a lift and a drag coefficient from an angle-of-attack curve and a ride-height curve, multiplied by the dynamic pressure of the air the car actually meets, half the air density times the square of the forward airspeed, which is measured against the wind rather than the ground, so a headwind adds load. Bodywork lift at each axle is added on top, and the total is split between the axles by the element's position along the wheelbase before it is applied as a force at that point, so a rearward shift of the aerodynamic centre really does pitch the car. A following car sits in two different wakes: drag falls inside a tow, and downforce falls more sharply and more at the front than the rear, which shifts the centre of pressure rearward and makes the car understeer in traffic. The wake is built from every car between a couple of metres and about a hundred and thirty metres ahead, its half width spreading with distance, its strength growing with the leader's speed, its front-axle loss and rear-axle loss summed in quadrature so several cars saturate smoothly, and on a wet track it also carries a spray plume. Rolling the chassis lifts the inside floor edge and leaks the underfloor seal, which is modelled as a square-of-roll downforce loss with a floor.",
+      "constants": [
+        {
+          "name": "dynamicPressureFactor",
+          "value": 0.5,
+          "unit": "dimensionless, per evaluation",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:2176"
+        },
+        {
+          "name": "towDragLossPerCar",
+          "value": 0.22,
+          "unit": "drag fraction per car ahead, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:114"
+        },
+        {
+          "name": "dirtyAirFrontLossPerCar",
+          "value": 0.28,
+          "unit": "front downforce fraction per car ahead, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:115"
+        },
+        {
+          "name": "dirtyAirRearLossPerCar",
+          "value": 0.16,
+          "unit": "rear downforce fraction per car ahead, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:116"
+        },
+        {
+          "name": "dragLossCap",
+          "value": 0.26,
+          "unit": "fraction, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:121"
+        },
+        {
+          "name": "frontDownforceLossCap",
+          "value": 0.32,
+          "unit": "fraction, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:122"
+        },
+        {
+          "name": "rearDownforceLossCap",
+          "value": 0.2,
+          "unit": "fraction, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:123"
+        },
+        {
+          "name": "wakeHalfWidthM",
+          "value": 1.05,
+          "unit": "metres at the rear wing, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:96"
+        },
+        {
+          "name": "wakeSpreadPerM",
+          "value": 0.026,
+          "unit": "metres of half width per metre downstream, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:96"
+        },
+        {
+          "name": "wakeNearLimitM",
+          "value": 130,
+          "unit": "metres downstream, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:91"
+        },
+        {
+          "name": "frontDownforceWeight",
+          "value": 0.46,
+          "unit": "fraction of the mean downforce, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:130"
+        },
+        {
+          "name": "rollFloorLeakCoefficient",
+          "value": 1.8,
+          "unit": "multiplier per radian squared of roll, per evaluation",
+          "source": "src/lib/sim/aero-wake.ts:151"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/aero-wake.ts",
+          "line": 63
+        },
+        {
+          "path": "src/lib/sim/aero-wake.ts",
+          "line": 149
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 2153
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 2232
+        }
+      ],
+      "capabilities": [
+        "ride-height-sensitive wings",
+        "slipstream tow",
+        "dirty-air downforce loss",
+        "floor seal loss in roll"
+      ],
+      "tags": [
+        "aero",
+        "downforce",
+        "drafting",
+        "physics"
+      ]
+    },
+    {
+      "id": "drivetrain-ers-lsd",
+      "node": "drivetrain",
+      "name": "Engine, energy recovery and limited-slip differential",
+      "summary": "Torque from a power curve minus a coast curve, turbo spool, clutch take-up, deploy and harvest budgets, and a ramped differential solved by impulses",
+      "behavior": "Combustion torque is a power curve evaluated at engine speed and divided back into torque, minus a coast curve weighted by how far the throttle is closed, and the result is scaled by one of five engine maps that trade peak torque for a more aggressive pedal. A turbocharger chases a boost target that climbs with engine speed above the middle of the range, spooling in around a seventh of a second and decaying far faster, and while the boost trails its target a small share of the positive torque is withheld. The clutch is a smoothstep of engine speed between a bite point and a lock point, with a torque capacity proportional to engagement, so a launch slips and then locks. The electric machine either adds crank torque, limited by a speed-dependent deploy curve and by a per-lap deployment budget, or removes it to recharge, limited by a speed-dependent harvest curve and, under braking, by the rear axle's share of the pedal demand so harvesting can never brake the rears harder than the bias allows. The differential is solved as sequential impulses over a fixed iteration count: clutches cap the gearbox-to-axle and left-to-right transfers, a preload always acts, and power and coast ramp gains ride on the torque actually flowing through the diff, with a three-phase scheme picking entry, mid and exit coefficients from longitudinal acceleration, speed and a high-speed switch.",
+      "constants": [
+        {
+          "name": "diffSolverIterations",
+          "value": 8,
+          "unit": "iterations per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:120"
+        },
+        {
+          "name": "engineMapLowestTorqueScale",
+          "value": 0.87,
+          "unit": "fraction of full torque, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1943"
+        },
+        {
+          "name": "turboSpoolSeconds",
+          "value": 0.14,
+          "unit": "seconds, per outer step",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1435"
+        },
+        {
+          "name": "turboDecaySeconds",
+          "value": 0.05,
+          "unit": "seconds, per outer step",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1435"
+        },
+        {
+          "name": "turboLagTorqueLoss",
+          "value": 0.1,
+          "unit": "fraction of positive torque, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:141"
+        },
+        {
+          "name": "diffLevelDivisor",
+          "value": 11,
+          "unit": "divisor mapping level twelve to one, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:2067"
+        },
+        {
+          "name": "diffHighSpeedSwitch",
+          "value": 250,
+          "unit": "kilometres per hour, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:2061"
+        },
+        {
+          "name": "defaultBrakeMigration",
+          "value": 0.015,
+          "unit": "front bias fraction, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:2009"
+        },
+        {
+          "name": "halfShaftTorqueShare",
+          "value": 0.5,
+          "unit": "fraction of the axle torque, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:2054"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1929
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1941
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1968
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 2064
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 2094
+        }
+      ],
+      "capabilities": [
+        "torque curve with coast",
+        "turbo lag",
+        "clutch take-up",
+        "deploy and harvest budget",
+        "ramped limited slip"
+      ],
+      "tags": [
+        "drivetrain",
+        "engine",
+        "hybrid",
+        "differential"
+      ]
+    },
+    {
+      "id": "brake-disc-thermal",
+      "node": "brakes-electronics",
+      "name": "Brake disc heat and pad bite",
+      "summary": "A two-node disc with convection, radiation and a double-sigmoid pad friction curve, plus bias migration under pedal",
+      "behavior": "Each corner's disc is two thermal nodes, a friction face and the internal core, joined by conduction. Friction power enters mostly at the face and the remainder conducts into the core; both lose heat by forced convection that rises with road speed, with the duct opening and with wet spray, and by radiation from a glowing face that follows the fourth power of absolute temperature. Pad friction is read from a double sigmoid of face temperature, so a carbon disc is soft when cold, holds full bite in a wide plateau and fades above roughly a thousand degrees, while a steel endurance disc comes up to temperature sooner and fades much lower; the result is floored so a totally faded brake still does something. Sustained operation above the glazing temperature accumulates a permanent pad glazing factor that shaves fifteen per cent off everything. Bias is not fixed: the driver's base front share migrates forward with pedal travel and comes back rearward as the pedal is released, clamped between hard limits, which is what makes a car stable under a big stop and rotate on the way into the corner.",
+      "constants": [
+        {
+          "name": "carbonSurfaceHeatCapacity",
+          "value": 1150,
+          "unit": "joules per kelvin, per step",
+          "source": "src/lib/sim/brake-physics.ts:118"
+        },
+        {
+          "name": "steelSurfaceHeatCapacity",
+          "value": 2100,
+          "unit": "joules per kelvin, per step",
+          "source": "src/lib/sim/brake-physics.ts:118"
+        },
+        {
+          "name": "surfaceHeatShare",
+          "value": 0.62,
+          "unit": "fraction of friction power, per step",
+          "source": "src/lib/sim/brake-physics.ts:147"
+        },
+        {
+          "name": "carbonColdBiteMidC",
+          "value": 90,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/brake-physics.ts:78"
+        },
+        {
+          "name": "carbonFadeMidC",
+          "value": 1030,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/brake-physics.ts:80"
+        },
+        {
+          "name": "steelFadeMidC",
+          "value": 790,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/brake-physics.ts:87"
+        },
+        {
+          "name": "carbonDiscAreaM2",
+          "value": 0.135,
+          "unit": "square metres, per step",
+          "source": "src/lib/sim/brake-physics.ts:133"
+        },
+        {
+          "name": "carbonEmissivity",
+          "value": 0.88,
+          "unit": "dimensionless, per step",
+          "source": "src/lib/sim/brake-physics.ts:132"
+        },
+        {
+          "name": "carbonMaxDiscC",
+          "value": 1280,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/brake-physics.ts:150"
+        },
+        {
+          "name": "carbonGlazeThresholdC",
+          "value": 980,
+          "unit": "degrees Celsius, per step",
+          "source": "src/lib/sim/brake-physics.ts:155"
+        },
+        {
+          "name": "glazeRatePerSecond",
+          "value": 0.025,
+          "unit": "glazing fraction per second of overheat, per step",
+          "source": "src/lib/sim/brake-physics.ts:158"
+        },
+        {
+          "name": "defaultMigrationRange",
+          "value": 0.06,
+          "unit": "front bias fraction, per braking event",
+          "source": "src/lib/sim/brake-physics.ts:175"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/brake-physics.ts",
+          "line": 105
+        },
+        {
+          "path": "src/lib/sim/brake-physics.ts",
+          "line": 69
+        },
+        {
+          "path": "src/lib/sim/brake-physics.ts",
+          "line": 172
+        },
+        {
+          "path": "src/lib/sim/brake-physics.ts",
+          "line": 147
+        }
+      ],
+      "capabilities": [
+        "two-node disc thermal",
+        "temperature-dependent pad friction",
+        "pad glazing",
+        "brake migration"
+      ],
+      "tags": [
+        "brakes",
+        "temperature",
+        "feel",
+        "physics"
+      ]
+    },
+    {
+      "id": "traction-control-abs",
+      "node": "brakes-electronics",
+      "name": "Traction control and antilock brakes",
+      "summary": "Twelve-position slip targets with a two-stage torque cut, and four independent brake channels with deceleration anticipation",
+      "behavior": "Both aids are slip controllers with a position dial rather than a simple on-off. Traction control runs at a fixed rate on a weighted rear-axle slip ratio, mixing the worse wheel and the axle mean, and compares it with a target chosen from a twelve-entry table where position twelve is the most intrusive; the target is tightened as lateral acceleration builds and, on a wet track, as the rear slip angle grows, so the aid intervenes earlier in a corner than on a straight. The correction has two stages: below a small excess it retards timing for a partial cut, above it, cylinders are cut in sequence up to a much larger share, with a floor on the throttle share that moves with the second dial, and the cut is applied quickly and released at a quarter of that rate so the car does not snap back. Antilock brakes run four independent channels at their own higher rate, each combining the wheel's slip ratio with an anticipation term from wheel deceleration, comparing against a target from a twelve-entry table, and cutting that wheel's brake torque proportionally past it with a floor; the rear channels tighten their target when the car is trail braking with a big slip angle, which is what stops the rear axle from stepping out under a late brake release.",
+      "constants": [
+        {
+          "name": "absSlipTargetMostIntrusive",
+          "value": 0.08,
+          "unit": "slip ratio, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:97"
+        },
+        {
+          "name": "absSlipTargetLeastIntrusive",
+          "value": 0.19,
+          "unit": "slip ratio, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:97"
+        },
+        {
+          "name": "absUpdateRateHz",
+          "value": 240,
+          "unit": "hertz, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:99"
+        },
+        {
+          "name": "tcSlipTargetMostIntrusive",
+          "value": 0.065,
+          "unit": "slip ratio, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:100"
+        },
+        {
+          "name": "tcSlipTargetLeastIntrusive",
+          "value": 0.15,
+          "unit": "slip ratio, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:100"
+        },
+        {
+          "name": "tcUpdateRateHz",
+          "value": 130,
+          "unit": "hertz, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:102"
+        },
+        {
+          "name": "tcMinimumSpeedKmh",
+          "value": 7.2,
+          "unit": "kilometres per hour, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:103"
+        },
+        {
+          "name": "tcStageBThreshold",
+          "value": 0.03,
+          "unit": "slip ratio excess, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1185"
+        },
+        {
+          "name": "tcStageAShare",
+          "value": 0.25,
+          "unit": "fraction of torque cut, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1185"
+        },
+        {
+          "name": "tcThrottleFloorBase",
+          "value": 0.18,
+          "unit": "throttle fraction, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1189"
+        },
+        {
+          "name": "tcThrottleFloorPerLevel",
+          "value": 0.011,
+          "unit": "throttle fraction per level, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1189"
+        },
+        {
+          "name": "rearAbsGuardFloor",
+          "value": 0.72,
+          "unit": "fraction of the target, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1213"
+        },
+        {
+          "name": "absCutGain",
+          "value": 12.5,
+          "unit": "cut fraction per unit slip excess, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1215"
+        },
+        {
+          "name": "absCutFloor",
+          "value": 0.08,
+          "unit": "brake torque fraction, per update",
+          "source": "src/lib/sim/f12026-car/F12026CarSim.ts:1215"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/f12026-car/F12026CarSim.ts",
+          "line": 1162
+        },
+        {
+          "path": "src/lib/sim/f12026-car/F12026CarSim.ts",
+          "line": 1198
+        },
+        {
+          "path": "src/lib/sim/f12026-car/F12026CarSim.ts",
+          "line": 1204
+        },
+        {
+          "path": "src/lib/sim/f12026-car/F12026CarSim.ts",
+          "line": 1165
+        }
+      ],
+      "capabilities": [
+        "staged traction control",
+        "four-channel antilock",
+        "slip-angle guard under braking",
+        "adjustable intervention"
+      ],
+      "tags": [
+        "assists",
+        "electronics",
+        "grip",
+        "braking"
+      ]
+    },
+    {
+      "id": "surface-table",
+      "node": "surfaces",
+      "name": "Surface grip, ripple and vibration table",
+      "summary": "One data table per surface kind: friction dry and wet, rolling resistance, a real-wavelength ripple, vibration gain and track-limits membership",
+      "behavior": "What the tyres are rolling on is a small data table rather than code. Each kind of ground, road, kerb, sausage kerb, painted run-off, pit lane, grass and gravel, carries a dry friction multiplier, an extra wet multiplier relative to asphalt in the same water, a rolling resistance per newton of load, a sinusoidal ripple described by a real amplitude and a real wavelength, a vibration gain for force feedback and haptics, and a flag for whether it counts as track for the limits referee. Kerbs are the interesting row: slightly less grip than asphalt when dry but noticeably less when wet, a four millimetre ripple repeating every sixty-five centimetres, and full vibration gain. The visible kerb is a separate cross-section, a profile that rises from the road edge to a crown of just over three centimetres and back down over about a metre and a half, so the physics surface and the drawn surface agree. A circuit can override any field per kind in its own track data, and the ripple is added to the contact height analytically along the surface's own texture coordinate and faded in across its width, so the serrations are felt whatever the mesh density happens to be.",
+      "constants": [
+        {
+          "name": "asphaltFriction",
+          "value": 1,
+          "unit": "grip multiplier in the dry, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:35"
+        },
+        {
+          "name": "kerbFriction",
+          "value": 0.96,
+          "unit": "grip multiplier in the dry, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:37"
+        },
+        {
+          "name": "kerbWetFriction",
+          "value": 0.72,
+          "unit": "extra multiplier at full wetness, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:37"
+        },
+        {
+          "name": "kerbRippleHeightM",
+          "value": 0.004,
+          "unit": "metres of peak ripple, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:37"
+        },
+        {
+          "name": "kerbRippleWavelengthM",
+          "value": 0.65,
+          "unit": "metres along the surface, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:37"
+        },
+        {
+          "name": "kerbCrownM",
+          "value": 0.032,
+          "unit": "metres above the road, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:76"
+        },
+        {
+          "name": "grassFriction",
+          "value": 0.6,
+          "unit": "grip multiplier in the dry, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:43"
+        },
+        {
+          "name": "grassRollingResistance",
+          "value": 0.04,
+          "unit": "drag per newton of load, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:43"
+        },
+        {
+          "name": "gravelFriction",
+          "value": 0.45,
+          "unit": "grip multiplier in the dry, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:45"
+        },
+        {
+          "name": "gravelRollingResistance",
+          "value": 0.16,
+          "unit": "drag per newton of load, per contact",
+          "source": "src/lib/sim/track-surfaces.ts:45"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/track-surfaces.ts",
+          "line": 34
+        },
+        {
+          "path": "src/lib/sim/track-surfaces.ts",
+          "line": 53
+        },
+        {
+          "path": "src/lib/sim/track-surfaces.ts",
+          "line": 79
+        },
+        {
+          "path": "src/lib/sim/track-surfaces.ts",
+          "line": 93
+        }
+      ],
+      "capabilities": [
+        "per-surface friction",
+        "rolling resistance table",
+        "kerb ripple and crown",
+        "track-limits membership"
+      ],
+      "tags": [
+        "terrain",
+        "grip",
+        "feedback",
+        "kerbs"
+      ]
+    },
+    {
+      "id": "standing-water",
+      "node": "weather",
+      "name": "Rain film, drainage and aquaplaning",
+      "summary": "A water film that rain lays down and that drains, evaporates and gets squeezed off the racing line, plus the grip it takes away",
+      "behavior": "Water on the road is one global film depth with a per-sector memory of how much of it is still on the racing line. Rain adds depth at a rate that scales with the square of the intensity, so a heavy shower is far more than twice a light one. Depth leaves through run-off that grows faster than linearly with depth, which is why heavy rain settles at a couple of millimetres rather than accumulating without limit, and through evaporation that rises with track temperature, sun elevation, wind and dry air. Cars squeeze the line dry: a pass inside a few metres of the racing line clears a small share of the sector's water, weighted by a Gaussian across the line, so the dry line appears first where the field is running and the rain refills it within a minute of heavy weather. The tyre then reads that depth: a thin boundary film costs a little grip on any tyre, a slick loses a little more once the film is no longer merely damp, and above what the tread can clear at the current speed the tyre aquaplanes, with the tread's capacity quoted at a reference speed and falling as the tread wears. Standing water also lifts the front of the contact patch so the steering goes light before the tyre actually lets go, and adds a hydrodynamic drag force per tyre, so the side of the car that finds the deeper water is dragged back hardest.",
+      "constants": [
+        {
+          "name": "dampFilmMm",
+          "value": 0.08,
+          "unit": "millimetres of film, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:77"
+        },
+        {
+          "name": "wetFilmMm",
+          "value": 0.5,
+          "unit": "millimetres of film, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:78"
+        },
+        {
+          "name": "standingWaterMm",
+          "value": 1.5,
+          "unit": "millimetres of film, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:79"
+        },
+        {
+          "name": "treadClearReferenceSpeed",
+          "value": 55.6,
+          "unit": "metres per second, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:104"
+        },
+        {
+          "name": "aquaplaneGripLossMax",
+          "value": 0.8,
+          "unit": "fraction of grip, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:133"
+        },
+        {
+          "name": "pneumaticTrailFloor",
+          "value": 0.25,
+          "unit": "multiplier, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:159"
+        },
+        {
+          "name": "hydrodynamicDragCoefficient",
+          "value": 0.16,
+          "unit": "dimensionless, per evaluation",
+          "source": "src/lib/sim/wet-tyres.ts:171"
+        },
+        {
+          "name": "rainRateAtFullIntensity",
+          "value": 12,
+          "unit": "millimetres per hour, per weather step",
+          "source": "src/lib/sim/weather.ts:472"
+        },
+        {
+          "name": "runoffCoefficient",
+          "value": 2,
+          "unit": "millimetres per hour per millimetre to the power of the exponent, per weather step",
+          "source": "src/lib/sim/weather.ts:474"
+        },
+        {
+          "name": "runoffExponent",
+          "value": 1.67,
+          "unit": "dimensionless, per weather step",
+          "source": "src/lib/sim/weather.ts:475"
+        },
+        {
+          "name": "lineClearedPerPass",
+          "value": 0.045,
+          "unit": "share of the sector film, per car pass",
+          "source": "src/lib/sim/weather.ts:477"
+        },
+        {
+          "name": "lineHalfWidthM",
+          "value": 2.4,
+          "unit": "metres from the racing line, per weather step",
+          "source": "src/lib/sim/weather.ts:479"
+        },
+        {
+          "name": "waterSectors",
+          "value": 64,
+          "unit": "sectors around the lap, per weather step",
+          "source": "src/lib/sim/weather.ts:481"
+        },
+        {
+          "name": "trackTemperatureTimeConstant",
+          "value": 600,
+          "unit": "seconds, per weather step",
+          "source": "src/lib/sim/weather.ts:483"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/wet-tyres.ts",
+          "line": 140
+        },
+        {
+          "path": "src/lib/sim/wet-tyres.ts",
+          "line": 126
+        },
+        {
+          "path": "src/lib/sim/wet-tyres.ts",
+          "line": 167
+        },
+        {
+          "path": "src/lib/sim/weather.ts",
+          "line": 664
+        },
+        {
+          "path": "src/lib/sim/weather.ts",
+          "line": 739
+        }
+      ],
+      "capabilities": [
+        "water film balance",
+        "line drying by traffic",
+        "aquaplaning with tread wear",
+        "steering lightening in water"
+      ],
+      "tags": [
+        "weather",
+        "rain",
+        "grip",
+        "physics"
+      ]
+    },
+    {
+      "id": "track-rubber-marbles",
+      "node": "track-state",
+      "name": "Rubbering-in, marbles and a green track",
+      "summary": "A per-sector rubber and marble state that changes the grip multiplier away from the racing line",
+      "behavior": "The circuit remembers what the field has done to it in sixty-four sectors. Driving within a couple of metres of the racing line lays warm rubber, damped by whatever dust or marbles are already there and rising asymptotically toward saturation; sliding hard in a corner throws rubber marbles outward onto the off-line surface, and driving off-line sweeps a small fraction of them away. The grip multiplier is then built from two pieces: a groove term that is zero at a natural baseline, rises with rubber and then bends over as the surface saturates, plus a marble penalty proportional to how much of the local surface is marbles and weighted by how far off the line the car is, all clamped into a narrow band around one. When the track is wet the rubbered-in line becomes slicker than the unrubbered asphalt, so the grip bonus fades as water fills the pores and then turns into a penalty. Rain washes the whole thing back toward a much less rubbered level on a long time constant, which is why a shower resets the weekend for everyone. Rubber laid on the line also grows with the sliding energy the tyres put in, not only with time on the line, so a busy first lap rubbers in faster than a quiet one, and a per-sector temperature rise from friction heating adds a little on top.",
+      "constants": [
+        {
+          "name": "evolutionSectors",
+          "value": 64,
+          "unit": "sectors around the lap, per update",
+          "source": "src/lib/sim/track-evolution.ts:17"
+        },
+        {
+          "name": "baselineRubber",
+          "value": 0.65,
+          "unit": "fraction of saturation, per update",
+          "source": "src/lib/sim/track-evolution.ts:18"
+        },
+        {
+          "name": "baseTrackTemperatureC",
+          "value": 41,
+          "unit": "degrees Celsius at session start, per sample",
+          "source": "src/lib/sim/track-evolution.ts:57"
+        },
+        {
+          "name": "washedRubberLevel",
+          "value": 0.35,
+          "unit": "fraction of saturation, per wash step",
+          "source": "src/lib/sim/track-evolution.ts:61"
+        },
+        {
+          "name": "washTimeConstantS",
+          "value": 1200,
+          "unit": "seconds, per wash step",
+          "source": "src/lib/sim/track-evolution.ts:62"
+        },
+        {
+          "name": "onLineHalfWidthM",
+          "value": 2.4,
+          "unit": "metres from the racing line, per update",
+          "source": "src/lib/sim/track-evolution.ts:146"
+        },
+        {
+          "name": "surfaceTemperatureRiseCapC",
+          "value": 4.5,
+          "unit": "degrees Celsius, per update",
+          "source": "src/lib/sim/track-evolution.ts:168"
+        },
+        {
+          "name": "grooveGripGain",
+          "value": 0.072,
+          "unit": "grip fraction per unit rubber, per sample",
+          "source": "src/lib/sim/track-evolution.ts:215"
+        },
+        {
+          "name": "grooveGripQuadratic",
+          "value": 0.015,
+          "unit": "grip fraction per unit rubber squared, per sample",
+          "source": "src/lib/sim/track-evolution.ts:215"
+        },
+        {
+          "name": "marbleGripPenalty",
+          "value": 0.075,
+          "unit": "grip fraction at full marble density, per sample",
+          "source": "src/lib/sim/track-evolution.ts:223"
+        },
+        {
+          "name": "lineGaussianSigmaM",
+          "value": 2.1,
+          "unit": "metres, per sample",
+          "source": "src/lib/sim/track-evolution.ts:209"
+        },
+        {
+          "name": "gripMultiplierFloor",
+          "value": 0.82,
+          "unit": "multiplier, per sample",
+          "source": "src/lib/sim/track-evolution.ts:226"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 98
+        },
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 131
+        },
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 193
+        },
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 177
+        }
+      ],
+      "capabilities": [
+        "rubber build-up",
+        "marble shedding on the off-line",
+        "wet-groove inversion",
+        "rain resets the track"
+      ],
+      "tags": [
+        "track",
+        "evolution",
+        "grip",
+        "session"
+      ]
+    },
+    {
+      "id": "car-to-car-contact",
+      "node": "track-state",
+      "name": "Car-to-car rigid-body contact",
+      "summary": "Two oriented boxes tested with the separating axis theorem and resolved with impulses, lever arms and capped corrections",
+      "behavior": "Contact between cars is a proper rigid-body problem rather than a bump. Each car is an oriented rectangle in plan view, and the solver tries the four candidate separating axes, each car's forward and lateral directions, to find the axis of least overlap; a vertical band and a bounding-sphere test reject the pairs that cannot touch, so a car flying over a kerb does not collide with one on the road. The contact point is placed midway across both the normal and the tangential overlap, the relative velocity there includes the rotational lever arm, and a normal impulse with a low restitution plus a tangential friction impulse resolves it, with the point of application also producing a yaw change, so a hit on the rear quarter turns the car rather than sliding it sideways. The per-call position correction is capped, which keeps a deep interpenetration from teleporting a car out of the gravel. The opponent field uses its own variant with an explicit car mass and yaw inertia and hard per-frame caps on the position, velocity and yaw-rate changes, because a light touch lasting tens of milliseconds must not spin a car at racing speed.",
+      "constants": [
+        {
+          "name": "collisionRestitution",
+          "value": 0.22,
+          "unit": "coefficient, per contact",
+          "source": "src/lib/sim/track-evolution.ts:344"
+        },
+        {
+          "name": "collisionFriction",
+          "value": 0.28,
+          "unit": "coefficient, per contact",
+          "source": "src/lib/sim/track-evolution.ts:345"
+        },
+        {
+          "name": "maxPositionCorrection",
+          "value": 0.25,
+          "unit": "metres per contact",
+          "source": "src/lib/sim/track-evolution.ts:321"
+        },
+        {
+          "name": "verticalContactBand",
+          "value": 1.4,
+          "unit": "metres, per contact",
+          "source": "src/lib/sim/track-evolution.ts:348"
+        },
+        {
+          "name": "contactMassKg",
+          "value": 778,
+          "unit": "kilograms, per contact",
+          "source": "src/lib/sim/ai-opponents.ts:232"
+        },
+        {
+          "name": "contactYawInertia",
+          "value": 1120,
+          "unit": "kilogram metres squared, per contact",
+          "source": "src/lib/sim/ai-opponents.ts:233"
+        },
+        {
+          "name": "contactMaxPositionChange",
+          "value": 0.25,
+          "unit": "metres per contact",
+          "source": "src/lib/sim/ai-opponents.ts:234"
+        },
+        {
+          "name": "contactMaxVelocityChange",
+          "value": 6,
+          "unit": "metres per second per contact",
+          "source": "src/lib/sim/ai-opponents.ts:235"
+        },
+        {
+          "name": "contactMaxYawChange",
+          "value": 0.25,
+          "unit": "radians per second per contact",
+          "source": "src/lib/sim/ai-opponents.ts:239"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 341
+        },
+        {
+          "path": "src/lib/sim/track-evolution.ts",
+          "line": 348
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 855
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 310
+        }
+      ],
+      "capabilities": [
+        "oriented-box separating axes",
+        "impulse with lever arms",
+        "capped corrections",
+        "yaw from a quarter hit"
+      ],
+      "tags": [
+        "collision",
+        "contact",
+        "multiplayer",
+        "physics"
+      ]
+    },
+    {
+      "id": "ai-target-speed",
+      "node": "ai-field",
+      "name": "Opponent target speed and skill",
+      "summary": "Each AI car plans its own braking points from its own limit profile, then errors and skill scale the result",
+      "behavior": "An AI car does not chase a single authored speed trace. It first reads its own capability out of its limit-speed profile by looking at every place the profile drops and working out the deceleration that drop implies, binning that by speed and making the result non-decreasing with speed so downforce and drag are accounted for, with a floor of about eight tenths of a g at the lowest speed bin. It then builds a target profile: corners and braking zones take an apex scale, crests get a lift proportional to the negative vertical curvature and to a caution setting, and two passes backwards around the lap clamp every point to what can be reached by braking at a margin-reduced share of that capability. Pace and consistency come from a skill level anchored at four points, which sets a pace multiplier, a braking-margin addition, an apex multiplier, the size of the per-lap gaussian pace error and of the per-corner braking-point error, and the chance per lap of a genuine mistake into one corner. A per-section learner records where a car ran wide, locked up or lost the line and feeds those offsets back into its own braking margins and apex speeds on later laps, so a driver that keeps making the same error at one corner slowly stops making it.",
+      "constants": [
+        {
+          "name": "decelarationEnvelopeFloor",
+          "value": 8,
+          "unit": "metres per second squared, per profile build",
+          "source": "src/lib/sim/ai-tuning.ts:436"
+        },
+        {
+          "name": "gravity",
+          "value": 9.81,
+          "unit": "metres per second squared, per profile point",
+          "source": "src/lib/sim/ai-tuning.ts:418"
+        },
+        {
+          "name": "brakingCurvatureThreshold",
+          "value": 0.004,
+          "unit": "inverse metres, per profile point",
+          "source": "src/lib/sim/ai-tuning.ts:473"
+        },
+        {
+          "name": "targetSpeedFloor",
+          "value": 6,
+          "unit": "metres per second, per profile point",
+          "source": "src/lib/sim/ai-tuning.ts:478"
+        },
+        {
+          "name": "backwardPassLaps",
+          "value": 2,
+          "unit": "passes around the lap, per profile build",
+          "source": "src/lib/sim/ai-tuning.ts:482"
+        },
+        {
+          "name": "defaultConsistency",
+          "value": 0.85,
+          "unit": "fraction, per lap",
+          "source": "src/lib/sim/ai-tuning.ts:78"
+        },
+        {
+          "name": "defaultOvertakeCaution",
+          "value": 0.3,
+          "unit": "fraction, per car",
+          "source": "src/lib/sim/ai-tuning.ts:75"
+        },
+        {
+          "name": "defaultDefend",
+          "value": 0.4,
+          "unit": "fraction, per car",
+          "source": "src/lib/sim/ai-tuning.ts:76"
+        },
+        {
+          "name": "paceRangeMin",
+          "value": 0.8,
+          "unit": "multiplier, per tuning file and per lap",
+          "source": "src/lib/sim/ai-tuning.ts:83"
+        },
+        {
+          "name": "paceRangeMax",
+          "value": 1.05,
+          "unit": "multiplier, per tuning file and per lap",
+          "source": "src/lib/sim/ai-tuning.ts:83"
+        },
+        {
+          "name": "defaultSkill",
+          "value": 70,
+          "unit": "zero to one hundred scale, per session",
+          "source": "src/lib/sim/ai-tuning.ts:210"
+        },
+        {
+          "name": "proLapPaceSigma",
+          "value": 0.012,
+          "unit": "fraction of pace, per lap",
+          "source": "src/lib/sim/ai-tuning.ts:241"
+        },
+        {
+          "name": "rookieMistakesPerLap",
+          "value": 0.3,
+          "unit": "mistakes per lap, per lap",
+          "source": "src/lib/sim/ai-tuning.ts:239"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ai-tuning.ts",
+          "line": 456
+        },
+        {
+          "path": "src/lib/sim/ai-tuning.ts",
+          "line": 424
+        },
+        {
+          "path": "src/lib/sim/ai-tuning.ts",
+          "line": 245
+        },
+        {
+          "path": "src/lib/sim/ai-tuning.ts",
+          "line": 482
+        },
+        {
+          "path": "src/lib/sim/ai-learning.ts",
+          "line": 107
+        }
+      ],
+      "capabilities": [
+        "per-car braking envelope",
+        "backward braking passes",
+        "skill anchors",
+        "section learning"
+      ],
+      "tags": [
+        "ai",
+        "opponents",
+        "pace",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "ai-traffic-racecraft",
+      "node": "ai-field",
+      "name": "Following, passing and defending",
+      "summary": "Reaction gaps, side-by-side spacing, an inside cover when defending, and a lookahead that keeps a pass inside the track",
+      "behavior": "Traffic is planned before any AI car is stepped. Each car looks for three neighbours: one alongside within about a car length, one ahead inside ninety metres and inside a car's width of its own lateral position, and one closing from behind. Beside another car it simply holds a fixed lateral spacing away from it, and if that pushes it past the edge and it is not clear of the other car it lifts instead. To pass, it first checks whether it is already inside a reaction gap that grows with closing speed and with its own speed; if there is room on the wider side it aims that far across, and if there is not it sits in the tow and caps its speed at the car ahead minus a margin that shrinks as the gap opens. Before committing it looks a braking distance ahead for tightening curvature and limits how far it will run off its line accordingly, and gives the place up if a real corner arrives with a car still alongside. Defending covers the inside of the upcoming corner with a distance scaled by the car's own defend setting, started on the throttle and abandoned once in the corner so it can rejoin its line. Lateral movement is rate-limited, and the further it sits off the ideal line the more pace it gives away, which makes a car that has been forced wide genuinely slower. A car that has been stopped or off the road for a few seconds is placed back on its own line at a sane speed rather than left to flounder.",
+      "constants": [
+        {
+          "name": "carLengthM",
+          "value": 5,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:73"
+        },
+        {
+          "name": "carWidthM",
+          "value": 1.95,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:74"
+        },
+        {
+          "name": "passSpacingM",
+          "value": 2.5,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:76"
+        },
+        {
+          "name": "lineBiasRate",
+          "value": 2.2,
+          "unit": "metres per second, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:78"
+        },
+        {
+          "name": "startLightInterval",
+          "value": 1,
+          "unit": "seconds, per start",
+          "source": "src/lib/sim/ai-opponents.ts:79"
+        },
+        {
+          "name": "baseCaution",
+          "value": 0.3,
+          "unit": "fraction, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:82"
+        },
+        {
+          "name": "mistakeApexScale",
+          "value": 1.06,
+          "unit": "multiplier, per lap",
+          "source": "src/lib/sim/ai-opponents.ts:84"
+        },
+        {
+          "name": "reactionGapBaseM",
+          "value": 8,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:776"
+        },
+        {
+          "name": "reactionGapClosingGain",
+          "value": 2.2,
+          "unit": "seconds, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:776"
+        },
+        {
+          "name": "followGapBaseM",
+          "value": 12,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:741"
+        },
+        {
+          "name": "followGapCautionGain",
+          "value": 10,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:741"
+        },
+        {
+          "name": "lookAheadBaseM",
+          "value": 30,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:795"
+        },
+        {
+          "name": "lookAheadSpeedDivisor",
+          "value": 60,
+          "unit": "metres per squared metre per second, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:795"
+        },
+        {
+          "name": "tightLineBiasCap",
+          "value": 1.2,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:803"
+        },
+        {
+          "name": "defendCoverM",
+          "value": 2.2,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:815"
+        },
+        {
+          "name": "stuckRecoveryS",
+          "value": 4,
+          "unit": "seconds, per frame",
+          "source": "src/lib/sim/ai-opponents.ts:917"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 724
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 650
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 776
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 803
+        },
+        {
+          "path": "src/lib/sim/ai-opponents.ts",
+          "line": 737
+        }
+      ],
+      "capabilities": [
+        "traffic detection",
+        "overtake with fallback to the tow",
+        "defensive inside cover",
+        "stuck car recovery"
+      ],
+      "tags": [
+        "ai",
+        "racecraft",
+        "traffic",
+        "overtaking"
+      ]
+    },
+    {
+      "id": "cockpit-shake-and-camera",
+      "node": "driver-input",
+      "name": "Cockpit shake and trackside cameras",
+      "summary": "Suspension velocity is high-passed into a small pitch, roll and heave shake, and an automatic director cuts between trackside dollies",
+      "behavior": "The cockpit view is not rigid. Each corner's suspension travel is differentiated to a velocity, high-passed to strip the steady attitude, and integrated with a slow leak so the estimate cannot drift, which leaves the fast part of what the wheels are doing. The four corners are combined into a front-to-rear difference for pitch, a left-to-right difference for roll and a mean for heave, scaled by the car's wheelbase and track, and those targets drive three spring-dampers that are integrated in two substeps and then clamped, with the velocity zeroed at the limit so they cannot wind up. Riding a kerb adds a one-off kick to roll, pitch and heave scaled by speed, plus a little noise for as long as the kerb is under a wheel, which is the part that makes the cockpit feel like it is being shaken rather than nudged. Separately, an automatic broadcast director places a fixed number of camera stations around the lap, on the outside of corners, each owning a short curved dolly track parallel to the road; the active station is the nearest by track distance with hysteresis so it does not flip back and forth, the look-at point is critically damped and leads the car, and the field of view is adjusted to keep the car a roughly constant size on screen and tightens a few degrees when the car is on a kerb.",
+      "constants": [
+        {
+          "name": "shakeHighPassHz",
+          "value": 2,
+          "unit": "hertz, per frame",
+          "source": "src/lib/render/camera-rig.ts:13"
+        },
+        {
+          "name": "shakeLeakSeconds",
+          "value": 0.5,
+          "unit": "seconds, per frame",
+          "source": "src/lib/render/camera-rig.ts:16"
+        },
+        {
+          "name": "wheelbaseReferenceMm",
+          "value": 3400,
+          "unit": "millimetres, per frame",
+          "source": "src/lib/render/camera-rig.ts:18"
+        },
+        {
+          "name": "trackWidthReferenceMm",
+          "value": 1460,
+          "unit": "millimetres, per frame",
+          "source": "src/lib/render/camera-rig.ts:19"
+        },
+        {
+          "name": "pitchGain",
+          "value": 1.5,
+          "unit": "radians per millimetre of axle difference, per frame",
+          "source": "src/lib/render/camera-rig.ts:20"
+        },
+        {
+          "name": "rollGain",
+          "value": 1.5,
+          "unit": "radians per millimetre of axle difference, per frame",
+          "source": "src/lib/render/camera-rig.ts:21"
+        },
+        {
+          "name": "shakeFrequencyHz",
+          "value": 9,
+          "unit": "hertz, per frame",
+          "source": "src/lib/render/camera-rig.ts:24"
+        },
+        {
+          "name": "shakeDampingRatio",
+          "value": 0.35,
+          "unit": "dimensionless, per frame",
+          "source": "src/lib/render/camera-rig.ts:25"
+        },
+        {
+          "name": "pitchRollLimitDeg",
+          "value": 0.6,
+          "unit": "degrees, per frame",
+          "source": "src/lib/render/camera-rig.ts:27"
+        },
+        {
+          "name": "heaveLimitM",
+          "value": 0.004,
+          "unit": "metres, per frame",
+          "source": "src/lib/render/camera-rig.ts:29"
+        },
+        {
+          "name": "kerbRollKick",
+          "value": 0.25,
+          "unit": "radians per second, per kerb strike",
+          "source": "src/lib/render/camera-rig.ts:32"
+        },
+        {
+          "name": "kerbNoise",
+          "value": 4,
+          "unit": "radians per second squared, per frame",
+          "source": "src/lib/render/camera-rig.ts:36"
+        },
+        {
+          "name": "cameraStationSpacingM",
+          "value": 280,
+          "unit": "metres, per circuit",
+          "source": "src/lib/render/camera-rig.ts:203"
+        },
+        {
+          "name": "cameraOffsetM",
+          "value": 32,
+          "unit": "metres from the centreline, per station",
+          "source": "src/lib/render/camera-rig.ts:211"
+        },
+        {
+          "name": "cameraSwitchHysteresisM",
+          "value": 40,
+          "unit": "metres, per switch",
+          "source": "src/lib/render/camera-rig.ts:219"
+        },
+        {
+          "name": "cameraFovMinDeg",
+          "value": 18,
+          "unit": "degrees, per frame",
+          "source": "src/lib/render/camera-rig.ts:222"
+        },
+        {
+          "name": "cameraFovMaxDeg",
+          "value": 24,
+          "unit": "degrees, per frame",
+          "source": "src/lib/render/camera-rig.ts:223"
+        },
+        {
+          "name": "kerbFovTightenDeg",
+          "value": 3,
+          "unit": "degrees, per frame",
+          "source": "src/lib/render/camera-rig.ts:225"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/render/camera-rig.ts",
+          "line": 70
+        },
+        {
+          "path": "src/lib/render/camera-rig.ts",
+          "line": 262
+        },
+        {
+          "path": "src/lib/render/camera-rig.ts",
+          "line": 106
+        },
+        {
+          "path": "src/lib/render/camera-rig.ts",
+          "line": 296
+        }
+      ],
+      "capabilities": [
+        "high-passed suspension shake",
+        "spring-damper cockpit motion",
+        "kerb strike kicks",
+        "automatic trackside director"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "feedback",
+        "broadcast"
+      ]
+    },
+    {
+      "id": "wheel-force-feedback",
+      "node": "driver-input",
+      "name": "Steering weight and force feedback",
+      "summary": "The front axle's real steering torque, normalised, shaped, and delivered to a wheel through a native bridge or straight over browser HID",
+      "behavior": "What the driver feels at the rim is computed by the physics, not authored. For each front wheel the self-aligning moment is combined with the lateral force acting through the caster trail, a small share of the longitudinal force acting through the scrub radius and a share of the overturning moment, and the total is normalised by a reference torque and clamped, so a big moment at the contact patch becomes a definite but bounded weight at the rim. Flat-spot harmonics and road-texture noise ride on top. Because the browser cannot speak DirectInput, the shipped path streams one packet per frame over a local websocket to a small helper on the machine, which owns the wheel's constant-force effect, upsamples it, synthesises the kerb and antilock vibrations, rate-limits and fades to zero if the packets stop. A shaping stage applies the player's gain, adds a minimum force with a smoothstep blend near the centre so the rim does not notch, and gates that minimum force off at very low speed so a direct-drive wheel does not oscillate at rest. Past the car's own steering lock a soft-lock spring builds over a few degrees, standing in for the end stop a real rack has. An experimental path writes the standard HID force-feedback reports from the browser itself, discovering the report layout from the device rather than hard-coding vendors.",
+      "constants": [
+        {
+          "name": "ffbReferenceTorqueNm",
+          "value": 600,
+          "unit": "newton metres, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:139"
+        },
+        {
+          "name": "defaultMechanicalTrailM",
+          "value": 0.012,
+          "unit": "metres, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:145"
+        },
+        {
+          "name": "steerComplianceTimeConstant",
+          "value": 0.015,
+          "unit": "seconds, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:147"
+        },
+        {
+          "name": "scrubRadiusFeedbackWeight",
+          "value": 0.15,
+          "unit": "dimensionless, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1753"
+        },
+        {
+          "name": "overturningFeedbackWeight",
+          "value": 0.08,
+          "unit": "dimensionless, per substep",
+          "source": "src/lib/sim/f12026-car/VehiclePhysics.ts:1754"
+        },
+        {
+          "name": "softLockRampDeg",
+          "value": 12,
+          "unit": "degrees past lock, per frame",
+          "source": "src/lib/input/wheel-ffb.ts:19"
+        },
+        {
+          "name": "minimumForceEase",
+          "value": 0.02,
+          "unit": "fraction of full force, per frame",
+          "source": "src/lib/input/wheel-ffb.ts:21"
+        },
+        {
+          "name": "bridgePort",
+          "value": 18500,
+          "unit": "port number, per connection",
+          "source": "src/lib/input/wheel-ffb.ts:15"
+        },
+        {
+          "name": "hidWriteIntervalMs",
+          "value": 2,
+          "unit": "milliseconds, per report",
+          "source": "src/lib/input/webhid-ffb.ts:134"
+        },
+        {
+          "name": "hidDirectionXFraction",
+          "value": 0.25,
+          "unit": "fraction of the direction range, per report",
+          "source": "src/lib/input/webhid-ffb.ts:138"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1770
+        },
+        {
+          "path": "src/lib/input/wheel-ffb.ts",
+          "line": 39
+        },
+        {
+          "path": "src/lib/input/wheel-ffb.ts",
+          "line": 55
+        },
+        {
+          "path": "src/lib/sim/f12026-car/VehiclePhysics.ts",
+          "line": 1585
+        }
+      ],
+      "capabilities": [
+        "contact-patch steering torque",
+        "rim force shaping",
+        "soft lock",
+        "websocket bridge and browser HID"
+      ],
+      "tags": [
+        "force feedback",
+        "input",
+        "feel",
+        "hardware"
+      ]
+    },
+    {
+      "id": "gamepad-steering-assist",
+      "node": "driver-input",
+      "name": "Pad steering assist",
+      "summary": "A stick maps to a steering limit set by the front tyres' peak slip angle, with a self-aligning force that catches slides",
+      "behavior": "A thumbstick has a couple of centimetres of travel and no feedback, so mapping it straight to the rack makes a high-downforce car undrivable: a small twitch is several degrees of road-wheel angle at speed. Instead the stick, after a dead zone and a rate-limited smoothing, scales to a steering limit rather than to full lock, and that limit is set so the front tyres sit just under their peak slip angle relative to the front axle's actual direction of travel, which means full stick is maximum front grip at any speed. A self-steer term turns the wheels toward the rear axle's direction of travel with yaw damping, applied in full with the stick centred and fading out as the driver steers, which is what catches a slide. When the driver countersteers, the limit switches to the rear axle's travel angle plus a margin, so a full-lock correction is a sensible one rather than opposite lock, and a yaw-rate guard shrinks the limit when the car is already rotating faster than its grip can support. Because none of this acts at very low speed, the whole assist fades in between a couple of wheelbases of front-axle speed and out again for a car travelling sideways or backwards.",
+      "constants": [
+        {
+          "name": "assistDeadzone",
+          "value": 0.05,
+          "unit": "fraction of stick travel, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:63"
+        },
+        {
+          "name": "stickSmoothingRate",
+          "value": 0.5,
+          "unit": "rate multiplier, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:64"
+        },
+        {
+          "name": "targetPeakSlipShare",
+          "value": 0.95,
+          "unit": "fraction of the peak slip angle, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:65"
+        },
+        {
+          "name": "selfSteerResponse",
+          "value": 0.37,
+          "unit": "dimensionless, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:66"
+        },
+        {
+          "name": "yawDampingStrength",
+          "value": 0.37,
+          "unit": "dimensionless, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:67"
+        },
+        {
+          "name": "countersteerResponse",
+          "value": 0.2,
+          "unit": "fraction, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:68"
+        },
+        {
+          "name": "maxDynamicLimitReduction",
+          "value": 5,
+          "unit": "zero to ten scale, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:69"
+        },
+        {
+          "name": "countersteerDeadbandDeg",
+          "value": 4.5,
+          "unit": "degrees, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:199"
+        },
+        {
+          "name": "yawGuardGain",
+          "value": 1.1,
+          "unit": "multiplier on the grip-limited yaw rate, per frame",
+          "source": "src/lib/sim/gamepad-assist.ts:208"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/gamepad-assist.ts",
+          "line": 152
+        },
+        {
+          "path": "src/lib/sim/gamepad-assist.ts",
+          "line": 130
+        },
+        {
+          "path": "src/lib/sim/gamepad-assist.ts",
+          "line": 185
+        },
+        {
+          "path": "src/lib/sim/gamepad-assist.ts",
+          "line": 208
+        }
+      ],
+      "capabilities": [
+        "peak-slip steering limit",
+        "self-aligning force",
+        "countersteer limit",
+        "yaw-rate guard"
+      ],
+      "tags": [
+        "input",
+        "assists",
+        "handling",
+        "gamepad"
+      ]
+    },
+    {
+      "id": "race-timing",
+      "node": "race-control",
+      "name": "Lap clock, gaps and classification",
+      "summary": "Distance-bucket gap timing, a wrap-safe lap clock and a classification that handles penalties and lapped cars",
+      "behavior": "Race distance is the currency. Each car's progress is integrated from its track position with a wrapped difference, so crossing the line is a small step rather than a jump off a cliff, and a car starting behind the line simply has a negative distance until it crosses. Laps come from the whole part of that distance, and a lap is only recorded if it took more than a second, which filters out a reset or a teleport. Gaps are not measured car to car: the race time at which the first car reached each bucket of distance is remembered, and a car's gap is the current race time minus that remembered time, corrected for how far into the bucket the car has itself travelled, which is the interval since the leader was where this car is now; it stays correct even when the order changes. The classification sorts finishers by their time with penalties added and everyone else by distance, counts laps down from the leader's distance for cars still running, and closes some time after the winner in case a straggler never arrives. The start procedure runs on the same clock, one light at a time with a random hold after the last, so every client in a networked race shows the same lights and has the same instant of release.",
+      "constants": [
+        {
+          "name": "gapBucketM",
+          "value": 25,
+          "unit": "metres, per frame",
+          "source": "src/lib/sim/race-session.ts:10"
+        },
+        {
+          "name": "startLightIntervalMs",
+          "value": 1000,
+          "unit": "milliseconds, per start",
+          "source": "src/lib/sim/race-session.ts:11"
+        },
+        {
+          "name": "classificationCloseS",
+          "value": 90,
+          "unit": "seconds after the winner, per race",
+          "source": "src/lib/sim/race-session.ts:13"
+        },
+        {
+          "name": "minimumLapMs",
+          "value": 1000,
+          "unit": "milliseconds, per lap",
+          "source": "src/lib/sim/race-session.ts:267"
+        },
+        {
+          "name": "splitTrendS",
+          "value": 4,
+          "unit": "seconds of history, per split",
+          "source": "src/lib/sim/race-session.ts:185"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/race-session.ts",
+          "line": 259
+        },
+        {
+          "path": "src/lib/sim/race-session.ts",
+          "line": 198
+        },
+        {
+          "path": "src/lib/sim/race-session.ts",
+          "line": 45
+        },
+        {
+          "path": "src/lib/sim/race-session.ts",
+          "line": 235
+        }
+      ],
+      "capabilities": [
+        "wrap-safe lap counting",
+        "bucket gap timing",
+        "classification with penalties",
+        "synchronised start lights"
+      ],
+      "tags": [
+        "race",
+        "timing",
+        "classification",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "track-limits",
+      "node": "race-control",
+      "name": "Track limits and penalties",
+      "summary": "Excursions are judged after the car rejoins, with a give-back window, and repeat strikes become time penalties",
+      "behavior": "The referee does not invalidate a lap the instant a wheel crosses a line. An excursion is timed while it is happening and only judged once the car is back on the asphalt and has settled, so a kerb bounce is not a violation. A touch shorter than a fraction of a second is ignored outright. Cutting the inside of a corner is treated as a strike unless the time is given back, because there is no honest reason to be there; running wide is only a strike if the car actually gained time over its best lap, or, before there is a best lap to compare against, if the driver neither lifted nor braked. A strike can be cancelled by handing the advantage back inside a short window, either by losing the time gained or by lifting and coasting for long enough, with the owed lift proportional to the time spent off the track and clamped at both ends. Gaining a position off the track gets its own longer window to give it back. In practice a strike deletes the lap in practice or qualifying; in a race each strike is a warning and every third one is a time penalty that grows after the first.",
+      "constants": [
+        {
+          "name": "minimumExcursionS",
+          "value": 0.12,
+          "unit": "seconds, per excursion",
+          "source": "src/lib/sim/track-limits.ts:18"
+        },
+        {
+          "name": "rejoinDebounceS",
+          "value": 0.15,
+          "unit": "seconds, per excursion",
+          "source": "src/lib/sim/track-limits.ts:20"
+        },
+        {
+          "name": "settleS",
+          "value": 1,
+          "unit": "seconds after the rejoin, per excursion",
+          "source": "src/lib/sim/track-limits.ts:22"
+        },
+        {
+          "name": "gainThresholdS",
+          "value": 0.1,
+          "unit": "seconds over the reference lap, per excursion",
+          "source": "src/lib/sim/track-limits.ts:24"
+        },
+        {
+          "name": "cutGainThresholdS",
+          "value": 0.03,
+          "unit": "seconds over the reference lap, per excursion",
+          "source": "src/lib/sim/track-limits.ts:26"
+        },
+        {
+          "name": "giveBackWindowS",
+          "value": 6,
+          "unit": "seconds, per excursion",
+          "source": "src/lib/sim/track-limits.ts:28"
+        },
+        {
+          "name": "illegalOvertakeWindowS",
+          "value": 10,
+          "unit": "seconds, per excursion",
+          "source": "src/lib/sim/track-limits.ts:30"
+        },
+        {
+          "name": "noLiftThrottle",
+          "value": 0.6,
+          "unit": "throttle fraction, per judging step",
+          "source": "src/lib/sim/track-limits.ts:32"
+        },
+        {
+          "name": "liftPerSecondOffTrack",
+          "value": 1,
+          "unit": "seconds of lift per second off, per excursion",
+          "source": "src/lib/sim/track-limits.ts:37"
+        },
+        {
+          "name": "strikesPerPenalty",
+          "value": 3,
+          "unit": "strikes, per race",
+          "source": "src/lib/sim/track-limits.ts:45"
+        },
+        {
+          "name": "firstPenaltyS",
+          "value": 3,
+          "unit": "seconds, per race",
+          "source": "src/lib/sim/track-limits.ts:46"
+        },
+        {
+          "name": "repeatPenaltyS",
+          "value": 5,
+          "unit": "seconds, per race",
+          "source": "src/lib/sim/track-limits.ts:47"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/lib/sim/track-limits.ts",
+          "line": 104
+        },
+        {
+          "path": "src/lib/sim/track-limits.ts",
+          "line": 153
+        },
+        {
+          "path": "src/lib/sim/track-limits.ts",
+          "line": 45
+        },
+        {
+          "path": "src/lib/sim/track-limits.ts",
+          "line": 18
+        }
+      ],
+      "capabilities": [
+        "judged-on-rejoin excursions",
+        "time-gained detection",
+        "give-back window",
+        "escalating penalties"
+      ],
+      "tags": [
+        "race control",
+        "rules",
+        "penalties",
+        "fairness"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1565 @@
+{
+  "version": 1,
+  "id": "richard-burns-rally",
+  "title": "Richard Burns Rally",
+  "repo": "https://github.com/JodusNodus/rerbr",
+  "sha": "6ebd7b820291873226ccca746e42a1b7cd2003da",
+  "nodes": [
+    {
+      "id": "frame-clock",
+      "name": "Frame clock and substep pacing",
+      "purpose": "Turns each frame's wall time into whole physics substeps, clamps an overlong frame, keeps the leftover time and settles the car at load",
+      "paths": [
+        "crates/rbr-gameplay/src/tick.rs",
+        "crates/rbr-gameplay/src/game.rs",
+        "crates/rbr-recording/src/lib.rs",
+        "crates/rbr-physics/src/physics_core/step.rs"
+      ],
+      "functions": [
+        {
+          "name": "step_interval",
+          "path": "crates/rbr-gameplay/src/tick.rs",
+          "lines": [
+            20,
+            26
+          ]
+        },
+        {
+          "name": "frame",
+          "path": "crates/rbr-gameplay/src/tick.rs",
+          "lines": [
+            54,
+            60
+          ]
+        },
+        {
+          "name": "frame",
+          "path": "crates/rbr-gameplay/src/game.rs",
+          "lines": [
+            350,
+            616
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "physics-step",
+      "name": "Physics step dispatch",
+      "purpose": "Orders force input, acceleration and integration over every body, runs the contact and solver passes and advances the physics clock once per substep",
+      "paths": [
+        "crates/rbr-physics/src/physics_core/step.rs",
+        "crates/rbr-physics/src/physics_core/pacing.rs"
+      ],
+      "functions": [
+        {
+          "name": "step_forward",
+          "path": "crates/rbr-physics/src/physics_core/step.rs",
+          "lines": [
+            50,
+            173
+          ]
+        },
+        {
+          "name": "step_bodies",
+          "path": "crates/rbr-physics/src/physics_core/step.rs",
+          "lines": [
+            28,
+            35
+          ]
+        },
+        {
+          "name": "advance_time",
+          "path": "crates/rbr-physics/src/physics_core/pacing.rs",
+          "lines": [
+            16,
+            21
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-clock"
+      ]
+    },
+    {
+      "id": "suspension",
+      "name": "Spring-damper struts",
+      "purpose": "Per-wheel spring, helper spring, bump and droop stops, damper fade and the high-speed damping that takes over at break speeds",
+      "paths": [
+        "crates/rbr-physics/src/spring_damper/mod.rs",
+        "crates/rbr-physics/src/spring_damper/suspension.rs",
+        "crates/rbr-physics/src/ngp/spring.rs",
+        "crates/rbr-physics/src/wheel/strut.rs"
+      ],
+      "functions": [
+        {
+          "name": "step",
+          "path": "crates/rbr-physics/src/spring_damper/mod.rs",
+          "lines": [
+            462,
+            559
+          ]
+        },
+        {
+          "name": "update_forces",
+          "path": "crates/rbr-physics/src/spring_damper/mod.rs",
+          "lines": [
+            444,
+            450
+          ]
+        },
+        {
+          "name": "bump_stop",
+          "path": "crates/rbr-physics/src/ngp/spring.rs",
+          "lines": [
+            43,
+            71
+          ]
+        },
+        {
+          "name": "latch",
+          "path": "crates/rbr-physics/src/ngp/spring.rs",
+          "lines": [
+            96,
+            104
+          ]
+        },
+        {
+          "name": "rest_travel",
+          "path": "crates/rbr-physics/src/wheel/strut.rs",
+          "lines": [
+            11,
+            13
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-step"
+      ]
+    },
+    {
+      "id": "tyre",
+      "name": "Tyre contact, friction and heat",
+      "purpose": "The contact patch on the road, the slip curve that turns slip into friction, the low-speed hold, the ploughing of loose ground and the heat and wear the tyre takes",
+      "paths": [
+        "crates/rbr-physics/src/tyre/friction_curve.rs",
+        "crates/rbr-physics/src/tyre/grip.rs",
+        "crates/rbr-physics/src/tyre/contact_patch.rs",
+        "crates/rbr-physics/src/tyre/heat.rs",
+        "crates/rbr-physics/src/tyre/hold.rs",
+        "crates/rbr-physics/src/tyre/soil.rs"
+      ],
+      "functions": [
+        {
+          "name": "friction_curve",
+          "path": "crates/rbr-physics/src/tyre/friction_curve.rs",
+          "lines": [
+            84,
+            121
+          ]
+        },
+        {
+          "name": "limit_to_friction_circle",
+          "path": "crates/rbr-physics/src/tyre/grip.rs",
+          "lines": [
+            74,
+            99
+          ]
+        },
+        {
+          "name": "contact_patch",
+          "path": "crates/rbr-physics/src/tyre/contact_patch.rs",
+          "lines": [
+            27,
+            161
+          ]
+        },
+        {
+          "name": "heat_step",
+          "path": "crates/rbr-physics/src/tyre/heat.rs",
+          "lines": [
+            92,
+            186
+          ]
+        },
+        {
+          "name": "hold",
+          "path": "crates/rbr-physics/src/tyre/hold.rs",
+          "lines": [
+            57,
+            136
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-step",
+        "suspension"
+      ]
+    },
+    {
+      "id": "stage-world",
+      "name": "Stage collision world and surface maps",
+      "purpose": "Builds the stage's physics world from its collision and material files: the triangle meshes in a cell grid, the material maps chosen by tyre wear and wetness, and the brake wall",
+      "paths": [
+        "crates/rbr-physics/src/stage/mod.rs",
+        "crates/rbr-physics/src/physics_core/detect.rs",
+        "crates/rbr-physics/src/collision/mesh_hit.rs",
+        "crates/rbr-physics/src/collision/mesh_grid.rs"
+      ],
+      "functions": [
+        {
+          "name": "select_maps",
+          "path": "crates/rbr-physics/src/stage/mod.rs",
+          "lines": [
+            117,
+            137
+          ]
+        },
+        {
+          "name": "col_root",
+          "path": "crates/rbr-physics/src/stage/mod.rs",
+          "lines": [
+            56,
+            66
+          ]
+        },
+        {
+          "name": "channel_sum",
+          "path": "crates/rbr-physics/src/collision/mesh_hit.rs",
+          "lines": [
+            30,
+            33
+          ]
+        },
+        {
+          "name": "grid_bounds",
+          "path": "crates/rbr-physics/src/physics_core/detect.rs",
+          "lines": [
+            85,
+            90
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-step"
+      ]
+    },
+    {
+      "id": "car-body",
+      "name": "Car body, impacts and brake walls",
+      "purpose": "The car's own body: the damage handler that records impact damage zone by zone, the drivability gate and the friction a car takes while it is pressed into a brake wall",
+      "paths": [
+        "crates/rbr-physics/src/car_body/damage.rs",
+        "crates/rbr-physics/src/car_body/wall_friction.rs",
+        "crates/rbr-physics/src/car_body/forces.rs"
+      ],
+      "functions": [
+        {
+          "name": "impact_scale",
+          "path": "crates/rbr-physics/src/car_body/damage.rs",
+          "lines": [
+            145,
+            147
+          ]
+        },
+        {
+          "name": "set_level",
+          "path": "crates/rbr-physics/src/car_body/damage.rs",
+          "lines": [
+            13,
+            23
+          ]
+        },
+        {
+          "name": "wall_friction",
+          "path": "crates/rbr-physics/src/car_body/wall_friction.rs",
+          "lines": [
+            60,
+            99
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-step",
+        "stage-world"
+      ]
+    },
+    {
+      "id": "driveline",
+      "name": "Engine, clutch and gearbox logic",
+      "purpose": "The gearbox's own decisions: launch and rpm shift requests, the shift lockout, the downshift slip gate and the differential locks the drive is given",
+      "paths": [
+        "crates/rbr-physics/src/vcu/gear.rs",
+        "crates/rbr-physics/src/vcu/slip.rs",
+        "crates/rbr-physics/src/vcu/locks.rs",
+        "crates/rbr-physics/src/engine_driveline/drive_step.rs"
+      ],
+      "functions": [
+        {
+          "name": "update",
+          "path": "crates/rbr-physics/src/vcu/gear.rs",
+          "lines": [
+            35,
+            75
+          ]
+        },
+        {
+          "name": "query_slip",
+          "path": "crates/rbr-physics/src/vcu/slip.rs",
+          "lines": [
+            15,
+            39
+          ]
+        },
+        {
+          "name": "diff_locks",
+          "path": "crates/rbr-physics/src/vcu/locks.rs",
+          "lines": [
+            31,
+            44
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-step"
+      ]
+    },
+    {
+      "id": "controls",
+      "name": "Driver input payload and force feedback",
+      "purpose": "Quantises the filtered pedals and steering into the fixed control payload the physics reads, maps the shift and ignition actions, and turns the steering force into a force feedback magnitude",
+      "paths": [
+        "crates/rbr-gameplay/src/control.rs",
+        "crates/rbr-gameplay/src/ffb.rs",
+        "crates/rbr-gameplay/src/filter.rs"
+      ],
+      "functions": [
+        {
+          "name": "pack",
+          "path": "crates/rbr-gameplay/src/control.rs",
+          "lines": [
+            133,
+            148
+          ]
+        },
+        {
+          "name": "ngp_direct_gears",
+          "path": "crates/rbr-gameplay/src/control.rs",
+          "lines": [
+            200,
+            213
+          ]
+        },
+        {
+          "name": "magnitude",
+          "path": "crates/rbr-gameplay/src/ffb.rs",
+          "lines": [
+            41,
+            51
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-clock"
+      ]
+    },
+    {
+      "id": "pace-notes",
+      "name": "Marker ticker and pace notes",
+      "purpose": "Advances the stage's marker keys against the car's distance, fires start, split and finish events and calls pace notes out ahead of the car",
+      "paths": [
+        "crates/rbr-gameplay/src/markers.rs",
+        "crates/rbr-formats/src/markers.rs"
+      ],
+      "functions": [
+        {
+          "name": "tick",
+          "path": "crates/rbr-gameplay/src/markers.rs",
+          "lines": [
+            288,
+            359
+          ]
+        },
+        {
+          "name": "pace_stack",
+          "path": "crates/rbr-gameplay/src/markers.rs",
+          "lines": [
+            373,
+            381
+          ]
+        },
+        {
+          "name": "spoken_tag",
+          "path": "crates/rbr-gameplay/src/markers.rs",
+          "lines": [
+            363,
+            365
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-clock"
+      ]
+    },
+    {
+      "id": "stage-timing",
+      "name": "Stage time card and race clock",
+      "purpose": "Finds the start, marks splits and the finish against the car's distance and elapsed time, keeps the stage clock and the countdown, and reports a still or moving start",
+      "paths": [
+        "crates/rbr-gameplay/src/timing.rs",
+        "crates/rbr-gameplay/src/race_clock.rs"
+      ],
+      "functions": [
+        {
+          "name": "record",
+          "path": "crates/rbr-gameplay/src/timing.rs",
+          "lines": [
+            269,
+            273
+          ]
+        },
+        {
+          "name": "update",
+          "path": "crates/rbr-gameplay/src/timing.rs",
+          "lines": [
+            277,
+            290
+          ]
+        },
+        {
+          "name": "tick",
+          "path": "crates/rbr-gameplay/src/race_clock.rs",
+          "lines": [
+            216,
+            279
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-clock",
+        "pace-notes"
+      ]
+    },
+    {
+      "id": "weather",
+      "name": "Weather, season and conditions",
+      "purpose": "Reads the season's per-stage weather rows, picks the track letter, cloud, rain preset, wetness and tyre wear, sets the time of day and selects the wet collision meshes and the tyre kind",
+      "paths": [
+        "crates/rbr-gameplay/src/weather.rs",
+        "crates/rbr-formats/src/rsf/mod.rs"
+      ],
+      "functions": [
+        {
+          "name": "start_clock",
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "lines": [
+            402,
+            410
+          ]
+        },
+        {
+          "name": "wet_meshes",
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "lines": [
+            340,
+            342
+          ]
+        },
+        {
+          "name": "tyre_kind",
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "lines": [
+            304,
+            311
+          ]
+        }
+      ],
+      "dependsOn": [
+        "stage-timing"
+      ]
+    },
+    {
+      "id": "service-damage",
+      "name": "Carried damage and the service park",
+      "purpose": "Reads the damage the car carries back from a stage as a level per part, repairs parts on order, and runs the service budget, the repair clock and the late penalty",
+      "paths": [
+        "crates/rbr-gameplay/src/car_damage.rs",
+        "crates/rbr-gameplay/src/service/mod.rs",
+        "crates/rbr-gameplay/src/service/tree.rs"
+      ],
+      "functions": [
+        {
+          "name": "severity",
+          "path": "crates/rbr-gameplay/src/car_damage.rs",
+          "lines": [
+            288,
+            360
+          ]
+        },
+        {
+          "name": "repair",
+          "path": "crates/rbr-gameplay/src/car_damage.rs",
+          "lines": [
+            410,
+            482
+          ]
+        },
+        {
+          "name": "late_penalty",
+          "path": "crates/rbr-gameplay/src/service/mod.rs",
+          "lines": [
+            129,
+            137
+          ]
+        },
+        {
+          "name": "tick",
+          "path": "crates/rbr-gameplay/src/service/mod.rs",
+          "lines": [
+            473,
+            500
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-body"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Driving cameras",
+      "purpose": "Places the chase and bonnet eyes on the car, lags and pushes them out of the stage's geometry, and builds the start orbit and the field of view",
+      "paths": [
+        "crates/rbr-render/src/game_camera.rs",
+        "crates/rbr-render/src/coords.rs",
+        "crates/rbr-render/src/camera.rs"
+      ],
+      "functions": [
+        {
+          "name": "fov",
+          "path": "crates/rbr-render/src/game_camera.rs",
+          "lines": [
+            186,
+            188
+          ]
+        },
+        {
+          "name": "bonnet_lift",
+          "path": "crates/rbr-render/src/game_camera.rs",
+          "lines": [
+            192,
+            198
+          ]
+        },
+        {
+          "name": "orbit_reach",
+          "path": "crates/rbr-render/src/game_camera.rs",
+          "lines": [
+            203,
+            217
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-substep-clock",
+      "node": "frame-clock",
+      "name": "Fixed substep clock",
+      "summary": "Wall time is cut into identical physics substeps so that handling, timing and suspension all advance by the same 7 ms slice.",
+      "behavior": "Each frame the loop measures the time since the previous frame, caps a long gap at a tenth of a second and drops the excess, then takes as many whole physics substeps as fit and carries the remainder into the next frame. In the retail game a substep is seven milliseconds; the recording layer keeps that value as the canonical step for every recorded drive, while a live player's steps under the community physics build run at a finer rate. Before the first frame the car is settled with four calls of forty substeps, which is why recorded drives open with a burst of identical frames. The contact and solver passes are not run on every substep: the retail build ran them on every fourth count, and the community physics build patches that to four of every thirty-two with a collision window of twenty substeps in place of the retail four. The frame split, the settle burst and the step dispatch are reversed from the retail executable's own loop and its physics entry point, not rewritten; the Rust side reproduces the original's operation order so a drive can be replayed bit for bit.",
+      "constants": [
+        {
+          "name": "Longest wall time a frame may count",
+          "value": 0.1,
+          "unit": "seconds of wall time per frame; the cap applied before whole 7 ms physics substeps are taken",
+          "source": "crates/rbr-gameplay/src/tick.rs:11"
+        },
+        {
+          "name": "Physics substep length",
+          "value": 0.007,
+          "unit": "seconds per physics substep (7 ms); one substep is one integration step for every body",
+          "source": "crates/rbr-recording/src/lib.rs:55"
+        },
+        {
+          "name": "Load settle substeps",
+          "value": 40,
+          "unit": "substeps per load-settle call; four such calls run before the first frame, at 7 ms per substep",
+          "source": "crates/rbr-gameplay/src/tick.rs:16"
+        },
+        {
+          "name": "Collision window",
+          "value": 20,
+          "unit": "physics substeps covered by one collision window, evaluated once per 7 ms substep",
+          "source": "crates/rbr-physics/src/physics_core/step.rs:11"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/tick.rs",
+          "line": 54
+        },
+        {
+          "path": "crates/rbr-recording/src/lib.rs",
+          "line": 55
+        },
+        {
+          "path": "crates/rbr-physics/src/physics_core/step.rs",
+          "line": 50
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "frame pacing",
+        "load settle"
+      ],
+      "tags": [
+        "physics",
+        "timing",
+        "engine"
+      ]
+    },
+    {
+      "id": "strut-travel-and-bump-rubber",
+      "node": "suspension",
+      "name": "Strut travel and bump rubber",
+      "summary": "An independent suspension corner is a spring with helper, two stops and a rubber that engages near full compression and softens the corner for that calculation alone.",
+      "behavior": "Travel is measured between a bump stop position and a droop stop position. The height at rest is a weighted blend of the two stop positions, seven tenths from the droop side and a third from the bump side, so the strut sits close to the middle of its travel when the car is loaded. When the corner compresses into the last five centimetres before the bump stop, less whatever gap the wheel's settings subtract, a rubber stop engages: its engagement ratio is the depth over the gap when the progressive option is on and full engagement otherwise, its stiffness is scaled by that ratio and its damping by the ratio's square root, so a grazing hit on a crest is much softer than a full compression. Compression divides that damping further by an integer divisor, and a positive rebound ratio multiplies it, which is how a corner can be made stiff in one direction only. The rubber's values replace the spring and damper definition for one calculation, and the original definition is restored afterwards. The whole strut, its rubber and its rest travel are ports of the retail executable's suspension code with the community physics build's changes layered on; the customer of the port is the memory image, so the arithmetic is reversed rather than rewritten.",
+      "constants": [
+        {
+          "name": "Rubber engagement gap",
+          "value": 0.05,
+          "unit": "metres of strut travel before the bump stop, over which the rubber ramps in; read once per strut step at the 7 ms physics substep",
+          "source": "crates/rbr-physics/src/ngp/spring.rs:54"
+        },
+        {
+          "name": "Compression damping divisor",
+          "value": 0.3,
+          "unit": "dimensionless factor dividing the rubber's damping in compression; applied once per strut step",
+          "source": "crates/rbr-physics/src/ngp/spring.rs:64"
+        },
+        {
+          "name": "Droop weight of the rest travel",
+          "value": "0.669_999_96",
+          "unit": "dimensionless weight of the droop stop in the rest position; evaluated when a setup is adopted, not per step",
+          "source": "crates/rbr-physics/src/wheel/strut.rs:4"
+        },
+        {
+          "name": "Bump weight of the rest travel",
+          "value": 0.33,
+          "unit": "dimensionless weight of the bump stop in the rest position; evaluated when a setup is adopted, not per step",
+          "source": "crates/rbr-physics/src/wheel/strut.rs:6"
+        },
+        {
+          "name": "Droop stop rate of a fresh strut",
+          "value": "600_000.0",
+          "unit": "spring rate for the droop stop, per metre of travel; set once when the strut's definition is built",
+          "source": "crates/rbr-physics/src/spring_damper/mod.rs:58"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/ngp/spring.rs",
+          "line": 43
+        },
+        {
+          "path": "crates/rbr-physics/src/wheel/strut.rs",
+          "line": 11
+        },
+        {
+          "path": "crates/rbr-physics/src/spring_damper/mod.rs",
+          "line": 462
+        }
+      ],
+      "capabilities": [
+        "independent suspension",
+        "progressive bump stop",
+        "droop stop",
+        "helper spring"
+      ],
+      "tags": [
+        "physics",
+        "suspension",
+        "handling"
+      ]
+    },
+    {
+      "id": "damper-fade-and-high-speed-latch",
+      "node": "suspension",
+      "name": "Damper fade and the high-speed latch",
+      "summary": "Sustained suspension movement fades the damper, a separate high-speed valve takes over past break speeds, and bump damping never falls below a floor.",
+      "behavior": "The strut carries a fade amount that grows while the damper works hard. At each update the bump damping is reduced in proportion to the fade, the rebound damping fades less, and the high-speed bump damping fades more than either, with a floor under the bump value so a fully faded corner still resists. Separately, the high-speed rebound damping is scaled by one minus a fraction of the fade, so a tired damper loses some of its fast-rebound control. During a step the damper compares the strut velocity with the two break speeds: past the bump break speed the high-speed bump value becomes the effective damping and the break speed is cleared for that step; past the rebound break speed the scaled high-speed rebound value does the same. The latch is held for a short run of steps so the valve does not chatter, and the pre-step values are kept on the strut and on the car for the rest of the frame. The fade weights and the effective damping update are ports of the retail executable's damper update; the break-speed wrapper belongs to the community physics build and is reversed from that build, not from the retail game.",
+      "constants": [
+        {
+          "name": "Bump fade weight",
+          "value": 0.7,
+          "unit": "fraction of the fade amount removed from bump damping; applied once per strut update at the 7 ms substep",
+          "source": "crates/rbr-physics/src/spring_damper/mod.rs:446"
+        },
+        {
+          "name": "Rebound fade weight",
+          "value": 0.3,
+          "unit": "fraction of the fade amount removed from rebound damping; applied once per strut update at the 7 ms substep",
+          "source": "crates/rbr-physics/src/spring_damper/mod.rs:448"
+        },
+        {
+          "name": "High-speed bump fade weight",
+          "value": 0.8,
+          "unit": "fraction of the fade amount removed from high-speed bump damping; applied once per strut update at the 7 ms substep",
+          "source": "crates/rbr-physics/src/spring_damper/mod.rs:449"
+        },
+        {
+          "name": "Minimum bump damping",
+          "value": 400,
+          "unit": "damping force per metre per second, the floor under the faded bump value; enforced once per strut update at the 7 ms substep",
+          "source": "crates/rbr-physics/src/spring_damper/mod.rs:21"
+        },
+        {
+          "name": "High-speed rebound fade share",
+          "value": 0.4,
+          "unit": "dimensionless share of the fade that scales high-speed rebound damping; read once per strut step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/ngp/spring.rs:76"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/spring_damper/mod.rs",
+          "line": 444
+        },
+        {
+          "path": "crates/rbr-physics/src/ngp/spring.rs",
+          "line": 96
+        }
+      ],
+      "capabilities": [
+        "damper fade",
+        "high-speed damping",
+        "bump and rebound split"
+      ],
+      "tags": [
+        "physics",
+        "suspension",
+        "handling"
+      ]
+    },
+    {
+      "id": "tyre-slip-curve",
+      "node": "tyre",
+      "name": "Tyre slip curve and friction circle",
+      "summary": "Slip becomes friction through a curve that peaks and falls to a sliding value, while the carcass forces are held inside a circle set by the load and the surface coefficient.",
+      "behavior": "The curve rises from zero along a shape whose knee is either three times the slip at which the linear stiffness would reach peak friction or the peak slip itself, whichever is smaller. Up to the knee the friction follows a cubic that passes through the peak; beyond it the falloff is read from a small table and blended down to the sliding friction at the end slip, and past that the friction stays flat while the pneumatic trail goes to zero. The peak is reached at a slip derived from peak friction, load and slip stiffness, so a heavier or softer tyre peaks later. In parallel, the lateral deflection and torsion of the carcass are treated as spring forces and are clamped to a circle whose radius is the normal force times the coefficient used, static while the state is clamped and kinetic otherwise; when the forces exceed the circle both are scaled back together, which is what makes a tyre slide rather than grip past its limit. At walking pace a hold torque keeps the contact direction from spinning freely, capped at a share of the normal force and with the slip speed clamped to a range. All of this is reversed from the retail executable's tyre solver, with NaN behaviour and operation order copied from its assembly rather than from any C++ reference.",
+      "constants": [
+        {
+          "name": "Peak-friction slip factor",
+          "value": 1.2,
+          "unit": "dimensionless multiplier on the slip at which the linear stiffness reaches peak friction; evaluated once per tyre step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/tyre/friction_curve.rs:87"
+        },
+        {
+          "name": "Knee tripling",
+          "value": 3,
+          "unit": "dimensionless factor applied to the linear slip when it falls under the peak slip; evaluated once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/friction_curve.rs:92"
+        },
+        {
+          "name": "Stiffness treated as zero",
+          "value": 0.001,
+          "unit": "stiffness units below which a carcass spring is treated as absent; tested once per clamp at the 7 ms substep",
+          "source": "crates/rbr-physics/src/tyre/grip.rs:13"
+        },
+        {
+          "name": "Low-speed hold grip cap",
+          "value": 0.3,
+          "unit": "share of the normal force times kinetic friction that the hold torque may use; applied once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/hold.rs:15"
+        },
+        {
+          "name": "Hold slip-speed ceiling",
+          "value": 100,
+          "unit": "metres per second, the top of the range the hold's slip speed is clamped to; applied once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/hold.rs:18"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/tyre/friction_curve.rs",
+          "line": 84
+        },
+        {
+          "path": "crates/rbr-physics/src/tyre/grip.rs",
+          "line": 74
+        },
+        {
+          "path": "crates/rbr-physics/src/tyre/hold.rs",
+          "line": 57
+        }
+      ],
+      "capabilities": [
+        "slip curve",
+        "friction circle",
+        "pneumatic trail",
+        "low-speed hold"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "grip"
+      ]
+    },
+    {
+      "id": "tyre-heat-and-wear",
+      "node": "tyre",
+      "name": "Tyre heat and wear",
+      "summary": "Friction power heats the tread in layers, the surface sheds heat to the road and the air, and the rubber wears only once it is sliding.",
+      "behavior": "Each tyre step turns the forces at the contact point into heat: rolling resistance contributes half its power, the lateral and longitudinal slip forces contribute the rest. That heat is split between the surface layer, the tread beneath it and the carcass, with some of it passed down and a little returned; the surface loses heat to the road at a rate that depends on how hot it is and on how wet the surface is, since water carries heat away faster. The tread counts as hot only above a threshold, and the difference above it is ramped to a fraction between zero and one that scales the conductance. Wear is gated: while the squared slip velocity stays small the abrasion rate is zero, and once the tyre is sliding, the amount past the peak of the slip curve decides how much rubber is taken. The step's heat and wear coefficients belong to the community physics build, which replaced the retail tyre's thermal values; the structure of the step and the layer split are reversed from that build rather than rewritten.",
+      "constants": [
+        {
+          "name": "Hot tread threshold",
+          "value": 40,
+          "unit": "degrees Celsius above which the tread counts as hot; the difference is taken once per tyre step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/tyre/heat.rs:13"
+        },
+        {
+          "name": "Hotness ramp",
+          "value": 0.0125,
+          "unit": "fraction of hotness per kelvin above the threshold, clamped to one; computed once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/heat.rs:112"
+        },
+        {
+          "name": "Slip-squared wear gate",
+          "value": 0.4,
+          "unit": "squared metres per second squared, the slip velocity below which no wear is taken; tested once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/heat.rs:163"
+        },
+        {
+          "name": "Minimum abrasion rate",
+          "value": 0.05,
+          "unit": "wear units per second, below which the rate is reported as zero; applied once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/heat.rs:182"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/tyre/heat.rs",
+          "line": 92
+        },
+        {
+          "path": "crates/rbr-physics/src/tyre/contact_patch.rs",
+          "line": 27
+        }
+      ],
+      "capabilities": [
+        "tyre temperature",
+        "tread wear",
+        "wet cooling"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "weather"
+      ]
+    },
+    {
+      "id": "loose-surface-ploughing",
+      "node": "tyre",
+      "name": "Loose surface ploughing",
+      "summary": "On gravel, snow and mud a sliding tyre pushes soil aside, and the mass it moves becomes a drag that pulls the car toward the slide and slows it.",
+      "behavior": "The soil the tyre meets is described by how deep it sinks, how much the carcass compresses, the tread coverage and the carcass width. From those the step builds the side area the lateral motion sweeps and the section the longitudinal motion pushes, converts both to a mass flow through the soil's density, and makes a drag force out of the contact point's lateral velocity times that flow. Two flow rates are reported, one for a longitudinal slip that fights the direction of travel and one for a slip that goes with it, which is what makes a locked wheel dig in differently from a spinning one. A furrow ratio compares the swept side area with twice the effective radius and is blended with the lateral share of the force, so a wide, sunk tyre drags more of its own contact patch. The results are smoothed against the previous step, keeping nine tenths of the old average and taking a tenth of the new value, which is why the drag builds and releases over a few frames instead of snapping. The original also multiplies two of the terms by zero and the port keeps those products, so the longitudinal force stays zero: the whole function is reversed from the retail executable's tyre code.",
+      "constants": [
+        {
+          "name": "Soil drag smoothing, kept share",
+          "value": 0.9,
+          "unit": "fraction of the previous average kept; applied once per tyre step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/tyre/soil.rs:4"
+        },
+        {
+          "name": "Soil drag smoothing, new share",
+          "value": 0.1,
+          "unit": "fraction of the new value taken into the average; applied once per tyre step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/tyre/soil.rs:5"
+        },
+        {
+          "name": "Furrow radius factor",
+          "value": 2,
+          "unit": "dimensionless factor on the effective radius in the furrow ratio; evaluated once per tyre step",
+          "source": "crates/rbr-physics/src/tyre/soil.rs:76"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/tyre/soil.rs",
+          "line": 62
+        },
+        {
+          "path": "crates/rbr-physics/src/tyre/contact_patch.rs",
+          "line": 27
+        }
+      ],
+      "capabilities": [
+        "loose surface drag",
+        "soil displacement",
+        "gravel and snow handling"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "surfaces"
+      ]
+    },
+    {
+      "id": "stage-collision-grid",
+      "node": "stage-world",
+      "name": "Stage collision grid and surface sampling",
+      "summary": "The stage's triangle meshes sit in a cell grid that is queried around the car; each hit face carries packed vertex slots and material weights that are blended across the triangle.",
+      "behavior": "The stage's collision file becomes a set of meshes, each built into boxes over a cell grid, with a brake wall and optional wet and water mesh lists behind the same root. A query starts from the cells under the car box's four projected corners; when the box is widened the lookup uses one margin either side of the box's midpoint on each axis instead, which is what catches a thin post or a fence rail that the corners miss. An edge sweep keeps the nearest hit below a starting distance and can stop early. With no brake wall to bound it, the grid falls back to a fixed extent and origin that covers the retail stages, so a stage with no wall data still has a sane world. Each mesh face is a compact record of three vertex slots and two sets of per-corner bytes: the low nibble weights are used where the original wanted a fine blend, the five-bit channels where it wanted a coarse one, and both are summed with the barycentric coordinates of the hit to give the surface properties at that exact point. The face-record layout, the cell grid and the query walk are reversed from the retail executable's collision system; the surface reads keep the original's packed-byte arithmetic.",
+      "constants": [
+        {
+          "name": "Widened lookup margin",
+          "value": 4.7,
+          "unit": "metres added either side of the box midpoint on each ground axis; used per query at the 7 ms physics substep",
+          "source": "crates/rbr-physics/src/physics_core/detect.rs:7"
+        },
+        {
+          "name": "Edge sweep starting distance",
+          "value": 1.01,
+          "unit": "metres, the initial best distance an edge-pair sweep must beat; used per sweep at the 7 ms substep",
+          "source": "crates/rbr-physics/src/physics_core/detect.rs:9"
+        },
+        {
+          "name": "Fallback grid width",
+          "value": 10000,
+          "unit": "metres across the stage in x when there is no brake wall to bound the grid; set once at stage load",
+          "source": "crates/rbr-physics/src/physics_core/detect.rs:80"
+        },
+        {
+          "name": "Fallback grid height",
+          "value": 15000,
+          "unit": "metres across the stage in y when there is no brake wall to bound the grid; set once at stage load",
+          "source": "crates/rbr-physics/src/physics_core/detect.rs:81"
+        },
+        {
+          "name": "Mesh box plane margin",
+          "value": 0.1,
+          "unit": "metres of margin on the plane when a mesh box is inserted into the grid; built once at stage load",
+          "source": "crates/rbr-physics/src/collision/mesh_grid.rs:21"
+        },
+        {
+          "name": "Crease cosine",
+          "value": "0.984_807_75",
+          "unit": "dimensionless cosine of a ten degree crease, the edge filter's bound; evaluated once per mesh build",
+          "source": "crates/rbr-physics/src/collision/mesh_grid.rs:23"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/collision/mesh_hit.rs",
+          "line": 30
+        },
+        {
+          "path": "crates/rbr-physics/src/stage/mod.rs",
+          "line": 56
+        },
+        {
+          "path": "crates/rbr-physics/src/physics_core/detect.rs",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "collision meshes",
+        "cell grid queries",
+        "surface material blending",
+        "wet meshes"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "stage"
+      ]
+    },
+    {
+      "id": "impact-damage",
+      "node": "car-body",
+      "name": "Impact damage",
+      "summary": "A hit is turned into damage zone by zone, the car keeps driving until enough zones fail, and the damage level changes how much of a hit is recorded.",
+      "behavior": "An impact's length is scaled before it reaches the car's damage handler, and the handler walks a set of functors, each with its own random spread, to decide which zones the hit reaches and how hard. A zone's stored float only ever rises, is capped at one, and a zone index outside the recorded range is ignored. Four damage levels exist for the whole car and each carries its own threshold: an off setting records nothing, a reduced setting records only beyond a fifth of the scale, the normal setting beyond seven tenths, and the harshest beyond one. Separately, the car's drivability gate turns on four counters and a windshield level: a car whose windshield value reaches zero or whose counters mostly read zero is no longer drivable, which is how a wrecked car ends a stage instead of limping on. The impact path also rolls a random draw for engine damage and fires only on the low tail of that draw, and keeps a short ring of recent engine events. Every one of these branches is reversed from the retail executable's damage handler, including its random generator and the exact rounding of each drawn value; the damage-level option itself is reversed from the game's own options code.",
+      "constants": [
+        {
+          "name": "Impact length scale",
+          "value": 0.08,
+          "unit": "damage units per metre of impact length; applied once per impact event",
+          "source": "crates/rbr-physics/src/car_body/damage.rs:146"
+        },
+        {
+          "name": "Reduced damage threshold",
+          "value": 0.2,
+          "unit": "fraction of the damage scale a hit must reach at the reduced level; read once per impact",
+          "source": "crates/rbr-physics/src/car_body/damage.rs:18"
+        },
+        {
+          "name": "Normal damage threshold",
+          "value": 0.7,
+          "unit": "fraction of the damage scale a hit must reach at the normal level; read once per impact",
+          "source": "crates/rbr-physics/src/car_body/damage.rs:19"
+        },
+        {
+          "name": "Harshest damage threshold",
+          "value": 1,
+          "unit": "fraction of the damage scale a hit must reach at the harshest level; read once per impact",
+          "source": "crates/rbr-physics/src/car_body/damage.rs:20"
+        },
+        {
+          "name": "Engine fire draw",
+          "value": 0.05,
+          "unit": "fraction of the draw range below which engine damage catches fire; rolled once per engine damage gate",
+          "source": "crates/rbr-physics/src/car_body/damage.rs:204"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/car_body/damage.rs",
+          "line": 145
+        },
+        {
+          "path": "crates/rbr-physics/src/car_body/damage.rs",
+          "line": 13
+        },
+        {
+          "path": "crates/rbr-gameplay/src/car_damage.rs",
+          "line": 288
+        }
+      ],
+      "capabilities": [
+        "impact damage",
+        "damage levels",
+        "drivability gate",
+        "engine fire"
+      ],
+      "tags": [
+        "physics",
+        "damage",
+        "handling"
+      ]
+    },
+    {
+      "id": "brake-wall-friction",
+      "node": "car-body",
+      "name": "Brake wall friction",
+      "summary": "A car pressed into a wall or a snow bank is held back by a friction force that grows with penetration and speed, with a low-speed and a high-speed term and a yaw torque.",
+      "behavior": "Once the car's penetration into a brake wall is positive, the force accumulator minus the car's weight gives a support force; if the support points upward and the car is moving sideways, a force opposing the velocity is added, scaled by the penetration, by a low-speed term that saturates after half a metre per second and by a high-speed term with a much smaller gain. The two terms are mixed with fixed shares and the result is applied at a lever arm below the car's centre, so scraping a wall also turns the car. A yaw-rate term adds a torque about the vertical axis, which is what makes a car that hits a bank at an angle pivot instead of sliding flat along it. Below a very small horizontal speed nothing is applied. The function is reversed from the retail executable's wall friction code, and where the reconstructed C++ disagrees with the assembly the port follows the assembly.",
+      "constants": [
+        {
+          "name": "Penetration gain",
+          "value": 3,
+          "unit": "force weight per metre of wall penetration; applied once per contact step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:24"
+        },
+        {
+          "name": "Low-speed gain",
+          "value": 2,
+          "unit": "force weight per metre per second of horizontal speed in the low-speed term; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:27"
+        },
+        {
+          "name": "High-speed gain",
+          "value": 0.01,
+          "unit": "force weight per metre per second of horizontal speed in the high-speed term; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:30"
+        },
+        {
+          "name": "High-speed share",
+          "value": 0.5,
+          "unit": "dimensionless share of the high-speed term in the mixed weight; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:33"
+        },
+        {
+          "name": "Low-speed share",
+          "value": 0.3,
+          "unit": "dimensionless share of the low-speed term in the mixed weight; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:36"
+        },
+        {
+          "name": "Yaw gain",
+          "value": 2.5,
+          "unit": "seconds, the gain of the yaw rate in the torque about the vertical axis; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:39"
+        },
+        {
+          "name": "Lever arm below the centre",
+          "value": -0.3,
+          "unit": "metres below the car's centre where the wall force is applied; applied once per contact step",
+          "source": "crates/rbr-physics/src/car_body/wall_friction.rs:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/car_body/wall_friction.rs",
+          "line": 60
+        },
+        {
+          "path": "crates/rbr-physics/src/car_body/wall_friction.rs",
+          "line": 24
+        }
+      ],
+      "capabilities": [
+        "brake walls",
+        "snow banks",
+        "scrape friction",
+        "yaw torque"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "handling"
+      ]
+    },
+    {
+      "id": "service-park-repair",
+      "node": "service-damage",
+      "name": "Service park repair",
+      "summary": "Between stages the crew repairs damaged parts against a time budget; running over the budget adds a penalty for every started minute.",
+      "behavior": "Each service event carries a budget: twenty minutes before a rally's first stage and after its first and third, forty before a night leg, and none otherwise. A rally's start gives the player a short service before the first stage. Damage is not a single number but a level per part, from sound to lost, and each level is scored for the manager's advice, with a lost part worth the most and a light scrape worth almost nothing. Repair orders run on a tree of parts: ordering a parent covers its children, taking an order off falls back to the damaged parts underneath it, and every repair draws its own duration between the file's unmount and mount times with a variance, then scales that by the crew's two factors. While the clock runs, the time left falls at the normal rate; pressing the repair key raises that rate so the remaining time is spent faster and the actual repairs advance with it. When the clock reaches zero the park closes and ten seconds are added for every minute that was started past the budget, whether or not the repairs finished. All of it is reversed from the retail executable's service code and its result page, and the community physics build patches only the crew's index and its own wheel and tyre damage objects.",
+      "constants": [
+        {
+          "name": "Short service budget",
+          "value": 20,
+          "unit": "minutes of service time, converted to 1200 seconds at the park's open",
+          "source": "crates/rbr-gameplay/src/service/mod.rs:82"
+        },
+        {
+          "name": "Long service budget",
+          "value": 40,
+          "unit": "minutes of service time before a night leg, converted to 2400 seconds at the park's open",
+          "source": "crates/rbr-gameplay/src/service/mod.rs:83"
+        },
+        {
+          "name": "Late penalty",
+          "value": 10,
+          "unit": "seconds added per started minute over the budget; charged once when the park closes",
+          "source": "crates/rbr-gameplay/src/service/mod.rs:133"
+        },
+        {
+          "name": "Repair clock rate",
+          "value": 30,
+          "unit": "seconds of repair per second of wall clock while the repair key is held; applied each service frame",
+          "source": "crates/rbr-gameplay/src/service/mod.rs:227"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/service/mod.rs",
+          "line": 129
+        },
+        {
+          "path": "crates/rbr-gameplay/src/service/mod.rs",
+          "line": 473
+        },
+        {
+          "path": "crates/rbr-gameplay/src/car_damage.rs",
+          "line": 410
+        }
+      ],
+      "capabilities": [
+        "service park",
+        "repair orders",
+        "time budget",
+        "late penalty"
+      ],
+      "tags": [
+        "gameplay",
+        "damage",
+        "rally"
+      ]
+    },
+    {
+      "id": "weather-and-surface-choice",
+      "node": "weather",
+      "name": "Weather and surface choice",
+      "summary": "A stage's weather row decides cloud, rain, wetness and tyre wear, and wetness in turn decides which wet collision meshes and which tyre the car gets.",
+      "behavior": "Each stage map has a short list of rows in the season table, and a row fixes the track letter, the cloud, the rain preset, the wetness and the wear. A cloud letter sets the start time of day: the clear letter starts at a quarter past eight, the middle letter at twenty-two past midday and the overcast letter at twenty-three past five in the afternoon, and the clock then runs forward through the stage. Rain and snow presets carry a precipitation target, half scale for light and full scale for heavy, which drives the particle systems and is what a saved ghost records. Wetness is a small integer: at its top value the stage loads its wet collision meshes as well as its dry ones, so puddles and streams become surfaces with their own friction. The same wetness, with the car's chosen tyre wear, picks the entry in the stage's material file that the physics reads, which is how the same corner changes character between a dry morning and a wet afternoon. The weather rows and their byte layout are reversed from the retail executable's season table and its weather daemon; the renderer's clouds and rain are written fresh and only read the values the daemon leaves.",
+      "constants": [
+        {
+          "name": "Clear-sky start hour",
+          "value": 8,
+          "unit": "hours after midnight for the clear cloud letter's start clock; set once at stage start",
+          "source": "crates/rbr-gameplay/src/weather.rs:404"
+        },
+        {
+          "name": "Clear-sky start minute",
+          "value": 15,
+          "unit": "minutes past the start hour for the clear cloud letter; set once at stage start",
+          "source": "crates/rbr-gameplay/src/weather.rs:404"
+        },
+        {
+          "name": "Light precipitation target",
+          "value": 50,
+          "unit": "percent of full precipitation for the light rain and light snow presets; read once per stage and stored in the ghost",
+          "source": "crates/rbr-gameplay/src/weather.rs:360"
+        },
+        {
+          "name": "Heavy precipitation target",
+          "value": 100,
+          "unit": "percent of full precipitation for the heavy rain and heavy snow presets; read once per stage and stored in the ghost",
+          "source": "crates/rbr-gameplay/src/weather.rs:361"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "line": 402
+        },
+        {
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "line": 340
+        },
+        {
+          "path": "crates/rbr-gameplay/src/weather.rs",
+          "line": 304
+        }
+      ],
+      "capabilities": [
+        "weather presets",
+        "time of day",
+        "wet surfaces",
+        "tyre choice"
+      ],
+      "tags": [
+        "gameplay",
+        "weather",
+        "surfaces"
+      ]
+    },
+    {
+      "id": "pace-note-callouts",
+      "node": "pace-notes",
+      "name": "Pace note callouts",
+      "summary": "As the car runs down the stage's distance the co-driver calls the next notes, each note fired once at a lookahead that grows with speed.",
+      "behavior": "The stage's notes are keys on the driveline, each with a tag for the kind of corner or hazard and flags for its modifiers. The ticker compares the car's distance with the keys and handles exactly one crossed key per step, which is what keeps start, split and finish events in order when the car covers a lot of ground in one frame. Notes ahead of the car are fired when they fall inside a lookahead that is the distance to the note scaled by the player's callout setting plus the car's own position, and only if the current speed is below a threshold that is also scaled by the distance, so a note is called earlier the faster the car is travelling and a slow car gets it late. A note fires once; the key carries a fired bit afterwards. Notes with a spoken word are separated from notes that only show a symbol, and the HUD keeps a short stack of the next symbol keys so the driver can read what is coming. The ticker, the lookahead arithmetic and the per-tag routing are reversed from the retail executable's animation-set ticker, with the tag tables taken from the stage's own note file rather than invented.",
+      "constants": [
+        {
+          "name": "Pace speed multiplier",
+          "value": 3.6,
+          "unit": "metres per second of car speed per metre of distance to the note; compared once per note candidate per 7 ms substep",
+          "source": "crates/rbr-gameplay/src/markers.rs:16"
+        },
+        {
+          "name": "Default callout distance",
+          "value": 4,
+          "unit": "metres of lookahead per metre of note distance, the game's starting setting; read once per note candidate per 7 ms substep",
+          "source": "crates/rbr-gameplay/src/markers.rs:30"
+        },
+        {
+          "name": "Default speed threshold",
+          "value": 25,
+          "unit": "metres per second, the game's starting callout speed threshold; compared once per note candidate per 7 ms substep",
+          "source": "crates/rbr-gameplay/src/markers.rs:30"
+        },
+        {
+          "name": "Pace stack depth",
+          "value": 5,
+          "unit": "symbol keys kept for the HUD's pace stack; refreshed once per HUD frame",
+          "source": "crates/rbr-gameplay/src/markers.rs:368"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/markers.rs",
+          "line": 288
+        },
+        {
+          "path": "crates/rbr-gameplay/src/markers.rs",
+          "line": 373
+        }
+      ],
+      "capabilities": [
+        "pace notes",
+        "callout lookahead",
+        "marker ticker",
+        "HUD stack"
+      ],
+      "tags": [
+        "gameplay",
+        "rally",
+        "audio"
+      ]
+    },
+    {
+      "id": "stage-time-card",
+      "node": "stage-timing",
+      "name": "Stage time card",
+      "summary": "The time card finds the start either by crossing the start line or by moving, marks splits and the finish, and samples the car to catch a car that has stopped.",
+      "behavior": "The card starts before the start line with a fixed mid-day origin so that every reading is a time of day rather than a count from zero. The start is found two ways: the car's driveline distance reaching the start key, or, while the elapsed time is still on the unstarted side, the car moving faster than half a metre per second measured over one physics step. Each split and the finish is marked when the car's distance passes the key, and each carries the elapsed time at that moment. Every hundredth step while timing, the card samples the car's distance, and a sample in which the car moved less than four metres counts toward a stuck tally, which the flow uses to catch a car that has come to rest. The stage clock itself is a double seeded at its own starting value and advanced once per substep, with the addition rounded to single precision in the retail build and kept double under the community physics build; the countdown before the start is a separate seven-second clock, and crossing the line early while it still counts is a jump start penalised in seconds. The card, the start conditions and the clock seeding are reversed from the retail executable's timekeeper; the stuck tally feeds a flow that is reversed from the same executable.",
+      "constants": [
+        {
+          "name": "Unstarted time origin",
+          "value": 43200,
+          "unit": "seconds after midnight held before timing starts; the origin of every split time",
+          "source": "crates/rbr-gameplay/src/timing.rs:16"
+        },
+        {
+          "name": "Speed start",
+          "value": 0.5,
+          "unit": "metres per second the car must exceed over one 7 ms substep to start timing before the line",
+          "source": "crates/rbr-gameplay/src/timing.rs:20"
+        },
+        {
+          "name": "Still distance",
+          "value": 4,
+          "unit": "metres of movement below which a sample counts the car as stopped; tested every 100 substeps",
+          "source": "crates/rbr-gameplay/src/timing.rs:22"
+        },
+        {
+          "name": "Sample interval",
+          "value": 100,
+          "unit": "physics substeps between two distance samples of the time card, so roughly 0.7 seconds at 7 ms per substep",
+          "source": "crates/rbr-gameplay/src/timing.rs:24"
+        },
+        {
+          "name": "Start countdown",
+          "value": 7,
+          "unit": "seconds of countdown before a stage start; decremented once per 7 ms substep",
+          "source": "crates/rbr-gameplay/src/race_clock.rs:25"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/timing.rs",
+          "line": 269
+        },
+        {
+          "path": "crates/rbr-gameplay/src/timing.rs",
+          "line": 277
+        },
+        {
+          "path": "crates/rbr-gameplay/src/race_clock.rs",
+          "line": 216
+        }
+      ],
+      "capabilities": [
+        "stage timing",
+        "splits",
+        "speed start",
+        "stuck detection",
+        "countdown"
+      ],
+      "tags": [
+        "gameplay",
+        "rally",
+        "timing"
+      ]
+    },
+    {
+      "id": "gearbox-launch-and-shifts",
+      "node": "driveline",
+      "name": "Gearbox launch and shifts",
+      "summary": "The gearbox decides shifts by itself from pedal positions, engine speed and road speed, with a lockout after each request and a slip gate on the way down.",
+      "behavior": "In the low gears the box watches the pedals: with both pedals in the middle of their travel it treats the car as launching, and the exact fractions of pedal that open and close that window are fixed. A launch that lingers on the edge of the window for longer than a short timer forces the shift instead of waiting, and a neutral that lingers at zero speed does the same after a different timer. In the upper gears the shift request comes from the engine speed against a threshold, and every request starts a cooldown that blocks the next one, which is what makes the automatic gearbox feel deliberate rather than snatching. Before a downshift the box can ask a slip question: in the gears above second it compares the gear's rpm with the rev limit, and in second it asks whether the car is travelling faster than ten kilometres per hour, and a yes cancels the downshift. The differential locks handed to the drive are the largest of a throttle map, a brake map and a speed map, with the centre lock released while the handbrake is held, and a left-foot braking pair of maps is used when both pedals pass a configured threshold. The gear logic is reversed from the retail executable's vehicle control unit, with its supervisor's operation order taken from the assembly; the threshold values belong to the community physics build's car definitions.",
+      "constants": [
+        {
+          "name": "Neutral speed limit",
+          "value": 0.5,
+          "unit": "metres per second, the speed boundary the low-gear launch logic uses; tested once per gear logic step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/vcu/gear.rs:11"
+        },
+        {
+          "name": "Low pedal threshold",
+          "value": 0.3,
+          "unit": "fraction of pedal travel marking the lower edge of the launch window; tested once per gear logic step",
+          "source": "crates/rbr-physics/src/vcu/gear.rs:12"
+        },
+        {
+          "name": "High pedal threshold",
+          "value": 0.9,
+          "unit": "fraction of pedal travel marking the upper edge of the launch window; tested once per gear logic step",
+          "source": "crates/rbr-physics/src/vcu/gear.rs:13"
+        },
+        {
+          "name": "Gear timer limit",
+          "value": 0.4,
+          "unit": "seconds a launch or neutral state may sit at its edge before a shift is forced; counted per gear logic step",
+          "source": "crates/rbr-physics/src/vcu/gear.rs:14"
+        },
+        {
+          "name": "Downshift slip speed",
+          "value": "2.777_777_9",
+          "unit": "metres per second (ten kilometres per hour) above which a second-gear downshift is refused; tested once per shift request",
+          "source": "crates/rbr-physics/src/vcu/slip.rs:11"
+        },
+        {
+          "name": "Clutch engagement scale",
+          "value": 900,
+          "unit": "clutch force units per unit of engagement; applied once per drive step at the 7 ms substep",
+          "source": "crates/rbr-physics/src/engine_driveline/drive_step.rs:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-physics/src/vcu/gear.rs",
+          "line": 35
+        },
+        {
+          "path": "crates/rbr-physics/src/vcu/slip.rs",
+          "line": 15
+        },
+        {
+          "path": "crates/rbr-physics/src/vcu/locks.rs",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "automatic gearbox",
+        "shift lockout",
+        "downshift protection",
+        "differential locks",
+        "launch control"
+      ],
+      "tags": [
+        "physics",
+        "driveline",
+        "handling"
+      ]
+    },
+    {
+      "id": "control-payload-quantisation",
+      "node": "controls",
+      "name": "Control payload quantisation",
+      "summary": "Filtered pedal and steering values are quantised into small integers before the physics sees them, and the steering force becomes a force feedback magnitude.",
+      "behavior": "The driver's inputs are filtered first and then packed into a fixed-size payload of eight words that the physics reads every substep. Pedals take one of two hundred and fifty-six steps with half-step rounding, while steering is mapped onto a signed byte by spanning the range of a hundred and twenty-seven and a half steps and biasing by a hundred and twenty-eight, so the centre of the wheel lands on a byte value with slightly more resolution to the left than to the right. That quantisation is why a keyboard or a coarse wheel can feel notchy: the physics never sees a fractional value between two steps. Above the plain payload, the community physics build adds direct gear actions that are pressed rather than held, with a press threshold and a separate ignition threshold near full travel, so a button tap and a held button behave differently. The force feedback side takes the steering force the physics leaves, scales it by the player's strength setting, applies a dead zone and inverts it on request, and reports it as an integer magnitude with a fixed top of the range. The payload, its packing and the filter chain are reversed from the retail executable's input path; the community build's direct gears are reversed from that build, and the force feedback shaping is reversed from the exe's own force feedback call.",
+      "constants": [
+        {
+          "name": "Steering span",
+          "value": 127.5,
+          "unit": "steps of steering travel across the full lock range; applied once per control payload at each 7 ms substep",
+          "source": "crates/rbr-gameplay/src/control.rs:27"
+        },
+        {
+          "name": "Steering bias",
+          "value": 128,
+          "unit": "signed byte offset applied after the steering span; applied once per control payload at each 7 ms substep",
+          "source": "crates/rbr-gameplay/src/control.rs:28"
+        },
+        {
+          "name": "Pedal span",
+          "value": 255,
+          "unit": "steps of pedal travel; applied once per control payload at each 7 ms substep",
+          "source": "crates/rbr-gameplay/src/control.rs:30"
+        },
+        {
+          "name": "Direct gear press threshold",
+          "value": 0.999,
+          "unit": "fraction of an action's travel that counts as a press for the community build's direct gears; tested once per input poll",
+          "source": "crates/rbr-gameplay/src/control.rs:185"
+        },
+        {
+          "name": "Ignition press threshold",
+          "value": 0.99,
+          "unit": "fraction of an action's travel that counts as ignition on; tested once per input poll",
+          "source": "crates/rbr-gameplay/src/control.rs:188"
+        },
+        {
+          "name": "Force feedback magnitude ceiling",
+          "value": "10_000",
+          "unit": "force feedback units, the top of the magnitude range; computed once per force feedback update per 7 ms substep",
+          "source": "crates/rbr-gameplay/src/ffb.rs:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-gameplay/src/control.rs",
+          "line": 133
+        },
+        {
+          "path": "crates/rbr-gameplay/src/control.rs",
+          "line": 200
+        },
+        {
+          "path": "crates/rbr-gameplay/src/ffb.rs",
+          "line": 41
+        }
+      ],
+      "capabilities": [
+        "input quantisation",
+        "control payload",
+        "force feedback",
+        "direct gear actions"
+      ],
+      "tags": [
+        "gameplay",
+        "input",
+        "physics"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "node": "camera",
+      "name": "Chase camera and start orbit",
+      "summary": "The chase eye follows the car at a set radius and angle, lags a little behind, and is pushed out of stage geometry before it is drawn.",
+      "behavior": "The game's chase camera keeps its eye on a point a little ahead of and above the car body, and places the eye behind the car on a radius and a pitch angle that the player can change. The eye's wanted position is sampled into a short history and the drawn eye follows that history with a fixed lag, so the view swings smoothly through a hairpin instead of snapping to the car's new heading; a slight downhill lift keeps the car in frame over a crest. Before the lag is applied, the wanted eye is pulled in front of anything the stage geometry crosses between the eye and the look point, and pushed off nearby faces, with both corrections decaying over a few frames once contact is lost and with a faster catch-up while a push is still large. After the distance is clamped, the eye is put once more in front of whatever the look point and its own last place intersect, so a post or a rock cannot end up between the camera and the car. The bonnet view probes the ground and lifts itself by a bounded amount. The chase placement, the lag, the height window and the probes are reversed from the retail executable's camera code; the look-back key, the orbit clearance and the player's own chase settings are written for the Rust build and are not in the retail game. The field of view and the near plane belong to the fresh renderer.",
+      "constants": [
+        {
+          "name": "Chase radius",
+          "value": 4.4,
+          "unit": "metres from the look point to the eye at the game's default setting; used once per camera frame",
+          "source": "crates/rbr-render/src/game_camera.rs:50"
+        },
+        {
+          "name": "Chase field of view",
+          "value": 75,
+          "unit": "degrees horizontal, the Rust build's own chase field of view; used once per drawn frame",
+          "source": "crates/rbr-render/src/game_camera.rs:129"
+        },
+        {
+          "name": "Look point height",
+          "value": 0.75,
+          "unit": "metres above the car body where the camera looks, with the look point 1.54 metres ahead; used once per camera frame",
+          "source": "crates/rbr-render/src/game_camera.rs:137"
+        },
+        {
+          "name": "Wanted-eye push decay",
+          "value": 0.7,
+          "unit": "fraction kept per camera frame of the push applied to the wanted eye, so a push fades over a few frames",
+          "source": "crates/rbr-render/src/game_camera.rs:143"
+        },
+        {
+          "name": "Drawn-eye push decay",
+          "value": 0.8,
+          "unit": "fraction kept per camera frame of the push applied to the drawn eye after the distance clamp",
+          "source": "crates/rbr-render/src/game_camera.rs:144"
+        },
+        {
+          "name": "Eye lag history",
+          "value": 64,
+          "unit": "camera frames of wanted-eye history the drawn eye follows, about 0.45 seconds at 7 ms per physics substep",
+          "source": "crates/rbr-render/src/game_camera.rs:156"
+        }
+      ],
+      "sources": [
+        {
+          "path": "crates/rbr-render/src/game_camera.rs",
+          "line": 192
+        },
+        {
+          "path": "crates/rbr-render/src/game_camera.rs",
+          "line": 203
+        },
+        {
+          "path": "crates/rbr-render/src/coords.rs",
+          "line": 23
+        }
+      ],
+      "capabilities": [
+        "chase camera",
+        "camera lag",
+        "camera collision",
+        "bonnet view",
+        "start orbit"
+      ],
+      "tags": [
+        "render",
+        "camera",
+        "presentation"
+      ]
+    }
+  ]
+}

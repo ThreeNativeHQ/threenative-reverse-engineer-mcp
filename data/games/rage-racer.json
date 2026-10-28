@@ -1,0 +1,1719 @@
+{
+  "version": 1,
+  "id": "rage-racer",
+  "title": "Rage Racer",
+  "repo": "https://github.com/khasinski/rage-racer-decomp",
+  "sha": "fdc6d1ebc9c6520497702847271738b8331bb256",
+  "nodes": [
+    {
+      "id": "player-car",
+      "name": "Player car update",
+      "purpose": "Top-level per-update pass for the player vehicle: reads pad input, runs the drivetrain, resolves track boundaries from the four body corners, applies wall pushes, collides with the field and drives the body pitch and roll effects",
+      "paths": [
+        "src/main/PAL/main/car/update_player_car.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdatePlayerCar",
+          "path": "src/main/PAL/main/car/update_player_car.c",
+          "lines": [
+            24,
+            527
+          ]
+        }
+      ],
+      "dependsOn": [
+        "drivetrain",
+        "track-contact",
+        "body-motion"
+      ]
+    },
+    {
+      "id": "drivetrain",
+      "name": "Engine and gearbox model",
+      "purpose": "Integer engine-speed simulation with banded torque curves, a rev limiter, clutch-blended gear changes, slope load, aerodynamic drag and the per-update speed retention that turns engine output into road speed",
+      "paths": [
+        "src/main/PAL/main/car/update_car_drivetrain.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateCarDrivetrain",
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "lines": [
+            17,
+            841
+          ]
+        }
+      ],
+      "dependsOn": [
+        "motion-states"
+      ]
+    },
+    {
+      "id": "motion-states",
+      "name": "Driving, slide and start handlers",
+      "purpose": "The four handlers the drivetrain dispatches to each update: normal grip driving, the slide entry pass, the slide recovery pass and the standing-start wheelspin, plus the shared position and heading integrator",
+      "paths": [
+        "src/main/PAL/main/car/update_car_driving.c",
+        "src/main/PAL/main/car/steer_car_to_track_line.c",
+        "src/main/PAL/main/car/advance_car_position.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateCarDriving",
+          "path": "src/main/PAL/main/car/update_car_driving.c",
+          "lines": [
+            15,
+            108
+          ]
+        },
+        {
+          "name": "UpdateCarLaunch",
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "lines": [
+            96,
+            313
+          ]
+        },
+        {
+          "name": "UpdateCarAirborne",
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "lines": [
+            320,
+            386
+          ]
+        },
+        {
+          "name": "UpdateCarStandingStart",
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "lines": [
+            388,
+            445
+          ]
+        },
+        {
+          "name": "AdvanceCarPosition",
+          "path": "src/main/PAL/main/car/advance_car_position.c",
+          "lines": [
+            13,
+            48
+          ]
+        },
+        {
+          "name": "SteerCarToTrackLine",
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "lines": [
+            22,
+            86
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-contact"
+      ]
+    },
+    {
+      "id": "track-contact",
+      "name": "Track-relative placement",
+      "purpose": "Projects each car onto the spline-and-arc track description to get distance along the segment, lateral offset, surface height, pitch, roll and lap progress, and pushes the car back inside the road edges",
+      "paths": [
+        "src/main/PAL/main/car/car_track_state.c",
+        "src/main/PAL/main/car/clamp_car_lateral_offset.c",
+        "src/main/PAL/main/car/steer_car_to_track_line.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateCarTrackState",
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "lines": [
+            28,
+            396
+          ]
+        },
+        {
+          "name": "SampleTrackSurfaceHeight",
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "lines": [
+            407,
+            449
+          ]
+        },
+        {
+          "name": "FindTrackSegment",
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "lines": [
+            456,
+            541
+          ]
+        },
+        {
+          "name": "ClampCarLateralOffset",
+          "path": "src/main/PAL/main/car/clamp_car_lateral_offset.c",
+          "lines": [
+            15,
+            70
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "body-motion",
+      "name": "Impacts, crests and body effects",
+      "purpose": "Wall knockback vectors, crest hop arcs triggered by track markers, impact body kicks and the throttle and brake squat that tilts the body",
+      "paths": [
+        "src/main/PAL/main/car/car_draw_and_knockback.c",
+        "src/main/PAL/main/car/car_ai.c"
+      ],
+      "functions": [
+        {
+          "name": "SetCarKnockback",
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "lines": [
+            226,
+            353
+          ]
+        },
+        {
+          "name": "ApplyCarKnockback",
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "lines": [
+            199,
+            215
+          ]
+        },
+        {
+          "name": "StartCarBodyKick",
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "lines": [
+            355,
+            414
+          ]
+        },
+        {
+          "name": "UpdateCarTiltCounter",
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "lines": [
+            143,
+            197
+          ]
+        },
+        {
+          "name": "UpdateCarBodyKick",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            15,
+            73
+          ]
+        },
+        {
+          "name": "GetCarCrestTrigger",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            75,
+            155
+          ]
+        },
+        {
+          "name": "UpdateCarCrestHop",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            167,
+            239
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-contact"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Race cameras",
+      "purpose": "Bumper view, lagging chase view with three height presets, and the track-side and scripted path cameras chosen by the nearest camera node",
+      "paths": [
+        "src/main/PAL/main/track/update_camera.c",
+        "src/main/PAL/main/track/find_nearest_track_camera.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateCamera",
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "lines": [
+            37,
+            635
+          ]
+        },
+        {
+          "name": "FindNearestTrackCamera",
+          "path": "src/main/PAL/main/track/find_nearest_track_camera.c",
+          "lines": [
+            6,
+            66
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-contact"
+      ]
+    },
+    {
+      "id": "rival-ai",
+      "name": "Rival driver logic",
+      "purpose": "Per-rival speed schedule read from track keys, lateral racing-line hints, traffic avoidance between cars, AI slide flicks and the rubber band that holds the leading contenders near the player",
+      "paths": [
+        "src/main/PAL/main/car/race_car_update.c",
+        "src/main/PAL/main/car/rival_ai.c",
+        "src/main/PAL/main/car/car_ai.c",
+        "src/main/PAL/main/car/clamp_car_lateral_offset.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateRaceCars",
+          "path": "src/main/PAL/main/car/race_car_update.c",
+          "lines": [
+            18,
+            289
+          ]
+        },
+        {
+          "name": "UpdateCarAiTargetSpeed",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            415,
+            515
+          ]
+        },
+        {
+          "name": "UpdateCarSlideAngle",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            241,
+            316
+          ]
+        },
+        {
+          "name": "ApplyCarRacingLineHint",
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "lines": [
+            318,
+            384
+          ]
+        },
+        {
+          "name": "UpdateCarTrafficAvoidance",
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "lines": [
+            30,
+            190
+          ]
+        },
+        {
+          "name": "SlowRivalAhead",
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "lines": [
+            192,
+            215
+          ]
+        },
+        {
+          "name": "RankContenders",
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "lines": [
+            223,
+            279
+          ]
+        },
+        {
+          "name": "UpdateRivalRubberBand",
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "lines": [
+            282,
+            407
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-contact",
+        "motion-states"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "engine-torque-bands",
+      "node": "drivetrain",
+      "name": "Banded engine torque and rev limiter",
+      "summary": "Engine speed picks a thousand-rpm band whose torque is linearly blended per gear, and a soft limiter pulls revs back past the cutoff",
+      "behavior": "Engine speed is divided into thousand-rpm bands. For the current band the model looks up a pair of rpm breakpoints and two per-gear torque values, then blends linearly between them, dividing by ten times the band width. A second table blended the same way yields a percentage loss that later reduces the drag term, and first gear doubles that percentage below the redline. Once engine speed reaches the rev limit the torque is replaced by four fifths of the overshoot, which is negative, so the engine falls back under the cutoff. Throttle input scales the final torque in 1/256 steps and the clutch flag gates it to zero while a shift is engaging. Engine speed is clamped to the range from zero to 15000 after every update.",
+      "constants": [
+        {
+          "name": "rpmBandWidth",
+          "value": 1000,
+          "unit": "rpm per band, per update",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:304"
+        },
+        {
+          "name": "torqueBlendScale",
+          "value": "0xA",
+          "unit": "multiplier on band width, per update",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:341"
+        },
+        {
+          "name": "limiterPullback",
+          "value": 4,
+          "unit": "fifths of the overshoot removed, per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:300"
+        },
+        {
+          "name": "engineRpmCeiling",
+          "value": "0x3A98",
+          "unit": "rpm, clamped per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:709"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 296
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 304
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 341
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 565
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 707
+        }
+      ],
+      "capabilities": [
+        "torque curve",
+        "rev limiter",
+        "throttle response"
+      ],
+      "tags": [
+        "engine",
+        "acceleration",
+        "physics",
+        "tuning"
+      ]
+    },
+    {
+      "id": "gear-shift-blend",
+      "node": "drivetrain",
+      "name": "Clutch-blended gear change",
+      "summary": "A gear change computes the target revs for the new ratio and eases the tachometer there over ten updates",
+      "behavior": "When the selected gear differs from the engaged gear the model converts road speed into the engine speed the new ratio demands. A downshift adds 500 rpm to that target as a blip. The clutch counter is set to ten and drive is uncoupled, so no throttle torque reaches the wheels. Each update the counter falls and engine speed is placed between the old and new values: the manual gearbox spreads the move over fifteen steps of the remaining gap, the automatic over ten. When the counter reaches zero drive couples again. With the manual gearbox, an upshift on a climb, the grade sign that loads the engine, reduces the shift target and the carried engine load by a grade fraction that grows from fourth to sixth gear, so the engine lands lower in the band on a hill.",
+      "constants": [
+        {
+          "name": "clutchUpdates",
+          "value": "0xA",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:531"
+        },
+        {
+          "name": "downshiftBlip",
+          "value": "0x1F4",
+          "unit": "rpm added to the target",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:525"
+        },
+        {
+          "name": "manualBlendSteps",
+          "value": 15,
+          "unit": "steps over the gap, per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:549"
+        },
+        {
+          "name": "automaticBlendSteps",
+          "value": 10,
+          "unit": "steps over the gap, per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:554"
+        },
+        {
+          "name": "fourthGearGradeDivisor",
+          "value": 120,
+          "unit": "grade units per percent of shift target",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:492"
+        },
+        {
+          "name": "fifthGearGradeDivisor",
+          "value": 48,
+          "unit": "grade units per percent of shift target",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:499"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 470
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 474
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 525
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 531
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 549
+        }
+      ],
+      "capabilities": [
+        "gear shift",
+        "automatic gearbox",
+        "manual gearbox",
+        "rev matching"
+      ],
+      "tags": [
+        "engine",
+        "transmission",
+        "feel"
+      ]
+    },
+    {
+      "id": "speed-retention-drag",
+      "node": "drivetrain",
+      "name": "Road speed retention and drag",
+      "summary": "Road speed keeps 94 percent of itself each update while drivetrain torque supplies the acceleration term, and a speed-squared drag loads the engine",
+      "behavior": "In grip driving the car keeps 94 hundredths of its speed every update and the shared integrator adds back the acceleration derived from drivetrain torque, so top speed emerges where the two balance instead of from a hard cap. The automatic gearbox scales that acceleration by a per-car factor in thousandths, and a grip-loss timer halves it while it runs. Engine load grows with the square of the displayed road speed divided by a per-car drag divisor times a thousand, and brake input adds load in proportion to engine speed. Road speed for the display and the drag uses a 160 over 1168 conversion from internal speed units. Below eight speed units the travel heading snaps to the body yaw so a stopped car does not drift sideways.",
+      "constants": [
+        {
+          "name": "gripSpeedRetention",
+          "value": "0x5E",
+          "unit": "hundredths of speed kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:801"
+        },
+        {
+          "name": "roadSpeedDivisor",
+          "value": 1168,
+          "unit": "internal speed units per display conversion",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:679"
+        },
+        {
+          "name": "dragDivisorScale",
+          "value": "0x3E8",
+          "unit": "multiplier on the per-car drag divisor",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:680"
+        },
+        {
+          "name": "headingSnapSpeed",
+          "value": 8,
+          "unit": "internal speed units",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:805"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 679
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 686
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 798
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 801
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 805
+        }
+      ],
+      "capabilities": [
+        "speed retention",
+        "aerodynamic drag",
+        "emergent top speed"
+      ],
+      "tags": [
+        "speed",
+        "physics",
+        "drag",
+        "top speed"
+      ]
+    },
+    {
+      "id": "slope-engine-load",
+      "node": "drivetrain",
+      "name": "Slope load on the engine",
+      "summary": "The blended track pitch under the car, turned to the car heading, loads the engine fully uphill and only a tenth as much downhill",
+      "behavior": "The pitch values of the current and next track points are blended by how far the car is along the segment, then multiplied by the cosine of the angle between the car heading and the track direction, so driving across a slope feels flatter than driving straight up it. The result is clamped to plus or minus 238 angle units and stored as the road grade the gearbox reads. The sine of that grade times 1800, divided by 40960, becomes extra engine load. On a climb the full term adds load; on a descent a tenth of it is removed, a mild assist. A separate countdown adds 200 load plus twenty per remaining update while it runs. The same pass adds load from the angle between body yaw and travel heading, so a sideways car bogs down.",
+      "constants": [
+        {
+          "name": "gradeClamp",
+          "value": "0xEE",
+          "unit": "angle units, 4096 per turn",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:648"
+        },
+        {
+          "name": "gradeLoadScale",
+          "value": "0x708",
+          "unit": "load units per unit of sine",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:650"
+        },
+        {
+          "name": "gradeLoadDivisor",
+          "value": "0xA000",
+          "unit": "divisor on the scaled sine",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:652"
+        },
+        {
+          "name": "descentShare",
+          "value": 10,
+          "unit": "divisor applied on a descent",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:660"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 620
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 625
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 650
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 660
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 601
+        }
+      ],
+      "capabilities": [
+        "slope resistance",
+        "grade-aware load",
+        "sideways bog"
+      ],
+      "tags": [
+        "physics",
+        "terrain",
+        "engine"
+      ]
+    },
+    {
+      "id": "slide-grip-budget",
+      "node": "drivetrain",
+      "name": "Pedal-driven steering grip",
+      "summary": "A steering grip budget falls with throttle and rises with brake, and banked corners add or remove grip by direction",
+      "behavior": "Every update the model builds a grip budget starting at 380, subtracts throttle input scaled to at most 100, and adds brake input scaled the same way, so lifting or braking tightens the line and flooring it loosens it. While the car is outside the slide entry state and on a curve whose direction differs from the remembered one, the cross slope of the road, clamped to plus or minus 50, adds grip: three times the slope on one hand of curve and minus three times the slope on the other, so the bank changes grip by curve direction. The stored grip moves halfway toward the new budget each update, weighted by a per-car response value in thousandths. In the slide entry state a curve bias that builds up while the curve direction stays the same, clamped to plus or minus 30, takes ten grip units per step.",
+      "constants": [
+        {
+          "name": "gripBase",
+          "value": "0x17C",
+          "unit": "grip units",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:183"
+        },
+        {
+          "name": "camberClamp",
+          "value": "0x32",
+          "unit": "cross-slope units",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:234"
+        },
+        {
+          "name": "camberGain",
+          "value": 3,
+          "unit": "grip units per cross-slope unit",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:247"
+        },
+        {
+          "name": "curveBiasClamp",
+          "value": "0x1E",
+          "unit": "bias steps",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:216"
+        },
+        {
+          "name": "gripResponseScale",
+          "value": 1000,
+          "unit": "thousandths per update",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:251"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 177
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 183
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 222
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 243
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 251
+        }
+      ],
+      "capabilities": [
+        "steering grip",
+        "banked corner grip",
+        "pedal balance"
+      ],
+      "tags": [
+        "handling",
+        "steering",
+        "grip",
+        "feel"
+      ]
+    },
+    {
+      "id": "slide-entry",
+      "node": "motion-states",
+      "name": "Throttle-stab and brake-tap slide entry",
+      "summary": "Lifting then stabbing the throttle, or tapping the brake while turning, commits the car to a slide when it carries enough energy",
+      "behavior": "Each pedal has a three-step latch: it arms above 133 of 255, reports a fresh press for exactly one update, then holds until the pedal drops below 124. While the throttle is under half and the brake is not freshly pressed, a counter of coasting updates grows. A fresh throttle press multiplies speed by that coasting count to form slide energy; if speed clears the course threshold and energy clears the car threshold, the car enters the slide state with a spin rate set from twice its lateral velocity, sharpened when the car steering response is below nominal. A fresh brake press instead uses the absolute lateral velocity times speed over 64, against a second speed threshold, and seeds spin from the lateral velocity alone. Outside those paths the coasting count and energy reset.",
+      "constants": [
+        {
+          "name": "pedalArmLevel",
+          "value": "0x85",
+          "unit": "pedal units out of 255",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:144"
+        },
+        {
+          "name": "pedalReleaseLevel",
+          "value": "0x7C",
+          "unit": "pedal units out of 255",
+          "source": "src/main/PAL/main/car/update_car_drivetrain.c:155"
+        },
+        {
+          "name": "coastThrottleLevel",
+          "value": 128,
+          "unit": "pedal units out of 255",
+          "source": "src/main/PAL/main/car/update_car_driving.c:85"
+        },
+        {
+          "name": "brakeTapEnergyDivisor",
+          "value": 64,
+          "unit": "speed times lateral velocity per energy unit",
+          "source": "src/main/PAL/main/car/update_car_driving.c:89"
+        },
+        {
+          "name": "throttleStabSpinGain",
+          "value": 2,
+          "unit": "multiplier on lateral velocity",
+          "source": "src/main/PAL/main/car/update_car_driving.c:81"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_driving.c",
+          "line": 69
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_driving.c",
+          "line": 70
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_driving.c",
+          "line": 87
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 141
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 159
+        }
+      ],
+      "capabilities": [
+        "drift initiation",
+        "pedal latch",
+        "technique input"
+      ],
+      "tags": [
+        "drift",
+        "technique",
+        "handling",
+        "input"
+      ]
+    },
+    {
+      "id": "slide-rotation",
+      "node": "motion-states",
+      "name": "Slide rotation and energy drain",
+      "summary": "During a slide the body yaw spins away from the travel heading under a capped spin rate while an energy budget drains each update",
+      "behavior": "The source labels this state a takeoff; in play it is the committed slide. While slide energy remains, body yaw advances by the spin rate over 256 and the spin rate is pulled toward the steering target, scaled by the steering load, with a cap of plus or minus 13824. With the steering short of full lock and the body almost aligned, spin decays by one thirty-second and is drawn back toward the heading. Energy drains a fixed 64 per update, plus the square of the yaw gap over 65536, plus terms for low spin, low speed, brake and lifted throttle; brake and lift also scrub speed. A body more than 1536 angle units off heading loses one percent of speed per update. A body lift offset climbs by ten to a cap of 100. When energy runs out the car hands to recovery with a twenty-update timer, keeps part of its speed as sideways momentum based on the yaw gap, and starts a rev blend for the current gear.",
+      "constants": [
+        {
+          "name": "spinRateCap",
+          "value": "0x3600",
+          "unit": "spin units, 256 per angle unit per update",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:179"
+        },
+        {
+          "name": "energyDrainPerUpdate",
+          "value": 64,
+          "unit": "energy units, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:187"
+        },
+        {
+          "name": "overRotationRetention",
+          "value": 990,
+          "unit": "thousandths of speed kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:121"
+        },
+        {
+          "name": "overRotationThreshold",
+          "value": "0x600",
+          "unit": "angle units, 4096 per turn",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:120"
+        },
+        {
+          "name": "bodyLiftStep",
+          "value": 10,
+          "unit": "lift units, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:158"
+        },
+        {
+          "name": "recoveryUpdates",
+          "value": "0x14",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:257"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 96
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 163
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 186
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 190
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 236
+        }
+      ],
+      "capabilities": [
+        "drift",
+        "yaw spin",
+        "energy budget",
+        "slide exit"
+      ],
+      "tags": [
+        "drift",
+        "handling",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "slide-recovery",
+      "node": "motion-states",
+      "name": "Slide recovery glide",
+      "summary": "After a slide the car glides for twenty updates while leftover sideways momentum, spin and yaw offset decay by a thirty-second each update",
+      "behavior": "The source labels this state airborne; it runs after the slide energy is spent. Body yaw keeps chasing the steering target by a fifth of the gap. Travel velocity is rebuilt from the heading plus the stored yaw offset, and the momentum captured at slide exit is added along the exit heading. Spin, captured momentum and yaw offset each keep 31/32 per update and the body lift keeps two thirds. If the yaw offset is still more than 1536 angle units, speed drops to four fifths each update, which punishes a slide held too far. When the twenty-update timer expires, the remaining spin is removed from body yaw and the car returns to grip driving. A coasting counter keeps running here, so a driver can chain the next slide straight out of recovery.",
+      "constants": [
+        {
+          "name": "recoveryDecay",
+          "value": 31,
+          "unit": "thirty-seconds kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:367"
+        },
+        {
+          "name": "liftDecayDenominator",
+          "value": 3,
+          "unit": "thirds, two of which are kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:371"
+        },
+        {
+          "name": "overRotationLimit",
+          "value": 1537,
+          "unit": "angle units, 4096 per turn",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:372"
+        },
+        {
+          "name": "overRotationSpeedKeep",
+          "value": 4,
+          "unit": "fifths of speed kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:373"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 320
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 350
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 367
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 376
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 383
+        }
+      ],
+      "capabilities": [
+        "drift recovery",
+        "momentum carry",
+        "slide chaining"
+      ],
+      "tags": [
+        "drift",
+        "recovery",
+        "physics"
+      ]
+    },
+    {
+      "id": "heading-integration",
+      "node": "motion-states",
+      "name": "Split heading and body yaw",
+      "summary": "The car keeps a travel heading separate from its body yaw, and the body yaw chases the steering target by one fifth of the gap each update",
+      "behavior": "Each motion handler first moves body yaw a fifth of the way toward the steering target heading. The integrator then builds a displacement from a quarter of speed along the travel heading plus the acceleration term along the body yaw, divided by 100, and recomputes the travel heading from that displacement. Speed itself grows by the acceleration term times the cosine of the gap between heading and body yaw, so thrust only builds speed in the direction the car points. In grip driving a velocity is then rebuilt by projecting the travel vector onto the body axis, which removes lateral slip; the standing-start handler projects with a four times larger divisor. Angles are 12-bit, 4096 to a turn, with sine and cosine in 4096 fixed point.",
+      "constants": [
+        {
+          "name": "yawChaseDivisor",
+          "value": 5,
+          "unit": "fraction of the yaw gap per update",
+          "source": "src/main/PAL/main/car/update_car_driving.c:29"
+        },
+        {
+          "name": "speedShareDivisor",
+          "value": 4,
+          "unit": "divisor on speed in the displacement",
+          "source": "src/main/PAL/main/car/advance_car_position.c:22"
+        },
+        {
+          "name": "displacementDivisor",
+          "value": 100,
+          "unit": "divisor per update",
+          "source": "src/main/PAL/main/car/advance_car_position.c:22"
+        },
+        {
+          "name": "fixedPointOne",
+          "value": 4096,
+          "unit": "fixed-point unit for sine and cosine",
+          "source": "src/main/PAL/main/car/advance_car_position.c:45"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_car_driving.c",
+          "line": 27
+        },
+        {
+          "path": "src/main/PAL/main/car/advance_car_position.c",
+          "line": 13
+        },
+        {
+          "path": "src/main/PAL/main/car/advance_car_position.c",
+          "line": 22
+        },
+        {
+          "path": "src/main/PAL/main/car/advance_car_position.c",
+          "line": 45
+        },
+        {
+          "path": "src/main/PAL/main/car/advance_car_position.c",
+          "line": 47
+        }
+      ],
+      "capabilities": [
+        "heading integration",
+        "yaw smoothing",
+        "slip removal"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "physics"
+      ]
+    },
+    {
+      "id": "standing-start",
+      "node": "motion-states",
+      "name": "Standing-start wheelspin",
+      "summary": "At the start a spin counter burns down with throttle and brake while speed is cut to a tenth and the body jitters",
+      "behavior": "If the race starts with the car in the standing-start state, every update divides speed by ten and burns a spin counter down by the throttle input plus 32, plus 1000 more while engine speed is below 2000, plus 127 more when the throttle is under half at higher revs. Brake input burns twice its value as well. The body jitters vertically and sideways by small random amounts scaled to the burn. The drivetrain adds a fraction of the remaining spin to engine load so revs flare. When the counter is used up, or starts at ten or less, the car changes to grip driving. The tyre squeal volume falls as the counter drains.",
+      "constants": [
+        {
+          "name": "startSpeedDivisor",
+          "value": 10,
+          "unit": "divisor on speed, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:416"
+        },
+        {
+          "name": "lowRevThreshold",
+          "value": 2000,
+          "unit": "rpm",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:424"
+        },
+        {
+          "name": "lowRevExtraBurn",
+          "value": 1032,
+          "unit": "spin units, throttle added, per update, rate unverified",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:425"
+        },
+        {
+          "name": "minimumSpinToStart",
+          "value": 11,
+          "unit": "spin units",
+          "source": "src/main/PAL/main/car/steer_car_to_track_line.c:418"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 388
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 416
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 430
+        },
+        {
+          "path": "src/main/PAL/main/car/steer_car_to_track_line.c",
+          "line": 433
+        },
+        {
+          "path": "src/main/PAL/main/car/update_car_drivetrain.c",
+          "line": 664
+        }
+      ],
+      "capabilities": [
+        "standing start",
+        "wheelspin",
+        "launch control"
+      ],
+      "tags": [
+        "start",
+        "timing",
+        "technique"
+      ]
+    },
+    {
+      "id": "track-surface-placement",
+      "node": "track-contact",
+      "name": "Track-frame height, pitch and roll",
+      "summary": "The car is placed by distance along the current track segment and lateral offset, and its height, pitch and roll come from interpolated track data",
+      "behavior": "Each track point stores position, heading, left and right half widths, height, cross slope and pitch. Straight segments project the car into the segment frame; curved segments measure the car radius about an arc centre and blend the heading by swept angle. Along-segment distance is clamped to the segment and stored as a fraction of 1024. Half widths, height, cross slope and pitch are blended between the two points by that distance. Height is the blended height plus the cross slope times the lateral offset over 128. Body pitch and roll are the track pitch and the bank angle, turned into the car frame with the sine and cosine of the car yaw relative to the track. A separate sampler finds the containing segment quad by spiralling outward from the last index.",
+      "constants": [
+        {
+          "name": "crossSlopeShift",
+          "value": 7,
+          "unit": "bits, so 128 lateral units per slope unit",
+          "source": "src/main/PAL/main/car/car_track_state.c:319"
+        },
+        {
+          "name": "segmentFractionShift",
+          "value": "0xA",
+          "unit": "bits, 1024 per segment",
+          "source": "src/main/PAL/main/car/car_track_state.c:286"
+        },
+        {
+          "name": "localOffsetScale",
+          "value": 4,
+          "unit": "multiplier before rotation into the segment frame",
+          "source": "src/main/PAL/main/car/car_track_state.c:205"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 28
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 112
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 286
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 319
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 358
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 373
+        }
+      ],
+      "capabilities": [
+        "spline track",
+        "arc segments",
+        "banked road",
+        "surface height"
+      ],
+      "tags": [
+        "physics",
+        "terrain",
+        "track",
+        "spatial test"
+      ]
+    },
+    {
+      "id": "wall-knockback",
+      "node": "body-motion",
+      "name": "Wall push and knockback",
+      "summary": "The outermost body corner past a road edge pushes the car back inside and, for the player, starts a decaying knockback whose strength depends on speed and which corner hit",
+      "behavior": "The player car rotates its four corner offsets by the yaw relative to the track and keeps the farthest left and right corners as the edge insets, noting which corner each was. If the lateral offset passes an edge plus its inset, the car moves back onto the edge and, when it is the player, a knockback starts. A hit on the first corner pushes away from the wall at ten units plus a speed term: above 800 speed units the term is speed, capped at 1800, times the sine of the yaw against the wall over 65536, otherwise a small fixed share of that sine. That push lasts thirty updates. Hits on the second or third corner push twenty units for fifteen updates, and a fourth-corner hit halves the impact vector for fifteen updates. The knockback displaces the car each update and keeps seven eighths of itself. Rivals are clamped to five eighths or four sevenths of the half width.",
+      "constants": [
+        {
+          "name": "speedPushThreshold",
+          "value": "0x321",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:265"
+        },
+        {
+          "name": "speedPushCap",
+          "value": "0x708",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:267"
+        },
+        {
+          "name": "pushBase",
+          "value": 10,
+          "unit": "world units per update",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:293"
+        },
+        {
+          "name": "firstCornerHitUpdates",
+          "value": "0x1E",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:310"
+        },
+        {
+          "name": "sideHitPush",
+          "value": 20,
+          "unit": "world units per update",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:326"
+        },
+        {
+          "name": "knockbackRetention",
+          "value": 7,
+          "unit": "eighths kept, per update, rate unverified",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:212"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/update_player_car.c",
+          "line": 274
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 238
+        },
+        {
+          "path": "src/main/PAL/main/car/car_track_state.c",
+          "line": 249
+        },
+        {
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "line": 226
+        },
+        {
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "line": 210
+        },
+        {
+          "path": "src/main/PAL/main/car/clamp_car_lateral_offset.c",
+          "line": 55
+        }
+      ],
+      "capabilities": [
+        "wall collision",
+        "knockback",
+        "edge clamp"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "hit reaction"
+      ]
+    },
+    {
+      "id": "crest-hop",
+      "node": "body-motion",
+      "name": "Marker-triggered crest hop",
+      "summary": "Crossing a track crest marker above 800 speed units starts a vertical hop whose rate scales with speed, and the arc grows with the square of time",
+      "behavior": "Each track carries up to eight crest markers per direction, each holding a progress value and a signed strength. Above 800 speed units, the hop logic compares the progress values of this update and the previous one with every marker. A jump of 4096 or more between the two is treated as a lap wrap and ignored. A positive strength starts a hop whose vertical rate is strength times speed over minus 4800, so a faster car leaves the crest harder. A negative strength starts a second mode that uses the magnitude of the strength as the rate, without the speed term. While a hop runs, the pitch accumulator gains the square of the hop timer over six, divided by 256 once the accumulator reaches 300, and the roll accumulator gains a quarter of that. The car pitch and roll are then overridden by the accumulators.",
+      "constants": [
+        {
+          "name": "crestSpeedThreshold",
+          "value": "0x320",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_ai.c:93"
+        },
+        {
+          "name": "lapWrapGuard",
+          "value": "0x1000",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/car_ai.c:122"
+        },
+        {
+          "name": "hopRateDivisor",
+          "value": -4800,
+          "unit": "strength times speed per rate unit",
+          "source": "src/main/PAL/main/car/car_ai.c:222"
+        },
+        {
+          "name": "arcDivisor",
+          "value": 6,
+          "unit": "divisor on timer squared, per update, rate unverified",
+          "source": "src/main/PAL/main/car/car_ai.c:185"
+        },
+        {
+          "name": "crestMarkersPerDirection",
+          "value": 8,
+          "unit": "markers",
+          "source": "src/main/PAL/main/car/car_ai.c:147"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 75
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 93
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 167
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 213
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 222
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "crest",
+        "vertical motion"
+      ],
+      "tags": [
+        "jump",
+        "physics",
+        "terrain",
+        "feel"
+      ]
+    },
+    {
+      "id": "body-kick-and-squat",
+      "node": "body-motion",
+      "name": "Impact kick and pedal squat",
+      "summary": "Impacts start a thirty-update decaying sine on pitch or roll, and heavy throttle or braking tilts the body",
+      "behavior": "A wall or car contact starts a body kick. The angled kick measures the yaw against the track, and above 320 speed units its amplitude is the excess speed times that angle, given a random sign. The kick runs thirty updates. Each update the amplitude is scaled by the remaining time over 128 and a sine of three cycles over the thirty updates rides on top, then goes to pitch, roll or both by kick mode. Separately, a tilt counter moves one way by four per update while the throttle is past half at or above the redline, down to a floor of five times nine minus the gear, so lower gears squat harder. Above 80 speed units, braking or sliding moves it the other way by two to a cap of eight. Otherwise it relaxes to three quarters each update. The bumper camera adds this counter to its pitch.",
+      "constants": [
+        {
+          "name": "kickUpdates",
+          "value": "0x1E",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:376"
+        },
+        {
+          "name": "kickSpeedThreshold",
+          "value": "0x140",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:390"
+        },
+        {
+          "name": "kickWaveCycles",
+          "value": 3,
+          "unit": "cycles over the kick",
+          "source": "src/main/PAL/main/car/car_ai.c:41"
+        },
+        {
+          "name": "squatGearBase",
+          "value": 9,
+          "unit": "gear offset for the squat floor",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:166"
+        },
+        {
+          "name": "brakeTiltSpeed",
+          "value": "0x51",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:177"
+        },
+        {
+          "name": "tiltCap",
+          "value": 8,
+          "unit": "tilt units",
+          "source": "src/main/PAL/main/car/car_draw_and_knockback.c:182"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "line": 355
+        },
+        {
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "line": 383
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 15
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 41
+        },
+        {
+          "path": "src/main/PAL/main/car/car_draw_and_knockback.c",
+          "line": 143
+        },
+        {
+          "path": "src/main/PAL/main/car/update_player_car.c",
+          "line": 306
+        }
+      ],
+      "capabilities": [
+        "impact shake",
+        "body pitch",
+        "weight transfer"
+      ],
+      "tags": [
+        "feel",
+        "hit reaction",
+        "camera"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "node": "camera",
+      "name": "Lagging chase camera",
+      "summary": "The chase view follows body yaw through an accelerating ramp with a speed-dependent damping and a step cap, then sits behind the car at one of three heights",
+      "behavior": "The chase view tracks the car yaw with a ramp rather than a fixed rate. Each update the yaw error picks a direction; the ramp grows by eight and the step is the square of the ramp over a damping value. Damping comes from 1250 minus speed: above 800 speed units it is lightly scaled and floored at six, and below that a quadratic in the same term is used, so the camera swings faster at speed. The step is capped at a seventeenth of the error times two, and never more than 64 angle units. Errors under five units reset the ramp. The eye is offset behind and above the car through its pitch and roll, then pulled back along one of three presets that pair a height with a distance. The view pitches down by a preset amount and the roll copies the body roll minus its roll velocity.",
+      "constants": [
+        {
+          "name": "fastSpeedThreshold",
+          "value": "0x321",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/track/update_camera.c:180"
+        },
+        {
+          "name": "dampingBase",
+          "value": "0x4E2",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/track/update_camera.c:181"
+        },
+        {
+          "name": "rampStep",
+          "value": 8,
+          "unit": "ramp units, per update, rate unverified",
+          "source": "src/main/PAL/main/track/update_camera.c:204"
+        },
+        {
+          "name": "stepCap",
+          "value": "0x40",
+          "unit": "angle units per update",
+          "source": "src/main/PAL/main/track/update_camera.c:198"
+        },
+        {
+          "name": "nearPresetHeight",
+          "value": "0x3A",
+          "unit": "world units",
+          "source": "src/main/PAL/main/track/update_camera.c:325"
+        },
+        {
+          "name": "nearPresetDistance",
+          "value": "0x118",
+          "unit": "world units",
+          "source": "src/main/PAL/main/track/update_camera.c:326"
+        },
+        {
+          "name": "farPresetDistance",
+          "value": "0x190",
+          "unit": "world units",
+          "source": "src/main/PAL/main/track/update_camera.c:334"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 160
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 186
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 201
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 323
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 345
+        }
+      ],
+      "capabilities": [
+        "third-person follow",
+        "yaw lag",
+        "camera presets"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "smoothing",
+        "distance"
+      ]
+    },
+    {
+      "id": "track-side-cameras",
+      "node": "camera",
+      "name": "Track-side and path cameras",
+      "summary": "Replay and attract views pick the nearest track camera node, which either eases a fixed eye toward the car or interpolates a path between nodes",
+      "behavior": "Outside the two driver views, the camera mode comes from the nearest of a list of camera nodes placed along the track. A world-position node moves its eye toward a target point near the car by a node-specific blend in ten-thousandths each update. It then aims at the car with pitch and yaw from an arctangent, with no roll. A path node keeps a start value, a delta and a current value for a local offset and for pitch, yaw, roll and pull-back distance, and blends them over the node duration in frames. A change of node re-seeds the start from the current camera, so cuts inside a path stay smooth. The bumper view is the first mode: it rides a fixed offset of 448 sixteenth units along the body vertical axis and inherits the squat tilt.",
+      "constants": [
+        {
+          "name": "blendScale",
+          "value": 10000,
+          "unit": "ten-thousandths per update",
+          "source": "src/main/PAL/main/track/update_camera.c:377"
+        },
+        {
+          "name": "targetLift",
+          "value": "0x32",
+          "unit": "world units",
+          "source": "src/main/PAL/main/track/update_camera.c:370"
+        },
+        {
+          "name": "bumperHeight",
+          "value": "-0x1C0",
+          "unit": "sixteenth world units along the body vertical axis",
+          "source": "src/main/PAL/main/track/update_camera.c:142"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 119
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 356
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 377
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 394
+        },
+        {
+          "path": "src/main/PAL/main/track/update_camera.c",
+          "line": 130
+        }
+      ],
+      "capabilities": [
+        "track cameras",
+        "replay camera",
+        "bumper view",
+        "path interpolation"
+      ],
+      "tags": [
+        "camera",
+        "replay",
+        "smoothing"
+      ]
+    },
+    {
+      "id": "rival-speed-schedule",
+      "node": "rival-ai",
+      "name": "Rival speed keys and flicks",
+      "summary": "Each rival interpolates a target speed between per-course progress keys by its grid slot, and flicks its body in a slide when a key says so",
+      "behavior": "Each course direction has up to 48 speed keys at progress positions, each holding four target speed columns and a slide value. A rival finds the key pair around its progress and blends the two targets linearly. The four contenders each read their own column; the rest of the field reuses the fourth column scaled by 85 minus the car index, in percent, so later cars run slower. The blend becomes an acceleration limit through the inverse of the speedometer conversion, 1168 over 160, times six hundredths. A rival also carries a lateral racing-line offset that hint ranges along the track nudge, but only for the four contenders with no cars nearby. When a key carries a slide value, the rival gets a yaw input scaled by speed over 800. Its yaw rate then follows a decaying input, capped at plus or minus 700, which reads as a rival throwing the car into a corner.",
+      "constants": [
+        {
+          "name": "fieldScaleBase",
+          "value": "0x55",
+          "unit": "percent",
+          "source": "src/main/PAL/main/car/car_ai.c:459"
+        },
+        {
+          "name": "speedConversion",
+          "value": 1168,
+          "unit": "internal speed units per display conversion",
+          "source": "src/main/PAL/main/car/car_ai.c:483"
+        },
+        {
+          "name": "accelerationShare",
+          "value": 6,
+          "unit": "hundredths",
+          "source": "src/main/PAL/main/car/car_ai.c:483"
+        },
+        {
+          "name": "slideSpeedThreshold",
+          "value": "0x3C1",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/car_ai.c:254"
+        },
+        {
+          "name": "slideYawCap",
+          "value": "0x2BC",
+          "unit": "yaw units per update",
+          "source": "src/main/PAL/main/car/car_ai.c:290"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 415
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 447
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 482
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 241
+        },
+        {
+          "path": "src/main/PAL/main/car/car_ai.c",
+          "line": 318
+        },
+        {
+          "path": "src/main/PAL/main/car/race_car_update.c",
+          "line": 68
+        }
+      ],
+      "capabilities": [
+        "ai speed profile",
+        "racing line",
+        "ai drift"
+      ],
+      "tags": [
+        "ai",
+        "racing",
+        "opponent"
+      ]
+    },
+    {
+      "id": "traffic-avoidance",
+      "node": "rival-ai",
+      "name": "Rival traffic avoidance",
+      "summary": "Rivals score the lanes ahead by how close blocking cars are and step sideways toward the emptiest lane, braking if boxed in",
+      "behavior": "Each update a rival looks at the other ten cars and the player. A car counts as ahead when its progress lead is positive and under a look-ahead of 3072 plus twice the rival speed; for the player the window is 6144 minus twice the player speed. Cars within 48 lateral units of the rival lane mark it blocked and add a closeness score to one of three lane buckets. The rival does not count a car ahead that is faster than it unless it is already avoiding. Very close cars on either side, under 512 progress units, mark that side unsafe. With anything ahead the rival targets 80 units left or right, picking the lower-scoring lane on a safe side, and steps six to eight units per update plus two while it avoids. A total score above 1000 cuts its acceleration limit to 30 percent. With nothing ahead it returns to its racing line.",
+      "constants": [
+        {
+          "name": "lookAheadBase",
+          "value": "0xC00",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:63"
+        },
+        {
+          "name": "laneHalfWidth",
+          "value": "0x30",
+          "unit": "lateral units",
+          "source": "src/main/PAL/main/car/rival_ai.c:65"
+        },
+        {
+          "name": "playerLookAhead",
+          "value": "0x1800",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:102"
+        },
+        {
+          "name": "avoidOffset",
+          "value": "-0x50",
+          "unit": "lateral units",
+          "source": "src/main/PAL/main/car/rival_ai.c:163"
+        },
+        {
+          "name": "boxedInScore",
+          "value": "0x3E9",
+          "unit": "score units",
+          "source": "src/main/PAL/main/car/rival_ai.c:178"
+        },
+        {
+          "name": "sideCheckRange",
+          "value": "0x200",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:141"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 30
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 119
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 158
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 178
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 189
+        },
+        {
+          "path": "src/main/PAL/main/car/race_car_update.c",
+          "line": 54
+        }
+      ],
+      "capabilities": [
+        "ai avoidance",
+        "lane choice",
+        "overtaking"
+      ],
+      "tags": [
+        "ai",
+        "racing",
+        "opponent",
+        "spatial test"
+      ]
+    },
+    {
+      "id": "rubber-band",
+      "node": "rival-ai",
+      "name": "Contender rubber band",
+      "summary": "The four contenders are ranked each update, and whichever is ahead of the player by more than a course-dependent gap has its acceleration trimmed",
+      "behavior": "The four contender rivals are ranked by total progress. Starting from the last ranked, the first contender found ahead of the player is examined. If it leads by more than a far gap and is above 800 speed units, its acceleration limit drops to 90 percent. If it leads by more than a near gap and is above 1000 speed units, the limit drops to 98 percent. The gaps are 1536 and 3584 progress units on most courses and 3072 and 5120 on every course whose index is three modulo four. Separately, when a contender leads the next contender by more than 10240 progress units above 900 speed units, the leader loses fifteen percent of its limit. The same pass picks voice cues for close rivals and for taking the lead. The pass does nothing once the race reaches its late phase, and the field beyond the contenders runs avoidance only on alternate updates.",
+      "constants": [
+        {
+          "name": "nearGap",
+          "value": "0x600",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:296"
+        },
+        {
+          "name": "farGap",
+          "value": "0xE00",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:297"
+        },
+        {
+          "name": "farGapTrim",
+          "value": 90,
+          "unit": "percent of acceleration limit kept",
+          "source": "src/main/PAL/main/car/rival_ai.c:320"
+        },
+        {
+          "name": "nearGapTrim",
+          "value": 98,
+          "unit": "percent of acceleration limit kept",
+          "source": "src/main/PAL/main/car/rival_ai.c:328"
+        },
+        {
+          "name": "leaderSpreadGap",
+          "value": "0x2800",
+          "unit": "progress units",
+          "source": "src/main/PAL/main/car/rival_ai.c:206"
+        },
+        {
+          "name": "leaderSpreadSpeed",
+          "value": "0x385",
+          "unit": "speed units",
+          "source": "src/main/PAL/main/car/rival_ai.c:210"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 223
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 282
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 292
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 317
+        },
+        {
+          "path": "src/main/PAL/main/car/rival_ai.c",
+          "line": 192
+        },
+        {
+          "path": "src/main/PAL/main/car/race_car_update.c",
+          "line": 75
+        }
+      ],
+      "capabilities": [
+        "rubber banding",
+        "ai ranking",
+        "difficulty balance"
+      ],
+      "tags": [
+        "ai",
+        "racing",
+        "opponent",
+        "balance"
+      ]
+    }
+  ]
+}

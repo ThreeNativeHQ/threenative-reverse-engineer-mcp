@@ -1,0 +1,1431 @@
+{
+  "version": 1,
+  "id": "grand-prix-4",
+  "title": "Grand Prix 4",
+  "repo": "https://github.com/leighrobertabbott/decomp-grandprix4",
+  "sha": "d71cbd42dc2d358c9c716de628871177e7a90ba1",
+  "nodes": [
+    {
+      "id": "sim-frame",
+      "name": "Frame loop and fixed-step car update",
+      "purpose": "The outer simulation frame: once per rendered frame it prepares the session, steps every listed car, splits the frame span into equal sub-steps, runs the per-chunk update chain and closes the frame.",
+      "paths": [
+        "src/gp4/c/0043/004362cd.cpp",
+        "src/gp4/asm/0041/004198c7.cpp",
+        "src/gp4/c/0041/0041970f.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_004362cd",
+          "path": "src/gp4/c/0043/004362cd.cpp",
+          "lines": [
+            35,
+            138
+          ]
+        },
+        {
+          "name": "FUN_004198c7",
+          "path": "src/gp4/asm/0041/004198c7.cpp",
+          "lines": [
+            27,
+            144
+          ]
+        },
+        {
+          "name": "FUN_0041970f",
+          "path": "src/gp4/c/0041/0041970f.cpp",
+          "lines": [
+            35,
+            98
+          ]
+        }
+      ],
+      "dependsOn": [
+        "body-integration",
+        "tyres",
+        "aero",
+        "suspension",
+        "steering",
+        "drivetrain"
+      ]
+    },
+    {
+      "id": "body-integration",
+      "parent": "sim-frame",
+      "name": "Sub-step body integration",
+      "purpose": "Advances the six degrees of freedom of a body slot (three positions, three velocities) by the whole sub-step, using a quadratic drag term plus linear damping.",
+      "paths": [
+        "src/gp4/asm/0041/0041b035.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_0041b035",
+          "path": "src/gp4/asm/0041/0041b035.cpp",
+          "lines": [
+            15,
+            64
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "tyres",
+      "name": "Tyre load, slip and force",
+      "purpose": "Per-wheel load, the two slip inputs, the fixed-size coefficient records and the soft-saturating curve that converts slip into longitudinal and lateral force.",
+      "paths": [
+        "src/gp4/asm/0041/0041724d.cpp",
+        "src/gp4/asm/0041/00411e17.cpp",
+        "src/gp4/c/0041/00411cc4.cpp",
+        "src/gp4/c/0041/00411e69.cpp",
+        "src/gp4/c/0041/00411f09.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_0041724d",
+          "path": "src/gp4/asm/0041/0041724d.cpp",
+          "lines": [
+            65,
+            160
+          ]
+        },
+        {
+          "name": "FUN_00411e17",
+          "path": "src/gp4/asm/0041/00411e17.cpp",
+          "lines": [
+            15,
+            29
+          ]
+        },
+        {
+          "name": "FUN_00411cc4",
+          "path": "src/gp4/c/0041/00411cc4.cpp",
+          "lines": [
+            56,
+            101
+          ]
+        },
+        {
+          "name": "FUN_00411e69",
+          "path": "src/gp4/c/0041/00411e69.cpp",
+          "lines": [
+            32,
+            70
+          ]
+        },
+        {
+          "name": "FUN_00411f09",
+          "path": "src/gp4/c/0041/00411f09.cpp",
+          "lines": [
+            31,
+            64
+          ]
+        }
+      ],
+      "dependsOn": [
+        "suspension",
+        "aero"
+      ]
+    },
+    {
+      "id": "aero",
+      "name": "Aerodynamic load",
+      "purpose": "Blends the stored aerodynamic load pair by a height-dependent weight and spreads half of each axle value, plus a per-wheel trim, into the four wheel loads.",
+      "paths": [
+        "src/gp4/c/0041/00416dec.cpp",
+        "src/gp4/c/0041/00417066.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00416dec",
+          "path": "src/gp4/c/0041/00416dec.cpp",
+          "lines": [
+            32,
+            100
+          ]
+        },
+        {
+          "name": "FUN_00417066",
+          "path": "src/gp4/c/0041/00417066.cpp",
+          "lines": [
+            49,
+            123
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "suspension",
+      "name": "Suspension travel and load transfer",
+      "purpose": "Turns per-wheel load into spring compression, damper rate and a ride height, and moves the difference between the axle means into the body roll term.",
+      "paths": [
+        "src/gp4/c/0041/0041073d.cpp",
+        "src/gp4/c/0041/0041c145.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_0041073d",
+          "path": "src/gp4/c/0041/0041073d.cpp",
+          "lines": [
+            49,
+            94
+          ]
+        },
+        {
+          "name": "FUN_0041c145",
+          "path": "src/gp4/c/0041/0041c145.cpp",
+          "lines": [
+            68,
+            105
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "steering",
+      "name": "Steering input and heading response",
+      "purpose": "Builds the steering value for the frame from the driver input and the track heading, rate-limits it, and provides the response curve and per-wheel steering offsets.",
+      "paths": [
+        "src/gp4/asm/0041/0041416e.cpp",
+        "src/gp4/asm/0041/00415b00.cpp",
+        "src/gp4/asm/0041/0041b3d9.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_0041416e",
+          "path": "src/gp4/asm/0041/0041416e.cpp",
+          "lines": [
+            51,
+            166
+          ]
+        },
+        {
+          "name": "FUN_00415b00",
+          "path": "src/gp4/asm/0041/00415b00.cpp",
+          "lines": [
+            24,
+            74
+          ]
+        },
+        {
+          "name": "FUN_0041b3d9",
+          "path": "src/gp4/asm/0041/0041b3d9.cpp",
+          "lines": [
+            42,
+            70
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-ring"
+      ]
+    },
+    {
+      "id": "drivetrain",
+      "name": "Engine torque and gearbox",
+      "purpose": "The interpolated engine torque curve, the gear ratio table, the gear-selection ramp and the percentage blend that softens a gear change.",
+      "paths": [
+        "src/gp4/asm/0044/0044192c.cpp",
+        "src/gp4/asm/0041/00416487.cpp",
+        "src/gp4/asm/0041/0041034e.cpp",
+        "src/gp4/asm/0041/0041362a.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_0044192c",
+          "path": "src/gp4/asm/0044/0044192c.cpp",
+          "lines": [
+            52,
+            132
+          ]
+        },
+        {
+          "name": "FUN_00416487",
+          "path": "src/gp4/asm/0041/00416487.cpp",
+          "lines": [
+            51,
+            84
+          ]
+        },
+        {
+          "name": "FUN_0041034e",
+          "path": "src/gp4/asm/0041/0041034e.cpp",
+          "lines": [
+            13,
+            67
+          ]
+        },
+        {
+          "name": "FUN_0041362a",
+          "path": "src/gp4/asm/0041/0041362a.cpp",
+          "lines": [
+            40,
+            68
+          ]
+        }
+      ],
+      "dependsOn": [
+        "tyres"
+      ]
+    },
+    {
+      "id": "collision",
+      "name": "Car contact and collision response",
+      "purpose": "Swept pair tests over one frame, the oriented-box contact test built from outcode clipping, and the mass-weighted blend that separates two touching bodies.",
+      "paths": [
+        "src/gp4/asm/0043/00436970.cpp",
+        "src/gp4/asm/0043/00438c98.cpp",
+        "src/gp4/asm/0043/00439f75.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00436970",
+          "path": "src/gp4/asm/0043/00436970.cpp",
+          "lines": [
+            110,
+            235
+          ]
+        },
+        {
+          "name": "FUN_00438c98",
+          "path": "src/gp4/asm/0043/00438c98.cpp",
+          "lines": [
+            94,
+            255
+          ]
+        },
+        {
+          "name": "FUN_00439f75",
+          "path": "src/gp4/asm/0043/00439f75.cpp",
+          "lines": [
+            69,
+            92
+          ]
+        }
+      ],
+      "dependsOn": [
+        "sim-frame"
+      ]
+    },
+    {
+      "id": "track-ring",
+      "name": "Track segment ring and lap position",
+      "purpose": "The circular list of fixed-size track segment records, the forward and backward walkers over it, and the projection of a car onto the lap length.",
+      "paths": [
+        "src/gp4/asm/0040/00409467.cpp",
+        "src/gp4/asm/0041/0041cb9b.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00409467",
+          "path": "src/gp4/asm/0040/00409467.cpp",
+          "lines": [
+            11,
+            62
+          ]
+        },
+        {
+          "name": "FUN_0041cb9b",
+          "path": "src/gp4/asm/0041/0041cb9b.cpp",
+          "lines": [
+            83,
+            140
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "race-clock",
+      "name": "Race clock, lap digits and session timers",
+      "purpose": "Two fixed-point clock accumulators advanced by per-frame deltas, the remaining-time split into decimal digits, and the day and countdown deadlines.",
+      "paths": [
+        "src/gp4/c/0044/00443393.cpp",
+        "src/gp4/asm/0040/0040996f.cpp",
+        "src/gp4/c/0044/00442cb4.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00443393",
+          "path": "src/gp4/c/0044/00443393.cpp",
+          "lines": [
+            27,
+            119
+          ]
+        },
+        {
+          "name": "FUN_0040996f",
+          "path": "src/gp4/asm/0040/0040996f.cpp",
+          "lines": [
+            30,
+            48
+          ]
+        },
+        {
+          "name": "FUN_00442cb4",
+          "path": "src/gp4/c/0044/00442cb4.cpp",
+          "lines": [
+            25,
+            29
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-ring"
+      ]
+    },
+    {
+      "id": "ai-driver",
+      "name": "AI driver line following",
+      "purpose": "Finds the target point ahead on the racing line, damps the car offsets and closing speed in that frame, and turns the heading toward it with a deadband and a rate cap.",
+      "paths": [
+        "src/gp4/asm/0043/00433709.cpp",
+        "src/gp4/asm/0042/0042c1f4.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00433709",
+          "path": "src/gp4/asm/0043/00433709.cpp",
+          "lines": [
+            306,
+            503
+          ]
+        },
+        {
+          "name": "FUN_0042c1f4",
+          "path": "src/gp4/asm/0042/0042c1f4.cpp",
+          "lines": [
+            512,
+            613
+          ]
+        }
+      ],
+      "dependsOn": [
+        "steering",
+        "track-ring"
+      ]
+    },
+    {
+      "id": "pit-lane",
+      "name": "Pit lane detection",
+      "purpose": "Decides per car and frame whether it is on the pit lane or the racing lap, which lane kind it is on, and the lateral limit that lane entry allows.",
+      "paths": [
+        "src/gp4/asm/0043/004320f2.cpp",
+        "src/gp4/asm/0042/00425cb3.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_004320f2",
+          "path": "src/gp4/asm/0043/004320f2.cpp",
+          "lines": [
+            49,
+            150
+          ]
+        },
+        {
+          "name": "FUN_00425cb3",
+          "path": "src/gp4/asm/0042/00425cb3.cpp",
+          "lines": [
+            49,
+            115
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-ring"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "View and projection matrices",
+      "purpose": "Builds the perspective projection and the view matrix for a raised, position-locked viewpoint, and derives the orthonormal basis of the camera body.",
+      "paths": [
+        "src/gp4/c/0049/00492c10.cpp",
+        "src/gp4/c/0040/0040233e.cpp",
+        "src/gp4/c/0040/004024b5.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FUN_00492c10",
+          "path": "src/gp4/c/0049/00492c10.cpp",
+          "lines": [
+            20,
+            48
+          ]
+        },
+        {
+          "name": "FUN_0040233e",
+          "path": "src/gp4/c/0040/0040233e.cpp",
+          "lines": [
+            11,
+            32
+          ]
+        },
+        {
+          "name": "FUN_004024b5",
+          "path": "src/gp4/c/0040/004024b5.cpp",
+          "lines": [
+            12,
+            40
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "substep-scheduler",
+      "node": "sim-frame",
+      "name": "Frame split into equal sub-steps",
+      "summary": "A rendered frame is not one physics step: its span is divided into equal sub-steps and the car chain is run once per bounded chunk, so handling stays the same at any frame rate.",
+      "behavior": "Each car spends its frame in a scheduler rather than a single update call. The scheduler reads the span of simulated time for the frame and divides it by the nominal sub-step length, adding half a step before the divide so the sub-step count is the nearest whole number instead of a floor. It then clears the per-frame accumulators, runs the once-per-frame preparations (load refresh, tyre and gear requests, telemetry sampling) and enters a loop that runs once per chunk: the time accumulator is reloaded with the chunk count times the nominal step, the chain of body, aerodynamic, tyre, suspension and drivetrain updates runs against that shortened span, and the once-per-chunk counters advance. Because every routine downstream reads the chunk span and not the frame span, a 15 ms frame and a 40 ms frame produce the same sequence of equal steps, which is what keeps the car from behaving differently on a slow machine. Replay playback and normal play share this split and differ only in the finisher chosen by a state byte, and the original frame span is written back when the loop ends.",
+      "constants": [
+        {
+          "name": "Rounding bias in the sub-step divide",
+          "value": 1,
+          "unit": "integer sub-steps (half a step added before dividing); per frame, frame rate unverified",
+          "source": "src/gp4/c/0041/0041970f.cpp:45"
+        },
+        {
+          "name": "Minimum sub-steps per pass",
+          "value": 1,
+          "unit": "count of sub-steps; per pass, rate unverified",
+          "source": "src/gp4/asm/0041/0041b035.cpp:24"
+        },
+        {
+          "name": "Chunk cap in sub-steps",
+          "value": "0x006228b0",
+          "unit": "address of the 32-bit chunk cap; reloaded per chunk within an update, rate unverified",
+          "source": "src/gp4/asm/0041/004198c7.cpp:60"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/c/0043/004362cd.cpp",
+          "line": 23
+        },
+        {
+          "path": "src/gp4/c/0041/0041970f.cpp",
+          "line": 32
+        },
+        {
+          "path": "src/gp4/asm/0041/004198c7.cpp",
+          "line": 22
+        }
+      ],
+      "capabilities": [
+        "fixed-step simulation",
+        "frame-rate independence",
+        "per-frame scheduling"
+      ],
+      "tags": [
+        "physics",
+        "timing",
+        "architecture"
+      ]
+    },
+    {
+      "id": "body-substep-integration",
+      "node": "body-integration",
+      "name": "Quadratic drag integration of body position and velocity",
+      "summary": "Every sub-step each body slot is pushed along three axes by a force that is quadratic in position plus linear in velocity, and its position is advanced with the mean of the old and new velocity.",
+      "behavior": "For a slot of the body array the routine reads one position and one velocity per axis. The three force terms are built from per-axis coefficients that are converted from scaled integers to doubles once per call, outside the loop, so a chunk of many sub-steps costs only multiplies and adds: a term that grows with the square of the offset from rest and keeps its sign, a term proportional to the current velocity, and a constant bias. The negated force scaled by the sub-step length is added to the velocity, and the position is then advanced with the average of the old and the new velocity, a midpoint scheme that stays stable for the spring-like position term. Everything between the loads and the stores stays in extended precision in the original, so the rounding happens once per axis per sub-step. Slot positions are addressed by a stride, and the coefficient triples sit just past the last slot of the table so they do not change during the loop.",
+      "constants": [
+        {
+          "name": "Integrated axes per body slot",
+          "value": 3,
+          "unit": "axes; per sub-step, rate unverified",
+          "source": "src/gp4/asm/0041/0041b035.cpp:46"
+        },
+        {
+          "name": "Body slot stride",
+          "value": "0x60",
+          "unit": "bytes per body slot, static layout, no timestep",
+          "source": "src/gp4/asm/0041/0041b035.cpp:19"
+        },
+        {
+          "name": "Quadratic drag coefficient triple",
+          "value": "0x006028f4",
+          "unit": "address of three scaled integers read once per call; per sub-step, rate unverified",
+          "source": "src/gp4/asm/0041/0041b035.cpp:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0041/0041b035.cpp",
+          "line": 9
+        },
+        {
+          "path": "src/gp4/asm/0041/0041b035.cpp",
+          "line": 52
+        },
+        {
+          "path": "src/gp4/asm/0041/0041b035.cpp",
+          "line": 55
+        }
+      ],
+      "capabilities": [
+        "rigid body integration",
+        "nonlinear drag",
+        "midpoint position update"
+      ],
+      "tags": [
+        "physics",
+        "integration"
+      ]
+    },
+    {
+      "id": "tyre-load-and-force",
+      "node": "tyres",
+      "name": "Per-wheel load, slip clamping and force split",
+      "summary": "Each of the four wheels turns its vertical load and two slip inputs into a pure slip force, a combined lateral force and a combined longitudinal force, mirrored for the right-hand side.",
+      "behavior": "The routine runs once per wheel with the wheel index. It first clears the slide bit of the wheel status, then forms the vertical load as a fixed-point product of a load field and a suspension term, scaled again by a global gain; both an integer load and a double version are kept, and the double is the multiplier every force is finally scaled by. Two slip inputs follow: one from a shared wheel field times a per-wheel factor, given the sign of a direction field; the other from the same wheel field, a second per-wheel term and a table entry chosen by wheel index, whose sign is flipped for the odd-numbered wheels because the four records mirror the two sides of the car. Both are clamped to a magnitude limit, so a spin or a lock-up cannot produce an unbounded input. Three curve evaluations then run on the clamped pair: one pure slip force, one combined lateral force and one combined longitudinal force; each result is rounded to an integer and written to both a per-wheel slot and a shared slot. Finally the two slip angles the curves reported are scaled and the larger magnitude is compared against a global threshold, and when it reaches that threshold the slide bit is set for the rest of the frame, which the visual and audio layers read as a tyre in trouble.",
+      "constants": [
+        {
+          "name": "Wheel record stride",
+          "value": "0x300",
+          "unit": "bytes per wheel record, static layout, no timestep",
+          "source": "src/gp4/asm/0041/0041724d.cpp:58"
+        },
+        {
+          "name": "Highest wheel index",
+          "value": 3,
+          "unit": "0-based wheel index (four wheels); per wheel per update, rate unverified",
+          "source": "src/gp4/asm/0041/0041724d.cpp:58"
+        },
+        {
+          "name": "Side mirroring index bit",
+          "value": 1,
+          "unit": "wheel index bit that marks the right-hand side; per wheel per update",
+          "source": "src/gp4/asm/0041/0041724d.cpp:69"
+        },
+        {
+          "name": "Angular slip clamp",
+          "value": "0x006f2afc",
+          "unit": "address of the double slip limit; per wheel per update, rate unverified",
+          "source": "src/gp4/asm/0041/0041724d.cpp:61"
+        },
+        {
+          "name": "Slide warning bit",
+          "value": "0x80",
+          "unit": "bit 7 of the wheel status byte; per wheel per update, rate unverified",
+          "source": "src/gp4/asm/0041/0041724d.cpp:153"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0041/0041724d.cpp",
+          "line": 58
+        },
+        {
+          "path": "src/gp4/asm/0041/0041724d.cpp",
+          "line": 85
+        },
+        {
+          "path": "src/gp4/asm/0041/0041724d.cpp",
+          "line": 121
+        }
+      ],
+      "capabilities": [
+        "per-wheel tyre load",
+        "slip clamping",
+        "combined slip forces",
+        "slide detection"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "handling"
+      ]
+    },
+    {
+      "id": "tyre-slip-curve",
+      "node": "tyres",
+      "name": "Soft-saturating slip curve with per-compound records",
+      "summary": "Slip becomes grip through a double arctangent that rounds off the peak instead of clipping it, with separate front and rear coefficient sets and an activation gate per record.",
+      "behavior": "The kernel that every tyre force passes through is tiny and shared. The input slip is scaled, blended toward its own arctangent so the curve is flatter near zero without a hard corner, passed through an arctangent again, multiplied by a gain that sets where the peak sits, and finally replaced by the sine of that angle, which is what makes the force fall away again as the slip keeps growing. The angle itself is kept in a global so the rest of the car can read how far the tyre was taken. The coefficients are held in fixed-size records indexed by the wheel slot, and two further coefficient blocks are chosen by axle: the front pair of wheels uses one block and the rear pair another, which is how the setup separates front and rear grip. Each record also carries an activation gate: a scaled value read from the record is compared with a small negative threshold, and while it stays at or above that threshold the curve contributes exactly zero and the blend factor is left untouched, so a wheel whose record is gated off produces no force at all instead of a scaled-down one. The two combined-force routines multiply this kernel result by a shape made of cosines of arctangents of the two slip inputs and their cross terms, which is why a tyre that is already sliding sideways loses longitudinal grip.",
+      "constants": [
+        {
+          "name": "Curve activation threshold",
+          "value": -2,
+          "unit": "signed integer threshold on a scaled record value, the curve stays inactive at or above it; per wheel per update, rate unverified",
+          "source": "src/gp4/c/0041/00411cc4.cpp:70"
+        },
+        {
+          "name": "Compound record stride",
+          "value": "0x158",
+          "unit": "bytes per compound record, static layout, no timestep",
+          "source": "src/gp4/c/0041/00411cc4.cpp:59"
+        },
+        {
+          "name": "Front axle coefficient table",
+          "value": "0x0062f5e0",
+          "unit": "address of the front axle coefficient block; per wheel per update, rate unverified",
+          "source": "src/gp4/c/0041/00411e69.cpp:26"
+        },
+        {
+          "name": "Rear axle coefficient table",
+          "value": "0x0062f808",
+          "unit": "address of the rear axle coefficient block; per wheel per update, rate unverified",
+          "source": "src/gp4/c/0041/00411e69.cpp:27"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0041/00411e17.cpp",
+          "line": 11
+        },
+        {
+          "path": "src/gp4/c/0041/00411e69.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/gp4/c/0041/00411f09.cpp",
+          "line": 26
+        }
+      ],
+      "capabilities": [
+        "slip curve shape",
+        "front and rear grip split",
+        "activation gate",
+        "combined slip falloff"
+      ],
+      "tags": [
+        "physics",
+        "tyres",
+        "feel"
+      ]
+    },
+    {
+      "id": "aero-downforce-split",
+      "node": "aero",
+      "name": "Aerodynamic load blended into the four wheel loads",
+      "summary": "A stored pair of aerodynamic values is rescaled by a ride-height weight and then halved into the front and rear axle loads, with a per-wheel trim added on top.",
+      "behavior": "Two passes run every frame. The first reads the current aerodynamic pair and rescales it by a weight that falls from full scale to zero as a height-like level rises above a floor: the level is the magnitude of the mean of one field of the two rear wheel records, the excess over the floor is scaled and clamped so the weight never leaves the fixed-point range, and the pair is multiplied by that weight with a fixed-point shift. Several guards skip the blend entirely, in which case the pair keeps its previous value: a gate value of zero, a magnitude below a threshold, two other rear-record fields disagreeing in sign, or a level still below its floor. The second pass spreads the result into the four wheel records: one wheel share is a per-wheel gain times a shared term, divided by the fixed-point unit, plus half of the front value for the two front wheels and half of the rear value for the two rear wheels, negated depending on the sign of a per-wheel field, which is how the unloaded side of the car is handled. A separate speed-like term, scaled with its own shift and gated by flags that mark a replay and a disabled driver aid, is added to all four wheels with a different gain per axle, which is what gives the car its high-speed platform change.",
+      "constants": [
+        {
+          "name": "Downforce weight full scale",
+          "value": "0x4000",
+          "unit": "Q14 fixed point where 1.0 is this value; per frame, rate unverified",
+          "source": "src/gp4/c/0041/00416dec.cpp:80"
+        },
+        {
+          "name": "Front axle downforce value",
+          "value": "0x0062fba8",
+          "unit": "address of the front axle fixed-point value; per frame, rate unverified",
+          "source": "src/gp4/c/0041/00416dec.cpp:93"
+        },
+        {
+          "name": "Rear axle downforce value",
+          "value": "0x0062fbac",
+          "unit": "address of the rear axle fixed-point value; per frame, rate unverified",
+          "source": "src/gp4/c/0041/00417066.cpp:73"
+        },
+        {
+          "name": "Extra load term shift",
+          "value": 11,
+          "unit": "right shift scaling a speed-like term into wheel load; per frame, rate unverified",
+          "source": "src/gp4/c/0041/00417066.cpp:102"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/c/0041/00416dec.cpp",
+          "line": 32
+        },
+        {
+          "path": "src/gp4/c/0041/00417066.cpp",
+          "line": 39
+        },
+        {
+          "path": "src/gp4/c/0041/00417066.cpp",
+          "line": 58
+        }
+      ],
+      "capabilities": [
+        "downforce",
+        "axle balance",
+        "ride-height sensitivity",
+        "per-wheel load trim"
+      ],
+      "tags": [
+        "physics",
+        "aero",
+        "handling"
+      ]
+    },
+    {
+      "id": "suspension-travel",
+      "node": "suspension",
+      "name": "Spring travel, damper rate and lateral load transfer",
+      "summary": "Per wheel, load is divided by a spring rate and a damper rate to give travel and a ride height; the difference between the axle means is then clamped and moved into the body roll term.",
+      "behavior": "The routine refreshes the four loads and then treats each wheel the same way. The load is shifted up and divided by a per-wheel spring rate to give a compression, and separately shifted by a smaller amount, divided by a per-wheel valve term and shifted again to give a damper contribution in the wheel travel units. The ride height is a per-wheel rest value with the damper term, the compression and a stored offset subtracted and a stored correction added, plus that wheel record trim. Once all four ride heights exist the routine computes the mean of the rear pair minus the mean of the front pair, clamps that difference to a fixed-point limit so a jump or a kerb strike cannot spike the body, shifts it up by a large factor and divides by the sum of two axle constants, and adds the quotient to the body roll accumulator. That single number is what the renderer and the body attitude use, so a car under braking visibly digs at the front and a car on the throttle squats. A second routine does the same per axle: an axle term from the difference of two wheel load fields, a sum with half a payload term and a base offset, and two divisions that produce the axle position and its scaled counterpart.",
+      "constants": [
+        {
+          "name": "Spring compression shift",
+          "value": 10,
+          "unit": "left shift of the load before dividing by the spring rate; per frame, rate unverified",
+          "source": "src/gp4/c/0041/0041073d.cpp:61"
+        },
+        {
+          "name": "Damper term shift",
+          "value": 6,
+          "unit": "left shift of the load before dividing by the valve term; per frame, rate unverified",
+          "source": "src/gp4/c/0041/0041073d.cpp:62"
+        },
+        {
+          "name": "Lateral transfer clamp",
+          "value": "0x80000",
+          "unit": "fixed-point load difference limit; per frame, rate unverified",
+          "source": "src/gp4/c/0041/0041073d.cpp:80"
+        },
+        {
+          "name": "Ride-height scaling shift",
+          "value": 5,
+          "unit": "left shift of the axle sum before scaling; per frame, rate unverified",
+          "source": "src/gp4/c/0041/0041c145.cpp:52"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/c/0041/0041073d.cpp",
+          "line": 47
+        },
+        {
+          "path": "src/gp4/c/0041/0041073d.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/gp4/c/0041/0041c145.cpp",
+          "line": 45
+        }
+      ],
+      "capabilities": [
+        "spring compression",
+        "damping",
+        "ride height",
+        "lateral load transfer"
+      ],
+      "tags": [
+        "physics",
+        "suspension",
+        "feel"
+      ]
+    },
+    {
+      "id": "steering-heading-response",
+      "node": "steering",
+      "name": "Steering value from heading error, with rate limiting",
+      "summary": "The steering word for the frame comes from the difference between the car heading and the track heading, is clamped, rate-limited toward the target, and then mapped through a response curve.",
+      "behavior": "Two inputs decide the steering word. When the car has a target close enough and roughly ahead, the bearing to it is used and a lock flag is raised; otherwise the heading of the car against the segment heading decides, with a small tolerance window and a fallback angle for the cars that are spun or reversing. The difference goes through the cosine table in the fixed-point angle representation, keeps the sign of the difference, is clamped to a limit, and raises the left or the right saturation state bit once its magnitude passes a small threshold, so the input layer and the AI can both see how much lock is in use. On top of that sits a rate limiter: the target value minus the current value is limited to a rate picked by the sign and by the state bits, the rate is applied through the frame span, and the state bits are cleared when the value reaches its stop, which is what stops a keyboard tap from producing an instant full-lock step at the front wheels. A separate response routine maps the raw input through a response curve and, in one mode, substitutes a rounded value taken from a per-car table for that curve result, so the same key press can be shaped differently per car.",
+      "constants": [
+        {
+          "name": "Target lock heading window",
+          "value": "0x4000",
+          "unit": "fixed-point heading units (a quarter turn); per frame, rate unverified",
+          "source": "src/gp4/asm/0041/0041416e.cpp:43"
+        },
+        {
+          "name": "Saturation threshold on steering magnitude",
+          "value": "0x80",
+          "unit": "fixed-point steering magnitude; per frame, rate unverified",
+          "source": "src/gp4/asm/0041/0041416e.cpp:48"
+        },
+        {
+          "name": "Rate limiter span shift",
+          "value": 16,
+          "unit": "right shift applying the frame span to the target rate; per frame, rate unverified",
+          "source": "src/gp4/asm/0041/00415b00.cpp:19"
+        },
+        {
+          "name": "Scaled steering ceiling",
+          "value": "0x4000",
+          "unit": "Q14 fixed-point ceiling of the stored scaled steering; per frame, rate unverified",
+          "source": "src/gp4/asm/0041/00415b00.cpp:22"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0041/0041416e.cpp",
+          "line": 41
+        },
+        {
+          "path": "src/gp4/asm/0041/00415b00.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/gp4/asm/0041/0041b3d9.cpp",
+          "line": 37
+        }
+      ],
+      "capabilities": [
+        "heading error steering",
+        "steering rate limit",
+        "input response curve",
+        "saturation reporting"
+      ],
+      "tags": [
+        "controls",
+        "handling",
+        "feel"
+      ]
+    },
+    {
+      "id": "engine-torque-curve",
+      "node": "drivetrain",
+      "name": "Interpolated engine torque curve",
+      "summary": "A scaled demand plus a per-car level selects a curve position, which is stretched above a knee and read out of a breakpoint table by linear interpolation.",
+      "behavior": "The torque for one car is evaluated from two curves and a breakpoint table. The curve position is one byte of a packed dword on the car, chosen by the caller, so a single routine serves several torque demands (drive, engine braking, and the same curves read at a different level). The position is combined with the incoming scaled demand, then with a per-level word and a large shift, giving a value in curve-position units. Above a knee the value is stretched by two per-level table entries, which is how the curve keeps rising past its last breakpoint instead of going flat. The stretched position is then looked up in a table of breakpoint pairs terminated by a sentinel: the first pair whose start exceeds the position bounds the segment, the rise between the two breakpoints is divided by the horizontal span with integer division, and the result is added to the base value of the segment. A per-curve floor is enforced afterwards, so the interpolation can never return less than the minimum of the curve, and a per-car level correction is added, or replaces the interpolated value outright in one session mode. Because the arithmetic is integer and fixed-point, the curve is identical on every run, which matters for replays and for the AI cars that use the same routine.",
+      "constants": [
+        {
+          "name": "Curve position byte selector mask",
+          "value": 31,
+          "unit": "shift mask selecting one of four bytes of the packed curve position; per evaluation, rate unverified",
+          "source": "src/gp4/asm/0044/0044192c.cpp:64"
+        },
+        {
+          "name": "Curve stretch knee",
+          "value": "0x280",
+          "unit": "curve position units, above which the value is stretched; per evaluation, rate unverified",
+          "source": "src/gp4/asm/0044/0044192c.cpp:76"
+        },
+        {
+          "name": "Breakpoint pair stride",
+          "value": 2,
+          "unit": "table entries per breakpoint pair, static layout, no timestep",
+          "source": "src/gp4/asm/0044/0044192c.cpp:93"
+        },
+        {
+          "name": "Breakpoint table terminator",
+          "value": "0xffffffff",
+          "unit": "sentinel value ending the breakpoint table, no timestep",
+          "source": "src/gp4/asm/0044/0044192c.cpp:94"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0044/0044192c.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/gp4/asm/0044/0044192c.cpp",
+          "line": 72
+        },
+        {
+          "path": "src/gp4/asm/0044/0044192c.cpp",
+          "line": 105
+        }
+      ],
+      "capabilities": [
+        "engine torque curve",
+        "linear interpolation",
+        "past-peak stretch",
+        "per-car levels"
+      ],
+      "tags": [
+        "drivetrain",
+        "physics",
+        "ai"
+      ]
+    },
+    {
+      "id": "gearbox-ratio",
+      "node": "drivetrain",
+      "name": "Gear ratio scaling and shift softening",
+      "summary": "A gear byte indexes a ratio table, the ratio scales a difference of two wheel-record fields, and a percentage byte blends the new value with the old across a shift.",
+      "behavior": "The gearbox side of the car update starts from the gear byte, which is copied to a shadow field so other systems can see the gear actually in use, and looks the ratio up in a per-car byte table. The ratio multiplies a quantity built from two fields of the wheel records, half their sum plus a stored term, taken as a magnitude, and the product is shifted down into the value the drivetrain integrates; that single number is the coupling between the contact patch state and the drivetrain. A separate routine converts the seven-byte gear block in place on a gear change and ramps it over several frames, and a sliding percentage byte blends two torque values, the new one and a held one, with the complement applied in fixed point, which rounds a downshift into a short soft period instead of a step. A per-gear table, indexed by the current gear with a mask and a cap, decides whether the ramp applies at all, and a session flag disables the whole ramp during replay.",
+      "constants": [
+        {
+          "name": "Gear ratio scaling shift",
+          "value": 22,
+          "unit": "right shift converting the scaled product to the stored drivetrain value; per frame, rate unverified",
+          "source": "src/gp4/asm/0041/00416487.cpp:39"
+        },
+        {
+          "name": "Blend percentage denominator",
+          "value": 100,
+          "unit": "percent, integer; per blending call within an update, rate unverified",
+          "source": "src/gp4/asm/0041/0041362a.cpp:44"
+        },
+        {
+          "name": "Gear table index mask",
+          "value": "0x3f",
+          "unit": "index mask into the per-gear byte table, static layout, no timestep",
+          "source": "src/gp4/asm/0041/0041034e.cpp:10"
+        },
+        {
+          "name": "Gear table index cap",
+          "value": 10,
+          "unit": "highest usable per-gear table index, static, no timestep",
+          "source": "src/gp4/asm/0041/0041034e.cpp:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0041/00416487.cpp",
+          "line": 22
+        },
+        {
+          "path": "src/gp4/asm/0041/0041362a.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/gp4/asm/0041/0041034e.cpp",
+          "line": 4
+        }
+      ],
+      "capabilities": [
+        "gear ratio lookup",
+        "load-driven engine speed",
+        "shift blending",
+        "gear change ramp"
+      ],
+      "tags": [
+        "drivetrain",
+        "physics"
+      ]
+    },
+    {
+      "id": "collision-sweep",
+      "node": "collision",
+      "name": "Swept car-to-car collision over the frame",
+      "summary": "Two cars are stepped backwards in time in equal increments until their boxes touch, then the contact is refined over four halvings, so a fast closing pair cannot tunnel through each other.",
+      "behavior": "The two cars are copied into a pair of scratch collision objects together with their headings, and the deltas for one step are the stored velocities scaled by the frame rate plus the difference in headings. If the largest delta is bigger than a fixed threshold the step is halved repeatedly and the fraction is halved with it, which keeps the sample spacing small enough for the box test to catch the contact; the heading is halved with the position so a spinning car cannot slip a corner past the test. Stepping then goes back in time from the end of the frame while the pair does not overlap, up to a step budget, and a pair that never touches reports no contact and leaves the cars alone. When the backward walk does find an overlap, the walk continues until the two are apart, or, when the budget runs out, the pair is pushed apart along the line of their centres instead. The last part is a binary refinement: four halvings alternately step forward and backward depending on whether the boxes overlap, which converges on the touch instant within one step fraction. The contact words are published for the player car and the corrected positions and headings are written back, so the frame never ends with the two cars interpenetrating.",
+      "constants": [
+        {
+          "name": "Sweep fraction full scale",
+          "value": "0x4000",
+          "unit": "Q14 fixed-point 1.0 for the remaining time fraction; per frame, rate unverified",
+          "source": "src/gp4/asm/0043/00436970.cpp:146"
+        },
+        {
+          "name": "Step halving threshold",
+          "value": "0x8000",
+          "unit": "largest per-step delta allowed before the step is halved; per frame, rate unverified",
+          "source": "src/gp4/asm/0043/00436970.cpp:147"
+        },
+        {
+          "name": "Contact refinement passes",
+          "value": 4,
+          "unit": "halving passes after the first overlap; per contact, rate unverified",
+          "source": "src/gp4/asm/0043/00436970.cpp:204"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0043/00436970.cpp",
+          "line": 102
+        },
+        {
+          "path": "src/gp4/asm/0043/00436970.cpp",
+          "line": 192
+        },
+        {
+          "path": "src/gp4/asm/0043/00436970.cpp",
+          "line": 213
+        }
+      ],
+      "capabilities": [
+        "swept collision",
+        "time stepping",
+        "binary contact refinement",
+        "contact reporting"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "collision-box-contact",
+      "node": "collision",
+      "name": "Oriented box contact test",
+      "summary": "Two oriented boxes are tested by bringing one into the other frame, comparing half extents along three axes and then clipping the eight corners of one box against the other.",
+      "behavior": "The test first decides which of the two objects is the reference: the one with the larger maximum half extent, with a fixed tie rule, so that the result does not depend on the order the pair arrives in. Both rotation bodies are built and the centres are rotated into world space, then the second box centre is rotated into the first box frame. A quick rejection follows: when the centre offset along any of the three axes exceeds the first box half extent plus the second box radius, the boxes cannot touch and the routine returns clean. Otherwise the second box three half-extent axes are carried into the first frame, which gives a full oriented-box overlap test for the case where one centre is inside the other. The general case takes the eight corners of the second box, forms a Cohen-Sutherland style outcode against the six planes of the first box, and rejects when all corners share the same outside bit. A corner inside, or one of the twelve edges that survives clipping, is a contact. The flags of the routine carry the boolean, so the caller can branch without a second call.",
+      "constants": [
+        {
+          "name": "Box corner count",
+          "value": 8,
+          "unit": "corners per oriented box; per contact test, rate unverified",
+          "source": "src/gp4/asm/0043/00438c98.cpp:89"
+        },
+        {
+          "name": "Collision shape block stride",
+          "value": "0x5d8",
+          "unit": "bytes per shape block, static layout, no timestep",
+          "source": "src/gp4/asm/0043/00438c98.cpp:83"
+        },
+        {
+          "name": "Clipped edge count",
+          "value": 12,
+          "unit": "box edges tested after the corner rejection; per contact test, rate unverified",
+          "source": "src/gp4/asm/0043/00438c98.cpp:91"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0043/00438c98.cpp",
+          "line": 82
+        },
+        {
+          "path": "src/gp4/asm/0043/00438c98.cpp",
+          "line": 87
+        },
+        {
+          "path": "src/gp4/asm/0043/00438c98.cpp",
+          "line": 94
+        }
+      ],
+      "capabilities": [
+        "oriented box overlap",
+        "outcode clipping",
+        "reference selection",
+        "boolean contact flag"
+      ],
+      "tags": [
+        "collision",
+        "physics"
+      ]
+    },
+    {
+      "id": "collision-response",
+      "node": "collision",
+      "name": "Mass-weighted separation of two touching bodies",
+      "summary": "The heavier body moves less: a fixed-point mass fraction weights how far each body is pushed out of the other, and the contact flags are cleared.",
+      "behavior": "When two bodies are found to touch, the response is a positional one rather than an impulse. The mass of the first body is divided by the sum of both masses in fixed point, with the degenerate zero-mass case guarded by a denominator of one, and the complement is formed as the remainder of the full scale. The two coordinates that describe the contact are then blended toward each other, each body moving by its own share of the overlap, with the pairs of coordinates updated so that two wheels touching a wall or an opponent separate over the following frames instead of snapping. The share of the lighter body is larger, so a car that hits a much heavier one is the one that is deflected, which is the behaviour players read as an opponent being immovable. The last step clears the two contact bytes so the pair is not resolved twice in the same frame, and the intermediate values are left in registers for the caller, which uses them for the contact effect and the sound trigger.",
+      "constants": [
+        {
+          "name": "Mass fraction fixed-point shift",
+          "value": 14,
+          "unit": "left shift forming the Q14 mass fraction; per contact, rate unverified",
+          "source": "src/gp4/asm/0043/00439f75.cpp:77"
+        },
+        {
+          "name": "Mass fraction full scale",
+          "value": "0x4000",
+          "unit": "Q14 fixed-point 1.0 for the complementary weight; per contact, rate unverified",
+          "source": "src/gp4/asm/0043/00439f75.cpp:79"
+        },
+        {
+          "name": "Separation stiffness",
+          "value": "0x006097f8",
+          "unit": "address of the 32-bit spring factor used to blend the coordinates; per contact, rate unverified",
+          "source": "src/gp4/asm/0043/00439f75.cpp:80"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0043/00439f75.cpp",
+          "line": 63
+        },
+        {
+          "path": "src/gp4/asm/0043/00439f75.cpp",
+          "line": 74
+        },
+        {
+          "path": "src/gp4/asm/0043/00439f75.cpp",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "mass-weighted separation",
+        "positional contact response",
+        "contact flag clearing"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "track-lap-position",
+      "node": "track-ring",
+      "name": "Lap position from the segment ring",
+      "summary": "A car position is the distance along the lap: the segment index and the projection inside the segment are summed, offset by the start line and wrapped into the lap length.",
+      "behavior": "The track is a circular list of fixed-size segment records with the pit lane and the racing lap held as separate ranges in the same array, which is why the walkers have two wrap rules. Forward and backward stepping each advance by one record, and near the pit entry the pit lane clamps the walk while below the lap start the walk wraps around to the other end of the lap ring, so a car cannot walk backwards out of the pit lane into the previous lap. The lap position itself comes from the segment index, masked to its index bits, plus a conversion term applied when the car carries a particular state flag, reduced and wrapped by the lap length and offset by the start-line word, giving a value that only ever lies between zero and the lap length. Two scaled copies are stored on the car, one of them with the sub-segment fraction, and a further routine fills the lateral lane words used by the pit and AI logic. This one value drives the standings, the progress comparison between two cars and the DRS-style gap logic, so it has to be monotone along the lap and identical for every car on every frame.",
+      "constants": [
+        {
+          "name": "Segment index mask",
+          "value": "0x7ff",
+          "unit": "index bits of the segment number, static layout, no timestep",
+          "source": "src/gp4/asm/0040/00409467.cpp:19"
+        },
+        {
+          "name": "Segment record stride",
+          "value": "0x160",
+          "unit": "bytes per track segment record, static layout, no timestep",
+          "source": "src/gp4/asm/0041/0041cb9b.cpp:38"
+        },
+        {
+          "name": "Lap length value",
+          "value": "0x00868558",
+          "unit": "address of the 16-bit lap length in track units; per frame, rate unverified",
+          "source": "src/gp4/asm/0040/00409467.cpp:41"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0040/00409467.cpp",
+          "line": 4
+        },
+        {
+          "path": "src/gp4/asm/0041/0041cb9b.cpp",
+          "line": 35
+        },
+        {
+          "path": "src/gp4/asm/0040/00409467.cpp",
+          "line": 35
+        }
+      ],
+      "capabilities": [
+        "lap position",
+        "segment ring walking",
+        "pit and lap wrap rules",
+        "progress comparison"
+      ],
+      "tags": [
+        "track",
+        "race rules",
+        "timing"
+      ]
+    },
+    {
+      "id": "race-clock-and-digit-split",
+      "node": "race-clock",
+      "name": "Race clock, remaining time and digit split",
+      "summary": "Two 48-bit fixed-point clocks advance by per-frame deltas; the remaining session time is clamped at zero and split into decimal digits for the timing display.",
+      "behavior": "The session time is kept as two fixed-point accumulators, each a 32-bit whole part with a 16-bit fraction, advanced every frame by a delta that the session code sets and carried on overflow. One accumulator is the wall clock of the session and the other is the timer whose remaining value is shown to the driver. Remaining time is the configured limit minus the clock, floored at zero, and it is converted by a routine that packs the decimal digits of a millisecond value into one digit per nibble by repeated subtraction at the thousand, ten thousand, minute, ten minute and hour thresholds; the packed result is shifted down before it is stored, so the display reads whole units. On a new value a change flag is raised so the front end only redraws the digits when they actually move. The same pass arms and then fires the session countdown: when the session flags ask for it, a deadline is set a few thousand clock units ahead, and once the clock passes it the corresponding flags are raised so the session code can react. A 24-hour deadline is armed in milliseconds for the day-long sessions, and the selected car refreshes its own lap digits and raises a flag when its lap-time value changes.",
+      "constants": [
+        {
+          "name": "Day deadline",
+          "value": 86400000,
+          "unit": "milliseconds in 24 hours; static session limit, no timestep",
+          "source": "src/gp4/c/0044/00442cb4.cpp:22"
+        },
+        {
+          "name": "Countdown deadline span",
+          "value": 6000,
+          "unit": "clock units added to the current clock when the countdown arms; per frame, rate unverified",
+          "source": "src/gp4/c/0044/00443393.cpp:23"
+        },
+        {
+          "name": "Minute digit threshold",
+          "value": 60000,
+          "unit": "milliseconds per packed minute digit; static, no timestep",
+          "source": "src/gp4/asm/0040/0040996f.cpp:43"
+        },
+        {
+          "name": "Second digit threshold",
+          "value": 1000,
+          "unit": "milliseconds per packed second digit; static, no timestep",
+          "source": "src/gp4/asm/0040/0040996f.cpp:45"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/c/0044/00443393.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/gp4/asm/0040/0040996f.cpp",
+          "line": 24
+        },
+        {
+          "path": "src/gp4/c/0044/00442cb4.cpp",
+          "line": 22
+        }
+      ],
+      "capabilities": [
+        "session clock",
+        "remaining time",
+        "digit packing",
+        "countdown",
+        "lap time refresh"
+      ],
+      "tags": [
+        "race rules",
+        "timing",
+        "hud"
+      ]
+    },
+    {
+      "id": "ai-line-following",
+      "node": "ai-driver",
+      "name": "AI target point, frame damping and heading turn",
+      "summary": "An AI car takes the target point ahead, damps its offsets and closing speed in that point frame, and turns its heading toward the target with a deadband and a rate cap.",
+      "behavior": "The AI car first decides whether the driver logic should run at all, which it should not in the pit lane, when the car is flagged as being under manual control, or when the state byte that marks a scripted car is clear. It then asks for the target point ahead on the racing line for the segment the car is on, translates the car position into that target frame, and rotates the closing speed components into the same frame with a sine and cosine pair built from the segment heading. That rotation is what makes the following behaviour independent of the world orientation: the same numbers work on every corner of every track. An offset damping pass then pulls the lateral and longitudinal offsets toward the target with a share taken from the target frame, and the results are rotated back. The heading turn is computed from the difference between the car heading and the bearing to the target: a deadband is subtracted from the magnitude first, so the AI does not saw at the wheel down a straight, and the excess is scaled, multiplied by the frame span, shifted down and capped to a maximum turn per frame before it is added to the heading. A companion routine handles the overtaking case, steering for the gap between a lane edge and the car ahead and adjusting the steering word when the space on the inside is smaller than a threshold.",
+      "constants": [
+        {
+          "name": "Velocity frame scaling shift",
+          "value": 8,
+          "unit": "right shift converting the stored velocity into the target frame; per AI update, rate unverified",
+          "source": "src/gp4/asm/0043/00433709.cpp:120"
+        },
+        {
+          "name": "Half-turn heading offset",
+          "value": "0x80000000",
+          "unit": "heading units, a half turn of the 32-bit heading circle; per AI update, rate unverified",
+          "source": "src/gp4/asm/0043/00433709.cpp:112"
+        },
+        {
+          "name": "Heading deadband",
+          "value": "0x00601be8",
+          "unit": "address of the deadband in heading units; per AI update, rate unverified",
+          "source": "src/gp4/asm/0043/00433709.cpp:276"
+        },
+        {
+          "name": "Turn integration shift",
+          "value": 16,
+          "unit": "right shift applying the frame span to the turn rate; per AI update, rate unverified",
+          "source": "src/gp4/asm/0043/00433709.cpp:288"
+        },
+        {
+          "name": "Inside gap threshold",
+          "value": "0x240",
+          "unit": "track lateral units below which the overtake steering is adjusted; per AI update, rate unverified",
+          "source": "src/gp4/asm/0042/0042c1f4.cpp:91"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0043/00433709.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/gp4/asm/0043/00433709.cpp",
+          "line": 260
+        },
+        {
+          "path": "src/gp4/asm/0042/0042c1f4.cpp",
+          "line": 89
+        }
+      ],
+      "capabilities": [
+        "target point following",
+        "local frame damping",
+        "heading control with deadband",
+        "overtake gap logic"
+      ],
+      "tags": [
+        "ai",
+        "driving",
+        "handling"
+      ]
+    },
+    {
+      "id": "pit-lane-detection",
+      "node": "pit-lane",
+      "name": "Pit lane membership and lateral limit",
+      "summary": "Each car and frame, the pit logic decides whether the car is on a lane, which kind of lane, and how far it may drift laterally before the lane entry is refused.",
+      "behavior": "The per-car pit state is decided from a few flag bits, the session byte that says whether a pit lane exists at all, and the distance between the car segment and the segment the pit logic currently holds. A car that is not on a lane has its lane kind cleared along with the bits that mark an approach and a committed entry, so the state cannot leak from the previous lap. A car that is on one takes a lane kind of one to five taken from its own flags, and the bits that mark the lane phase are set from those flags; the comparison of a signed lateral word against a stored offset then picks between the inside and the outside half of the lane. A separate routine produces the lateral limit that lane entry allows: it reads a fixed-size lane entry from the lane table indexed by the segment, clamps the bound, eases it toward the stored weight of the car when the car is already part of the queue, refines it with an extra pass and a shift, and returns the signed lateral room as the product of the value and the mean of the value and the reference. That limit is what stops an AI car from cutting across the pit entry line and what lets the player be steered back onto the lane without a hard wall.",
+      "constants": [
+        {
+          "name": "Lane kind code top",
+          "value": 5,
+          "unit": "highest lane kind code (codes 1 to 5); per car per frame, rate unverified",
+          "source": "src/gp4/asm/0043/004320f2.cpp:45"
+        },
+        {
+          "name": "Lane blend shift",
+          "value": 2,
+          "unit": "left shift on the blend weight before the 16-bit product; per lane evaluation, rate unverified",
+          "source": "src/gp4/asm/0042/00425cb3.cpp:30"
+        },
+        {
+          "name": "Lane table entry size",
+          "value": 16,
+          "unit": "bytes per lane table entry, static layout, no timestep",
+          "source": "src/gp4/asm/0042/00425cb3.cpp:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/asm/0043/004320f2.cpp",
+          "line": 42
+        },
+        {
+          "path": "src/gp4/asm/0042/00425cb3.cpp",
+          "line": 42
+        },
+        {
+          "path": "src/gp4/asm/0042/00425cb3.cpp",
+          "line": 46
+        }
+      ],
+      "capabilities": [
+        "pit lane membership",
+        "lane kind state",
+        "lateral lane limit",
+        "pit entry assist"
+      ],
+      "tags": [
+        "race rules",
+        "track",
+        "ai"
+      ]
+    },
+    {
+      "id": "camera-view-matrices",
+      "node": "camera",
+      "name": "Perspective and overhead view matrices",
+      "summary": "The projection is built from a field of view, a square aspect and long clipping range, and the view is placed at a raised point looking straight down at the car with an up vector flattened onto the ground plane.",
+      "behavior": "The view build is a small deterministic pair. The projection is a standard perspective with its vertical field of view derived as twice an arctangent of a stored tangent, an aspect of one, a near plane of one and a far plane far out in world units, which is why the game can show both a car three metres away and a straight half a kilometre long without popping. The view puts the eye directly above the car position by a fixed vertical offset and looks straight down at the car, so the picture stays locked to the car whatever the track orientation; the up direction is the body forward axis, transformed as a normal and flattened onto the ground plane, then scaled to a fixed length so the roll of the picture never degenerates when the car points straight along an axis. Both matrices are identity-initialised before they are filled, so the homogeneous row is well defined even if a routine leaves it untouched. A second routine derives the camera body basis itself: three cross-product-like terms from the body vectors, a square root of the squared length and, when that length exceeds a stored limit, a uniform rescale, which keeps the basis orthonormal after the many small additions the frame makes to it.",
+      "constants": [
+        {
+          "name": "Far clipping plane",
+          "value": 100000,
+          "unit": "world units; rebuilt per camera update, rate unverified",
+          "source": "src/gp4/c/0049/00492c10.cpp:36"
+        },
+        {
+          "name": "Near clipping plane",
+          "value": 1,
+          "unit": "world units; rebuilt per camera update, rate unverified",
+          "source": "src/gp4/c/0049/00492c10.cpp:36"
+        },
+        {
+          "name": "Projection aspect",
+          "value": 1,
+          "unit": "width divided by height, dimensionless; rebuilt per camera update, rate unverified",
+          "source": "src/gp4/c/0049/00492c10.cpp:36"
+        },
+        {
+          "name": "Camera basis length clamp",
+          "value": "0x00609758",
+          "unit": "address of the 32-bit maximum basis length; per frame, rate unverified",
+          "source": "src/gp4/c/0040/004024b5.cpp:25"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/gp4/c/0049/00492c10.cpp",
+          "line": 15
+        },
+        {
+          "path": "src/gp4/c/0040/0040233e.cpp",
+          "line": 5
+        },
+        {
+          "path": "src/gp4/c/0040/004024b5.cpp",
+          "line": 12
+        }
+      ],
+      "capabilities": [
+        "perspective projection",
+        "overhead view matrix",
+        "orthonormal camera basis",
+        "up vector flattening"
+      ],
+      "tags": [
+        "camera",
+        "rendering",
+        "3d"
+      ]
+    }
+  ]
+}
