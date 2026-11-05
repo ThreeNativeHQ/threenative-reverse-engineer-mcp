@@ -1,5 +1,5 @@
 import Ajv from 'ajv/dist/2020.js';
-import { readFileSync, readdirSync, mkdirSync, existsSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, mkdirSync, existsSync, writeFileSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
@@ -180,6 +180,9 @@ export function run(args = process.argv.slice(2)) {
     mkdirSync(path.join(root, '.release'), { recursive: true });
     writeFileSync(path.join(root, '.release', 'index.json.gz'), gzipSync(JSON.stringify({ version: 1, games: catalog, stubs })));
     for (const game of games) writeFileSync(path.join(root, '.release', `game-${game.id}.json`), JSON.stringify(game));
+    // The gameplay watcher rides along so an installed game project can fetch it from the same
+    // release the reference tools already read, with no checkout of this repository.
+    copyFileSync(new URL('../scripts/watch.mjs', import.meta.url), path.join(root, '.release', 'watch.mjs'));
   }
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

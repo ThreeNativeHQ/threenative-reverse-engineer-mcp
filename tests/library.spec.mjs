@@ -139,7 +139,8 @@ test('release assets keep the version-1 contract and exact asset set', t => {
   t.after(() => cleanup(dir));
   const result = runNpm(dir, ['release:assets', '--', '--source', source.dir]);
   assert.equal(result.status, 0, result.stderr);
-  assert.deepEqual(readdirSync(path.join(dir, '.release')).sort(), ['game-demo.json', 'game-second.json', 'index.json.gz']);
+  assert.deepEqual(readdirSync(path.join(dir, '.release')).sort(), ['game-demo.json', 'game-second.json', 'index.json.gz', 'watch.mjs']);
+  assert.equal(readFileSync(path.join(dir, '.release', 'watch.mjs'), 'utf8'), readFileSync(path.join(dir, 'scripts', 'watch.mjs'), 'utf8'));
   const index = JSON.parse(gunzipSync(readFileSync(path.join(dir, '.release', 'index.json.gz'))).toString());
   assert.equal(index.version, 1);
   assert.deepEqual(index.games, config);
