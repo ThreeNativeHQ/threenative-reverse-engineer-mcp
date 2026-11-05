@@ -163,13 +163,13 @@ export async function watch(args) {
   const options = parseArgs(args);
   if (options.help) { console.log(usage); return; }
   if (!options.query) throw new Error(`missing search words\n\n${usage}`);
-  const ytDlp = tool('yt-dlp', 'install it with `pipx install yt-dlp`');
-  const ffmpeg = tool('ffmpeg');
   const folder = options.out ? path.resolve(options.out) : mkdtempSync(path.join(os.tmpdir(), 'threenative-watch-'));
   if (options.out) {
     if (existsSync(folder) && readdirSync(folder).length) throw new Error(`output folder is not empty: ${folder}`);
     mkdirSync(folder, { recursive: true });
   }
+  const ytDlp = tool('yt-dlp', 'install it with `pipx install yt-dlp`');
+  const ffmpeg = tool('ffmpeg');
 
   const candidates = await search(ytDlp, options.query);
   if (!candidates.length) throw new Error(`no YouTube result for "${options.query}"`);
