@@ -87,3 +87,28 @@ Run `npm run scout -- <id> <repo> <sha>`; it clones into `.sources/`, logs to `.
 and then runs the validator on that game. Promoting a new map with a catalog row belongs
 to the review lane, not to the scout.
 Every card gets a full human or agent review before merge.
+
+## Gameplay watcher
+
+Mechanic cards say what a game does; sometimes the authoring agent needs to *see* it. The watcher
+searches YouTube for a gameplay video of a reference game, downloads one segment, and slices
+frames plus a contact sheet into a tmp folder:
+
+```sh
+npm run watch -- "super mario 64 triple jump" --duration 25 --frames 6
+# [0] 00:20:29 Super Mario 64 Speedrun Movement Guide — Derian Sera
+# look: /tmp/threenative-watch-Fo7al9/sheet.jpg
+```
+
+It needs `yt-dlp` (`pipx install yt-dlp`) and `ffmpeg` on `PATH`. Read `sheet.jpg` first: one
+image holding every frame, in order. Then aim — `--pick N` for another search result, `--from
+NN%` to jump into a long video, `--at 12,35,61` for exact frames of a known moment, `--frames N`
+for more or fewer slices. Each frame is 640px wide and named for its timestamp; `watch.json`
+records the video, the segment and every frame time, so a claim about the mechanic can name the
+clip it came from. Cards still cite source code at the pinned SHA; they never cite a video.
+
+The default window opens 10% into the video, past the title card and menu. A vertical slice of an
+open-ended session is still a guess: the first sheet is for deciding where to look next.
+
+Frames are transcription of someone else's footage. They stay in tmp for studying a mechanic,
+never in `data/`, and `check:data` cannot see them to complain.
