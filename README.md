@@ -107,6 +107,10 @@ for more or fewer slices. Each frame is 640px wide and named for its timestamp; 
 records the video, the segment and every frame time, so a claim about the mechanic can name the
 clip it came from. Cards still cite source code at the pinned SHA; they never cite a video.
 
+Every release also ships `watch.mjs`, so an installed game project fetches the watcher from the
+same base URL the reference tools already read
+(`releases/latest/download/watch.mjs`) and runs it with no checkout of this repository.
+
 The default window opens 10% into the video, past the title card and menu. A vertical slice of an
 open-ended session is still a guess: the first sheet is for deciding where to look next.
 
