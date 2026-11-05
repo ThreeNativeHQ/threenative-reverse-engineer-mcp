@@ -28,9 +28,12 @@ test('sampleTimes centres one frame in each cell and spans the segment', () => {
   assert.ok(sampleTimes(10, 90, 12).every(at => at > 10 && at < 100));
 });
 
-test('tileGrid never leaves an empty trailing cell row', () => {
+test('tileGrid keeps at most one blank cell, so a blank reads as padding not a lost frame', () => {
   assert.deepEqual(tileGrid(1), { columns: 1, rows: 1 });
+  assert.deepEqual(tileGrid(2), { columns: 2, rows: 1 });
+  assert.deepEqual(tileGrid(4), { columns: 2, rows: 2 });
   assert.deepEqual(tileGrid(5), { columns: 3, rows: 2 });
+  assert.deepEqual(tileGrid(6), { columns: 3, rows: 2 });
   assert.deepEqual(tileGrid(12), { columns: 3, rows: 4 });
 });
 
