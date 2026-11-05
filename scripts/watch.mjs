@@ -48,8 +48,10 @@ export const sampleTimes = (from, duration, frames) =>
 
 export const frameName = (index, at) => `${String(index).padStart(2, '0')}-t${at.toFixed(1)}s.jpg`;
 
+/** Columns from the frame count, so a 4-frame sheet is 2x2 instead of 3x2 with two black cells
+ *  that read like failed frames. */
 export function tileGrid(count) {
-  const columns = Math.min(3, Math.max(1, count));
+  const columns = Math.min(3, Math.max(1, Math.ceil(Math.sqrt(count))));
   return { columns, rows: Math.ceil(count / columns) };
 }
 
