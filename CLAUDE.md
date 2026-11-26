@@ -10,3 +10,4 @@
 - Never copy source code, comments, level layouts, character names or art. Write original
   prose and borrow algorithms and defaults only.
 - Verify with `npm run check:data` and `npm run validate` before claiming done.
+- **Release chain:** after modifying this MCP, follow the `threenative-release-chain` skill (bump version, merge to `main`, wait for npm publish, then bump `threenative-engine`).

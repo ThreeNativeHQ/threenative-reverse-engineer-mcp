@@ -12,3 +12,4 @@
   `npm run check:data`.
 - Original prose only. Do not copy source code, comments, level layouts, character names or
   art; borrow algorithms and defaults instead.
+- **Release chain:** after modifying this MCP, follow the `threenative-release-chain` skill (bump version, merge to `main`, wait for npm publish, then bump `threenative-engine`).
