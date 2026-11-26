@@ -1,0 +1,3440 @@
+{
+  "version": 1,
+  "id": "hexen-ii",
+  "title": "Hexen II",
+  "repo": "https://github.com/sezero/uhexen2",
+  "sha": "cdf6788628638b30fc5be9f739df5e547b381a03",
+  "nodes": [
+    {
+      "id": "client-input",
+      "name": "Client movement command and look input",
+      "purpose": "Turns key state into a movement command (forward, side, up) with the run key and the per-class speed factor, and turns key state into view angle changes with clamps",
+      "paths": [
+        "engine/hexen2/cl_input.c"
+      ],
+      "functions": [
+        {
+          "name": "CL_BaseMove",
+          "path": "engine/hexen2/cl_input.c",
+          "lines": [
+            470,
+            528
+          ]
+        },
+        {
+          "name": "CL_AdjustAngles",
+          "path": "engine/hexen2/cl_input.c",
+          "lines": [
+            410,
+            461
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "client-view",
+      "name": "View roll and walking bob",
+      "purpose": "Computes the camera bob from horizontal speed and the roll from sideways velocity",
+      "paths": [
+        "engine/hexen2/view.c"
+      ],
+      "functions": [
+        {
+          "name": "V_CalcBob",
+          "path": "engine/hexen2/view.c",
+          "lines": [
+            103,
+            125
+          ]
+        },
+        {
+          "name": "V_CalcRoll",
+          "path": "engine/hexen2/view.c",
+          "lines": [
+            72,
+            94
+          ]
+        }
+      ],
+      "dependsOn": [
+        "client-input"
+      ]
+    },
+    {
+      "id": "server-player-move",
+      "name": "Server player movement step",
+      "purpose": "Per-command server movement: ground friction, ground and air acceleration, swim and fly movement, and the per-client think entry point",
+      "paths": [
+        "engine/hexen2/sv_user.c"
+      ],
+      "functions": [
+        {
+          "name": "SV_UserFriction",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            140,
+            208
+          ]
+        },
+        {
+          "name": "SV_Accelerate",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            247,
+            262
+          ]
+        },
+        {
+          "name": "SV_AirAccelerate",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            265,
+            284
+          ]
+        },
+        {
+          "name": "SV_WaterMove",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            374,
+            446
+          ]
+        },
+        {
+          "name": "SV_AirMove",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            491,
+            536
+          ]
+        },
+        {
+          "name": "SV_ClientThink",
+          "path": "engine/hexen2/sv_user.c",
+          "lines": [
+            574,
+            634
+          ]
+        }
+      ],
+      "dependsOn": [
+        "client-input"
+      ]
+    },
+    {
+      "id": "server-physics",
+      "name": "Server physics integration and frame time",
+      "purpose": "Gravity, velocity clamp, step-up walking, slope test and the per-client physics driver, plus the frame time filter that bounds every step",
+      "paths": [
+        "engine/hexen2/sv_phys.c",
+        "engine/hexen2/host.c"
+      ],
+      "functions": [
+        {
+          "name": "SV_AddGravity",
+          "path": "engine/hexen2/sv_phys.c",
+          "lines": [
+            430,
+            450
+          ]
+        },
+        {
+          "name": "SV_CheckVelocity",
+          "path": "engine/hexen2/sv_phys.c",
+          "lines": [
+            98,
+            125
+          ]
+        },
+        {
+          "name": "SV_WalkMove",
+          "path": "engine/hexen2/sv_phys.c",
+          "lines": [
+            1562,
+            1653
+          ]
+        },
+        {
+          "name": "SV_Physics_Client",
+          "path": "engine/hexen2/sv_phys.c",
+          "lines": [
+            1663,
+            1738
+          ]
+        },
+        {
+          "name": "Host_FilterTime",
+          "path": "engine/hexen2/host.c",
+          "lines": [
+            666,
+            687
+          ]
+        }
+      ],
+      "dependsOn": [
+        "server-player-move"
+      ]
+    },
+    {
+      "id": "player-actions",
+      "name": "Player jump, crouch, swim and landing game code",
+      "purpose": "HexenC player code: class speed factor, jump launch, crouch hull and view height, water exit, drowning and liquid damage, and landing handling",
+      "paths": [
+        "gamecode/hc/h2/client.hc",
+        "gamecode/hc/h2/allplay.hc"
+      ],
+      "functions": [
+        {
+          "name": "PlayerSpeed_Calc",
+          "path": "gamecode/hc/h2/allplay.hc",
+          "lines": [
+            6,
+            22
+          ]
+        },
+        {
+          "name": "PlayerUnCrouching",
+          "path": "gamecode/hc/h2/allplay.hc",
+          "lines": [
+            317,
+            339
+          ]
+        },
+        {
+          "name": "PlayerCrouching",
+          "path": "gamecode/hc/h2/allplay.hc",
+          "lines": [
+            341,
+            358
+          ]
+        },
+        {
+          "name": "CheckWaterJump",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1087,
+            1116
+          ]
+        },
+        {
+          "name": "PlayerJump",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1119,
+            1193
+          ]
+        },
+        {
+          "name": "WaterMove",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1201,
+            1327
+          ]
+        },
+        {
+          "name": "CheckCrouch",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1329,
+            1367
+          ]
+        },
+        {
+          "name": "PlayerPostThink",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1929,
+            1978
+          ]
+        }
+      ],
+      "dependsOn": [
+        "server-physics"
+      ]
+    },
+    {
+      "id": "player-stats",
+      "name": "Class stats, experience and class abilities",
+      "purpose": "Starting health and mana rolls, experience thresholds, level-up growth, deathmatch level loss, and the passive class abilities",
+      "paths": [
+        "gamecode/hc/h2/stats.hc",
+        "gamecode/hc/h2/specials.hc"
+      ],
+      "functions": [
+        {
+          "name": "stats_compute",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            133,
+            143
+          ]
+        },
+        {
+          "name": "stats_NewPlayer",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            145,
+            177
+          ]
+        },
+        {
+          "name": "PlayerAdvanceLevel",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            212,
+            298
+          ]
+        },
+        {
+          "name": "FindLevel",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            301,
+            329
+          ]
+        },
+        {
+          "name": "AwardExperience",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            332,
+            420
+          ]
+        },
+        {
+          "name": "drop_level",
+          "path": "gamecode/hc/h2/stats.hc",
+          "lines": [
+            480,
+            503
+          ]
+        },
+        {
+          "name": "CheckAbilities",
+          "path": "gamecode/hc/h2/specials.hc",
+          "lines": [
+            1,
+            108
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "damage-core",
+      "name": "Damage, armor, radius blast and melee trace",
+      "purpose": "The single damage function with strength and armor modifiers, armor absorption, radius blast falloff, divine intervention and the shared melee probe",
+      "paths": [
+        "gamecode/hc/h2/damage.hc",
+        "gamecode/hc/h2/combat.hc"
+      ],
+      "functions": [
+        {
+          "name": "Pal_DivineIntervention",
+          "path": "gamecode/hc/h2/damage.hc",
+          "lines": [
+            128,
+            159
+          ]
+        },
+        {
+          "name": "armor_calc",
+          "path": "gamecode/hc/h2/damage.hc",
+          "lines": [
+            384,
+            496
+          ]
+        },
+        {
+          "name": "T_Damage",
+          "path": "gamecode/hc/h2/damage.hc",
+          "lines": [
+            506,
+            728
+          ]
+        },
+        {
+          "name": "T_RadiusDamage",
+          "path": "gamecode/hc/h2/damage.hc",
+          "lines": [
+            736,
+            824
+          ]
+        },
+        {
+          "name": "FireMelee",
+          "path": "gamecode/hc/h2/combat.hc",
+          "lines": [
+            34,
+            119
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-stats"
+      ]
+    },
+    {
+      "id": "artifacts-inventory",
+      "name": "Artifacts, inventory use and rings",
+      "purpose": "Pickup caps, use effects and timers for inventory artifacts, the class glyph weapons, and the timed rings",
+      "paths": [
+        "gamecode/hc/h2/artifact.hc",
+        "gamecode/hc/h2/invntory.hc",
+        "gamecode/hc/h2/client.hc"
+      ],
+      "functions": [
+        {
+          "name": "use_healthboost",
+          "path": "gamecode/hc/h2/artifact.hc",
+          "lines": [
+            348,
+            360
+          ]
+        },
+        {
+          "name": "UseManaBoost",
+          "path": "gamecode/hc/h2/artifact.hc",
+          "lines": [
+            463,
+            469
+          ]
+        },
+        {
+          "name": "UseTorch",
+          "path": "gamecode/hc/h2/artifact.hc",
+          "lines": [
+            435,
+            447
+          ]
+        },
+        {
+          "name": "Use_TomeofPower",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            197,
+            207
+          ]
+        },
+        {
+          "name": "Use_Haste",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            210,
+            221
+          ]
+        },
+        {
+          "name": "Use_Proximity_Mine",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            290,
+            314
+          ]
+        },
+        {
+          "name": "Use_TimeBomb",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            336,
+            355
+          ]
+        },
+        {
+          "name": "UseBlast",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            362,
+            452
+          ]
+        },
+        {
+          "name": "UseInvincibility",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            454,
+            474
+          ]
+        },
+        {
+          "name": "UseInventoryItem",
+          "path": "gamecode/hc/h2/invntory.hc",
+          "lines": [
+            503,
+            628
+          ]
+        },
+        {
+          "name": "CheckRings",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1603,
+            1736
+          ]
+        },
+        {
+          "name": "CheckPowerups",
+          "path": "gamecode/hc/h2/client.hc",
+          "lines": [
+            1761,
+            1887
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "weapons-paladin",
+      "name": "Paladin weapons",
+      "purpose": "Gauntlet, vorpal sword, axe and purifier, each with a normal mode and a Tome of Power mode",
+      "paths": [
+        "gamecode/hc/h2/gauntlet.hc",
+        "gamecode/hc/h2/vorpal.hc",
+        "gamecode/hc/h2/axe.hc",
+        "gamecode/hc/h2/purifier.hc"
+      ],
+      "functions": [
+        {
+          "name": "gauntlet_fire",
+          "path": "gamecode/hc/h2/gauntlet.hc",
+          "lines": [
+            58,
+            115
+          ]
+        },
+        {
+          "name": "vorpal_melee",
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "lines": [
+            368,
+            456
+          ]
+        },
+        {
+          "name": "vorpal_normal_fire",
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "lines": [
+            504,
+            541
+          ]
+        },
+        {
+          "name": "vorpal_tome_fire",
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "lines": [
+            548,
+            557
+          ]
+        },
+        {
+          "name": "launch_axe",
+          "path": "gamecode/hc/h2/axe.hc",
+          "lines": [
+            90,
+            139
+          ]
+        },
+        {
+          "name": "axeblade_fire",
+          "path": "gamecode/hc/h2/axe.hc",
+          "lines": [
+            147,
+            183
+          ]
+        },
+        {
+          "name": "pmissile_touch",
+          "path": "gamecode/hc/h2/purifier.hc",
+          "lines": [
+            61,
+            87
+          ]
+        },
+        {
+          "name": "launch_pmissile2",
+          "path": "gamecode/hc/h2/purifier.hc",
+          "lines": [
+            204,
+            245
+          ]
+        },
+        {
+          "name": "launch_pmissile1",
+          "path": "gamecode/hc/h2/purifier.hc",
+          "lines": [
+            272,
+            315
+          ]
+        },
+        {
+          "name": "pal_purifier_fire",
+          "path": "gamecode/hc/h2/purifier.hc",
+          "lines": [
+            411,
+            420
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "weapons-crusader",
+      "name": "Crusader weapons",
+      "purpose": "War hammer swings and throw, ice mace snowballs and blizzard",
+      "paths": [
+        "gamecode/hc/h2/warhamer.hc",
+        "gamecode/hc/h2/icemace.hc"
+      ],
+      "functions": [
+        {
+          "name": "HammerTouch",
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "lines": [
+            169,
+            210
+          ]
+        },
+        {
+          "name": "ThrowHammer",
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "lines": [
+            213,
+            249
+          ]
+        },
+        {
+          "name": "warhammer_fire",
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "lines": [
+            286,
+            361
+          ]
+        },
+        {
+          "name": "Cru_Wham_Fire",
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "lines": [
+            476,
+            492
+          ]
+        },
+        {
+          "name": "FreezeTouch",
+          "path": "gamecode/hc/h2/icemace.hc",
+          "lines": [
+            161,
+            204
+          ]
+        },
+        {
+          "name": "FireFreeze",
+          "path": "gamecode/hc/h2/icemace.hc",
+          "lines": [
+            206,
+            250
+          ]
+        },
+        {
+          "name": "FireBlizzard",
+          "path": "gamecode/hc/h2/icemace.hc",
+          "lines": [
+            457,
+            483
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "weapons-necromancer",
+      "name": "Necromancer weapons",
+      "purpose": "Magic missile and bone shards, each with a Tome of Power mode",
+      "paths": [
+        "gamecode/hc/h2/magicmis.hc",
+        "gamecode/hc/h2/boner.hc"
+      ],
+      "functions": [
+        {
+          "name": "FireMagicMissile",
+          "path": "gamecode/hc/h2/magicmis.hc",
+          "lines": [
+            116,
+            224
+          ]
+        },
+        {
+          "name": "mmis_power",
+          "path": "gamecode/hc/h2/magicmis.hc",
+          "lines": [
+            263,
+            274
+          ]
+        },
+        {
+          "name": "mmis_normal",
+          "path": "gamecode/hc/h2/magicmis.hc",
+          "lines": [
+            276,
+            285
+          ]
+        },
+        {
+          "name": "bone_fire",
+          "path": "gamecode/hc/h2/boner.hc",
+          "lines": [
+            338,
+            390
+          ]
+        },
+        {
+          "name": "bone_normal",
+          "path": "gamecode/hc/h2/boner.hc",
+          "lines": [
+            392,
+            404
+          ]
+        },
+        {
+          "name": "bone_power_touch",
+          "path": "gamecode/hc/h2/boner.hc",
+          "lines": [
+            251,
+            283
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "weapons-assassin",
+      "name": "Assassin weapons",
+      "purpose": "Crossbow volleys and the throwable grenades, each with a Tome of Power mode",
+      "paths": [
+        "gamecode/hc/h2/crossbow.hc",
+        "gamecode/hc/h2/assgren.hc"
+      ],
+      "functions": [
+        {
+          "name": "CB_BoltHit",
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "lines": [
+            108,
+            226
+          ]
+        },
+        {
+          "name": "FireCB_Bolt",
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "lines": [
+            282,
+            328
+          ]
+        },
+        {
+          "name": "crossbow_fire",
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "lines": [
+            338,
+            425
+          ]
+        },
+        {
+          "name": "ThrowMiniGrenade",
+          "path": "gamecode/hc/h2/assgren.hc",
+          "lines": [
+            43,
+            84
+          ]
+        },
+        {
+          "name": "ThrowMultiGrenade",
+          "path": "gamecode/hc/h2/assgren.hc",
+          "lines": [
+            148,
+            191
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "monster-ai",
+      "name": "Monster perception and attack choice",
+      "purpose": "Range bands, target acquisition, the per-think attack decision and the shared melee blow",
+      "paths": [
+        "gamecode/hc/h2/ai.hc",
+        "gamecode/hc/h2/fight.hc"
+      ],
+      "functions": [
+        {
+          "name": "range",
+          "path": "gamecode/hc/h2/ai.hc",
+          "lines": [
+            72,
+            101
+          ]
+        },
+        {
+          "name": "FindTarget",
+          "path": "gamecode/hc/h2/ai.hc",
+          "lines": [
+            323,
+            422
+          ]
+        },
+        {
+          "name": "CheckAttack",
+          "path": "gamecode/hc/h2/fight.hc",
+          "lines": [
+            33,
+            108
+          ]
+        },
+        {
+          "name": "ai_melee",
+          "path": "gamecode/hc/h2/fight.hc",
+          "lines": [
+            161,
+            191
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-core"
+      ]
+    },
+    {
+      "id": "puzzle-triggers",
+      "name": "Puzzle piece inventory and locks",
+      "purpose": "Eight-slot puzzle piece inventory, piece pickup and the lock check that gates doors and triggers",
+      "paths": [
+        "gamecode/hc/h2/triggers.hc"
+      ],
+      "functions": [
+        {
+          "name": "client_has_piece",
+          "path": "gamecode/hc/h2/triggers.hc",
+          "lines": [
+            99,
+            122
+          ]
+        },
+        {
+          "name": "check_puzzle_pieces",
+          "path": "gamecode/hc/h2/triggers.hc",
+          "lines": [
+            146,
+            196
+          ]
+        },
+        {
+          "name": "multi_use",
+          "path": "gamecode/hc/h2/triggers.hc",
+          "lines": [
+            198,
+            229
+          ]
+        },
+        {
+          "name": "GetPuzzle",
+          "path": "gamecode/hc/h2/triggers.hc",
+          "lines": [
+            1680,
+            1700
+          ]
+        },
+        {
+          "name": "puzzle_touch",
+          "path": "gamecode/hc/h2/triggers.hc",
+          "lines": [
+            1707,
+            1762
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-stats"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "class-move-speed",
+      "node": "client-input",
+      "name": "Class run speed, run key and haste factor",
+      "summary": "The client asks for a fixed walking command and a 2x run key; a per-class factor between 0.9 and 1.0 scales it, haste multiplies it by 2.9 and crouching by 0.6.",
+      "behavior": "The client builds a movement command each frame: 200 units per second forward or back and 225 sideways. The stock command speed cvars are commented out in the move function, so the literal values win. The run key (or always-run toggle, which flips its meaning) multiplies the whole command by 2.0, but only when the player's speed factor is 1 or less. The server then multiplies by the speed factor the game code stores on the player: Assassin 1.0, Paladin 0.96, Crusader 0.93, Necromancer 0.9. Active haste multiplies that factor by 2.9, which also disables the run key bonus, so a hasted Assassin moves at 580 units per second. A crouched hull multiplies the factor by 0.6. The server clamps the wished speed vector to 640. Derived walking speeds are 200, 192, 186 and 180; running speeds are 400, 384, 372 and 360. The factor is recalculated on spawn, on crouch change and when haste starts or ends, so a designer can tune classes by changing four numbers.",
+      "constants": [
+        {
+          "name": "forward and back command speed",
+          "value": 200,
+          "unit": "units per second, one command per client frame (at most 72 per second)",
+          "source": "engine/hexen2/cl_input.c:503"
+        },
+        {
+          "name": "strafe command speed",
+          "value": 225,
+          "unit": "units per second, one command per client frame",
+          "source": "engine/hexen2/cl_input.c:494"
+        },
+        {
+          "name": "run key multiplier",
+          "value": 2,
+          "unit": "scale on forward, side and up commands, applied per client frame",
+          "source": "engine/hexen2/cl_input.c:397"
+        },
+        {
+          "name": "Assassin speed factor",
+          "value": 1,
+          "unit": "scale on command speed, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:9"
+        },
+        {
+          "name": "Paladin speed factor",
+          "value": ".96",
+          "unit": "scale on command speed, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:11"
+        },
+        {
+          "name": "Crusader speed factor",
+          "value": ".93",
+          "unit": "scale on command speed, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:13"
+        },
+        {
+          "name": "Necromancer speed factor",
+          "value": ".9",
+          "unit": "scale on command speed, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:15"
+        },
+        {
+          "name": "haste speed multiplier",
+          "value": 2.9,
+          "unit": "scale on the speed factor while haste is active, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:18"
+        },
+        {
+          "name": "crouch speed multiplier",
+          "value": ".6",
+          "unit": "scale on the speed factor while crouched, per client frame",
+          "source": "gamecode/hc/h2/allplay.hc:21"
+        },
+        {
+          "name": "server wished speed cap",
+          "value": 640,
+          "unit": "units per second, applied each server move",
+          "source": "engine/hexen2/sv_user.c:218"
+        }
+      ],
+      "sources": [
+        {
+          "path": "engine/hexen2/cl_input.c",
+          "line": 470
+        },
+        {
+          "path": "gamecode/hc/h2/allplay.hc",
+          "line": 6
+        },
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 491
+        }
+      ],
+      "capabilities": [
+        "four class speed tiers from one factor",
+        "run key as a 2x multiplier",
+        "haste that replaces the run bonus",
+        "crouch slow-down"
+      ],
+      "tags": [
+        "movement",
+        "fps",
+        "rpg",
+        "class"
+      ]
+    },
+    {
+      "id": "ground-air-accel",
+      "node": "server-player-move",
+      "name": "Ground friction, acceleration and capped air steering",
+      "summary": "Quake-style add-speed acceleration with an edge-friction probe; air steering is limited to 30 units per second of wished speed along any direction.",
+      "behavior": "On the ground the server first applies friction, then accelerates. Friction removes the larger of the current speed and a stop speed of 100, times the friction cvar of 4, times the frame time. A short probe 16 units ahead of the feet, 34 units deep, multiplies friction by the edge friction of 2 when it finds no floor. Acceleration compares the speed along the wished direction with the wished speed and adds at most the shortfall, limited by 10 times the frame time times the wished speed. In the air the same add-speed test uses a wished speed clamped to 30, but the per-frame step still scales with the full wished speed, so mid-air turning is possible yet gains no speed beyond 30 along the pressed direction. Caution: the friction value is multiplied by a per-player friction field. For the stock progs the engine forces it to 1; for the progs built from this tree the player think function clears it every frame, so ground friction depends on that field. Treat the friction numbers as verified cvars with an unverified real-play effect. Frame time varies per frame (see the gravity card).",
+      "constants": [
+        {
+          "name": "friction cvar",
+          "value": 4,
+          "unit": "per second, multiplies frame time in the speed drop",
+          "source": "engine/hexen2/sv_phys.c:49"
+        },
+        {
+          "name": "stop speed",
+          "value": 100,
+          "unit": "units per second, floor for the speed used in friction",
+          "source": "engine/hexen2/sv_phys.c:48"
+        },
+        {
+          "name": "edge friction multiplier",
+          "value": 2,
+          "unit": "scale on friction when the probe finds no floor",
+          "source": "engine/hexen2/sv_user.c:28"
+        },
+        {
+          "name": "acceleration cvar",
+          "value": 10,
+          "unit": "per second, times wished speed, times frame time",
+          "source": "engine/hexen2/sv_user.c:219"
+        },
+        {
+          "name": "edge probe lead distance",
+          "value": 16,
+          "unit": "units ahead of the feet along velocity",
+          "source": "engine/hexen2/sv_user.c:156"
+        },
+        {
+          "name": "edge probe depth",
+          "value": 34,
+          "unit": "units below the hull bottom",
+          "source": "engine/hexen2/sv_user.c:159"
+        },
+        {
+          "name": "air wished speed cap",
+          "value": 30,
+          "unit": "units per second, cap used by the add-speed test in the air",
+          "source": "engine/hexen2/sv_user.c:271"
+        }
+      ],
+      "sources": [
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 140
+        },
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 247
+        },
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 265
+        },
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 491
+        }
+      ],
+      "capabilities": [
+        "add-speed acceleration without overshoot",
+        "ledge edge friction",
+        "air strafing with a 30 unit cap",
+        "tunable friction and acceleration cvars"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "gravity-step-slope",
+      "node": "server-physics",
+      "name": "Gravity, speed clamp, step height and walkable slope",
+      "summary": "Gravity is 800 units per second squared applied as one full step per frame; frames are clamped between 1/72 and 0.05 seconds; steps up to 18 units are climbed.",
+      "behavior": "Each player frame the server subtracts gravity times frame time from vertical velocity, using a full step, not a half step, and skips it while the player is in water or in the water-jump state. Total speed is clamped to 2000 units per second after non-finite values are cleared. Walking uses a step routine: a normal slide move runs first, and when it is blocked by a step the player is lifted 18 units, moved forward, and pushed back down; if the landing surface is steeper than a floor normal of 0.7 the plain move is kept instead. The step is skipped while airborne and not in water, so jumping never snaps up ledges. Frame time is the real elapsed time, ignored below 1/72 second (the loop does not run faster than 72 per second) and clamped to 0.05 second unless adaptive time is enabled, so all per-second constants integrate with a variable step. There is no fall damage in the live game code: landing only plays sounds (see the jump card).",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 800,
+          "unit": "units per second squared, applied each server frame at the capped frame time",
+          "source": "engine/hexen2/sv_phys.c:47"
+        },
+        {
+          "name": "maximum velocity",
+          "value": 2000,
+          "unit": "units per second, clamp on total speed each frame",
+          "source": "engine/hexen2/sv_phys.c:45"
+        },
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "units, lift tried when a move is blocked",
+          "source": "engine/hexen2/sv_phys.c:1561"
+        },
+        {
+          "name": "floor normal threshold",
+          "value": 0.7,
+          "unit": "unit-length normal z; steeper counts as not floor",
+          "source": "engine/hexen2/sv_phys.c:1637"
+        },
+        {
+          "name": "frame time cap",
+          "value": 0.05,
+          "unit": "seconds per server frame, maximum",
+          "source": "engine/hexen2/host.c:680"
+        },
+        {
+          "name": "maximum frame rate",
+          "value": 72,
+          "unit": "frames per second; faster frames are skipped",
+          "source": "engine/hexen2/host.c:670"
+        }
+      ],
+      "sources": [
+        {
+          "path": "engine/hexen2/sv_phys.c",
+          "line": 430
+        },
+        {
+          "path": "engine/hexen2/sv_phys.c",
+          "line": 98
+        },
+        {
+          "path": "engine/hexen2/sv_phys.c",
+          "line": 1562
+        },
+        {
+          "path": "engine/hexen2/sv_phys.c",
+          "line": 1663
+        },
+        {
+          "path": "engine/hexen2/host.c",
+          "line": 666
+        }
+      ],
+      "capabilities": [
+        "full-step gravity",
+        "18 unit stair climbing",
+        "speed clamp",
+        "variable frame time with a hard cap"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-and-landing",
+      "node": "player-actions",
+      "name": "Jump launch, water exit hop and landing",
+      "summary": "A jump adds 270 units per second to vertical speed once per button press; a ledge hop out of water sets 225; landing never hurts but picks a sound tier by impact speed.",
+      "behavior": "Jumping needs the on-ground flag and a released jump button, so holding the key does not bounce. It adds 270 (times the entity scale, normally 1) to the vertical velocity instead of setting it, clears the ground flag and plays a class sound. With gravity 800 the apex is about 45 units above the takeoff, a derived figure not tested in play. When the player is half submerged and a probe 24 units ahead at waist height hits a wall while the probe at eye height is clear, the water-jump state starts: vertical speed becomes 225 and horizontal speed follows a stored push of 50 units into the wall; a 2 second safety timer ends the state. On landing, the vertical speed stored in the last airborne frame is multiplied by mass over 10; below minus 300 a landing sound plays and below minus 500 a heavier one plays, with no health lost (the damage call is commented out). Crouching starts a 0.3 second absorb window that halves the stored impact value.",
+      "constants": [
+        {
+          "name": "jump impulse",
+          "value": 270,
+          "unit": "units per second added to vertical velocity, once per button press",
+          "source": "gamecode/hc/h2/client.hc:1192"
+        },
+        {
+          "name": "water exit hop vertical speed",
+          "value": 225,
+          "unit": "units per second, set at the start of the water-jump state",
+          "source": "gamecode/hc/h2/client.hc:1110"
+        },
+        {
+          "name": "water exit probe reach",
+          "value": 24,
+          "unit": "units ahead of the player along the facing",
+          "source": "gamecode/hc/h2/client.hc:1096"
+        },
+        {
+          "name": "water-jump safety timer",
+          "value": 2,
+          "unit": "seconds, then the state ends",
+          "source": "gamecode/hc/h2/client.hc:1112"
+        },
+        {
+          "name": "light landing threshold",
+          "value": -300,
+          "unit": "units per second of stored vertical speed times mass over 10",
+          "source": "gamecode/hc/h2/client.hc:1944"
+        },
+        {
+          "name": "hard landing threshold",
+          "value": -500,
+          "unit": "units per second of stored vertical speed times mass over 10",
+          "source": "gamecode/hc/h2/client.hc:1950"
+        },
+        {
+          "name": "crouch absorb window",
+          "value": 0.3,
+          "unit": "seconds after crouch starts in which landing impact is halved",
+          "source": "gamecode/hc/h2/allplay.hc:350"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1119
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1087
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1929
+        },
+        {
+          "path": "gamecode/hc/h2/allplay.hc",
+          "line": 341
+        }
+      ],
+      "capabilities": [
+        "no bunny hop jump latch",
+        "additive jump impulse",
+        "water ledge hop",
+        "no fall damage landing tiers"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "crouch-hull-view",
+      "node": "player-actions",
+      "name": "Crouch hull, view height and standing room check",
+      "summary": "Crouching swaps the 56 unit tall hull for a 28 unit hull, glides the eye from 50 to 24 in 10 unit steps, and standing up needs 28 units of clear room.",
+      "behavior": "The player collision box is 32 units wide on both horizontal axes (half-extent 16) and 56 tall when standing; crouching sets a hull 28 tall with the same footprint. The eye height starts at 50 and the projectile origin at 44. Crouching glides the eye down by 10 units per step to 24 (projectile origin to 18); standing glides it back up to 50. The step timer is a quarter of the 0.05 second game frame, so each glide takes three steps, about 0.04 seconds. Standing up first tests a box of the standing footprint 28 units above the feet; when it is blocked the player stays crouched, sees a no-room message and keeps retrying each frame. A crouch also multiplies move speed by 0.6 and opens the 0.3 second landing absorb window. Toggle crouch and held crouch both work through the same flags.",
+      "constants": [
+        {
+          "name": "standing hull half-extent x and y",
+          "value": 16,
+          "unit": "units, half of the 32 unit width",
+          "source": "gamecode/hc/h2/allplay.hc:327"
+        },
+        {
+          "name": "standing hull height",
+          "value": 56,
+          "unit": "units, full height from the feet",
+          "source": "gamecode/hc/h2/allplay.hc:327"
+        },
+        {
+          "name": "crouched hull height",
+          "value": 28,
+          "unit": "units, full height from the feet",
+          "source": "gamecode/hc/h2/allplay.hc:346"
+        },
+        {
+          "name": "standing eye height",
+          "value": 50,
+          "unit": "units above the feet",
+          "source": "gamecode/hc/h2/client.hc:775"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 24,
+          "unit": "units above the feet",
+          "source": "gamecode/hc/h2/client.hc:1338"
+        },
+        {
+          "name": "eye glide step",
+          "value": 10,
+          "unit": "units per step, one step per quarter game frame (0.0125 seconds)",
+          "source": "gamecode/hc/h2/client.hc:1336"
+        },
+        {
+          "name": "standing room check height",
+          "value": 28,
+          "unit": "units above the feet, box must be clear to stand",
+          "source": "gamecode/hc/h2/allplay.hc:319"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/allplay.hc",
+          "line": 317
+        },
+        {
+          "path": "gamecode/hc/h2/allplay.hc",
+          "line": 341
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1329
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 777
+        }
+      ],
+      "capabilities": [
+        "two hull heights",
+        "smooth eye glide",
+        "blocked stand-up retry",
+        "projectile origin that follows the crouch"
+      ],
+      "tags": [
+        "movement",
+        "camera",
+        "fps"
+      ]
+    },
+    {
+      "id": "water-swim-drowning",
+      "node": "server-player-move",
+      "name": "Swimming speed, drowning and liquid damage",
+      "summary": "Swimming scales speed by 0.7 (Paladin 0.75 to 1.0 by level), drifts down at 60, drowns after 12 seconds with growing damage, and burns in lava or slime.",
+      "behavior": "When the water level is 2 or more the server uses a swim step: the wished vector is limited to 640, then multiplied by 0.7 for most classes. The Paladin gets a level-based factor: 0.75 at level 1, 0.80 at level 2, then +0.05 every two levels up to 0.95 at levels 7 and 8, and no reduction from level 9. With no input the player sinks at 60 units per second. Water friction removes speed in proportion to speed times the friction cvar times frame time, and the game code adds a further per-frame drag. Pressing jump while swimming sets vertical speed to 100 in water, 80 in slime or 50 in lava. Air lasts 12 seconds under water; after that the drowning damage starts at 2, grows by 2 each second and wraps back to 10 when it passes 15. A Paladin with the level 3 ability never runs out. Lava deals 5 per water level every 0.5 seconds and slime 4 per water level every 1 second.",
+      "constants": [
+        {
+          "name": "swim speed factor, most classes",
+          "value": 0.7,
+          "unit": "scale on wished speed, per server move",
+          "source": "engine/hexen2/sv_user.c:403"
+        },
+        {
+          "name": "Paladin level 1 swim factor",
+          "value": 0.75,
+          "unit": "scale on wished speed, per server move",
+          "source": "engine/hexen2/sv_user.c:405"
+        },
+        {
+          "name": "Paladin level 7 and 8 swim factor",
+          "value": 0.95,
+          "unit": "scale on wished speed, per server move",
+          "source": "engine/hexen2/sv_user.c:413"
+        },
+        {
+          "name": "idle sink speed",
+          "value": 60,
+          "unit": "units per second downward with no input",
+          "source": "engine/hexen2/sv_user.c:389"
+        },
+        {
+          "name": "swim up speed in water",
+          "value": 100,
+          "unit": "units per second, set while jump is held in water",
+          "source": "gamecode/hc/h2/client.hc:1140"
+        },
+        {
+          "name": "swim up speed in slime",
+          "value": 80,
+          "unit": "units per second, set while jump is held in slime",
+          "source": "gamecode/hc/h2/client.hc:1142"
+        },
+        {
+          "name": "swim up speed in lava",
+          "value": 50,
+          "unit": "units per second, set while jump is held in lava",
+          "source": "gamecode/hc/h2/client.hc:1144"
+        },
+        {
+          "name": "air supply",
+          "value": 12,
+          "unit": "seconds of breath under water",
+          "source": "gamecode/hc/h2/client.hc:1253"
+        },
+        {
+          "name": "drowning damage step",
+          "value": 2,
+          "unit": "health points added to the tick damage each second",
+          "source": "gamecode/hc/h2/client.hc:1266"
+        },
+        {
+          "name": "drowning damage wrap threshold",
+          "value": 15,
+          "unit": "health points; above it the tick damage resets",
+          "source": "gamecode/hc/h2/client.hc:1267"
+        },
+        {
+          "name": "lava damage per water level",
+          "value": 5,
+          "unit": "health points per water level, once per tick",
+          "source": "gamecode/hc/h2/client.hc:1294"
+        },
+        {
+          "name": "lava damage tick",
+          "value": 0.5,
+          "unit": "seconds between lava damage ticks",
+          "source": "gamecode/hc/h2/client.hc:1289"
+        },
+        {
+          "name": "slime damage per water level",
+          "value": 4,
+          "unit": "health points per water level, once per tick",
+          "source": "gamecode/hc/h2/client.hc:1302"
+        }
+      ],
+      "sources": [
+        {
+          "path": "engine/hexen2/sv_user.c",
+          "line": 374
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1201
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1119
+        }
+      ],
+      "capabilities": [
+        "slower swimming with a class bonus",
+        "sinking when idle",
+        "escalating drowning damage",
+        "damaging lava and slime"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "hazard"
+      ]
+    },
+    {
+      "id": "view-angles-bob",
+      "node": "client-input",
+      "name": "Look speed, pitch limits, view bob and roll",
+      "summary": "Keyboard turn is 140 degrees per second yaw and 150 pitch, 1.5 times faster with the run key; pitch is clamped to 80 down and 70 up; bob is tiny and roll is 2 degrees.",
+      "behavior": "Key-driven turning adds the yaw speed of 140 degrees per second and the pitch speed of 150 degrees per second times frame time; holding the run key multiplies both by 1.5. Pitch is clamped to 80 degrees looking down and minus 70 looking up, and roll is clamped to 50. The camera bob is the horizontal speed times 0.02, shaped over a 0.6 second cycle whose first 0.5 fraction rises, then limited to 4 up and 7 down. Side velocity produces a view roll of up to 2 degrees. Flying players get an extra 10 degree roll when turning.",
+      "constants": [
+        {
+          "name": "keyboard yaw speed",
+          "value": 140,
+          "unit": "degrees per second",
+          "source": "engine/hexen2/cl_input.c:398"
+        },
+        {
+          "name": "keyboard pitch speed",
+          "value": 150,
+          "unit": "degrees per second",
+          "source": "engine/hexen2/cl_input.c:399"
+        },
+        {
+          "name": "run key turn multiplier",
+          "value": 1.5,
+          "unit": "scale on turn speed, per client frame",
+          "source": "engine/hexen2/cl_input.c:400"
+        },
+        {
+          "name": "maximum look down",
+          "value": 80,
+          "unit": "degrees of pitch, clamp each client frame",
+          "source": "engine/hexen2/cl_input.c:452"
+        },
+        {
+          "name": "maximum look up",
+          "value": -70,
+          "unit": "degrees of pitch, clamp each client frame",
+          "source": "engine/hexen2/cl_input.c:454"
+        },
+        {
+          "name": "roll clamp",
+          "value": 50,
+          "unit": "degrees, clamp each client frame",
+          "source": "engine/hexen2/cl_input.c:457"
+        },
+        {
+          "name": "bob scale",
+          "value": 0.02,
+          "unit": "scale on horizontal speed",
+          "source": "engine/hexen2/view.c:37"
+        },
+        {
+          "name": "bob cycle",
+          "value": 0.6,
+          "unit": "seconds per bob cycle",
+          "source": "engine/hexen2/view.c:38"
+        },
+        {
+          "name": "bob rise fraction",
+          "value": 0.5,
+          "unit": "fraction of the cycle spent rising",
+          "source": "engine/hexen2/view.c:39"
+        },
+        {
+          "name": "bob upper limit",
+          "value": 4,
+          "unit": "units of vertical camera offset",
+          "source": "engine/hexen2/view.c:120"
+        },
+        {
+          "name": "bob lower limit",
+          "value": -7,
+          "unit": "units of vertical camera offset",
+          "source": "engine/hexen2/view.c:122"
+        },
+        {
+          "name": "view roll angle",
+          "value": 2,
+          "unit": "degrees at full side speed",
+          "source": "engine/hexen2/view.c:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "engine/hexen2/cl_input.c",
+          "line": 410
+        },
+        {
+          "path": "engine/hexen2/view.c",
+          "line": 103
+        },
+        {
+          "path": "engine/hexen2/view.c",
+          "line": 72
+        }
+      ],
+      "capabilities": [
+        "clamped pitch camera",
+        "speed-proportional bob",
+        "strafe roll tilt"
+      ],
+      "tags": [
+        "camera",
+        "fps",
+        "movement"
+      ]
+    },
+    {
+      "id": "class-start-stats",
+      "node": "player-stats",
+      "name": "Class starting health, mana and attributes",
+      "summary": "Each of the four classes rolls starting health, one shared mana pool maximum and four attributes from per-class integer ranges when a character is created.",
+      "behavior": "A new character rolls each stat uniformly between the class minimum and maximum, rounded up, so both ends are reachable. Health starts at 70 to 85 for the Paladin and 65 to 75 for the other three classes, and the roll also sets maximum health. One roll sets the maximum of both mana pools (green and blue are always capped at the same value): 84 to 94 Paladin, 88 to 98 Crusader, 96 to 106 Necromancer, 92 to 102 Assassin. Strength, intelligence, wisdom and dexterity are also rolled per class: the Paladin is strong and dexterous, the Crusader wise, the Necromancer intelligent and weak, the Assassin dexterous. Strength changes melee damage and wisdom changes experience gain (see the damage and experience cards). Level starts at 1 with 0 experience. A quick class change rolls the stats again and then replays level-ups up to the level the old experience would give.",
+      "constants": [
+        {
+          "name": "Paladin health minimum",
+          "value": 70,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:66"
+        },
+        {
+          "name": "Paladin health maximum",
+          "value": 85,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:66"
+        },
+        {
+          "name": "Crusader health minimum",
+          "value": 65,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:69"
+        },
+        {
+          "name": "Crusader health maximum",
+          "value": 75,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:69"
+        },
+        {
+          "name": "Paladin starting mana low end",
+          "value": 84,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:84"
+        },
+        {
+          "name": "Paladin starting mana high end",
+          "value": 94,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:84"
+        },
+        {
+          "name": "Crusader starting mana low end",
+          "value": 88,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:85"
+        },
+        {
+          "name": "Necromancer starting mana low end",
+          "value": 96,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:86"
+        },
+        {
+          "name": "Necromancer starting mana high end",
+          "value": 106,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:86"
+        },
+        {
+          "name": "Assassin starting mana low end",
+          "value": 92,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:87"
+        },
+        {
+          "name": "Paladin strength minimum",
+          "value": 15,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:93"
+        },
+        {
+          "name": "Necromancer strength minimum",
+          "value": 6,
+          "unit": "points, rolled once at spawn, uniform integer",
+          "source": "gamecode/hc/h2/stats.hc:95"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 133
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 145
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 64
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 80
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 91
+        }
+      ],
+      "capabilities": [
+        "four distinct class stat profiles",
+        "uniform integer roll with both ends reachable",
+        "shared mana pool maximum",
+        "attribute scores that feed combat and experience"
+      ],
+      "tags": [
+        "rpg",
+        "class",
+        "stats"
+      ]
+    },
+    {
+      "id": "experience-levels",
+      "node": "player-stats",
+      "name": "Experience thresholds and experience gain modifiers",
+      "summary": "A per-class table gives the experience needed for levels 2 to 11, then a flat step per level; early levels earn half, class and wisdom scale the rest.",
+      "behavior": "Level comes from total experience by scanning ten thresholds per class (labelled levels 2 to 11 in the table); beyond them each further level costs one flat amount, the eleventh entry. The Paladin needs 945 for level 2 and 154000 for level 10; the Crusader 911, the Necromancer 823 and the Assassin 675 for level 2, so the Assassin levels fastest. The flat step after level 10 is 210000, 202500, 183000 and 150000. Every award is first halved below level 4, then multiplied by 1.4 for the Paladin, 1.35 for the Crusader and 1.22 for the Necromancer (the Assassin is 1.0), then scaled by wisdom: plus or minus one twentieth of the award per wisdom point away from 11. Kills of monsters pay the experience value on the monster; golem variants pay 125 to 650. In deathmatch a player kill pays 800 times the victim level minus 500 times a multiplier. Dying to a lower-level player, or killing yourself or a teammate, costs one level and rewinds experience to the previous threshold, never below level 1.",
+      "constants": [
+        {
+          "name": "Paladin level 2 threshold",
+          "value": 945,
+          "unit": "experience points, cumulative",
+          "source": "gamecode/hc/h2/stats.hc:9"
+        },
+        {
+          "name": "Paladin level 10 threshold",
+          "value": 154000,
+          "unit": "experience points, cumulative",
+          "source": "gamecode/hc/h2/stats.hc:17"
+        },
+        {
+          "name": "Paladin step per level after 10",
+          "value": 210000,
+          "unit": "experience points per level",
+          "source": "gamecode/hc/h2/stats.hc:19"
+        },
+        {
+          "name": "Crusader level 2 threshold",
+          "value": 911,
+          "unit": "experience points, cumulative",
+          "source": "gamecode/hc/h2/stats.hc:22"
+        },
+        {
+          "name": "Necromancer level 2 threshold",
+          "value": 823,
+          "unit": "experience points, cumulative",
+          "source": "gamecode/hc/h2/stats.hc:35"
+        },
+        {
+          "name": "Assassin level 2 threshold",
+          "value": 675,
+          "unit": "experience points, cumulative",
+          "source": "gamecode/hc/h2/stats.hc:48"
+        },
+        {
+          "name": "Assassin step per level after 10",
+          "value": 150000,
+          "unit": "experience points per level",
+          "source": "gamecode/hc/h2/stats.hc:58"
+        },
+        {
+          "name": "table levels before flat step",
+          "value": 10,
+          "unit": "levels",
+          "source": "gamecode/hc/h2/constant.hc:512"
+        },
+        {
+          "name": "early level award multiplier",
+          "value": ".5",
+          "unit": "scale on each award while level is below 4",
+          "source": "gamecode/hc/h2/stats.hc:352"
+        },
+        {
+          "name": "Paladin award multiplier",
+          "value": 1.4,
+          "unit": "scale on each award",
+          "source": "gamecode/hc/h2/stats.hc:355"
+        },
+        {
+          "name": "Crusader award multiplier",
+          "value": 1.35,
+          "unit": "scale on each award",
+          "source": "gamecode/hc/h2/stats.hc:357"
+        },
+        {
+          "name": "Necromancer award multiplier",
+          "value": 1.22,
+          "unit": "scale on each award",
+          "source": "gamecode/hc/h2/stats.hc:359"
+        },
+        {
+          "name": "wisdom neutral point",
+          "value": 11,
+          "unit": "wisdom points at which the bonus is zero",
+          "source": "gamecode/hc/h2/stats.hc:361"
+        },
+        {
+          "name": "wisdom divisor",
+          "value": 20,
+          "unit": "award fraction per wisdom point away from neutral",
+          "source": "gamecode/hc/h2/stats.hc:362"
+        },
+        {
+          "name": "Stone golem experience value",
+          "value": 125,
+          "unit": "experience points per kill",
+          "source": "gamecode/hc/h2/golem.hc:150"
+        },
+        {
+          "name": "Crystal golem experience value",
+          "value": 650,
+          "unit": "experience points per kill",
+          "source": "gamecode/hc/h2/golem.hc:287"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 6
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 301
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 332
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 480
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 256
+        }
+      ],
+      "capabilities": [
+        "per-class level curves",
+        "experience scaling by class and attribute",
+        "flat endless levelling after level 10",
+        "deathmatch level loss"
+      ],
+      "tags": [
+        "rpg",
+        "progression",
+        "class"
+      ]
+    },
+    {
+      "id": "level-up-growth",
+      "node": "player-stats",
+      "name": "Level-up health and mana growth and ability unlocks",
+      "summary": "Each level adds a class-rolled amount of health and mana, flat past level 10, with health capped at 150; ability flags unlock at levels 3 and 6.",
+      "behavior": "On a level change the game replays one step per level gained. Up to level 10 health gains roll between class limits (Paladin 8 to 13, the others 5 to 10) and mana gains roll too (Paladin 6 to 9, Crusader 7 to 10, Necromancer 10 to 12, Assassin 9 to 11). Past level 10 each level adds a flat amount: health 4 for the Paladin and 3 for the others, mana 1, 2, 4 and 3 by class order. Both current and maximum health rise by the gain, and green mana, blue mana and the shared maximum all rise by the same mana gain. Health is hard capped at 150 for both current and maximum. Ability flag 1 turns on above level 2 and flag 2 above level 5. The Crusader above level 2 also refills both mana pools and heals to full on every level-up.",
+      "constants": [
+        {
+          "name": "health cap",
+          "value": 150,
+          "unit": "health points, cap on current and maximum health",
+          "source": "gamecode/hc/h2/stats.hc:282"
+        },
+        {
+          "name": "Paladin health gain minimum",
+          "value": 8,
+          "unit": "health points per level up to 10",
+          "source": "gamecode/hc/h2/stats.hc:67"
+        },
+        {
+          "name": "Paladin health gain maximum",
+          "value": 13,
+          "unit": "health points per level up to 10",
+          "source": "gamecode/hc/h2/stats.hc:67"
+        },
+        {
+          "name": "other class health gain minimum",
+          "value": 5,
+          "unit": "health points per level up to 10",
+          "source": "gamecode/hc/h2/stats.hc:70"
+        },
+        {
+          "name": "Paladin flat health gain past level 10",
+          "value": 4,
+          "unit": "health points per level",
+          "source": "gamecode/hc/h2/stats.hc:67"
+        },
+        {
+          "name": "Paladin mana gain minimum",
+          "value": 6,
+          "unit": "mana points per level up to 10, each pool",
+          "source": "gamecode/hc/h2/stats.hc:84"
+        },
+        {
+          "name": "Necromancer mana gain minimum",
+          "value": 10,
+          "unit": "mana points per level up to 10, each pool",
+          "source": "gamecode/hc/h2/stats.hc:86"
+        },
+        {
+          "name": "first ability unlock level",
+          "value": 2,
+          "unit": "levels; flag is set above this level",
+          "source": "gamecode/hc/h2/stats.hc:293"
+        },
+        {
+          "name": "second ability unlock level",
+          "value": 5,
+          "unit": "levels; flag is set above this level",
+          "source": "gamecode/hc/h2/stats.hc:296"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 212
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 64
+        },
+        {
+          "path": "gamecode/hc/h2/stats.hc",
+          "line": 80
+        }
+      ],
+      "capabilities": [
+        "per-level stat growth",
+        "flat late-game growth",
+        "hard health cap",
+        "level-gated abilities"
+      ],
+      "tags": [
+        "rpg",
+        "progression",
+        "class"
+      ]
+    },
+    {
+      "id": "class-abilities",
+      "node": "player-stats",
+      "name": "Class passives: assassin cloak, backstab, necromancer drain, paladin save",
+      "summary": "The Assassin cloaks when still in the dark and stabs from behind for 2.5 to 4 times damage; the Necromancer drains health on melee hits; the Paladin may be saved at death.",
+      "behavior": "Assassin cloak: from level 3 an Assassin who has not moved, has not attacked for 2.5 seconds and stands in light at or below a level threshold starts to fade. Threshold is 30 at level 3 and rises by 10 per level to 100; the still time needed is 12 minus level seconds, minimum 2. After the fade, moving makes her visible again at a rate of 4 divided by level minus 2 per second, minimum 0.5, so higher levels stay hidden longer. Backstab: with the first weapon from level 6, a hit on a living target the attacker is behind, when a random number between 1 and 10 falls below the level, multiplies base damage by a random 2.5 to 4 and grants 10 experience on a kill. Necromancer drain: every melee hit on a monster or player has a chance of level times 0.05 to heal between 1 and the level in health. Paladin divine intervention: from level 6 a lethal hit is cancelled with chance level times 0.02, capped at 0.20; it restores full health, teleports the player, grants 5 seconds of invincibility and starts a tome. Necromancer from level 3 and Crusader from level 6 release a bonus sphere on kills.",
+      "constants": [
+        {
+          "name": "cloak minimum level",
+          "value": 3,
+          "unit": "levels",
+          "source": "gamecode/hc/h2/specials.hc:21"
+        },
+        {
+          "name": "cloak light threshold at level 3",
+          "value": 30,
+          "unit": "light level units (100 is normal brightness)",
+          "source": "gamecode/hc/h2/specials.hc:37"
+        },
+        {
+          "name": "cloak light threshold step per level",
+          "value": 10,
+          "unit": "light level units per level",
+          "source": "gamecode/hc/h2/specials.hc:37"
+        },
+        {
+          "name": "cloak still time base",
+          "value": 12,
+          "unit": "seconds minus level, minimum 2",
+          "source": "gamecode/hc/h2/specials.hc:38"
+        },
+        {
+          "name": "cloak attack quiet time",
+          "value": 2.5,
+          "unit": "seconds since the last attack",
+          "source": "gamecode/hc/h2/specials.hc:50"
+        },
+        {
+          "name": "decloak rate numerator",
+          "value": 4,
+          "unit": "per second divided by level minus 2",
+          "source": "gamecode/hc/h2/specials.hc:36"
+        },
+        {
+          "name": "decloak rate floor",
+          "value": 0.5,
+          "unit": "per second",
+          "source": "gamecode/hc/h2/specials.hc:41"
+        },
+        {
+          "name": "backstab minimum level",
+          "value": 5,
+          "unit": "levels; the check is level above this value",
+          "source": "gamecode/hc/h2/combat.hc:63"
+        },
+        {
+          "name": "backstab multiplier maximum",
+          "value": 4,
+          "unit": "scale on base damage (minimum 2.5), per hit",
+          "source": "gamecode/hc/h2/combat.hc:67"
+        },
+        {
+          "name": "backstab experience bonus",
+          "value": 10,
+          "unit": "experience points on a backstab kill",
+          "source": "gamecode/hc/h2/combat.hc:79"
+        },
+        {
+          "name": "necromancer drain chance per level",
+          "value": ".05",
+          "unit": "probability per melee hit per level",
+          "source": "gamecode/hc/h2/combat.hc:92"
+        },
+        {
+          "name": "divine intervention minimum level",
+          "value": 6,
+          "unit": "levels; lower levels are never saved",
+          "source": "gamecode/hc/h2/damage.hc:132"
+        },
+        {
+          "name": "divine intervention chance per level",
+          "value": ".02",
+          "unit": "probability per lethal hit per level",
+          "source": "gamecode/hc/h2/damage.hc:135"
+        },
+        {
+          "name": "divine intervention invincibility",
+          "value": 5,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/damage.hc:149"
+        },
+        {
+          "name": "Necromancer sphere minimum level",
+          "value": 3,
+          "unit": "levels",
+          "source": "gamecode/hc/h2/damage.hc:187"
+        },
+        {
+          "name": "Crusader sphere minimum level",
+          "value": 6,
+          "unit": "levels",
+          "source": "gamecode/hc/h2/damage.hc:195"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/specials.hc",
+          "line": 1
+        },
+        {
+          "path": "gamecode/hc/h2/combat.hc",
+          "line": 34
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 128
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 190
+        }
+      ],
+      "capabilities": [
+        "stealth that depends on stillness, darkness and level",
+        "positional critical hit",
+        "life steal on melee",
+        "chance-based death save"
+      ],
+      "tags": [
+        "rpg",
+        "class",
+        "stealth",
+        "combat"
+      ]
+    },
+    {
+      "id": "melee-trace-strength",
+      "node": "damage-core",
+      "name": "Melee probe, damage roll and strength bonus",
+      "summary": "Every melee swing probes 64 units ahead on three rays and rolls damage between a base and base plus a spread; strength 11 is neutral, each point moves damage 3.3 percent.",
+      "behavior": "A melee swing fires a straight ray 64 units from eye height; if it hits nothing, one ray aimed 30 units lower and one aimed 30 units higher are tried, so the effective reach cone is tall but the length is always 64. The attack-radius parameter that callers pass in is not used for the reach. Damage is rolled uniformly between the base and the base plus a spread, then goes through the single damage function. For the first weapon slot (and the Paladin's second slot when not boosted by a tome) the damage is multiplied by one plus strength minus 11 over 30, so strength 6 is about 0.83 and strength 18 about 1.23 times. A Crusader with the tome active skips the bonus because the tome swaps the weapon for a throw. Damage from entities flagged for monster bonus is doubled against monsters.",
+      "constants": [
+        {
+          "name": "melee reach",
+          "value": 64,
+          "unit": "units from eye height along the facing",
+          "source": "gamecode/hc/h2/combat.hc:43"
+        },
+        {
+          "name": "melee vertical probe offset",
+          "value": 30,
+          "unit": "units above or below the eye ray",
+          "source": "gamecode/hc/h2/combat.hc:47"
+        },
+        {
+          "name": "strength neutral point",
+          "value": 11,
+          "unit": "strength points at which the bonus is zero",
+          "source": "gamecode/hc/h2/damage.hc:594"
+        },
+        {
+          "name": "strength divisor",
+          "value": 30,
+          "unit": "damage fraction per strength point away from neutral",
+          "source": "gamecode/hc/h2/damage.hc:595"
+        },
+        {
+          "name": "monster damage bonus",
+          "value": 2,
+          "unit": "scale on damage against monsters for flagged inflictors",
+          "source": "gamecode/hc/h2/damage.hc:600"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/combat.hc",
+          "line": 34
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 578
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 506
+        }
+      ],
+      "capabilities": [
+        "shared melee probe",
+        "attribute-scaled melee damage",
+        "single damage entry point"
+      ],
+      "tags": [
+        "combat",
+        "rpg",
+        "melee"
+      ]
+    },
+    {
+      "id": "armor-absorb",
+      "node": "damage-core",
+      "name": "Four-piece armor and damage absorption",
+      "summary": "Four armor pieces hold 20 points each; every worn piece adds a per-class protection fraction, plus 0.001 per level, and absorbed damage wears the pieces down evenly.",
+      "behavior": "A player can wear an amulet, bracer, breastplate and helmet, each picked up as 20 points. The fraction of an incoming hit that armor absorbs is the sum of the protection values of the worn pieces, plus 0.001 per character level. The Paladin values are amulet 0.05, bracer 0.10, breastplate 0.25 and helmet 0.15, so a full Paladin set absorbs 0.55 of each hit. The absorbed damage is split evenly across the worn pieces, with leftovers carried to the next piece; if it exceeds the total armor left, every piece is destroyed. The health loss is damage minus absorbed damage. Quirk to flag: the table is read at the class number minus one plus the piece offset, with no multiplication by four, so classes after the Paladin read shifted entries and the intended per-class values are not what the live code uses.",
+      "constants": [
+        {
+          "name": "armor piece capacity",
+          "value": 20,
+          "unit": "armor points per piece on pickup",
+          "source": "gamecode/hc/h2/items.hc:768"
+        },
+        {
+          "name": "Paladin amulet protection",
+          "value": ".05",
+          "unit": "fraction of each hit absorbed",
+          "source": "gamecode/hc/h2/damage.hc:19"
+        },
+        {
+          "name": "Paladin bracer protection",
+          "value": ".10",
+          "unit": "fraction of each hit absorbed",
+          "source": "gamecode/hc/h2/damage.hc:20"
+        },
+        {
+          "name": "Paladin breastplate protection",
+          "value": ".25",
+          "unit": "fraction of each hit absorbed",
+          "source": "gamecode/hc/h2/damage.hc:21"
+        },
+        {
+          "name": "Paladin helmet protection",
+          "value": ".15",
+          "unit": "fraction of each hit absorbed",
+          "source": "gamecode/hc/h2/damage.hc:22"
+        },
+        {
+          "name": "level protection bonus",
+          "value": ".001",
+          "unit": "fraction of each hit absorbed per character level",
+          "source": "gamecode/hc/h2/damage.hc:406"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 384
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 16
+        },
+        {
+          "path": "gamecode/hc/h2/items.hc",
+          "line": 759
+        }
+      ],
+      "capabilities": [
+        "armor that wears out as it absorbs",
+        "class-specific protection per slot",
+        "level scaled protection"
+      ],
+      "tags": [
+        "combat",
+        "rpg",
+        "defense"
+      ]
+    },
+    {
+      "id": "radius-damage-knockback",
+      "node": "damage-core",
+      "name": "Radius blast falloff, self damage and knockback",
+      "summary": "A blast reaches damage plus 40 units, loses half a point per unit of distance, halves self damage, and pushes victims by points times 10 divided by mass.",
+      "behavior": "A radius blast looks for entities within the blast damage plus 40 units of the inflictor center. Each victim takes the damage minus half the distance from the center to the victim center, so damage falls to zero at twice the damage value; victims without a clear line of sight take nothing. The attacker takes half, a Necromancer takes none from own magic, and an Assassin takes a quarter from the large grenade. Victims also get a velocity push of points times 10, divided by an inertia that is 1 for mass up to 10, mass over 10 up to 100, and the plain mass above that. Direct damage on walking targets adds a push away from the inflictor of damage times 8. The fire circle effect uses a fixed 150 unit radius.",
+      "constants": [
+        {
+          "name": "blast reach padding",
+          "value": 40,
+          "unit": "units added to the damage value for the search radius",
+          "source": "gamecode/hc/h2/damage.hc:750"
+        },
+        {
+          "name": "distance falloff",
+          "value": 0.5,
+          "unit": "damage points lost per unit of distance",
+          "source": "gamecode/hc/h2/damage.hc:763"
+        },
+        {
+          "name": "self damage factor",
+          "value": 0.5,
+          "unit": "scale on damage to the attacker",
+          "source": "gamecode/hc/h2/damage.hc:773"
+        },
+        {
+          "name": "big grenade self damage factor",
+          "value": 0.25,
+          "unit": "scale on damage to the Assassin attacker",
+          "source": "gamecode/hc/h2/damage.hc:771"
+        },
+        {
+          "name": "blast push scale",
+          "value": 10,
+          "unit": "velocity units per damage point, divided by inertia",
+          "source": "gamecode/hc/h2/damage.hc:794"
+        },
+        {
+          "name": "direct hit push scale",
+          "value": 8,
+          "unit": "velocity units per damage point on walking targets",
+          "source": "gamecode/hc/h2/damage.hc:631"
+        },
+        {
+          "name": "fire circle blast radius",
+          "value": 150,
+          "unit": "units, fixed for that inflictor",
+          "source": "gamecode/hc/h2/damage.hc:748"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 736
+        },
+        {
+          "path": "gamecode/hc/h2/damage.hc",
+          "line": 631
+        }
+      ],
+      "capabilities": [
+        "distance-based blast falloff",
+        "reduced self damage",
+        "mass-based knockback"
+      ],
+      "tags": [
+        "combat",
+        "physics",
+        "explosion"
+      ]
+    },
+    {
+      "id": "paladin-melee-weapons",
+      "node": "weapons-paladin",
+      "name": "Paladin gauntlet, vorpal sword and axe",
+      "summary": "Three melee weapons share the 64 unit probe: gauntlet 16 plus up to 12, vorpal sword 30 plus up to 20 for 2 blue mana, axe 12 plus up to 12 with a thrown blade for 2 green mana.",
+      "behavior": "Gauntlet: a 0.5 second swing that does 16 plus a random 0 to 12 damage; the Tome of Power raises it to 30 plus 0 to 20. Vorpal sword: with at least 2 blue mana a hit does 30 plus 0 to 20, and only hits on monsters spend the 2 mana; with less mana it falls back to 20 plus 0 to 10. When mana is available the swing also damages other entities within 100 units for 15 plus 0 to 10. With the tome and 4 mana the hit becomes 40 plus 0 to 30 plus a quarter, and a 1000 units per second energy bolt flies for 2 seconds doing 30 to 60 and costing 4 mana. Axe: a swing does 12 plus 0 to 12 and launches a blade at 900 units per second that lives 2 seconds and can pass through two targets; both cost 2 green mana and the swing does nothing below 2 mana. The tome axe does 50 plus 0 to 25 in melee, launches three blades in a 5 degree fan and costs 8 green mana. Swing interval is 0.35 seconds normal and 0.7 with the tome. Strength raises the melee numbers (see the melee card).",
+      "constants": [
+        {
+          "name": "gauntlet base damage",
+          "value": 16,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/gauntlet.hc:49"
+        },
+        {
+          "name": "gauntlet random add",
+          "value": 12,
+          "unit": "health points per hit, added as 0 up to this",
+          "source": "gamecode/hc/h2/gauntlet.hc:50"
+        },
+        {
+          "name": "gauntlet tome base damage",
+          "value": 30,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/gauntlet.hc:51"
+        },
+        {
+          "name": "gauntlet swing interval",
+          "value": 0.5,
+          "unit": "seconds between swings",
+          "source": "gamecode/hc/h2/gauntlet.hc:240"
+        },
+        {
+          "name": "vorpal powered base damage",
+          "value": 30,
+          "unit": "health points per hit with 2 or more blue mana",
+          "source": "gamecode/hc/h2/vorpal.hc:416"
+        },
+        {
+          "name": "vorpal mana per monster hit",
+          "value": 2,
+          "unit": "blue mana per hit on a monster",
+          "source": "gamecode/hc/h2/vorpal.hc:418"
+        },
+        {
+          "name": "vorpal area burst radius",
+          "value": 100,
+          "unit": "units around the wielder",
+          "source": "gamecode/hc/h2/vorpal.hc:515"
+        },
+        {
+          "name": "vorpal area burst base damage",
+          "value": 15,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/vorpal.hc:40"
+        },
+        {
+          "name": "vorpal tome mana",
+          "value": 4,
+          "unit": "blue mana per swing with the tome",
+          "source": "gamecode/hc/h2/vorpal.hc:555"
+        },
+        {
+          "name": "vorpal bolt speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/vorpal.hc:340"
+        },
+        {
+          "name": "axe base damage",
+          "value": 12,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/constant.hc:297"
+        },
+        {
+          "name": "axe blade speed",
+          "value": 900,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/axe.hc:106"
+        },
+        {
+          "name": "axe blade lifetime",
+          "value": 2,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/axe.hc:117"
+        },
+        {
+          "name": "axe mana per swing",
+          "value": 2,
+          "unit": "green mana per swing",
+          "source": "gamecode/hc/h2/axe.hc:179"
+        },
+        {
+          "name": "axe tome mana per swing",
+          "value": 8,
+          "unit": "green mana per swing",
+          "source": "gamecode/hc/h2/axe.hc:165"
+        },
+        {
+          "name": "axe tome base damage",
+          "value": 50,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/axe.hc:151"
+        },
+        {
+          "name": "axe swing interval",
+          "value": ".35",
+          "unit": "seconds between swings",
+          "source": "gamecode/hc/h2/axe.hc:248"
+        },
+        {
+          "name": "axe tome swing interval",
+          "value": ".7",
+          "unit": "seconds between swings",
+          "source": "gamecode/hc/h2/axe.hc:246"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/gauntlet.hc",
+          "line": 58
+        },
+        {
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "line": 368
+        },
+        {
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "line": 504
+        },
+        {
+          "path": "gamecode/hc/h2/vorpal.hc",
+          "line": 548
+        },
+        {
+          "path": "gamecode/hc/h2/axe.hc",
+          "line": 90
+        },
+        {
+          "path": "gamecode/hc/h2/axe.hc",
+          "line": 147
+        }
+      ],
+      "capabilities": [
+        "mana-gated melee",
+        "thrown blade that pierces",
+        "tome powered variant per weapon",
+        "area burst on sword swing"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "weapon",
+        "class"
+      ]
+    },
+    {
+      "id": "paladin-purifier",
+      "node": "weapons-paladin",
+      "name": "Paladin purifier fire missiles",
+      "summary": "The purifier shoots a fireball every 0.14 seconds for 1 green and 1 blue mana each; the tome version is a homing shell for 8 of each doing 150 to 200 plus a blast.",
+      "behavior": "Normal fire needs at least 2 of each mana to start. Each shot spends 1 green and 1 blue mana, flies at 1000 units per second for up to 2.5 seconds, alternates between left and right muzzles and deals 15 to 25 on a direct hit with a small fire ring. The firing interval is 0.14 seconds, about seven shots per second. With the tome and at least 8 of each mana, the weapon fires one shell every 0.5 seconds that costs 8 green and 8 blue. The shell flies at 1000 units per second for 2 seconds with a gentle homing turn on targets in front. A hit deals 150 to 200 to the target and a separate blast of 120 to 160 to everything nearby, excluding the target. Blast reach follows the radius damage card.",
+      "constants": [
+        {
+          "name": "fire start mana",
+          "value": 2,
+          "unit": "green and blue mana required to begin firing",
+          "source": "gamecode/hc/h2/purifier.hc:416"
+        },
+        {
+          "name": "mana per shot",
+          "value": 1,
+          "unit": "green and blue mana, each, per shot",
+          "source": "gamecode/hc/h2/purifier.hc:313"
+        },
+        {
+          "name": "shot speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/purifier.hc:286"
+        },
+        {
+          "name": "shot lifetime",
+          "value": 2.5,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/purifier.hc:310"
+        },
+        {
+          "name": "shot direct damage minimum",
+          "value": 15,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/purifier.hc:74"
+        },
+        {
+          "name": "shot direct damage maximum",
+          "value": 25,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/purifier.hc:74"
+        },
+        {
+          "name": "fire interval",
+          "value": ".14",
+          "unit": "seconds between shots",
+          "source": "gamecode/hc/h2/purifier.hc:400"
+        },
+        {
+          "name": "tome mana per shell",
+          "value": 8,
+          "unit": "green and blue mana, each, per shell",
+          "source": "gamecode/hc/h2/purifier.hc:242"
+        },
+        {
+          "name": "tome shell impact damage maximum",
+          "value": 200,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/purifier.hc:135"
+        },
+        {
+          "name": "tome shell blast damage maximum",
+          "value": 160,
+          "unit": "health points per hit to nearby targets",
+          "source": "gamecode/hc/h2/purifier.hc:139"
+        },
+        {
+          "name": "tome shell interval",
+          "value": 0.5,
+          "unit": "seconds between shells",
+          "source": "gamecode/hc/h2/purifier.hc:261"
+        },
+        {
+          "name": "tome shell lifetime",
+          "value": 2,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/purifier.hc:235"
+        },
+        {
+          "name": "tome shell turn time",
+          "value": 3,
+          "unit": "homing turn smoothing, lower is tighter",
+          "source": "gamecode/hc/h2/purifier.hc:238"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/purifier.hc",
+          "line": 272
+        },
+        {
+          "path": "gamecode/hc/h2/purifier.hc",
+          "line": 204
+        },
+        {
+          "path": "gamecode/hc/h2/purifier.hc",
+          "line": 61
+        },
+        {
+          "path": "gamecode/hc/h2/purifier.hc",
+          "line": 411
+        }
+      ],
+      "capabilities": [
+        "rapid dual-muzzle projectile fire",
+        "homing heavy shell with area blast",
+        "paired mana costs"
+      ],
+      "tags": [
+        "combat",
+        "ranged",
+        "weapon",
+        "class"
+      ]
+    },
+    {
+      "id": "crusader-hammer-ice-mace",
+      "node": "weapons-crusader",
+      "name": "Crusader war hammer, thrown hammer and ice mace",
+      "summary": "The hammer swings every 0.7 seconds for 15 to 25, doubled overhead; the tome throws it at 800 units per second to return; the ice mace fires 1200 speed snowballs for 1 blue mana.",
+      "behavior": "War hammer: each swing picks one of three attack animations and a hit does 15 to 25, doubled for the overhead chop, within 64 units. Victims are pushed away with a strength-scaled force of strength over 40 plus 0.5. A swing takes 0.7 seconds. With the tome the hammer is thrown instead: it flies at 800 units per second (half underwater) for up to 3 seconds, turns back after 377 units from the thrower or on a wall, hits for 10 plus a chain lightning, flies back and re-equips on contact; a throw cannot repeat for 1 second. Ice mace: each snowball costs 1 blue mana, flies at 1200 units per second, is fired every 0.05 seconds and freezes flesh targets for 2.5 seconds; a monster frozen solid pays its experience at once and shatters when killed. With the tome and 10 blue mana the mace fires a blizzard missile at 1000 units per second every 1 second that bursts into a blizzard of ice shards, each shard hitting for 50 times its scale.",
+      "constants": [
+        {
+          "name": "hammer swing interval",
+          "value": ".7",
+          "unit": "seconds between swings",
+          "source": "gamecode/hc/h2/warhamer.hc:483"
+        },
+        {
+          "name": "hammer hit damage minimum",
+          "value": 15,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/warhamer.hc:319"
+        },
+        {
+          "name": "hammer hit damage maximum",
+          "value": 25,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/warhamer.hc:319"
+        },
+        {
+          "name": "hammer knockback strength divisor",
+          "value": 40,
+          "unit": "strength points per knockback unit",
+          "source": "gamecode/hc/h2/warhamer.hc:315"
+        },
+        {
+          "name": "thrown hammer speed",
+          "value": 800,
+          "unit": "units per second, halved underwater",
+          "source": "gamecode/hc/h2/warhamer.hc:226"
+        },
+        {
+          "name": "thrown hammer lifetime",
+          "value": 3,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/warhamer.hc:235"
+        },
+        {
+          "name": "thrown hammer turn-back distance",
+          "value": 377,
+          "unit": "units from the thrower",
+          "source": "gamecode/hc/h2/warhamer.hc:125"
+        },
+        {
+          "name": "thrown hammer hit damage",
+          "value": 10,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/warhamer.hc:198"
+        },
+        {
+          "name": "throw cooldown",
+          "value": 1,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/warhamer.hc:247"
+        },
+        {
+          "name": "ice mace shot speed",
+          "value": 1200,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/icemace.hc:224"
+        },
+        {
+          "name": "ice mace shot mana",
+          "value": 1,
+          "unit": "blue mana per snowball",
+          "source": "gamecode/hc/h2/icemace.hc:209"
+        },
+        {
+          "name": "ice mace fire interval",
+          "value": 0.05,
+          "unit": "seconds between snowballs",
+          "source": "gamecode/hc/h2/icemace.hc:210"
+        },
+        {
+          "name": "freeze time",
+          "value": 2.5,
+          "unit": "seconds a frozen victim stays frozen",
+          "source": "gamecode/hc/h2/icemace.hc:174"
+        },
+        {
+          "name": "blizzard mana",
+          "value": 10,
+          "unit": "blue mana per cast",
+          "source": "gamecode/hc/h2/icemace.hc:460"
+        },
+        {
+          "name": "blizzard missile speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/icemace.hc:470"
+        },
+        {
+          "name": "blizzard shard damage factor",
+          "value": 50,
+          "unit": "health points per hit times shard scale",
+          "source": "gamecode/hc/h2/icemace.hc:258"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "line": 286
+        },
+        {
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "line": 476
+        },
+        {
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "line": 213
+        },
+        {
+          "path": "gamecode/hc/h2/warhamer.hc",
+          "line": 169
+        },
+        {
+          "path": "gamecode/hc/h2/icemace.hc",
+          "line": 206
+        },
+        {
+          "path": "gamecode/hc/h2/icemace.hc",
+          "line": 457
+        }
+      ],
+      "capabilities": [
+        "melee with strength knockback",
+        "boomerang weapon",
+        "freeze status with shatter",
+        "area denial blizzard"
+      ],
+      "tags": [
+        "combat",
+        "weapon",
+        "class",
+        "status-effect"
+      ]
+    },
+    {
+      "id": "necromancer-missile-bones",
+      "node": "weapons-necromancer",
+      "name": "Necromancer magic missile and bone shards",
+      "summary": "The magic missile is a 1000 speed bolt for 2 blue mana doing 20 to 25; the tome fires three homing bolts for 45 to 55 each; bone shards spend 1 green mana per burst and the tome bone does 100 plus a blast.",
+      "behavior": "Magic missile: each cast costs 2 blue mana, flies at 1000 units per second, expires after 3 seconds, does 20 to 25 and can repeat every 0.2 seconds. With the tome it fires three bolts spread 75 units per second sideways, each 45 to 55 and homing, for 10 blue mana every 0.7 seconds; they live 5 seconds. Bone shards: holding fire sprays small shards that fly at 1000 plus up to 500 units per second and do 7 each, and each 0.3 second burst also fires an instant probe that does 4 and spends 1 green mana; the shards themselves cost no extra mana in that code path, so damage per mana is high. The tome version throws one big bone at 1000 units per second for 20 green mana and a 1.3 second recovery. The bone does double its 100 damage on a direct hit and a 100 blast to everything nearby, and the blast counts double against monsters.",
+      "constants": [
+        {
+          "name": "missile mana",
+          "value": 2,
+          "unit": "blue mana per cast",
+          "source": "gamecode/hc/h2/magicmis.hc:283"
+        },
+        {
+          "name": "missile speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/magicmis.hc:137"
+        },
+        {
+          "name": "missile damage minimum",
+          "value": 20,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/magicmis.hc:135"
+        },
+        {
+          "name": "missile damage maximum",
+          "value": 25,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/magicmis.hc:135"
+        },
+        {
+          "name": "missile cast interval",
+          "value": 0.2,
+          "unit": "seconds between casts",
+          "source": "gamecode/hc/h2/magicmis.hc:284"
+        },
+        {
+          "name": "missile lifetime",
+          "value": 3,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/magicmis.hc:189"
+        },
+        {
+          "name": "tome missile damage minimum",
+          "value": 45,
+          "unit": "health points per hit per bolt",
+          "source": "gamecode/hc/h2/magicmis.hc:172"
+        },
+        {
+          "name": "tome missile mana",
+          "value": 10,
+          "unit": "blue mana per three-bolt cast",
+          "source": "gamecode/hc/h2/magicmis.hc:272"
+        },
+        {
+          "name": "tome cast interval",
+          "value": 0.7,
+          "unit": "seconds between casts",
+          "source": "gamecode/hc/h2/magicmis.hc:273"
+        },
+        {
+          "name": "tome missile lifetime",
+          "value": 5,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/magicmis.hc:180"
+        },
+        {
+          "name": "bone shard damage",
+          "value": 7,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/boner.hc:374"
+        },
+        {
+          "name": "bone probe mana",
+          "value": 1,
+          "unit": "green mana per burst",
+          "source": "gamecode/hc/h2/boner.hc:402"
+        },
+        {
+          "name": "bone probe interval",
+          "value": 0.3,
+          "unit": "seconds between bursts",
+          "source": "gamecode/hc/h2/boner.hc:403"
+        },
+        {
+          "name": "tome bone damage",
+          "value": 100,
+          "unit": "health points per hit before the direct-hit doubling",
+          "source": "gamecode/hc/h2/boner.hc:358"
+        },
+        {
+          "name": "tome bone mana",
+          "value": 20,
+          "unit": "green mana per throw",
+          "source": "gamecode/hc/h2/boner.hc:369"
+        },
+        {
+          "name": "tome bone recovery",
+          "value": 1.3,
+          "unit": "seconds between throws",
+          "source": "gamecode/hc/h2/boner.hc:357"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/magicmis.hc",
+          "line": 116
+        },
+        {
+          "path": "gamecode/hc/h2/magicmis.hc",
+          "line": 263
+        },
+        {
+          "path": "gamecode/hc/h2/boner.hc",
+          "line": 338
+        },
+        {
+          "path": "gamecode/hc/h2/boner.hc",
+          "line": 392
+        },
+        {
+          "path": "gamecode/hc/h2/boner.hc",
+          "line": 251
+        }
+      ],
+      "capabilities": [
+        "mana-efficient homing volley",
+        "high rate spray weapon",
+        "heavy tome projectile with blast"
+      ],
+      "tags": [
+        "combat",
+        "ranged",
+        "weapon",
+        "class"
+      ]
+    },
+    {
+      "id": "assassin-crossbow-grenade",
+      "node": "weapons-assassin",
+      "name": "Assassin crossbow and chargeable grenades",
+      "summary": "The crossbow fires three arrows for 3 blue mana at 2 volleys per second (five flaming arrows for 10 at 3 per second with the tome); grenades fly 500 to 1000 units per second with a 2 second fuse.",
+      "behavior": "Crossbow: one volley of three bolts costs 3 blue mana and fires straight plus two spread 100 units per second to either side. Each bolt flies at a random speed from 700 to 1200 and hits for 10 and can stick into bodies and walls. Untomed firing runs two volleys per second. With the tome a volley fires five flaming arrows (centre, plus or minus 100, plus or minus 200) for 10 blue mana at three volleys per second. A flaming arrow explodes for 40. Grenades: holding fire charges the throw up to 50 steps, each adding 10 to a base of 500 units per second, so a throw reaches 1000. The mini grenade costs 3 green mana, does 100, explodes after 2 seconds or on death and recovers in 0.3 seconds. With the tome the throw is a cluster grenade costing 12 green mana that does 250 and bursts into three to six blasts, with a 2 second recovery.",
+      "constants": [
+        {
+          "name": "volley mana",
+          "value": 3,
+          "unit": "blue mana per volley",
+          "source": "gamecode/hc/h2/crossbow.hc:409"
+        },
+        {
+          "name": "tome volley mana",
+          "value": 10,
+          "unit": "blue mana per volley",
+          "source": "gamecode/hc/h2/crossbow.hc:393"
+        },
+        {
+          "name": "bolt speed minimum",
+          "value": 700,
+          "unit": "units per second, random between the two values",
+          "source": "gamecode/hc/h2/crossbow.hc:314"
+        },
+        {
+          "name": "bolt speed maximum",
+          "value": 1200,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/crossbow.hc:314"
+        },
+        {
+          "name": "bolt hit damage",
+          "value": 10,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/crossbow.hc:139"
+        },
+        {
+          "name": "side bolt offset",
+          "value": 100,
+          "unit": "units per second of sideways speed",
+          "source": "gamecode/hc/h2/crossbow.hc:415"
+        },
+        {
+          "name": "flaming arrow explosion damage",
+          "value": 40,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/crossbow.hc:301"
+        },
+        {
+          "name": "untomed volleys per second",
+          "value": 2,
+          "unit": "volleys per second",
+          "source": "gamecode/hc/h2/crossbow.hc:357"
+        },
+        {
+          "name": "tomed volleys per second",
+          "value": 3,
+          "unit": "volleys per second",
+          "source": "gamecode/hc/h2/crossbow.hc:355"
+        },
+        {
+          "name": "grenade base speed",
+          "value": 500,
+          "unit": "units per second before charge",
+          "source": "gamecode/hc/h2/assgren.hc:63"
+        },
+        {
+          "name": "grenade charge step",
+          "value": 10,
+          "unit": "units per second added per charge step",
+          "source": "gamecode/hc/h2/assgren.hc:63"
+        },
+        {
+          "name": "grenade charge cap",
+          "value": 50,
+          "unit": "charge steps",
+          "source": "gamecode/hc/h2/assgren.hc:219"
+        },
+        {
+          "name": "mini grenade mana",
+          "value": 3,
+          "unit": "green mana per throw",
+          "source": "gamecode/hc/h2/assgren.hc:45"
+        },
+        {
+          "name": "mini grenade fuse",
+          "value": 2,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/assgren.hc:59"
+        },
+        {
+          "name": "mini grenade damage",
+          "value": 100,
+          "unit": "health points per hit at the blast center",
+          "source": "gamecode/hc/h2/assgren.hc:58"
+        },
+        {
+          "name": "mini grenade recovery",
+          "value": 0.3,
+          "unit": "seconds between throws",
+          "source": "gamecode/hc/h2/assgren.hc:232"
+        },
+        {
+          "name": "cluster grenade mana",
+          "value": 12,
+          "unit": "green mana per throw",
+          "source": "gamecode/hc/h2/assgren.hc:152"
+        },
+        {
+          "name": "cluster grenade damage",
+          "value": 250,
+          "unit": "health points per hit at the blast center",
+          "source": "gamecode/hc/h2/assgren.hc:164"
+        },
+        {
+          "name": "cluster grenade recovery",
+          "value": 2,
+          "unit": "seconds between throws",
+          "source": "gamecode/hc/h2/assgren.hc:227"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "line": 338
+        },
+        {
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "line": 282
+        },
+        {
+          "path": "gamecode/hc/h2/crossbow.hc",
+          "line": 108
+        },
+        {
+          "path": "gamecode/hc/h2/assgren.hc",
+          "line": 43
+        },
+        {
+          "path": "gamecode/hc/h2/assgren.hc",
+          "line": 148
+        }
+      ],
+      "capabilities": [
+        "spread volley crossbow",
+        "sticking projectiles",
+        "hold-to-charge throw",
+        "cluster grenade"
+      ],
+      "tags": [
+        "combat",
+        "ranged",
+        "weapon",
+        "class"
+      ]
+    },
+    {
+      "id": "tome-of-power",
+      "node": "artifacts-inventory",
+      "name": "Tome of Power timed weapon upgrade",
+      "summary": "Using a tome gives 30 seconds of upgraded weapons, warns at 10 seconds left, and cannot be restarted until under 5 seconds remain.",
+      "behavior": "The tome is an inventory item with a pickup cap of 15. Using one sets a 30 second timer and consumes one tome. The player enters a power state with a different draw mode. The low-time flag turns on when 10 seconds remain, for the warning display. A second tome is refused until less than 5 seconds remain, so uses never stack time. Every class weapon checks the flag when firing: Paladin gauntlet, sword, axe and purifier get the stronger variants described in the weapon card; the Crusader hammer becomes a throw and the mace becomes a blizzard; the Necromancer missile becomes a three-bolt homing volley and the bone becomes a heavy bone; the Assassin crossbow fires flaming arrows and the grenade a cluster. Mana costs rise in step. The Paladin divine intervention also grants one. The flag is also used by a boss, so it is a general damage-upgrade switch for tuning.",
+      "constants": [
+        {
+          "name": "tome duration",
+          "value": 30,
+          "unit": "seconds per use",
+          "source": "gamecode/hc/h2/constant.hc:292"
+        },
+        {
+          "name": "low-time warning",
+          "value": 10,
+          "unit": "seconds remaining when the warning flag turns on",
+          "source": "gamecode/hc/h2/client.hc:1819"
+        },
+        {
+          "name": "restart window",
+          "value": 5,
+          "unit": "seconds remaining below which another use is allowed",
+          "source": "gamecode/hc/h2/invntory.hc:596"
+        },
+        {
+          "name": "pickup cap",
+          "value": 15,
+          "unit": "tomes held",
+          "source": "gamecode/hc/h2/artifact.hc:63"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 197
+        },
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1761
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 594
+        }
+      ],
+      "capabilities": [
+        "timed power-up that switches weapon modes",
+        "no stacking refresh rule",
+        "inventory use item"
+      ],
+      "tags": [
+        "rpg",
+        "power-up",
+        "combat",
+        "inventory"
+      ]
+    },
+    {
+      "id": "inventory-artifacts",
+      "node": "artifacts-inventory",
+      "name": "Inventory artifacts: caps, heals, haste, invincibility, blast",
+      "summary": "Most artifacts cap at 15 held; a health boost heals 25 (cap 30 for Crusader), the urn adds 100 up to 999 and decays, haste lasts 30 seconds, invincibility 10, blast pushes within 200.",
+      "behavior": "Artifacts are picked up into counted slots and used from a selected slot. The usual cap is 15 per type. A health boost caps at 30 for the Crusader and 15 for others, urns cap at 5 (2 in deathmatch), and the Crusader may hold 50 glyphs gaining 5 per pickup. A health boost heals 25 up to maximum health and is not consumed at full health. The urn adds 100 health up to a limit of 999 and then decays over time. A mana boost fills both pools to the maximum. The torch lights for 1 second, burns fully for 23 and dims for 7. Haste lasts 30 seconds (see the class speed card). Invincibility lasts 10 seconds, or 30 in deathmatch. Invisibility lasts 30 seconds. Blast radius pushes creatures within 200 units that have a clear line: the push scales with proximity, is capped at three times, and damage is capped at 10. Enemy missiles within twice that reach are turned around. Items marked as timed block reuse until the timer has under 5 seconds left.",
+      "constants": [
+        {
+          "name": "default pickup cap",
+          "value": 15,
+          "unit": "items held per type",
+          "source": "gamecode/hc/h2/artifact.hc:31"
+        },
+        {
+          "name": "Crusader health boost cap",
+          "value": 30,
+          "unit": "items held",
+          "source": "gamecode/hc/h2/artifact.hc:37"
+        },
+        {
+          "name": "urn pickup cap",
+          "value": 5,
+          "unit": "items held",
+          "source": "gamecode/hc/h2/artifact.hc:45"
+        },
+        {
+          "name": "Crusader glyph cap",
+          "value": 50,
+          "unit": "glyphs held",
+          "source": "gamecode/hc/h2/artifact.hc:83"
+        },
+        {
+          "name": "health boost heal",
+          "value": 25,
+          "unit": "health points per use, up to maximum health",
+          "source": "gamecode/hc/h2/artifact.hc:355"
+        },
+        {
+          "name": "urn heal",
+          "value": 100,
+          "unit": "health points per use",
+          "source": "gamecode/hc/h2/artifact.hc:318"
+        },
+        {
+          "name": "urn health ceiling",
+          "value": 999,
+          "unit": "health points",
+          "source": "gamecode/hc/h2/artifact.hc:320"
+        },
+        {
+          "name": "torch full burn",
+          "value": 23,
+          "unit": "seconds after the first second",
+          "source": "gamecode/hc/h2/artifact.hc:424"
+        },
+        {
+          "name": "torch dim burn",
+          "value": 7,
+          "unit": "seconds before the light goes out",
+          "source": "gamecode/hc/h2/artifact.hc:415"
+        },
+        {
+          "name": "invincibility duration",
+          "value": 10,
+          "unit": "seconds in single player",
+          "source": "gamecode/hc/h2/invntory.hc:460"
+        },
+        {
+          "name": "blast radius",
+          "value": 200,
+          "unit": "units; the search reach is twice this value",
+          "source": "gamecode/hc/h2/constant.hc:310"
+        },
+        {
+          "name": "blast push cap",
+          "value": 3,
+          "unit": "proximity multiplier maximum",
+          "source": "gamecode/hc/h2/invntory.hc:397"
+        },
+        {
+          "name": "blast damage cap",
+          "value": 10,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/invntory.hc:431"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/artifact.hc",
+          "line": 348
+        },
+        {
+          "path": "gamecode/hc/h2/artifact.hc",
+          "line": 463
+        },
+        {
+          "path": "gamecode/hc/h2/artifact.hc",
+          "line": 435
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 362
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 454
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 503
+        }
+      ],
+      "capabilities": [
+        "counted inventory slots",
+        "timed buffs with reuse lock",
+        "area knockback blast",
+        "health over max urn"
+      ],
+      "tags": [
+        "rpg",
+        "inventory",
+        "power-up"
+      ]
+    },
+    {
+      "id": "glyph-class-weapons",
+      "node": "artifacts-inventory",
+      "name": "Glyph of the ancients as a class-specific weapon",
+      "summary": "One artifact slot becomes a different bomb per class: Paladin timed mine, Crusader 0.75 second bomb, Necromancer proximity mine that scales with level, Assassin tripwire.",
+      "behavior": "Using a glyph calls a class-specific launcher. Paladin: throws a bouncing mine at 700 units per second plus 200 upward with a damage value of 50; on touch it sticks to the wall or victim (3 damage to a victim) and sprays fire about 0.5 seconds later, or at the 10 second timer if it never touches. Crusader: places a bomb that explodes after 0.75 seconds and does 50 to a victim it touches. Necromancer: drops a drifting mine with health 10 that does 50 plus 10 per level, capped at 120, lives 30 seconds, and it seeks a visible enemy at 150 units per second; once the enemy is within 100 units it sounds a warning and explodes 0.3 seconds later. Assassin: places a tripwire (a separate effect not detailed here). Because the glyph shares one slot and one count, a designer can use it as one class-flavored special attack.",
+      "constants": [
+        {
+          "name": "Paladin mine launch speed",
+          "value": 700,
+          "unit": "units per second forward, plus 200 up",
+          "source": "gamecode/hc/h2/explode.hc:232"
+        },
+        {
+          "name": "Paladin mine damage value",
+          "value": 50,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/explode.hc:230"
+        },
+        {
+          "name": "Paladin mine timer",
+          "value": 10,
+          "unit": "seconds until the mine explodes",
+          "source": "gamecode/hc/h2/explode.hc:240"
+        },
+        {
+          "name": "Crusader bomb fuse",
+          "value": 0.75,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/invntory.hc:354"
+        },
+        {
+          "name": "Crusader bomb damage",
+          "value": 50,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/invntory.hc:343"
+        },
+        {
+          "name": "Necromancer mine base damage",
+          "value": 50,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/invntory.hc:297"
+        },
+        {
+          "name": "Necromancer mine level step",
+          "value": 10,
+          "unit": "health points per level",
+          "source": "gamecode/hc/h2/invntory.hc:297"
+        },
+        {
+          "name": "Necromancer mine damage cap",
+          "value": 120,
+          "unit": "health points per hit",
+          "source": "gamecode/hc/h2/invntory.hc:298"
+        },
+        {
+          "name": "Necromancer mine lifetime",
+          "value": 30,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/invntory.hc:311"
+        },
+        {
+          "name": "Necromancer mine arm distance",
+          "value": 100,
+          "unit": "units from the enemy",
+          "source": "gamecode/hc/h2/invntory.hc:247"
+        },
+        {
+          "name": "Necromancer mine seek speed",
+          "value": 150,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/invntory.hc:254"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 542
+        },
+        {
+          "path": "gamecode/hc/h2/explode.hc",
+          "line": 218
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 336
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 290
+        },
+        {
+          "path": "gamecode/hc/h2/tripmine.hc",
+          "line": 234
+        }
+      ],
+      "capabilities": [
+        "one item with four class behaviours",
+        "level scaled mine",
+        "proximity arming"
+      ],
+      "tags": [
+        "combat",
+        "inventory",
+        "class",
+        "explosive"
+      ]
+    },
+    {
+      "id": "rings-timed",
+      "node": "artifacts-inventory",
+      "name": "Rings: regeneration, flight, water breathing and missile turning",
+      "summary": "Four rings drain a percentage meter: regeneration heals 1 health per second for a 150 point budget, flight lasts 60 seconds, water breathing 60 and reflection 60, deflecting missiles within 100 units.",
+      "behavior": "Each ring has a meter from 100 down to 0 that a once-per-second tick drains. Regeneration restores 1 health per second while below maximum and spends 100 divided by 150 per heal, so a full ring restores 150 health. Flight drains 100 over 60 seconds and ends the flight when empty; water breathing drains only while submerged without air; reflection drains over 60 seconds and, while active, takes any enemy missile within 100 units, makes it the wearer's and, 9 times in 10, sends it off at 1000 units per second in a random direction, otherwise reverses it. A low warning shows when the meter falls below 10 percent for regeneration and reflection and below 25 percent for flight and water breathing.",
+      "constants": [
+        {
+          "name": "regeneration budget",
+          "value": 150,
+          "unit": "health points a full ring can give",
+          "source": "gamecode/hc/h2/constant.hc:582"
+        },
+        {
+          "name": "flight duration",
+          "value": 60,
+          "unit": "seconds of flight a full ring gives",
+          "source": "gamecode/hc/h2/constant.hc:583"
+        },
+        {
+          "name": "water breathing duration",
+          "value": 60,
+          "unit": "seconds under water a full ring gives",
+          "source": "gamecode/hc/h2/constant.hc:584"
+        },
+        {
+          "name": "reflection duration",
+          "value": 60,
+          "unit": "seconds a full ring turns missiles",
+          "source": "gamecode/hc/h2/constant.hc:585"
+        },
+        {
+          "name": "regeneration heal per tick",
+          "value": 1,
+          "unit": "health points per second",
+          "source": "gamecode/hc/h2/client.hc:1619"
+        },
+        {
+          "name": "reflection radius",
+          "value": 100,
+          "unit": "units around the wearer",
+          "source": "gamecode/hc/h2/client.hc:1693"
+        },
+        {
+          "name": "reflection deflect chance",
+          "value": 0.9,
+          "unit": "probability per missile; otherwise it is reversed",
+          "source": "gamecode/hc/h2/client.hc:1703"
+        },
+        {
+          "name": "deflected missile speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "gamecode/hc/h2/client.hc:1707"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/client.hc",
+          "line": 1603
+        },
+        {
+          "path": "gamecode/hc/h2/invntory.hc",
+          "line": 8
+        }
+      ],
+      "capabilities": [
+        "metered timed buffs",
+        "projectile reflection aura",
+        "regeneration with a fixed budget"
+      ],
+      "tags": [
+        "rpg",
+        "power-up",
+        "defense"
+      ]
+    },
+    {
+      "id": "monster-awareness-attack",
+      "node": "monster-ai",
+      "name": "Monster range bands, target acquisition and attack choice",
+      "summary": "Monsters classify the player as melee within 100 units, near within 500, mid within 1000 or far, wake by facing and sight, and attack by range-dependent chances.",
+      "behavior": "Range bands use eye-to-eye distance: melee under 100 (50 for the mummy), near under 500, mid under 1000, far beyond. A monster not hunting checks one candidate player per frame. Far players are ignored; near players are noticed only when in front unless they attacked within the last second; mid players need to be in front; all need a clear line of sight and good visibility. Once hunting, the decision to attack runs each think: a blocked shot (a tough or non-damageable obstacle) cancels the attack. In melee range the melee move is always used when the monster has one; otherwise a missile attack is rolled at 0.9. Near rolls 0.2 with a melee move and 0.4 without; mid rolls 0.05 and 0.1. After a missile attack the next attack waits a random 0 to 2 seconds. A melee blow reaches 60 units and does 0 to 9. A monster hit by another monster of its own kind turns on it only 5 percent of the time (spiders and scorpions 30 percent), while a different kind always retaliates. In the hardest skill, pain interruptions are suppressed for 5 seconds.",
+      "constants": [
+        {
+          "name": "melee band limit",
+          "value": 100,
+          "unit": "units, eye to eye",
+          "source": "gamecode/hc/h2/ai.hc:92"
+        },
+        {
+          "name": "mummy melee band limit",
+          "value": 50,
+          "unit": "units, eye to eye",
+          "source": "gamecode/hc/h2/ai.hc:90"
+        },
+        {
+          "name": "near band limit",
+          "value": 500,
+          "unit": "units, eye to eye",
+          "source": "gamecode/hc/h2/ai.hc:96"
+        },
+        {
+          "name": "mid band limit",
+          "value": 1000,
+          "unit": "units, eye to eye",
+          "source": "gamecode/hc/h2/ai.hc:98"
+        },
+        {
+          "name": "missile chance in melee range",
+          "value": 0.9,
+          "unit": "probability per decision when no melee move is used",
+          "source": "gamecode/hc/h2/fight.hc:80"
+        },
+        {
+          "name": "missile chance near, with melee move",
+          "value": 0.2,
+          "unit": "probability per decision",
+          "source": "gamecode/hc/h2/fight.hc:86"
+        },
+        {
+          "name": "missile chance near, no melee move",
+          "value": 0.4,
+          "unit": "probability per decision",
+          "source": "gamecode/hc/h2/fight.hc:88"
+        },
+        {
+          "name": "missile chance mid, with melee move",
+          "value": 0.05,
+          "unit": "probability per decision",
+          "source": "gamecode/hc/h2/fight.hc:93"
+        },
+        {
+          "name": "missile chance mid, no melee move",
+          "value": 0.1,
+          "unit": "probability per decision",
+          "source": "gamecode/hc/h2/fight.hc:95"
+        },
+        {
+          "name": "post-attack wait maximum",
+          "value": 2,
+          "unit": "seconds, random from 0",
+          "source": "gamecode/hc/h2/fight.hc:103"
+        },
+        {
+          "name": "melee blow reach",
+          "value": 60,
+          "unit": "units",
+          "source": "gamecode/hc/h2/fight.hc:172"
+        },
+        {
+          "name": "melee blow damage maximum",
+          "value": 9,
+          "unit": "health points per hit, random from 0",
+          "source": "gamecode/hc/h2/fight.hc:188"
+        },
+        {
+          "name": "retaliation chance against own kind",
+          "value": 5,
+          "unit": "percent per hit from a monster of the same kind",
+          "source": "gamecode/hc/h2/damage.hc:703"
+        },
+        {
+          "name": "hardest skill pain lockout",
+          "value": 5,
+          "unit": "seconds",
+          "source": "gamecode/hc/h2/damage.hc:724"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/ai.hc",
+          "line": 72
+        },
+        {
+          "path": "gamecode/hc/h2/ai.hc",
+          "line": 323
+        },
+        {
+          "path": "gamecode/hc/h2/fight.hc",
+          "line": 33
+        },
+        {
+          "path": "gamecode/hc/h2/fight.hc",
+          "line": 161
+        }
+      ],
+      "capabilities": [
+        "range band perception",
+        "sight and facing wake rules",
+        "chance based ranged attacks",
+        "attack cooldown jitter"
+      ],
+      "tags": [
+        "ai",
+        "monster",
+        "combat"
+      ]
+    },
+    {
+      "id": "puzzle-pieces",
+      "node": "puzzle-triggers",
+      "name": "Puzzle piece inventory and lock check",
+      "summary": "Players carry up to eight named puzzle pieces; a door or trigger demands up to four pieces, checked as a four-bit set, optionally consumes them and shows a message at most every 2 seconds.",
+      "behavior": "A puzzle item has a name string; touching it places the name in the first free of eight slots and a piece already held is ignored. In single player the item vanishes and in co-op it stays so every player can take it. A lock lists up to four required piece names. The check builds a four-bit mask from required pieces with values 1, 2, 4 and 8 and the same from those held, and opens when the masks are equal; an inverse flag opens when they differ, and a remove flag deletes the pieces from every player after success. A cheat flag passes any lock. When the check fails and a message is set, it is shown at most once every 2 seconds. Quirk to flag: the eighth slot assignment is guarded by the wrong test in the pickup code, so an eighth piece is never stored when the other seven are full; plan for seven usable slots.",
+      "constants": [
+        {
+          "name": "inventory slots",
+          "value": 8,
+          "unit": "puzzle pieces per player",
+          "source": "gamecode/hc/h2/triggers.hc:1696"
+        },
+        {
+          "name": "fourth piece bit value",
+          "value": 8,
+          "unit": "mask bit; a lock holds four pieces with bits 1, 2, 4 and 8",
+          "source": "gamecode/hc/h2/triggers.hc:172"
+        },
+        {
+          "name": "lock message cooldown",
+          "value": 2,
+          "unit": "seconds between failure messages",
+          "source": "gamecode/hc/h2/triggers.hc:222"
+        }
+      ],
+      "sources": [
+        {
+          "path": "gamecode/hc/h2/triggers.hc",
+          "line": 146
+        },
+        {
+          "path": "gamecode/hc/h2/triggers.hc",
+          "line": 99
+        },
+        {
+          "path": "gamecode/hc/h2/triggers.hc",
+          "line": 1680
+        },
+        {
+          "path": "gamecode/hc/h2/triggers.hc",
+          "line": 1707
+        },
+        {
+          "path": "gamecode/hc/h2/triggers.hc",
+          "line": 198
+        }
+      ],
+      "capabilities": [
+        "set-based key and lock gating",
+        "shared pickups in co-op",
+        "consumable keys"
+      ],
+      "tags": [
+        "puzzle",
+        "inventory",
+        "level-design"
+      ]
+    }
+  ]
+}
