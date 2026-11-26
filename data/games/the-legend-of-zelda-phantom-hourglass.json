@@ -89,7 +89,7 @@
       ]
     },
     {
-      "id": "player-link-states",
+      "id": "player-state-machine",
       "name": "Player state handlers, interaction and equipment",
       "purpose": "Holds the character state machine: movement, damage reactions, grabbing, pushing, throwing, and the hammer charge and swing timing.",
       "paths": [
@@ -345,7 +345,7 @@
       ],
       "dependsOn": [
         "actor-physics",
-        "player-link-states"
+        "player-state-machine"
       ]
     },
     {
@@ -433,32 +433,26 @@
       "id": "stylus-world-plane",
       "node": "player-stylus-control",
       "name": "Stylus position to world-plane offset",
-      "summary": "The stylus position is mapped to a world offset from the screen centre, and a small radius around the character is ignored.",
-      "behavior": "Steering uses the stylus, not an analogue stick. The last stylus position is converted into a world-space offset: the horizontal distance from the screen centre at 128 pixels and the vertical distance from the centre at 96 pixels are scaled so that the full screen width and the full screen height each cover 10.625 world units. The result is a point on a horizontal plane at the character, with the screen vertical axis becoming world depth. Because the screen is wider than it is tall, one pixel sideways is a smaller world step than one pixel up or down; the reach is about 0.04 world units per pixel across and 0.06 per pixel down. Stylus distance from the character under 20 pixels is treated as no input, so a small accidental drift does not move the character. The same plane is used for movement goals, aim points and the fairy follow point, so all stylus-driven behaviour shares one mapping.",
+      "summary": "The last stylus position maps to a world-plane offset from the screen centre; the screen vertical axis becomes world depth",
+      "behavior": "Steering reads the stylus, not an analogue stick. While the stylus is touching, the last touch position is turned into a world offset from the screen centre (128, 96 pixels): the horizontal pixel offset is scaled so that the 256 pixel screen width spans 10.625 world units, and the vertical pixel offset is scaled so that the 192 pixel screen height spans the same 10.625 units. That gives about 0.0415 world units per pixel sideways and 0.0553 per pixel up or down, and the screen vertical axis becomes world depth (z) with height zero. The offset is the base for the aim vector and the aim point of items. The offset is only produced while a touch is active. The header comment for the distance field says there is a dead zone of 20 pixels around the character, but the code in this file does not use 20; the distance checks that exist use 10, 16 and 24 pixels in other cards.",
       "constants": [
         {
           "name": "Horizontal centre of the touchscreen",
           "value": 128,
-          "unit": "pixels from the left edge, sampled per update, rate unverified",
+          "unit": "pixels from the left edge, touch position sampled per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:914"
         },
         {
           "name": "Vertical centre of the touchscreen",
           "value": 96,
-          "unit": "pixels from the top edge, sampled per update, rate unverified",
+          "unit": "pixels from the top edge, touch position sampled per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:913"
         },
         {
           "name": "World span of the full screen width and height",
           "value": 10.625,
-          "unit": "world units across 256 pixels horizontally and across 192 pixels vertically, static mapping with no timestep",
+          "unit": "world units spanned by 256 pixels horizontally and by 192 pixels vertically, static mapping",
           "source": "src/00_Core/Player/PlayerControl.cpp:913"
-        },
-        {
-          "name": "Stylus dead zone around the character",
-          "value": 20,
-          "unit": "pixels of stylus offset, sampled per update, rate unverified",
-          "source": "include/Player/PlayerControl.hpp:32"
         }
       ],
       "sources": [
@@ -477,8 +471,7 @@
       ],
       "capabilities": [
         "stylus-steering",
-        "screen-to-world-mapping",
-        "dead-zone"
+        "screen-to-world-mapping"
       ],
       "tags": [
         "movement",
@@ -492,24 +485,24 @@
       "node": "player-stylus-control",
       "name": "Stylus distance to movement-speed fraction",
       "summary": "Speed is the square of stylus distance over an 80-pixel reference, softened during the first four updates of a contact.",
-      "behavior": "The character has a continuous speed fraction rather than a fixed walk. The engine divides the stylus distance from the character by 80 pixels and squares the quotient, so half the reference distance yields a quarter of the speed, three quarters of the reference yields about 56 percent, and only a stylus at or beyond 80 pixels yields the full walk speed. While a contact is younger than four updates the fraction is reduced by a quarter for each update still missing, so tapping far from the character does not start at full speed. The fraction is clamped between zero and one. With no contact the fraction is zero, unless a held button flag is present, in which case the full value is returned. The squaring means most of the usable speed range sits in the outer half of the reference radius, which keeps small stylus wobble from producing large speed changes.",
+      "behavior": "The character has a continuous speed fraction rather than a fixed walk. While a touch is active, the stylus distance from the character in pixels is divided by 80 and the quotient is squared, so a distance of 40 pixels gives a quarter of the speed, 60 pixels gives about 56 percent, and 80 pixels or more gives the full fraction. While the contact is younger than four updates the fraction is reduced by a quarter for each update still missing, so tapping far from the character does not start at full speed. A negative result becomes zero and the fraction is clamped to one. With no active touch the fraction is zero, unless a held-button flag is set, in which case it is one.",
       "constants": [
         {
           "name": "Reference stylus distance for full speed",
           "value": 80,
-          "unit": "pixels between stylus and character, sampled per update, rate unverified",
+          "unit": "pixels between stylus and character, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:637"
         },
         {
           "name": "Ramp length at the start of a contact",
           "value": 4,
-          "unit": "updates of the touch state machine, rate unverified",
+          "unit": "updates of the touch state, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:644"
         },
         {
           "name": "Upper clamp of the speed fraction",
           "value": 1,
-          "unit": "dimensionless fraction of the walk speed, recomputed per update, rate unverified",
+          "unit": "dimensionless fraction of the walk speed, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:651"
         }
       ],
@@ -543,43 +536,43 @@
       "id": "tap-and-hold-follow",
       "node": "player-stylus-control",
       "name": "Tap and short hold to approach",
-      "summary": "A contact that ends within 21 updates and 10 pixels of where the drag started selects a goal, and 15 updates without progress drops it.",
-      "behavior": "A tap is a contact that ends within 21 updates of starting, provided the release point is within 10 pixels of the point where the drag was recorded. On a tap the engine first looks for an object under the stylus and otherwise uses the map point under the stylus. That target becomes a follow goal and the character walks toward it without further input. A separate hold rule accepts a contact of 15 to 29 updates on the same object and returns that object as the interaction target when the direct follow reference is gone, which is how holding an object keeps the character working on it. While following a map point, the distance to the goal is compared with the previous update; progress of 0.01 world units or less counts as stuck, and 15 stuck updates cancel the follow. Touching down again cancels an existing follow immediately, and the end of a cutscene arms a 15-update delay before a tap is accepted.",
+      "summary": "A contact that ends within 20 updates and 10 pixels of the recorded drag point selects a follow goal; a follow with no progress for 15 updates is dropped",
+      "behavior": "A tap is a contact that ends when its duration is under 21 updates, provided the release point is within 10 pixels of the recorded fast-drag point. On a tap the engine uses the nearest actor picked under the stylus when there is one and otherwise a map point under the stylus. That target becomes a follow goal and a stuck timer of 15 starts. A separate check accepts a contact of 15 to 29 updates on the last tapped actor. While following, the distance to the goal is compared with the value from the previous update. Progress of 0.01 world units or less counts down the stuck timer, and when it reaches zero the follow stops. After a cutscene ends, a 15-update timer must run out before a tap is accepted again.",
       "constants": [
         {
-          "name": "Longest contact still counted as a tap",
+          "name": "Contact duration bound for a tap",
           "value": 21,
-          "unit": "updates of the touch state machine, rate unverified",
+          "unit": "updates, exclusive upper bound, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:327"
         },
         {
           "name": "Squared tap radius around the drag start",
           "value": 100,
-          "unit": "square pixels, equal to a 10-pixel radius, checked once on release, no timestep",
+          "unit": "square pixels, equal to a 10 pixel radius, checked once on release",
           "source": "src/00_Core/Player/PlayerControl.cpp:330"
         },
         {
           "name": "Hold window on the last tapped object",
           "value": 15,
-          "unit": "updates of the touch state machine, rate unverified",
+          "unit": "updates of contact, lower bound inclusive, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:835"
         },
         {
           "name": "End of the hold window on the last tapped object",
           "value": 30,
-          "unit": "updates after touch down, exclusive, rate unverified",
+          "unit": "updates of contact, exclusive upper bound, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:835"
         },
         {
           "name": "Follow progress below which the character counts as stuck",
           "value": 0.01,
-          "unit": "world units of distance change per update, rate unverified",
+          "unit": "world units of distance change per update, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:494"
         },
         {
           "name": "Stuck updates before a follow order is dropped",
           "value": 15,
-          "unit": "updates of the follow handler, rate unverified",
+          "unit": "updates, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:308"
         }
       ],
@@ -607,8 +600,9 @@
       ],
       "capabilities": [
         "tap-to-move",
-        "hold-to-interact",
-        "stuck-cancel"
+        "tap-to-interact",
+        "stuck-cancel",
+        "cutscene input delay"
       ],
       "tags": [
         "movement",
@@ -621,8 +615,8 @@
       "id": "tap-target-picking",
       "node": "player-stylus-control",
       "name": "Nearest touchable body under the stylus",
-      "summary": "The stylus selects the nearest living actor whose projected hitbox covers the touch point, not the first match in the actor table.",
-      "behavior": "Structured touch input needs to know which body the player meant. Selection scans the whole actor table and keeps the closest qualifying hit rather than stopping at the first. A candidate qualifies when it is alive, carries a non-zero interaction class, is marked touchable by the actor or by the current mode, and has its hitbox projected over the stylus position. Distance is measured in three dimensions from the character, so a small body under the stylus beats a large body further away even when both overlap the touch point. The projection lifts the hitbox centre by its own radius and uses that radius as the on-screen tolerance, so tall bodies are easier to hit near their top. The same rule runs when the stylus is released, which is why tapping between two overlapping objects picks the closer one.",
+      "summary": "The stylus picks the nearest qualifying actor whose projected hit body covers the touch point, not the first match in the actor table",
+      "behavior": "The pick scans the whole actor table and keeps the closest qualifying hit instead of stopping at the first. A candidate must be alive, pass an actor-specific eligibility test, have a touchable flag set on the actor or enabled by the current mode, and have its hit body touched by the stylus. Distance is the full three-dimensional distance from the actor to the player, so of two overlapping bodies the one nearer the player wins. The touch test lifts the hit body centre by the body size and passes that size as the on-screen tolerance, so the screen-space target covers a circle of roughly the body size around the lifted centre. The scan returns nothing when a global enable value is zero. The exact meaning of the eligibility and flag fields is not named in the source.",
       "constants": [],
       "sources": [
         {
@@ -659,48 +653,48 @@
       "node": "player-stylus-control",
       "name": "Stylus stroke to sword swing class",
       "summary": "A stroke must travel 10 pixels, and its direction against the facing picks one of four swing classes; fast strokes take a side class directly.",
-      "behavior": "Attacks are recognised from the shape of a stylus stroke on release. The stroke is accepted when the contact lasted fewer than 21 updates, or when the fast part of the contact arrived and the slow part lasted longer than 21 updates. The stroke must cover at least 10 pixels; when the alternate touch context applies the minimum rises to 20 pixels. If stylus travel speed is above 0.5 pixels per update the attack takes the fast variant and the side of the stroke relative to the stroke angle chooses the left or right class. Otherwise the stroke direction is compared with the facing recorded at the start of the drag: more than 135 degrees to either side gives class 0, 45 to 135 degrees gives class 1, minus 45 to minus 135 degrees gives class 2, and within 45 degrees gives class 3. When the stylus stayed within 10 pixels of the character, the attack uses the angle from the start of the drag and skips the side selection.",
+      "behavior": "Attacks are recognised from the shape of a stylus stroke on release. The stroke is accepted when the contact has just ended and lasted under 21 updates, or when a fast-motion flag is set and the slow duration is over 21. The stroke vector runs from the fast-drag point to the last point and must be at least 10 pixels long; when an unnamed flag is set the minimum is 20 pixels. If stylus speed is above 0.5 per update the swing is the fast variant and the sign of the stroke angle relative to the stroke heading picks the left or right class. Otherwise the stroke direction is compared with the heading recorded for the stroke: more than 135 degrees to either side gives class 0, 45 to 135 degrees on the positive side gives class 1, 45 to 135 on the negative side gives class 2, and within 45 degrees gives class 3. When the stylus stayed within 10 pixels of the character the class is 0 and the angle from the start of the drag is used.",
       "constants": [
         {
           "name": "Contact age still accepted as a swipe",
           "value": 21,
-          "unit": "updates of the touch state machine, rate unverified",
+          "unit": "updates, exclusive upper bound, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:854"
         },
         {
           "name": "Minimum stroke length for a swipe",
           "value": 10,
-          "unit": "pixels of stylus travel, measured once on release, no timestep",
+          "unit": "pixels of stylus travel, measured once on release",
           "source": "src/00_Core/Player/PlayerControl.cpp:863"
         },
         {
-          "name": "Minimum stroke length on a marked target tile",
+          "name": "Minimum stroke length when an unnamed flag is set",
           "value": 20,
-          "unit": "pixels of stylus travel, measured once on release, no timestep",
+          "unit": "pixels of stylus travel, measured once on release",
           "source": "src/00_Core/Player/PlayerControl.cpp:866"
         },
         {
           "name": "Stylus speed that selects the fast variant",
           "value": 0.5,
-          "unit": "pixels per update, rate unverified",
+          "unit": "pixels per update, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:873"
         },
         {
           "name": "Angle boundary for the wide swing class",
           "value": "0x6000",
-          "unit": "binary angle units, 135 degrees, compared once per stroke, no timestep",
+          "unit": "binary angle units, 0x6000 = 135 degrees of a 0x10000 turn",
           "source": "src/00_Core/Player/PlayerControl.cpp:894"
         },
         {
           "name": "Angle boundary between the middle and narrow swing classes",
           "value": "0x2000",
-          "unit": "binary angle units, 45 degrees, compared once per stroke, no timestep",
+          "unit": "binary angle units, 0x2000 = 45 degrees of a 0x10000 turn",
           "source": "src/00_Core/Player/PlayerControl.cpp:896"
         },
         {
           "name": "Stylus radius that skips side selection",
           "value": 10,
-          "unit": "pixels between stylus and character, measured once on release, no timestep",
+          "unit": "pixels between stylus and character, measured once on release",
           "source": "src/00_Core/Player/PlayerControl.cpp:889"
         }
       ],
@@ -724,8 +718,8 @@
       ],
       "capabilities": [
         "stroke-recognition",
-        "sword-direction",
-        "fast-swing"
+        "swing direction classes",
+        "fast swing variant"
       ],
       "tags": [
         "combat",
@@ -738,37 +732,37 @@
       "id": "aim-point-from-stylus",
       "node": "player-stylus-control",
       "name": "Aim point for boomerang, bow, hammer and rope",
-      "summary": "A held stylus produces a world aim point capped at 4 units, with an 8-unit reach for longer items and a 4.2-unit fairy height.",
-      "behavior": "Directional items do not turn the character toward an attack; they read an aim. Two forms exist. The short aim vector, used by the boomerang, the bow and the rope, starts updating after the stylus has been held for 16 updates: the screen-centre offset becomes a direction whose length is clamped to 4 world units, so a stylus at the screen edge cannot aim arbitrarily far. When the stylus sits closer than 24 pixels to the character, the short aim collapses onto the character instead of pointing somewhere behind it. The long aim point, used by the hammer, is built from the same projected plane but measured from the character and clamped to 8 world units, and it is kept when the stylus lifts so the item does not snap back at the end of a stroke. A fairy follow point derived from the same plane sits 4.2 world units above the touch point.",
+      "summary": "A held stylus produces an aim vector capped at 4 world units and a second aim point capped at an 8 unit parameter; the last aim point is kept after the stylus lifts",
+      "behavior": "Aimed items read an aim instead of turning the character toward the stroke. The short aim starts once the touch has lasted 16 updates: the stylus world offset from the screen centre becomes the aim vector, and its length is clamped to 4 world units, so a stylus at the screen edge cannot aim arbitrarily far. Before the 16-update hold, if the stylus is closer to the character than 24 pixels the aim point collapses onto the character, and otherwise it follows the stylus. A second aim point is built by a helper with an 8 world unit parameter that appears to cap its reach; the result is stored while the stylus is down and returned unchanged after the stylus lifts, so the item does not snap back at the end of a stroke. A helper that positions the companion passes the touch height plus 4.2 world units. Which items use which form is not shown here.",
       "constants": [
         {
           "name": "Hold time before the stylus drives the aim",
           "value": 16,
-          "unit": "updates of the touch state machine, rate unverified",
+          "unit": "updates of contact, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:923"
         },
         {
           "name": "Aim direction length cap",
           "value": 4,
-          "unit": "world units from the character, recomputed per update while the stylus is held, rate unverified",
+          "unit": "world units, vector length clamp while the stylus is held, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:926"
         },
         {
           "name": "Stylus distance under which the aim collapses onto the character",
           "value": 24,
-          "unit": "pixels between stylus and character, sampled per update, rate unverified",
+          "unit": "pixels between stylus and character, per update, rate unverified",
           "source": "src/00_Core/Player/PlayerControl.cpp:936"
         },
         {
-          "name": "Aim reach for long items",
+          "name": "Second aim point reach parameter",
           "value": 8,
-          "unit": "world units from the character, recomputed per update while the stylus is held, rate unverified",
+          "unit": "world units, helper parameter (cap interpretation unverified)",
           "source": "src/00_Core/Player/PlayerControl.cpp:619"
         },
         {
-          "name": "Fairy follow height above the stylus plane",
+          "name": "Companion point height above the touch point",
           "value": 4.2,
-          "unit": "world units above the touch point, sampled per update, rate unverified",
+          "unit": "world units added to the touch height",
           "source": "src/00_Core/Player/PlayerControl.cpp:601"
         }
       ],
@@ -792,8 +786,8 @@
       ],
       "capabilities": [
         "stylus-aim",
-        "item-direction",
-        "aim-memory"
+        "aim clamp",
+        "aim memory after release"
       ],
       "tags": [
         "combat",
@@ -807,18 +801,18 @@
       "node": "actor-physics",
       "name": "Gravity, fall cap and floor snap",
       "summary": "Actors accelerate downward by 0.0498 units per update, cap their fall at 0.5 units per update, then snap up to the map floor.",
-      "behavior": "Falling is integrated once per actor update: vertical velocity loses 0.0498 world units per update and the downward speed is clamped at 0.5 world units per update. From rest the cap is reached in about ten updates, so a fall settles into a constant descent quickly instead of accelerating without bound. The floor snap runs separately from gravity: the map floor height under the actor is sampled using both the current and the previous position, and the actor is lifted to that height when it has passed below it. Because the height query receives the higher of the two positions, a fast descent is still caught at the floor rather than passing through a step. Each actor owns its gravity and fall cap, so a flying or floating body only has to change those two values instead of switching to a separate physics mode.",
+      "behavior": "When the gravity step runs, the actor vertical velocity loses 0.0498 world units per update and the downward speed is then clamped at 0.5 world units per update, so from rest the cap is reached in about ten updates. Both values are per-actor fields initialised to these defaults in the constructor, so a floating or flying body only changes those two fields. The floor snap is a separate step: it asks the map for the floor height using the current and the previous position, and when the actor is at or below that height it is lifted to it and the call reports contact. How the map combines the two positions is not shown in this source.",
       "constants": [
         {
           "name": "Default downward acceleration",
           "value": 0.0498,
-          "unit": "world units per update squared, rate unverified",
+          "unit": "world units per update squared, per update, rate unverified",
           "source": "src/00_Core/Actor/Actor.cpp:56"
         },
         {
           "name": "Default fall speed cap",
           "value": 0.5,
-          "unit": "world units per update, rate unverified",
+          "unit": "world units per update, per update, rate unverified",
           "source": "src/00_Core/Actor/Actor.cpp:57"
         }
       ],
@@ -839,7 +833,8 @@
       "capabilities": [
         "gravity",
         "terminal-velocity",
-        "floor-snap"
+        "floor-snap",
+        "per-actor override"
       ],
       "tags": [
         "physics",
@@ -853,18 +848,18 @@
       "node": "actor-physics",
       "name": "Cylinder bodies and contact reach",
       "summary": "Bodies are upright cylinders whose single size value is radius and height, half a world unit by default, against a one-unit player radius.",
-      "behavior": "Collision bodies are upright cylinders. One size value serves as both radius and height, a negative size disables the body entirely so that visual-only effects never collide, and the body can be offset from its owner origin and is rotated with the owner facing before overlap tests. A newly spawned actor starts with a body of 0.5 world units. Contact reach is measured from the player centre to the actor centre against the sum of the actor body radius and the player body radius, which is fixed at 1.0 world unit. That is why a large body can be struck from further away than a small one and why the player counts as a wider target than a default enemy.",
+      "behavior": "Collision bodies are upright cylinders described by one size value that serves as both radius and height. A negative size marks an empty body that never collides. The body has its own offset from the owner origin, which is rotated with the owner facing before overlap tests. A newly constructed actor starts with a size of 0.5 world units. The contact test with the player compares the three-dimensional distance between the actor and the player with the actor size plus 1.0; the source comment says the player body radius is 1.0 world unit. So a larger body is touched from further away, and the player counts as a wider target than a default actor.",
       "constants": [
         {
           "name": "Default actor body size",
           "value": 0.5,
-          "unit": "world units, used as both radius and height, set once at spawn, no timestep",
+          "unit": "world units, radius and height in one value, set at construction",
           "source": "src/00_Core/Actor/Actor.cpp:61"
         },
         {
           "name": "Player body radius used in contact reach",
           "value": 1,
-          "unit": "world units added to the actor radius, evaluated once per contact, no timestep",
+          "unit": "world units added to the actor size, per the source comment, checked once per contact",
           "source": "src/00_Core/Actor/Actor.cpp:647"
         }
       ],
@@ -888,7 +883,7 @@
       ],
       "capabilities": [
         "cylinder-collision",
-        "body-size",
+        "single size radius",
         "contact-reach"
       ],
       "tags": [
@@ -902,13 +897,13 @@
       "id": "actor-near-far-class",
       "node": "actor-physics",
       "name": "Near and far actor classification",
-      "summary": "An actor within 10 units of the player on both horizontal axes is classed near, everything else far, unless it carries a pending flag.",
-      "behavior": "Actor activity is classified from distance instead of a streaming grid. The engine measures the absolute difference on the horizontal axes between the player and the actor; an actor within 10 world units on both axes counts as near, and anything beyond either limit counts as far. An actor with any of several pending flags set, including being grabbed or carrying an interaction highlight, is forced into the active class regardless of distance, so an object the player is carrying keeps updating. The routine only assigns the class; it does not move or delete the actor. The result is a cheap square instead of a circle, which means a body just inside the diagonal corner is still near and the cost is two absolute differences and two comparisons per actor.",
+      "summary": "An actor within 10 units of the player on both horizontal axes is classed 1, any other as 2, and actors with certain flags are classed 0",
+      "behavior": "Actor activity is classified by distance instead of a streaming grid. A near check takes the absolute difference between the player and the actor on the two horizontal axes (x and z); the actor is near when both differences are at most 10 world units, so the near region is a square. The classification pass then stores a class value in the actor: 0 when any of five flags is set (two flags in a sub-record, two unnamed flags and the grabbed flag), 1 when near, 2 otherwise. What the three class values do afterwards is not shown in this file, so reading class 0 as forced active is an inference from the grabbed flag. The routine only assigns the class and neither moves nor deletes the actor.",
       "constants": [
         {
           "name": "Near radius on each horizontal axis",
           "value": 10,
-          "unit": "world units from the player, evaluated per classification pass, rate unverified",
+          "unit": "world units, half-width of the square near region around the player, per update, rate unverified",
           "source": "src/00_Core/Actor/Actor.cpp:337"
         }
       ],
@@ -927,9 +922,9 @@
         }
       ],
       "capabilities": [
-        "distance-activation",
-        "actor-lod",
-        "forced-active"
+        "distance classification",
+        "square near region",
+        "flag override"
       ],
       "tags": [
         "physics",
@@ -943,18 +938,18 @@
       "node": "combat-and-damage",
       "name": "Shield arc and contact priority",
       "summary": "The shield covers 90 degrees each side of the facing, and contacts resolve in the order sword, shield, hammer, roll.",
-      "behavior": "A block is angle based. The engine measures the angle between the player facing and the direction to the attacking body, and the shield can only block when that angle is at most 90 degrees, so the guard covers the whole front half and nothing beside or behind the player. The shield volume must also overlap the incoming body. Contact resolution is a fixed chain: sword overlap is tested first, then the shield, then the hammer, then the Goron roll, and the first branch that matches produces the reaction and stops the chain. Each branch fills its own reaction record, so one body never receives two reactions in the same update, and the sword hit wins when the sword and the shield both overlap. A blocked contact carries a different reaction from a sword hit, and an upgraded wisdom fairy raises the blocked reaction by one step.",
+      "behavior": "A block is angle based. The angle between the player facing and the direction from the player to the attacking body must be at most 90 degrees, and the shield volume of the equipped shield must also overlap the incoming body. So the guard covers the front half and nothing beside or behind the player. Contact resolution is a fixed else-if chain: sword overlap is tested first, then the shield, then the hammer, then the roll attack, and the first branch that matches produces the reaction and stops the chain. So one body gets at most one reaction per call, and a sword hit wins when the sword and the shield both overlap. Each branch fills its own reaction record. A block uses reaction level 2, raised to 3 when the wisdom companion level is at least 1.",
       "constants": [
         {
           "name": "Shield half-angle around the facing",
           "value": 90,
-          "unit": "degrees, evaluated once per contact, no timestep",
+          "unit": "degrees from the facing direction, checked once per contact",
           "source": "src/00_Core/Actor/Actor.cpp:483"
         },
         {
-          "name": "Wisdom fairy level that upgrades a block reaction",
+          "name": "Companion level that raises the block reaction",
           "value": 1,
-          "unit": "fairy level, dimensionless, checked once per contact, no timestep",
+          "unit": "level, checked once per contact",
           "source": "src/00_Core/Actor/Actor.cpp:441"
         }
       ],
@@ -977,9 +972,9 @@
         }
       ],
       "capabilities": [
-        "directional-shield",
-        "contact-priority",
-        "block-reaction"
+        "directional shield",
+        "contact priority chain",
+        "block reaction level"
       ],
       "tags": [
         "combat",
@@ -992,43 +987,43 @@
       "id": "projectile-reaction-levels",
       "node": "combat-and-damage",
       "name": "Hit reaction level per incoming object",
-      "summary": "Each projectile or carried object maps to a fixed reaction level, from 1 for a sword beam to 11 for an unknown source.",
-      "behavior": "When an object strikes a body, the reaction is chosen from the identity of the source rather than from its speed or mass. A sword beam produces level 1, an arrow level 7, a boomerang level 5, a grappling hook level 8, and the bomb family, blasts and bombchus level 6. A group of nine heavy or carried object ids, including the big rock, the stone, the barrel, the pot, the flying pot, the boss key and the force gem, produces level 10. One further source id produces level 4 and anything unlisted falls back to level 11. For arrows and sword beams the knockback direction is built from the facing of the shooter, while other sources use the difference between the body position and the previous position of the source, so a rolling object pushes away from where it came from.",
+      "summary": "The source type of a hit maps to a fixed reaction level, from 1 for the first projectile type to 11 for any type not listed",
+      "behavior": "When another actor strikes a body, the reaction level is chosen from the type of the source actor rather than from its speed or mass. One beam-like projectile type gives 1, an arrow gives 7, a boomerang-like type gives 5, a hook type gives 8, and a group of four bomb-like types (including blasts) gives 6. A group of nine carried or heavy types, which includes two keyed item types, gives 10, one further type gives 4, and any other type gives 11. For the arrow and beam-like types the knockback direction is built from the sine and cosine of the source heading. For every other source it is the vector from the source previous position to the body position, so a rolling object pushes the body away from where it came from. The reaction level is passed to the hit handler together with the knockback record.",
       "constants": [
         {
-          "name": "Reaction level for a sword beam",
+          "name": "Reaction level for the beam-like projectile",
           "value": 1,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit",
           "source": "src/00_Core/Actor/Actor.cpp:563"
         },
         {
           "name": "Reaction level for an arrow",
           "value": 7,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit",
           "source": "src/00_Core/Actor/Actor.cpp:567"
         },
         {
-          "name": "Reaction level for a boomerang",
+          "name": "Reaction level for the boomerang-like type",
           "value": 5,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit",
           "source": "src/00_Core/Actor/Actor.cpp:571"
         },
         {
-          "name": "Reaction level for bombs, blasts and bombchus",
+          "name": "Reaction level for the bomb-like group",
           "value": 6,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit",
           "source": "src/00_Core/Actor/Actor.cpp:582"
         },
         {
           "name": "Reaction level for heavy and carried objects",
           "value": 10,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit (nine types)",
           "source": "src/00_Core/Actor/Actor.cpp:594"
         },
         {
           "name": "Fallback reaction level for an unlisted source",
           "value": 11,
-          "unit": "reaction index used to pick a hit animation, dimensionless; per hit, no timestep",
+          "unit": "reaction index, dimensionless, per hit",
           "source": "src/00_Core/Actor/Actor.cpp:602"
         }
       ],
@@ -1051,9 +1046,9 @@
         }
       ],
       "capabilities": [
-        "hit-reaction-table",
-        "knockback-direction",
-        "source-identity"
+        "hit reaction table by source type",
+        "knockback direction",
+        "fallback level"
       ],
       "tags": [
         "combat",
@@ -1066,31 +1061,31 @@
       "id": "damage-knockback-and-respawn",
       "node": "combat-and-damage",
       "name": "Knockback, damage window and respawn",
-      "summary": "A hit writes the knockback vector straight into player velocity, turns the body away from the blow, and respawns after a 0.6-unit lift.",
-      "behavior": "Damage does not blend with movement. The incoming knockback vector is written directly into player velocity, the damage state index is set, and the facing is replaced by the direction of the blow plus half a turn, leaving the body with its back to the source. The damage state also stores the reaction level used to choose the animation. Minor damage plays over a 10-frame window at 1.5 times speed, with the start and end frames taken from the midpoint of the character animation length, and the front and back variants are tuned separately. Death does not drop the body at once: the player is lifted 0.6 world units above its position, a respawn callback runs when the lift completes, and the body is displaced by the offset stored around the last jump. Health is clamped between zero and the current maximum whenever it is set or added, so healing cannot exceed the cap and damage cannot go negative.",
+      "summary": "A knockback call writes the vector straight into player velocity and turns the body opposite to it; death lifts the respawn point 0.6 units; health is clamped to zero and the maximum",
+      "behavior": "Damage does not blend with movement. The knockback call sets the damage state index to 2, copies the incoming vector directly into the player velocity and sets the facing to the direction of that vector minus half a turn, so the body faces back along the path it is pushed. The reaction level is stored for the animation choice. Minor damage uses a table whose defaults are a playback speed of 1.5, a start frame of 0 and an end frame of 10; front and back variants have separate rows, and a tuning loader can overwrite these rows, with the start frame ranged up to half the clip and the end frame from half to the full clip. Death is handled in a separate state: when it is in state 6 the player position is lifted by 0.6 world units and a respawn callback is registered. Health setters ignore the call while the player is invincible. A set or an add clamps health to between 0 and the maximum, and adding to a health of zero or less does nothing.",
       "constants": [
         {
-          "name": "Minor damage animation end frame",
+          "name": "Minor damage default end frame",
           "value": "0xa000",
-          "unit": "q20.12 fixed point, equal to 10 animation frames, rate unverified",
+          "unit": "q20.12 fixed point frames (0xa000 is 10 frames), default of an overridable tuning field",
           "source": "src/00_Core/Player/LinkStateDamage.cpp:16"
         },
         {
-          "name": "Minor damage playback speed",
+          "name": "Minor damage default playback speed",
           "value": "0x1800",
-          "unit": "q20.12 fixed point, equal to 1.5 times playback speed, per update, rate unverified",
+          "unit": "q20.12 fixed point multiplier (0x1800 is 1.5), default of an overridable tuning field",
           "source": "src/00_Core/Player/LinkStateDamage.cpp:16"
         },
         {
           "name": "Lift applied before the respawn callback",
           "value": "0x999",
-          "unit": "q20.12 fixed point world units, equal to 0.6 world units, applied once on death, no timestep",
+          "unit": "q20.12 fixed point world units (0x999 is about 0.6), applied once when the death state starts",
           "source": "src/00_Core/Player/LinkStateDamage.cpp:112"
         },
         {
           "name": "Facing flip applied on knockback",
           "value": "0x8000",
-          "unit": "binary angle units, half a turn of 65536 units per full turn, applied once per hit, no timestep",
+          "unit": "binary angle units (0x8000 is half a turn of 0x10000), applied once per hit",
           "source": "src/00_Core/Player/LinkStateDamage.cpp:127"
         }
       ],
@@ -1121,10 +1116,10 @@
         }
       ],
       "capabilities": [
-        "knockback",
-        "damage-reaction",
-        "death-respawn",
-        "health-clamp"
+        "knockback velocity write",
+        "facing reversal",
+        "respawn lift",
+        "health clamp"
       ],
       "tags": [
         "combat",
@@ -1135,46 +1130,34 @@
     },
     {
       "id": "grab-push-and-throw",
-      "node": "player-link-states",
+      "node": "player-state-machine",
       "name": "Grab, push and throw an object",
-      "summary": "Pushing is capped at one twelfth of a world unit per update and a throw leaves at 0.16 times the throw strength along the aim.",
-      "behavior": "Object interaction is a state machine over approach, push, lift, carry and throw. While pushing, the player planar velocity is rebuilt from the object position so that each axis contributes at most one twelfth of a world unit per update, and the forward term is shortened by the object body size plus 0.4 world units so the player pushes against the body rather than into it. Melee targeting during interaction uses reach of the object radius plus 3.5 world units, then narrows to a close band under 1.8 units, a mid band under 2.7 units with a 1.2-unit vertical tolerance, and a far band used only when a separate state flag is clear. Lifting uses 1.6 speed and its animation window ends at frame 10; throwing uses 1.0 speed and ends at frame 15. A two-update stop time is armed when a push or pull starts. A thrown object leaves along the aim at 0.16 times the throw strength. When a bomb-type item is equipped, the toss offset becomes 0.3 world units along the facing instead of the stylus-derived offset, and one helper refuses to launch a carried object unless it is a bomb or a cucco.",
+      "summary": "Pushing moves the player at most one twelfth of a world unit per axis per update toward a stand-off point; a drop leaves along the facing at 0.16 times the throw strength",
+      "behavior": "Object interaction is a state machine over approach, push, lift, carry and throw. While pushing, the object offset is rotated into the player frame and each of the two axes is clamped to one twelfth of a world unit per update, which sets the player velocity. On the forward axis the target is shortened by the object body size plus 0.4 world units so the player stands against the body. The approach test starts when the distance to the target is under its body size plus 3.5 world units. It then picks a variant by distance: a close band under 1.8 units that selects by facing difference, a middle band under 2.7 with a vertical tolerance of 1.2 units, and otherwise a far variant when a flag byte is zero. When one of two specific equipped items is active, the toss offset is 0.3 world units along the facing. Dropping a carried object gives it a velocity along the facing equal to the throw strength times 0.16.",
       "constants": [
         {
           "name": "Push speed divisor",
           "value": 12,
-          "unit": "divisor of one world unit per update, so the push cap is 1/12 world unit per update, rate unverified",
+          "unit": "world units per update per axis is 1 divided by this value, per update, rate unverified",
           "source": "src/00_Core/Player/LinkStateInteract.cpp:179"
         },
         {
-          "name": "Melee reach beyond the object body",
+          "name": "Approach reach beyond the object body",
           "value": "0x3800",
-          "unit": "q20.12 fixed point, equal to 3.5 world units, evaluated per interaction update, rate unverified",
+          "unit": "q20.12 fixed point world units (0x3800 is 3.5), checked per interaction update, per update, rate unverified",
           "source": "src/00_Core/Player/LinkStateInteract.cpp:315"
         },
         {
           "name": "Throw speed per unit of throw strength",
           "value": 0.16,
-          "unit": "world units per update per strength unit, rate unverified",
+          "unit": "world units per update per strength unit, per update, rate unverified",
           "source": "src/00_Core/Player/LinkStateInteract.cpp:616"
         },
         {
           "name": "Pickup throw offset",
           "value": "0x4cd",
-          "unit": "q20.12 fixed point world units, equal to 0.3 world units, static offset with no timestep",
+          "unit": "q20.12 fixed point world units (0x4cd is 0.3), applied along the facing",
           "source": "src/00_Core/Player/LinkStateInteract.cpp:243"
-        },
-        {
-          "name": "Lift animation speed",
-          "value": "0x1999",
-          "unit": "q20.12 fixed point, equal to 1.6 times playback speed, per update, rate unverified",
-          "source": "src/00_Core/Player/LinkStateInteract.cpp:27"
-        },
-        {
-          "name": "Pause after a push or pull gesture",
-          "value": 2,
-          "unit": "updates of the interaction state, rate unverified",
-          "source": "src/00_Core/Player/LinkStateInteract.cpp:25"
         }
       ],
       "sources": [
@@ -1204,10 +1187,10 @@
         }
       ],
       "capabilities": [
-        "push",
-        "pickup",
-        "carry",
-        "throw"
+        "push step clamp",
+        "stand-off distance",
+        "distance bands for approach",
+        "throw velocity from strength"
       ],
       "tags": [
         "interaction",
@@ -1218,51 +1201,27 @@
     },
     {
       "id": "hammer-charge-and-turn",
-      "node": "player-link-states",
+      "node": "player-state-machine",
       "name": "Hammer charge, animation timing and aim turn",
-      "summary": "Holding the hammer charges for 40 updates, a swing locks the item for four updates, and the body turns toward the aim in 45-degree steps.",
-      "behavior": "The hammer is held to charge. Holding the touch input starts a charge timer, the item state moves from idle to charging and then to charged when 40 updates have passed; releasing earlier still swings, but without the charged state. After a swing the item is locked for four updates so a new charge cannot start immediately. The release point is the aimed world position taken from the long stylus aim, and each release hands that point to the map. Four hammer animation records exist: a 64-frame entry clip at speed 1.0, mid clips of 5 and 3 frames at 1.0, and a 6-frame clip at 1.2 used while the charge is held. While a hammer action is pending the player turns toward the stored impact point with a step capped at 45 degrees per update, which lets a slow aim correction look like a deliberate wind-up rather than an instant snap.",
+      "summary": "A hammer charge counter of 40 counts down while held and sets a charged state at zero; a release passes the aim point and a charged flag to the map; the body turns toward the impact point in 45 degree steps",
+      "behavior": "The hammer item holds a charge counter initialised from a 40-update define. Each held update while the counter is above zero sets the charging state and decrements it, and reaching zero is reported. At zero the state becomes charged. A release hands the stored aim position to the map together with a flag that is true when the counter reached zero, and sets a separate countdown field to 4; reading that field as a recharge lockout is an inference. In the item state, a turn helper moves the player facing toward the stored impact point by at most 45 degrees (0x2000 binary angle units) per call.",
       "constants": [
         {
           "name": "Charge time for the powered hammer",
           "value": 40,
-          "unit": "updates of the item update, rate unverified",
+          "unit": "updates of the held item update, per update, rate unverified",
           "source": "include/Player/EquipHammer.hpp:8"
         },
         {
-          "name": "Lockout after a swing before charging again",
+          "name": "Countdown set on release",
           "value": 4,
-          "unit": "updates of the item update, rate unverified",
+          "unit": "updates, per update, rate unverified",
           "source": "src/59_Hammer/Player/EquipHammer.cpp:132"
-        },
-        {
-          "name": "Length of the ready swing animation",
-          "value": 64,
-          "unit": "animation frames, played at 1.0 speed per update, rate unverified",
-          "source": "src/59_Hammer/Player/EquipHammer.cpp:59"
-        },
-        {
-          "name": "Length of the follow-through animation",
-          "value": 5,
-          "unit": "animation frames, played at 1.0 speed per update, rate unverified",
-          "source": "src/59_Hammer/Player/EquipHammer.cpp:60"
-        },
-        {
-          "name": "Length of the short swing animation",
-          "value": 3,
-          "unit": "animation frames, played at 1.0 speed per update, rate unverified",
-          "source": "src/59_Hammer/Player/EquipHammer.cpp:61"
-        },
-        {
-          "name": "Length of the charged swing animation",
-          "value": 6,
-          "unit": "animation frames, played at 1.2 speed per update, rate unverified",
-          "source": "src/59_Hammer/Player/EquipHammer.cpp:62"
         },
         {
           "name": "Maximum turn step toward the impact point",
           "value": "0x2000",
-          "unit": "binary angle units, 45 degrees, applied per update while a hammer action is pending, rate unverified",
+          "unit": "binary angle units, 0x2000 = 45 degrees, applied per call, per update, rate unverified",
           "source": "src/59_Hammer/Player/EquipHammer.cpp:165"
         }
       ],
@@ -1290,8 +1249,8 @@
       ],
       "capabilities": [
         "hold-to-charge",
-        "swing-timing",
-        "aim-turn"
+        "charged flag on release",
+        "aim turn step"
       ],
       "tags": [
         "combat",
@@ -1305,13 +1264,19 @@
       "node": "world-collision-and-camera",
       "name": "Hammer ground strike over nine tiles",
       "summary": "A hammer release scans the impact tile and its eight neighbours, skipping map edges and floors that differ too much from the player height.",
-      "behavior": "A hammer release hands the impact position to the map, and the map scans a three-by-three block of tiles centred on the tile under that position. Candidate coordinates outside the map width or height are skipped, so an impact at the edge of a room scans only the tiles that exist. Before a tile can trigger, the ground height at the centre tile is compared with the player height and the difference must be below a small tolerance, which keeps an impact from reaching objects on a floor above or below. The scan keeps the last object id returned by a qualifying tile and reports a miss when none qualifies. Because the area is a square of tiles rather than a radius, the strike covers the same number of tiles wherever inside the centre tile the hammer lands, and the coverage never becomes a circle.",
+      "behavior": "A hammer release hands the impact position to the map, which scans a three-by-three block of tiles around the tile under that position. Coordinates outside the map width or height are skipped, so an impact at a room edge scans only the tiles that exist. A tile counts when the floor height differs from the player height by at most 0xcd in fixed point (about 0.05 world units), which keeps an impact from reaching things on a floor above or below, and a tile-data object exists there. The scan returns the value from the last qualifying tile, or -1 when none qualifies. In this reconstruction the floor height is read from the centre tile on every iteration rather than the neighbour being visited, which is probably a decompilation artifact, so treat the per-tile height test as unverified.",
       "constants": [
         {
           "name": "Tiles scanned beyond the impact tile on each axis",
           "value": 1,
-          "unit": "tiles on each side, giving a 3 by 3 block per strike, no timestep",
+          "unit": "tiles on each side, giving a 3 by 3 block per strike",
           "source": "src/00_Core/Map/MapManager.cpp:2377"
+        },
+        {
+          "name": "Floor height tolerance",
+          "value": "0xcd",
+          "unit": "q20.12 fixed point world units (about 0.05), compared with the absolute height difference, checked once per tile",
+          "source": "src/00_Core/Map/MapManager.cpp:2385"
         }
       ],
       "sources": [
@@ -1329,9 +1294,9 @@
         }
       ],
       "capabilities": [
-        "ground-strike",
-        "area-impact",
-        "tile-scan"
+        "ground-strike area",
+        "tile scan",
+        "floor height tolerance"
       ],
       "tags": [
         "combat",
@@ -1345,18 +1310,18 @@
       "node": "world-collision-and-camera",
       "name": "Per-room camera viewpoints",
       "summary": "Each map ships a viewpoint table, and a per-slot id selects one, falling back to a mode default when the id is zero or missing.",
-      "behavior": "Camera framing is authored with the map rather than computed from the player. A map owns a table of viewpoints, and each entry stores a position, a pair of identifiers and four scalar parameters. Two independent slots hold a current viewpoint id, so two consumers can select different entries from the same table at the same time. A slot id of zero, or an id that does not occur in the table, does not leave the camera undefined: the map supplies a default id instead, which is 28 for most of the alternate-mode cases and zero otherwise. Selecting a viewpoint copies the whole record into the caller structure, so switching rooms only swaps entries instead of rebuilding the map. Because the table is data-driven, a room can cut to a new angle without any player-relative camera logic running.",
+      "behavior": "Camera framing is authored with the map rather than computed from the player. A map owns a table of viewpoint records, and two slots each hold a current viewpoint id, so two consumers can select different entries at once. A slot id of zero, or an id that is not found in the table, does not leave the camera undefined: a per-map default value is returned instead, which is 0x1c (28) in one game mode for non-zero results of a mode query and 0 otherwise. When the id is found, the record fields are copied into the caller structure, so switching rooms swaps entries instead of rebuilding the map.",
       "constants": [
         {
           "name": "Viewpoint slots held per map",
           "value": 2,
-          "unit": "independent viewpoint ids, one per view; no timestep",
+          "unit": "independent viewpoint ids, no timestep",
           "source": "include/Map/MapBase.hpp:113"
         },
         {
           "name": "Alternate default viewpoint id",
           "value": "0x1c",
-          "unit": "viewpoint table id, decimal 28, chosen when the slot id is unset or missing, no timestep",
+          "unit": "viewpoint table id (0x1c is 28), returned in one game mode, no timestep",
           "source": "src/00_Core/Map/MapBase.cpp:1946"
         }
       ],
@@ -1383,9 +1348,9 @@
         }
       ],
       "capabilities": [
-        "authored-camera",
-        "room-cut",
-        "viewpoint-fallback"
+        "authored camera",
+        "viewpoint fallback",
+        "two viewpoint slots"
       ],
       "tags": [
         "camera",
@@ -1398,25 +1363,25 @@
       "id": "tile-grid-and-floor-height",
       "node": "world-collision-and-camera",
       "name": "One-unit tile grid and per-tile floor height",
-      "summary": "Tile starts are offset plus index times 4096 in fixed point, so tiles are one world unit; a tile box begins 1.2 units below its floor.",
-      "behavior": "Map geometry is queried on a square tile grid. A tile start is the map offset plus the tile index times 4096 in fixed point, the tile end adds the same step, so a tile is exactly one world unit on each horizontal axis. Tile-based positions are centred by adding half a unit to the start on both axes, which is the point used for floor sampling and for tile targeting. The box used for tile tests begins 1.2 world units below the floor and ends at the tile stored floor height, so a character standing on the tile is inside its box even when the floor is above the character origin. Because everything is fixed point, a tile offset can be added straight to a world coordinate with no conversion, so a tile lookup costs a multiply and two adds.",
+      "summary": "A tile start is the map offset plus the tile index times 4096 in fixed point, so tiles are one world unit; a tile box runs from a height of -1.2001 up to the stored floor height",
+      "behavior": "Map geometry is queried on a square tile grid. A tile start is the map offset plus the tile index times 4096 in fixed point, and the tile end adds 4096 again, so a tile is exactly one world unit on each horizontal axis. Tile-based positions are centred by adding half a unit (0x800) to the start on both axes; that point is used for floor sampling and tile targeting. The box used for tile tests has a fixed minimum height of -1.2001 world units, not a value relative to the floor, and its maximum height is the stored floor height of the tile, so anything standing on that tile is inside its height range as long as its origin is above -1.2.",
       "constants": [
         {
           "name": "Tile size",
           "value": "0x1000",
-          "unit": "q20.12 fixed point world units, equal to 1.0 world unit per tile on each horizontal axis, static geometry with no timestep",
+          "unit": "q20.12 fixed point world units (0x1000 is 1.0), static",
           "source": "src/00_Core/Map/MapBase.cpp:1227"
         },
         {
           "name": "Tile centre offset",
           "value": "0x800",
-          "unit": "q20.12 fixed point world units, equal to 0.5 world units from the tile start, static offset with no timestep",
+          "unit": "q20.12 fixed point world units (0x800 is 0.5), added to the tile start",
           "source": "src/00_Core/Map/MapManager.cpp:1168"
         },
         {
-          "name": "Tile box floor margin",
+          "name": "Tile box minimum height",
           "value": -1.2001,
-          "unit": "world units below the tile floor, applied when a tile box is built, no timestep",
+          "unit": "world units, absolute height of the box bottom",
           "source": "src/00_Core/Map/MapBase.cpp:1250"
         }
       ],
@@ -1443,9 +1408,9 @@
         }
       ],
       "capabilities": [
-        "tile-grid",
-        "floor-height",
-        "fixed-point-world"
+        "tile grid",
+        "floor height box",
+        "fixed-point world"
       ],
       "tags": [
         "level",

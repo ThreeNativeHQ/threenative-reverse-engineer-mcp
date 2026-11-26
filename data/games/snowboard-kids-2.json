@@ -327,7 +327,7 @@
     {
       "id": "chase-camera",
       "name": "Follow camera and projection",
-      "purpose": "The behind-the-rider chase rig with its rest distance, eased aim height and ground clearance, plus the world-to-screen projection used by overlays",
+      "purpose": "The behind-the-rider chase rig with its rest distance, aim height step, minimum horizontal distance and track clearance. The node also lists a world-to-screen helper that no card covers",
       "paths": [
         "src/text/text_elements.c",
         "src/graphics/camera_transform.c"
@@ -363,7 +363,7 @@
     {
       "id": "hit-and-items",
       "name": "Hit states and item usage",
-      "purpose": "Rider hit state priority, item activation with its update counters, and the CPU rules that decide when a primary or secondary item is spent",
+      "purpose": "Item activation gates and the countdown timers for boosts, wings and invincibility. A hit reaction clears the timers. The node also lists item use and target helpers that no card covers",
       "paths": [
         "src/race/hit_reactions.c"
       ],
@@ -465,49 +465,6 @@
       "dependsOn": [
         "track-surface"
       ]
-    },
-    {
-      "id": "snow-spray",
-      "name": "Snow spray billboards",
-      "purpose": "Short-lived spray and trail billboards with a fixed lifetime and a per-update alpha fade",
-      "paths": [
-        "src/race/spray_particles.c"
-      ],
-      "functions": [
-        {
-          "name": "updateSprayEffect",
-          "path": "src/race/spray_particles.c",
-          "lines": [
-            152,
-            178
-          ]
-        },
-        {
-          "name": "spawnSprayEffect",
-          "path": "src/race/spray_particles.c",
-          "lines": [
-            184,
-            193
-          ]
-        },
-        {
-          "name": "updateDualSnowSprayParticles",
-          "path": "src/race/spray_particles.c",
-          "lines": [
-            207,
-            238
-          ]
-        },
-        {
-          "name": "spawnDualSnowSprayEffect",
-          "path": "src/race/spray_particles.c",
-          "lines": [
-            244,
-            287
-          ]
-        }
-      ],
-      "dependsOn": []
     }
   ],
   "cards": [
@@ -515,56 +472,68 @@
       "id": "rider-turn-rate",
       "node": "rider-motion",
       "name": "Steering angle to heading rate",
-      "summary": "Stick input ramps a steering angle, and above a speed floor that angle becomes a heading rate that is limited to a small increment per update",
-      "behavior": "Each update the stick is scaled into a steering target measured in angle counts, with an extra twist when the stick is pinned sideways and also pushed downward. The gap between target and current steering angle is divided by eight, except inside a narrow band where it is nudged by one so the angle still settles. Once the speed magnitude passes a floor, half the steering angle is multiplied by the board handling byte and divided by a constant to give a turn rate; the magnitude of the sideways speed left after the deadzone, biased and shifted down by seven, is squared and multiplied by the board cornering byte and then divided by that turn rate, producing a curvature that is pushed away from zero when it comes out too small and finally turned into a heading increment limited to a fixed cap per update. Below the floor the heading follows the stick directly, which is what lets an almost stopped rider pivot on the spot.",
+      "summary": "The stick sets a steering target, the steering angle eases toward it, and above a speed floor a turn rate from the steering angle and forward speed gives a capped heading change",
+      "behavior": "A human rider gets a steering target of minus the stick X value times 50 counts. The stick range looks like plus or minus 7. At full sideways lean with the stick also pushed down, the down value times 50 is added in the same direction. A CPU rider instead aims at a waypoint, halves the angle gap to it and clamps the result to plus or minus 700. The steering angle then moves one eighth of the gap per update, or by one count when the gap is 7 counts or less. Above a speed floor of 0x10000 (3D velocity length at the start of the update) the turn rate is half the steering angle times the board handling stat, divided by 125. The magnitude of the forward speed left by the deadzone pass (see that card), plus 0x1FF,, shifted right by 7 and squared, is multiplied by the cornering stat and divided by that turn rate. This is a curvature. A magnitude under 0x100000 is raised to 0x100000, and in all race types except type 0xB the value is first clamped to 0x3FFFFFFF. The curvature and the forward speed give a heading step that is clamped to plus or minus 0x100 counts and added to the heading. At or below the speed floor the heading changes by minus 4 counts per stick X unit instead.",
       "constants": [
         {
           "name": "steerCountsPerStickUnit",
           "value": "0x32",
-          "unit": "steering angle counts, 8192 counts per turn per analog-stick unit, per update, rate unverified",
+          "unit": "steering angle counts per stick unit, applied to the target each update (stick range inferred), rate unverified",
           "source": "src/race/race_main.c:1343"
         },
         {
           "name": "steerSettleBand",
           "value": 7,
-          "unit": "steering angle counts, 8192 counts per turn, static",
+          "unit": "angle counts, 8192 counts per turn, gap size under which the angle moves by one count",
           "source": "src/race/race_main.c:1374"
         },
         {
           "name": "steerApproachShift",
           "value": 3,
-          "unit": "bit shift, divisor 8, per update, rate unverified",
+          "unit": "bit shift, the gap is divided by 8 each update, rate unverified",
           "source": "src/race/race_main.c:1387"
         },
         {
           "name": "turnSpeedFloor",
           "value": "0x10000",
-          "unit": "world units per update in 16.16 fixed point, per update, rate unverified",
+          "unit": "16.16 fixed point, length of the 3D velocity vector per update, rate unverified",
           "source": "src/race/race_main.c:1394"
         },
         {
           "name": "turnRateDivisor",
           "value": 125,
-          "unit": "handling counts per turn-rate count, static",
+          "unit": "divisor of half the steering angle times the handling stat, dimensionless",
           "source": "src/race/race_main.c:1395"
         },
         {
-          "name": "sideSpeedBias",
+          "name": "forwardSpeedBias",
           "value": "0x1FF",
-          "unit": "world units per update in 16.16 fixed point, per update, rate unverified",
+          "unit": "16.16 fixed point speed added before the shift, per update, rate unverified",
           "source": "src/race/race_main.c:1401"
         },
         {
-          "name": "sideSpeedShift",
+          "name": "forwardSpeedShift",
           "value": 7,
-          "unit": "bit shift, divisor 128, per update, rate unverified",
+          "unit": "bit shift, divisor 128, applied to the forward speed plus the bias",
           "source": "src/race/race_main.c:1402"
         },
         {
           "name": "headingStepCap",
           "value": "0x100",
-          "unit": "heading angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "angle counts, 8192 counts per turn per update, rate unverified",
           "source": "src/race/race_main.c:1453"
+        },
+        {
+          "name": "cpuSteerClamp",
+          "value": 700,
+          "unit": "steering angle counts, clamp on the CPU steering target, per update, rate unverified",
+          "source": "src/race/race_main.c:1365"
+        },
+        {
+          "name": "slowSpeedPivotRate",
+          "value": 4,
+          "unit": "heading counts per stick X unit per update, rate unverified",
+          "source": "src/race/race_main.c:1463"
         }
       ],
       "sources": [
@@ -598,9 +567,10 @@
         }
       ],
       "capabilities": [
-        "speed-dependent turn rate",
         "stick-to-angle ramping with a settle band",
-        "per-update heading increment cap"
+        "speed-dependent turn rate",
+        "per-update heading step cap",
+        "slow-speed pivot"
       ],
       "tags": [
         "movement",
@@ -613,62 +583,68 @@
       "id": "rider-lean-roll",
       "node": "rider-motion",
       "name": "Board lean and roll",
-      "summary": "The steering angle drives a lateral model sway while the roll angle chases a value built from speed and turn direction",
-      "behavior": "A lean target is built from the sine and cosine of the steering angle scaled by a constant, mirrored when the rider is travelling backwards, then the gap between that target and the current lateral model offset is clamped and added to the transform so the board sways rather than snapping. The roll then chases a step derived from the speed magnitude: the speed is capped, negated when the rider is reversed, multiplied by the steering angle, divided by a fixed divisor and shifted down nine more bits. That step is clamped, reduced by the current roll, clamped again and accumulated, and when the result falls inside a small deadband the roll is zeroed and a neutral animation plays. Otherwise the absolute roll selects one of two mirrored lean animations played at half the roll magnitude, so the visible lean saturates long before the roll value does.",
+      "summary": "The steering angle sways the board model sideways, and the roll angle follows a speed-and-steering target in capped steps",
+      "behavior": "A lean offset is built from the sine of the steering angle times 0x60. Its sign is flipped unless the reverse flag is set. The cosine part is computed but only the sine part is added to the model sideways offset in this function. The gap from the current offset to the target is clamped to plus or minus 0x6000 and added, so the board sways instead of snapping. The roll target is the speed (3D velocity length from the start of the update, capped at 0x80000 and negated when the reverse flag is set) times minus the steering angle, divided by 350, shifted right by 9 and clamped to plus or minus 0x400. The roll moves toward that target by at most 0x50 per update. A roll within 7 counts of zero is set to zero and the neutral lean animation is requested. Otherwise one of two mirrored lean animations is requested with the roll magnitude, capped at 0x400 and halved.",
       "constants": [
         {
           "name": "leanBasisScale",
           "value": "0x60",
-          "unit": "model translation counts per unit of sine, static",
+          "unit": "model translation counts per unit of sine, 16.16 fixed point",
           "source": "src/race/race_main.c:1466"
         },
         {
           "name": "leanOffsetClamp",
           "value": "0x6000",
-          "unit": "model translation counts per update, per update, rate unverified",
+          "unit": "model translation counts, clamp on the offset change per update, rate unverified",
           "source": "src/race/race_main.c:1476"
         },
         {
           "name": "rollSpeedCeiling",
           "value": "0x80000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed cap used for the roll target",
           "source": "src/race/race_main.c:1490"
         },
         {
           "name": "rollDivisor",
           "value": 350,
-          "unit": "steering angle counts, 8192 counts per turn per roll count, static",
+          "unit": "divisor of speed times steering angle, dimensionless",
           "source": "src/race/race_main.c:1497"
         },
         {
           "name": "rollStepShift",
           "value": 9,
-          "unit": "bit shift, divisor 512, per update, rate unverified",
+          "unit": "bit shift, divisor 512",
           "source": "src/race/race_main.c:1498"
         },
         {
-          "name": "rollStepCap",
+          "name": "rollTargetClamp",
           "value": "0x400",
-          "unit": "roll angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "roll angle counts, angle counts, 8192 counts per turn",
           "source": "src/race/race_main.c:1500"
         },
         {
           "name": "rollIncrementCap",
           "value": "0x50",
-          "unit": "roll angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "roll angle counts per update, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:1507"
         },
         {
-          "name": "rollDeadbandEdge",
+          "name": "leanSaturationEdge",
           "value": "0x401",
-          "unit": "roll angle counts, 8192 counts per turn, static",
+          "unit": "roll angle counts, at or above this the animation magnitude is capped at 0x400",
           "source": "src/race/race_main.c:1525"
         },
         {
           "name": "leanAnimationHalving",
           "value": 2,
-          "unit": "divisor applied to the roll, static",
+          "unit": "divisor applied to the roll magnitude for the lean animation, dimensionless",
           "source": "src/race/race_main.c:1529"
+        },
+        {
+          "name": "rollZeroBand",
+          "value": 7,
+          "unit": "roll angle counts, a roll this close to zero is set to zero",
+          "source": "src/race/race_main.c:1515"
         }
       ],
       "sources": [
@@ -707,7 +683,7 @@
       ],
       "capabilities": [
         "lateral model sway from steering",
-        "roll chasing with a clamped step",
+        "roll chasing with a capped step",
         "mirrored lean animations"
       ],
       "tags": [
@@ -721,43 +697,43 @@
       "id": "steering-angle-decay",
       "node": "rider-motion",
       "name": "Angle relaxation per update",
-      "summary": "Roll, pitch and steering angles wrap into the signed range and relax toward zero with a different cap on the ground than in the air",
-      "behavior": "The routine first folds each stored angle into the signed half-turn window and then subtracts a portion of the current value, capped so that no update moves more than the cap. On the ground the roll and steering angles share a large cap and the lateral model offset relaxes by up to a larger clamp; airborne the three angles relax by a much smaller cap and the offset by an intermediate clamp. Because the relaxation runs after gravity and before position integration, a rider who releases the stick drifts back into a straight line instead of stopping abruptly, and a rider in the air keeps only a slow residual spin.",
+      "summary": "Roll and steering angles wrap into the signed half-turn range and then move toward zero by at most a fixed count per update. The airborne version also handles pitch and uses a smaller cap",
+      "behavior": "Each routine first wraps its angles into the signed range of minus to plus half a turn (8192 counts per turn). It then moves each angle toward zero by its full size, limited to the cap. A small angle reaches zero in one update and a large angle shrinks by the cap each update. This is a linear approach, not a fraction of the angle. The grounded routine handles roll and steering with a cap of 0x80 and relaxes the sideways model offset by up to 0x8000. The airborne routine handles roll, pitch and steering with a cap of 0x28 and relaxes the offset by up to 0x6000. An airborne angle therefore relaxes about 3.2 times slower than a grounded one. Many behavior phases call one of the two routines. The position of the call inside each phase differs, so no ordering is claimed.",
       "constants": [
         {
           "name": "groundedAngleDecay",
           "value": "0x80",
-          "unit": "angle angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "roll and steering angle counts per update, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:3009"
         },
         {
-          "name": "groundedTiltRelax",
+          "name": "groundedOffsetRelax",
           "value": "0x8000",
-          "unit": "model translation counts per update, per update, rate unverified",
+          "unit": "model translation counts per update, 16.16 fixed point, rate unverified",
           "source": "src/race/race_main.c:3033"
         },
         {
           "name": "airborneAngleDecay",
           "value": "0x28",
-          "unit": "angle angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "roll, pitch and steering angle counts per update, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:3059"
         },
         {
-          "name": "airborneTiltRelax",
+          "name": "airborneOffsetRelax",
           "value": "0x6000",
-          "unit": "model translation counts per update, per update, rate unverified",
+          "unit": "model translation counts per update, 16.16 fixed point, rate unverified",
           "source": "src/race/race_main.c:3104"
         },
         {
           "name": "signedWindowEdge",
           "value": "0x1001",
-          "unit": "angle angle counts, 8192 counts per turn, static",
+          "unit": "angle counts, angle counts, 8192 counts per turn, values at or above this wrap negative",
           "source": "src/race/race_main.c:3003"
         },
         {
           "name": "halfTurnCount",
           "value": "0x2000",
-          "unit": "angle angle counts, 8192 counts per turn removed when past the window edge, static",
+          "unit": "angle counts subtracted when wrapping, one half turn of 8192 counts per turn",
           "source": "src/race/race_main.c:3004"
         }
       ],
@@ -789,8 +765,8 @@
       ],
       "capabilities": [
         "signed angle wrapping",
-        "capped per-update relaxation",
-        "separate ground and air decay rates"
+        "capped linear relaxation",
+        "separate ground and air caps"
       ],
       "tags": [
         "physics feel",
@@ -803,43 +779,43 @@
       "id": "velocity-deadzone",
       "node": "rider-motion",
       "name": "Surface-relative velocity deadzone",
-      "summary": "Speed is rotated into the surface frame, each local axis loses its deadzone or is zeroed, then the result is rotated back",
-      "behavior": "The velocity is transformed by a matrix pair built from the surface normal so that forward lies along the slope, and any downward component of the local velocity is dropped. A second matrix aligns the local frame with the rider heading, and after that each horizontal component either has its deadzone subtracted or, when it does not exceed the deadzone, is set to zero. The deadzones come from the caller: the driving, sliding and trick-slide passes pass a fixed forward and backward value plus the board-dependent lateral value from the stat table, while the bounce pass passes a much larger value on all three axes so a rider settles quickly after a fall. The local forward component is returned so the caller can compare it with speed thresholds, and the filtered velocity is rotated back into world space.",
+      "summary": "Velocity is tilted into a slope-aligned frame and turned to the board heading. Each horizontal axis then loses its deadzone amount or is zeroed, and the result is rotated back",
+      "behavior": "A matrix built from the surface normal tilts the world velocity into a slope-aligned frame. The local vertical part is floored at zero there. A second matrix aligns the frame to the board heading, which is the rider facing plus the steering angle. In that frame the sideways and forward parts each lose their deadzone amount when larger than it and become zero otherwise. The same rule applies to both signs. The result is rotated back, and only the horizontal x and z world parts are written to the velocity. The vertical velocity stays as it was. The local forward part is returned and the steering code uses it. Callers choose the deadzones. Ordinary driving, sliding and trick phases use 0x200 forward and backward plus a stat-derived sideways value. Several landing and bounce phases use 0x8000 on all three values, and other phases use 0x100 or 0x7000, so sliding speed dies fast there. The stat-derived value is the lateral stat shifted left 15, divided by 100, plus 0x1000. A boss racer uses a fixed 0xC000.",
       "constants": [
         {
           "name": "forwardDeadzone",
           "value": "0x200",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update, ordinary driving passes, rate unverified",
           "source": "src/race/race_main.c:1392"
         },
         {
           "name": "backwardDeadzone",
           "value": "0x200",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update, ordinary driving passes, rate unverified",
           "source": "src/race/race_main.c:1392"
         },
         {
           "name": "slopeMatrixShift",
           "value": 13,
-          "unit": "bit shift, scale 8192, static",
+          "unit": "bit shift, matrix scale 8192 for a unit vector",
           "source": "src/race/race_main.c:3139"
         },
         {
           "name": "lateralDeadzoneShift",
           "value": 15,
-          "unit": "bit shift applied to the board stat, static",
+          "unit": "bit shift applied to the lateral stat before the division by 100",
           "source": "src/race/character_stats.c:268"
         },
         {
           "name": "lateralDeadzoneBias",
           "value": "0x1000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed added to the stat-derived sideways deadzone, per update, rate unverified",
           "source": "src/race/character_stats.c:268"
         },
         {
           "name": "bounceDeadzone",
           "value": "0x8000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update on all three values in the stunned landing bounce, rate unverified",
           "source": "src/race/race_main.c:3378"
         }
       ],
@@ -872,7 +848,7 @@
       "capabilities": [
         "slope-aligned velocity decomposition",
         "per-axis deadzone removal",
-        "downward component clamping"
+        "phase-specific deadzone sizes"
       ],
       "tags": [
         "physics feel",
@@ -885,79 +861,79 @@
       "id": "speed-cap-assembly",
       "node": "speed-budget",
       "name": "Speed cap and catch-up",
-      "summary": "Base speed, catch-up, boost bonus, slowdown and wings pass through clamps and a smoothed slew before the cap is enforced on velocity",
-      "behavior": "The cap starts at the value derived from board and character stats, and a CPU rider has a per-difficulty penalty subtracted. A catch-up term starts at a per-finish-position table value minus the stored adjustment, and a large bonus is added when the rider leads the leader by a fixed amount of lap progress. The term is clamped in both directions with different limits and accumulates into a stored adjustment that is then added to the cap. Wings replace the board gravity with a small fixed value, a boost state adds a flat bonus that is roughly eight times larger for the rocket than for the fan, and the sum is capped absolutely and then reduced by a quarter for each active slowdown level. The cap that is actually enforced is a separate smoothed value that slews toward the target with a much larger rise cap than fall cap, except during a rocket impulse which snaps it straight to the target. A flag on the rider halves the cap before the boost bonus is added, so a rider carrying that flag gets the boost bonus on top of half their normal ceiling.",
+      "summary": "Base speed, a catch-up accumulator, boost bonus and slowdown pass through clamps. The cap in force is a smoothed value with a faster rise than fall",
+      "behavior": "The cap starts from the base value of the board stats. A CPU rider subtracts a per-difficulty table value times 0x202. The catch-up change is a per-finish-position table value minus the stored adjustment. It gets plus 0x8000 when the rider remaining progress exceeds the first-place rider by at least 0x3A9 counts. A larger remaining value means the rider is farther behind. The change is clamped to minus 0x80 through plus 0x100, added to the stored adjustment, and the adjustment is added to the cap. A rider flag then halves the cap. The fan boost states add 0x20000 and the rocket impulse and sustain states add 0x100000, which is eight times more. The rocket start states add nothing. The cap is clamped to 0 through 0x180000. Each slowdown level then removes a quarter of what remains. The cap in force is a separate smoothed value that moves toward this target by at most 0x1000 up or 0x600 down per update. In the rocket impulse and sustain states a smoothed value below the target is raised to it at once. Wings do not change the cap. They set the gravity to 0x3000.",
       "constants": [
         {
           "name": "cpuSpeedPenaltyUnit",
           "value": "0x202",
-          "unit": "world units per update in 16.16 fixed point per difficulty count, static",
+          "unit": "16.16 fixed point speed per difficulty table unit, per update, rate unverified",
           "source": "src/race/race_main.c:806"
         },
         {
           "name": "catchUpProgressGap",
           "value": "0x3A9",
-          "unit": "lap progress counts, static",
+          "unit": "progress counts, 8192 per lap as read from the lap multiplier",
           "source": "src/race/race_main.c:814"
         },
         {
           "name": "catchUpStepBonus",
           "value": "0x8000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "catch-up change counts added when far behind, same scale as the adjustment",
           "source": "src/race/race_main.c:815"
         },
         {
           "name": "catchUpRiseClamp",
           "value": "0x100",
-          "unit": "adjustment counts per update, static",
+          "unit": "adjustment counts per update, rate unverified",
           "source": "src/race/race_main.c:829"
         },
         {
           "name": "catchUpFallClamp",
           "value": "-0x80",
-          "unit": "adjustment counts per update, static",
+          "unit": "adjustment counts per update, rate unverified",
           "source": "src/race/race_main.c:832"
         },
         {
           "name": "speedFanBonus",
           "value": "0x20000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update added to the cap, rate unverified",
           "source": "src/race/race_main.c:845"
         },
         {
           "name": "rocketBonus",
           "value": "0x100000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update added to the cap, rate unverified",
           "source": "src/race/race_main.c:851"
         },
         {
           "name": "speedCapCeiling",
           "value": "0x180000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update, rate unverified",
           "source": "src/race/race_main.c:856"
         },
         {
           "name": "slowdownShift",
           "value": 2,
-          "unit": "bit shift, a quarter removed per slowdown level, static",
+          "unit": "bit shift, each slowdown level removes cap shifted right by 2 from the remaining cap",
           "source": "src/race/race_main.c:864"
         },
         {
           "name": "capRiseSlew",
           "value": "0x1000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update, rate unverified",
           "source": "src/race/race_main.c:869"
         },
         {
           "name": "capFallSlew",
           "value": "-0x600",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update, rate unverified",
           "source": "src/race/race_main.c:872"
         },
         {
           "name": "wingsGravity",
           "value": "0x3000",
-          "unit": "world units per update squared in 16.16 fixed point, static",
+          "unit": "16.16 fixed point gravity per update squared, rate unverified",
           "source": "src/race/race_main.c:801"
         }
       ],
@@ -1012,7 +988,7 @@
       "node": "speed-budget",
       "name": "Board stat to physics conversion",
       "summary": "Six small stat bytes per board and character pair are shifted, scaled and biased into the six physics values the rider uses",
-      "behavior": "Every board and character pair carries six unsigned bytes. The max speed byte is multiplied by a large constant, divided by a hundred and biased to give the base cap in world units; the handling and cornering bytes become turn-rate values with fixed biases; the lateral deadzone byte is shifted, scaled and biased into the velocity deadzone; and the gravity and acceleration bytes are shifted by different amounts, scaled and biased into the per-update gravity and the launch acceleration. A boss racer replaces the lateral deadzone with one large fixed value. Because the three shifts differ, one point of stat weight counts for very different amounts in speed, gravity and acceleration.",
+      "behavior": "Each board and character pair has a row of six stat values for max speed, handling, cornering, sideways deadzone, gravity and acceleration. Base max speed is the stat times 353894, divided by 100, plus 0xEB333. Handling is the stat plus 0x19 and cornering is the stat plus 1. The sideways deadzone is the stat shifted left 15, divided by 100, plus 0x1000. A boss racer uses 0xC000 instead. Gravity is the stat shifted left 14, divided by 100, plus 0x3000. Acceleration is the stat shifted left 17, divided by 100, plus 0x28000. In the intro race type a fixed row for character 0 is used. One stat point therefore counts for different amounts in speed, gravity and acceleration.",
       "constants": [
         {
           "name": "maxSpeedNumerator",
@@ -1129,43 +1105,43 @@
       "id": "ramp-launch-charge",
       "node": "trick-choreography",
       "name": "Trick charge and ramp launch",
-      "summary": "Holding the trick input charges a counter, and the release turns charge plus board acceleration into a launch along the board plane",
-      "behavior": "While the jump input is held the charge counter grows by a fixed step until it reaches a ceiling. Releasing the input sets the phase flag and, when the charge is above the ceiling, queues the trick type read from the stick. The launch phase then stores two magnitudes: a horizontal one built from the charge plus the board acceleration, and a vertical rise that is negated when the rider is facing backwards and doubled when the stick is pinned fully to one side. It rotates a shared launch vector through the rider orientation and tilt matrices and adds the result to velocity, with the already-applied gravity added back to the vertical component so the launch height does not depend on the order in which gravity and the launch ran. At this revision the two magnitudes and the launch vector are still single stand-alone words rather than the original tables, so the horizontal impulse magnitude is not fully recovered.",
+      "summary": "Holding the trick button builds a charge in four steps. On release the rider gets an impulse of charge plus board acceleration along one axis and a fixed 0x20000 along another",
+      "behavior": "While the trick button is held and the charge is at or below 0xFFFF, it grows by 0x4000 per update. It stops at 0x10000 after four updates. On release a behavior counter is set. When the charge is above 0xFFFF the stick direction is read and queued as the next trick. A CPU rider with input flags set is given full charge on release. The launch step sets the counter to 3 and fills a three-word vector. The first word stays 0. The second is the charge plus the board acceleration. The third is plus 0x20000, or minus 0x20000 when the reverse flag is set. A human rider with the stick at exactly 7 doubles the third word. A CPU rider with no input flags and lap progress remaining also doubles it. The three words are separate globals at consecutive addresses. I read the second as the vertical part and the third as the forward part. This is inferred from the order and from gravity being added back to the vertical velocity. The vector is rotated by the board matrices and added to the velocity. The gravity applied earlier in the update is added back to the vertical part, so the launch height does not depend on the order of the two steps.",
       "constants": [
         {
           "name": "chargeStep",
           "value": "0x4000",
-          "unit": "charge counts per update, per update, rate unverified",
+          "unit": "charge counts per update while held, rate unverified",
           "source": "src/race/race_main.c:1890"
         },
         {
           "name": "chargeCeiling",
           "value": "0xFFFF",
-          "unit": "charge counts, static",
+          "unit": "charge counts, growth stops once the charge is above this, so it saturates at 0x10000",
           "source": "src/race/race_main.c:1889"
         },
         {
-          "name": "launchRise",
+          "name": "launchThirdWord",
           "value": "0x20000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point, third launch word, read as the forward part (inferred), rate unverified",
           "source": "src/race/race_main.c:1921"
         },
         {
-          "name": "reversedLaunchRise",
+          "name": "reversedLaunchThirdWord",
           "value": "0xFFFE0000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point, third launch word when the reverse flag is set, rate unverified",
           "source": "src/race/race_main.c:1919"
         },
         {
           "name": "fullStickMultiplier",
           "value": 2,
-          "unit": "scale factor on the launch magnitudes, static",
+          "unit": "multiplier on the third launch word only, dimensionless",
           "source": "src/race/race_main.c:1934"
         },
         {
           "name": "postLaunchCounter",
           "value": 3,
-          "unit": "updates, per update, rate unverified",
+          "unit": "behavior counter value written at launch, meaning inferred, rate unverified",
           "source": "src/race/race_main.c:1914"
         }
       ],
@@ -1198,7 +1174,7 @@
       "capabilities": [
         "held-input charge accumulation",
         "stick-sensitive launch magnitude",
-        "board-plane launch direction"
+        "board-frame launch direction"
       ],
       "tags": [
         "jump",
@@ -1211,31 +1187,31 @@
       "id": "spin-trick-rotation",
       "node": "trick-choreography",
       "name": "Spin rotation sweep",
-      "summary": "A spin advances the trick rotation at a starting rate that decays past the half-turn mark and stops at one full turn",
-      "behavior": "Starting a spin trick resets both trick rotation axes and seeds a per-update rotation rate. Each update that rate is added to the spin axis, and once the rotation has passed the half-turn mark with no queued follow-up its magnitude is reduced by a fixed step, so the spin opens fast and eases into its end. The sweep stops at one full turn, where the rate is cleared and either the trick-rotation flag is dropped or the behavior continues straight into the queued trick. Flips reuse the same curve on the other rotation axis, so one rotation profile covers every trick in the chain, and the composed transform is rebuilt from both axes each update.",
+      "summary": "A spin adds a rotation rate that starts at 0x200 per update, slows by 0x22 per update after the half-turn mark when no trick is queued, and ends at one full turn",
+      "behavior": "Starting a trick clears both trick rotation axes and the queued trick, seeds the rate with 0x200, sets the trick flag, calls a completion hook and plays a sound. Each update the rate is added to the spin axis. It is subtracted for the left spin and the forward flip. Once the rotation passes 0x1001 counts and no next trick is queued, the rate loses 0x22 each update. At 0x2000 counts the rate is cleared. Then either the trick flag is dropped or the queued trick starts at step queued plus 6. The rate is constant for the first half turn and slows in the second half. Flips use the same curve on the second rotation axis. A combined trick moves both axes with opposite signs. The rotation transform is rebuilt each update in which the turn has not ended.",
       "constants": [
         {
           "name": "spinStartRate",
           "value": "0x200",
-          "unit": "rotation angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "rotation angle counts per update, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:2216"
         },
         {
           "name": "spinDecayStart",
           "value": "0x1001",
-          "unit": "rotation angle counts, 8192 counts per turn, static",
+          "unit": "rotation angle counts, angle counts, 8192 counts per turn, rate decay starts above this",
           "source": "src/race/race_main.c:2257"
         },
         {
           "name": "spinDecayStep",
           "value": "0x22",
-          "unit": "rotation angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "rotation angle counts per update removed from the rate, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:2259"
         },
         {
           "name": "spinSweepEnd",
           "value": "0x2000",
-          "unit": "rotation angle counts, 8192 counts per turn, one full turn at 8192 counts per turn",
+          "unit": "rotation angle counts, one full turn at 8192 counts per turn",
           "source": "src/race/race_main.c:2265"
         }
       ],
@@ -1277,56 +1253,68 @@
       "id": "trick-landing-award",
       "node": "trick-choreography",
       "name": "Trick score award tiers",
-      "summary": "Landing converts the accumulated trick chain into race gold and picks a reward sound from fixed score thresholds",
-      "behavior": "On landing the accumulated trick chain is added to the rider race gold, and a score display is raised for human riders. A reward sound is then chosen by comparing the chain total against a ladder of fixed thresholds, so a single small trick and a long chain are audibly different, and in one of the alternate race types a separate points total is awarded as skill points through its own ladder. Each new trick in a chain adds a per-slot base value plus a per-slot bonus, a repeat of a trick already in the chain is worth less than a fresh one, and completing the whole set of eight pays a large lump sum. Both running totals saturate at a maximum instead of overflowing, and the mask is cleared so the next chain starts fresh.",
+      "summary": "A landing credits the chain score as race gold in some race types and picks a reward sound from score thresholds. Each trick adds table values, a new kind adds 100 and all eight kinds add 1300",
+      "behavior": "Each trick adds a score value and a bonus point value from two tables. The tables are indexed by the trick position in the chain, and the index stops at 7. The first trick of a chain only sets its bit in a kind mask. A later trick whose kind is not yet in the mask adds 100 score and 10 points. A mask with all eight kinds adds a lump of 1300 score and 565 points and sets a ninth bit. Score is clamped to 9999 and points to 999. The landing does nothing while the airborne flag is set, and a stun flag diverts to the stunned phase. On landing the score is zeroed unless the race type value is 0, 8, 9 or 10. Race type names are not recovered. A non-zero score is added to race gold. A non-boss rider also gets a score display and a sound chosen by thresholds 0x96, 0x12C, 0x190, 0x1F4 and 0xBB8. In the cross race type the points are added as skill points, with their own sound thresholds of 0xF, 0x1E, 0x37, 0x5F and 0x3E7.",
       "constants": [
         {
           "name": "awardTierOne",
           "value": "0x96",
-          "unit": "score points, static",
+          "unit": "score points, sound steps up at this value",
           "source": "src/race/race_main.c:2135"
         },
         {
           "name": "awardTierTwo",
           "value": "0x12C",
-          "unit": "score points, static",
+          "unit": "score points, sound steps up at this value",
           "source": "src/race/race_main.c:2141"
         },
         {
           "name": "awardTierThree",
           "value": "0x190",
-          "unit": "score points, static",
+          "unit": "score points, sound steps up at this value",
           "source": "src/race/race_main.c:2144"
         },
         {
           "name": "awardTierFour",
           "value": "0x1F4",
-          "unit": "score points, static",
+          "unit": "score points, sound steps up at this value",
           "source": "src/race/race_main.c:2147"
         },
         {
           "name": "awardTierFive",
           "value": "0xBB8",
-          "unit": "score points, static",
+          "unit": "score points, sound steps up at this value",
           "source": "src/race/race_main.c:2150"
         },
         {
           "name": "freshTrickBonus",
           "value": 100,
-          "unit": "score points, static",
+          "unit": "score points added for a trick kind not yet in the chain",
           "source": "src/race/race_main.c:1966"
         },
         {
           "name": "scoreCeiling",
           "value": 10000,
-          "unit": "score points, static",
+          "unit": "score points, a score at or above this is set to 9999",
           "source": "src/race/race_main.c:1984"
         },
         {
           "name": "pointsCeiling",
           "value": 1000,
-          "unit": "skill points, static",
+          "unit": "skill points, a total at or above this is set to 999",
           "source": "src/race/race_main.c:1988"
+        },
+        {
+          "name": "allKindsScoreBonus",
+          "value": 1300,
+          "unit": "score points added when all eight trick kinds are in the chain",
+          "source": "src/race/race_main.c:1973"
+        },
+        {
+          "name": "allKindsPointsBonus",
+          "value": 565,
+          "unit": "skill points added when all eight trick kinds are in the chain",
+          "source": "src/race/race_main.c:1974"
         }
       ],
       "sources": [
@@ -1357,8 +1345,9 @@
       ],
       "capabilities": [
         "chain score to race gold",
-        "thresholded reward feedback",
-        "saturating score counters"
+        "thresholded reward sound",
+        "saturating score counters",
+        "full-set bonus"
       ],
       "tags": [
         "tricks",
@@ -1371,43 +1360,43 @@
       "id": "knockback-launch",
       "node": "stun-recovery",
       "name": "Knockback impulse and drag",
-      "summary": "A hit clamps the shove, lifts the rider at a fixed rise and bleeds the horizontal speed by a constant fraction",
-      "behavior": "A collision knockback stores an impact angle and a strength, and the strength is clamped at a ceiling before it is written into the knockback velocity. The airborne phase copies that velocity into the rider speed, rescales the horizontal part to the same ceiling, and sets a fixed upward rise so the rider always leaves the ground. Gravity then pulls the rise down while the horizontal speed is reduced by a fixed fraction of itself every update, which is a constant-fraction drag rather than a linear deceleration, so a fast shove fades quickly and a slow one lingers. The rider turns toward the track direction while airborne and drops into a bounce chain once the ground is reached, with a per-instance heat timer that the player can shorten by working the stick.",
+      "summary": "A collision hit stores a backward velocity capped at 0x60000. The airborne phase sets a 0x90000 rise, adds minus 0x9000 per update and removes one sixty-fourth of the horizontal speed per update",
+      "behavior": "Collision knockback is accepted only when the hit reaction state is below 4 and no blocking behavior flag (mask 0x77F) is set. It stores an angle and a velocity of zero sideways and minus the strength forward. The strength is clamped to 0x60000. Other knockback sources copy a full vector without that clamp. On its first update the airborne phase copies the stored horizontal velocity, rescales it to length 0x60000 when longer, and sets the vertical velocity to 0x90000. The stored angle is not used in this function. Each update the vertical velocity gets minus 0x9000 added. Each horizontal part loses one sixty-fourth of itself, which is a constant-fraction drag. When the lean animation ends and the rider is on the ground, the behavior moves to phase 0x14. A separate bounce phase starts a counter at 0x1E. The counter falls by 1 per update, or by 2 when the stick is newly pinned to a side. A CPU rider gets 2 one time in four. The bounce phase also sets the heading from the velocity direction.",
       "constants": [
         {
           "name": "knockbackStrengthCap",
           "value": "0x60000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed, collision knockback only, per update, rate unverified",
           "source": "src/race/hit_reactions.c:57"
         },
         {
           "name": "knockbackHorizontalCap",
           "value": "0x60000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed, horizontal length cap in the airborne phase, per update, rate unverified",
           "source": "src/race/race_main.c:4093"
         },
         {
           "name": "knockbackRise",
           "value": "0x90000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point vertical speed set on the first update, per update, rate unverified",
           "source": "src/race/race_main.c:4097"
         },
         {
           "name": "knockbackGravity",
           "value": "0xFFFF7000",
-          "unit": "world units per update squared in 16.16 fixed point, static",
+          "unit": "16.16 fixed point value added to vertical velocity each update. It is the two-complement form of minus 0x9000, rate unverified",
           "source": "src/race/race_main.c:4103"
         },
         {
           "name": "knockbackDragShift",
           "value": 6,
-          "unit": "bit shift, divisor 64, per update, rate unverified",
+          "unit": "bit shift, one sixty-fourth of horizontal speed removed per update, rate unverified",
           "source": "src/race/race_main.c:4104"
         },
         {
-          "name": "bounceHeatCounter",
+          "name": "bounceRecoveryCounter",
           "value": "0x1E",
-          "unit": "updates, per update, rate unverified",
+          "unit": "counter start value in the bounce phase, reduced by 1 or 2 per update, rate unverified",
           "source": "src/race/race_main.c:4128"
         }
       ],
@@ -1440,7 +1429,8 @@
       "capabilities": [
         "capped knockback impulse",
         "fixed vertical rise on hit",
-        "constant-fraction horizontal drag"
+        "constant-fraction horizontal drag",
+        "stick-shortened recovery counter"
       ],
       "tags": [
         "combat",
@@ -1453,49 +1443,49 @@
       "id": "stun-airborne-drag",
       "node": "stun-recovery",
       "name": "Stun gravity and bounce settle",
-      "summary": "Being stunned uses its own gravity and a stronger drag, and the following bounce removes the last of the speed",
-      "behavior": "While stunned the rider falls under a stun gravity that is smaller than the board gravity, turns toward the track centre line by a clamped increment each update, and loses horizontal speed by a fixed fraction of itself. On landing a short counter holds the rider in a bounce phase with the same stun gravity and a coarse deadzone on all three velocity axes, so the rider settles instead of skating away. When the bounce animation finishes and the remaining horizontal speed is under a small threshold the rider resumes normal driving; otherwise the counter keeps the bounce going. The recovery also halves the smoothed speed cap once, which is why a stunned rider stays slow for a moment after standing up.",
+      "summary": "A stunned rider falls with a fixed 0x6000 gravity and loses one sixteenth of horizontal speed per update while the heading turns toward the track direction. The landing bounce uses a coarse deadzone and a hold counter",
+      "behavior": "On its first update the stunned airborne phase copies the stored knockback velocity into the horizontal velocity. Each update the heading moves toward the target track angle by at most 0x100 counts. The vertical velocity loses 0x6000 and each horizontal part loses one sixteenth of itself. When the lean animation ends, the smoothed speed cap is halved once and the behavior returns to default. A stunned falling phase uses the same gravity with one sixty-fourth drag. In the stunned landing bounce phase a counter is set to 0x14 on the first update. It is set to 0xA on every update in which the rider is still airborne. In the air the horizontal speed loses one thirty-second per update. On the ground a deadzone of 0x8000 is applied on all three values. After the bounce animation ends on the ground the counter falls by 1 per update. At zero, if the horizontal speed is 0x1FFFF or less, normal driving resumes.",
       "constants": [
         {
           "name": "stunGravity",
           "value": "0x6000",
-          "unit": "world units per update squared in 16.16 fixed point, static",
+          "unit": "16.16 fixed point vertical speed removed per update, rate unverified",
           "source": "src/race/race_main.c:3264"
         },
         {
           "name": "stunDragShift",
           "value": 4,
-          "unit": "bit shift, divisor 16, per update, rate unverified",
+          "unit": "bit shift, one sixteenth of horizontal speed removed per update, rate unverified",
           "source": "src/race/race_main.c:3266"
         },
         {
           "name": "stunTurnCap",
           "value": "0x100",
-          "unit": "heading angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "unit": "heading angle counts per update, angle counts, 8192 counts per turn, rate unverified",
           "source": "src/race/race_main.c:3258"
         },
         {
           "name": "recoverySpeedHalving",
           "value": 2,
-          "unit": "divisor on the smoothed speed cap, static",
+          "unit": "divisor applied once to the smoothed speed cap when the airborne stun ends, dimensionless",
           "source": "src/race/race_main.c:3272"
         },
         {
           "name": "bounceHoldCounter",
           "value": "0x14",
-          "unit": "updates, per update, rate unverified",
+          "unit": "counter start value in the landing bounce, 0xA while airborne, falls by 1 per update on the ground, rate unverified",
           "source": "src/race/race_main.c:3357"
         },
         {
           "name": "bounceDeadzone",
           "value": "0x8000",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point speed per update on all three values, rate unverified",
           "source": "src/race/race_main.c:3378"
         },
         {
           "name": "settleSpeed",
           "value": "0x1FFFF",
-          "unit": "world units per update in 16.16 fixed point, static",
+          "unit": "16.16 fixed point horizontal speed per update, normal driving resumes at or below this, rate unverified",
           "source": "src/race/race_main.c:3390"
         }
       ],
@@ -1526,9 +1516,9 @@
         }
       ],
       "capabilities": [
-        "stun-specific gravity and drag",
+        "stun gravity and drag",
         "bounce settle with a coarse deadzone",
-        "post-hit speed cap penalty"
+        "speed cap halving after the stun"
       ],
       "tags": [
         "combat",
@@ -1541,38 +1531,44 @@
       "id": "wall-push-out",
       "node": "track-barriers",
       "name": "Track wall push-out",
-      "summary": "Three sample points around the board are resolved against wall geometry, with a growing radius while the rider is stunned",
-      "behavior": "Three points in the rider frame, one at the centre and one on each side, are tested against the track wall geometry, and a hit returns a push offset that is applied to the rider position and to the remaining sample points so the following tests do not start inside the wall. The centre point is tested at a larger radius than the two side points, which treats the nose of the board as wider than its edges. While the rider carries the stunned flag the tested radius grows by a fixed count per update up to a limit, which lets a rider being knocked around slip through geometry instead of getting pinned, and the flag is cleared once the test has run. A hit is also reported back to the caller so the behavior can abandon the current phase, and the second failure code reports that a sample sits below the local track surface, which is also treated as a hit.",
+      "summary": "Three board-frame sample points are pushed out of the track walls. The centre sample uses a radius of 6 and the two side samples use 5. A stun flag grows the centre radius from 7 to 16",
+      "behavior": "Three offsets are rotated by the combined board transform into world sample points. They are the centre and plus and minus 11 along one board axis. Each point is tested against the wall edges of its track sector, centre first. The centre radius is 6 units normally. While the stun flag is set a counter rises by 1 per update up to 10, and the radius becomes the counter plus 6 units, so 7 up to 16. The flag is cleared after the test. Without the flag the counter resets to 0. A returned push offset moves the rider position and the sample points not yet tested. A result of minus 1 is a hit that is reported to the caller. A result of minus 2 counts as a hit only when the sample height is lower than the ground height under it plus 16 units. The source comment says the growing radius lets a recovering rider pass through walls. The argument is named a collision radius, so a larger value may push out harder. This effect is unverified.",
       "constants": [
         {
           "name": "bodyWallRadius",
           "value": "0x00060000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, centre sample radius",
           "source": "src/race/track_collision.c:33"
         },
         {
           "name": "sideWallRadius",
           "value": "0x00050000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, side sample radius",
           "source": "src/race/track_collision.c:34"
         },
         {
           "name": "sideSampleOffset",
           "value": 11,
-          "unit": "world units, static",
+          "unit": "world units along one board axis, stored in the high half of a 16.16 value",
           "source": "src/race/track_collision.c:34"
         },
         {
           "name": "stunRadiusSteps",
           "value": 10,
-          "unit": "updates, per update, rate unverified",
+          "unit": "updates, counter limit while the stun flag is set, rate unverified",
           "source": "src/race/track_collision.c:96"
         },
         {
           "name": "stunRadiusBase",
           "value": 6,
-          "unit": "world units added to the tested radius while stunned, static",
+          "unit": "world units added to the counter to form the centre radius while stunned",
           "source": "src/race/track_collision.c:103"
+        },
+        {
+          "name": "belowGroundMargin",
+          "value": "0x100000",
+          "unit": "world units, 16.16 fixed point, added to the ground height in the minus 2 case",
+          "source": "src/race/track_collision.c:137"
         }
       ],
       "sources": [
@@ -1604,7 +1600,8 @@
       "capabilities": [
         "multi-point wall sampling",
         "push offset propagated to later samples",
-        "stun pass-through radius growth"
+        "stun radius growth",
+        "below-ground hit rule"
       ],
       "tags": [
         "collision",
@@ -1617,8 +1614,8 @@
       "id": "terrain-alignment",
       "node": "track-surface",
       "name": "Three-point terrain alignment",
-      "summary": "Three points dropped onto the track give two edge vectors, whose cross product becomes the surface normal behind pitch and roll",
-      "behavior": "The rider position is first raised to the track height under it, and the airborne flag is cleared when contact is found. Three sample points taken from a pattern chosen by the rider attack state are each dropped onto the track and lifted to the sampled height whenever they would otherwise sit below it, then reduced to two edge vectors and normalised to a fixed scale. Their cross product gives a surface normal, normalised to the same scale and rotated into the rider heading frame. Pitch and roll come from fixed-point arctangents of the normal components, masked into the signed angle window, and a rotation about the pitch is written straight into the orientation transform, so the board planes onto the slope instead of hovering at a fixed angle.",
+      "summary": "Three points dropped onto the track give two edge vectors. Their cross product becomes the surface normal behind pitch and roll",
+      "behavior": "The rider height is first raised to the track height under it when it is lower, and the airborne flag is cleared in that case. Three sample points come from a pattern chosen by the flying attack state. Cases 1 and 3 share one pattern, with one point 64 units to one end and two points 24 units to the other end and plus or minus 28 sideways. Case 2 uses a mirrored layout. Each point is lifted to the sampled track height when it is lower. The points are reduced to two edge vectors, each normalised to length 0x2000. Their cross product is normalised to the same scale and rotated into the heading frame. Pitch and roll come from fixed-point arctangents of the normal parts, negated and masked to 0x1FFF. A rotation about the pitch is written into the orientation transform, so the board lies on the slope.",
       "constants": [
         {
           "name": "sampleCount",
@@ -1633,9 +1630,9 @@
           "source": "src/race/track_collision.c:1463"
         },
         {
-          "name": "heightQueryLift",
+          "name": "heightQueryArgument",
           "value": "0x100000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "fourth argument of the height query, 16.16 fixed point, purpose not recovered",
           "source": "src/race/track_collision.c:1414"
         },
         {
@@ -1687,68 +1684,68 @@
       "id": "chase-camera-follow",
       "node": "chase-camera",
       "name": "Chase camera rig",
-      "summary": "A rest distance behind the rider, an eased aim height and a ground clearance keep the chase view stable through jumps and landings",
-      "behavior": "The rig starts behind the rider along a fixed offset rotated by the rider heading, with a rest distance, a closest distance, an aim height and a rig height. Each update it copies the rider vertical movement with a clamp and eases the distance and the aim height toward their rest values by dividing the difference by a fixed factor, so a jump or a landing is absorbed rather than followed rigidly. The horizontal distance is pushed out to the rig height, the full distance is clamped into a band between the rest distance and the rest distance plus a slack, and the look-at point is lifted along the camera up axis by the aim height scaled to the matrix unit. A terrain query under that look-at point lifts the whole rig when the track would otherwise cut through it, and a look-back input mirrors the view so the rider sees behind.",
+      "summary": "The chase camera sits about 96 units behind the rider. Its height follows the rider by a capped step, its distance eases by one thirty-second per update and the camera is lifted when it would sit under the track",
+      "behavior": "The camera starts 64 units behind the rider along the heading. The rest distance and the first distance value are 96 units. The aim height target is 44 units. The camera height follows the rider with a step of at most 0x4000 per update. The distance eases toward the rest distance by one thirty-second of the gap per update. The aim height moves toward its target by a clamped step of 0x3000 per update. While a rider flag (0x1000) is set it moves toward 0x1A0000 by a step of 0x6000. In the gold reward mode the distance and aim height ease toward other values instead. The horizontal distance to the rider is pushed out to at least 30 units. The full 3D distance is kept between the distance value and that value plus 1 unit. The look-at matrix translation is the camera position. It is lifted along the camera up axis by the aim height, scaled by 0x2000. A terrain query under it adds 10 units of clearance and raises the camera when the track is higher. Holding a button flips the view to look back from 48 units above the rider.",
       "constants": [
         {
           "name": "restDistance",
           "value": "0x600000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, rest and start distance",
           "source": "src/text/text_elements.c:201"
-        },
-        {
-          "name": "closestDistance",
-          "value": "0x20000",
-          "unit": "world units in 16.16 fixed point, static",
-          "source": "src/text/text_elements.c:202"
         },
         {
           "name": "aimHeight",
           "value": "0x2C0000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, aim height target",
           "source": "src/text/text_elements.c:203"
         },
         {
-          "name": "rigHeight",
+          "name": "minHorizontalDistance",
           "value": "0x1E0000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, horizontal distance floor",
           "source": "src/text/text_elements.c:206"
         },
         {
           "name": "verticalFollowClamp",
           "value": "0x4000",
-          "unit": "world units in 16.16 fixed point per update, per update, rate unverified",
+          "unit": "world units per update, 16.16 fixed point, rate unverified",
           "source": "src/text/text_elements.c:252"
         },
         {
           "name": "easeDivisor",
           "value": "0x20",
-          "unit": "updates per easing step, per update, rate unverified",
+          "unit": "divisor, the gap is divided by 32 each update, rate unverified",
           "source": "src/text/text_elements.c:264"
         },
         {
           "name": "distanceSlack",
           "value": "0x10000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, added to the distance for the upper bound",
           "source": "src/text/text_elements.c:323"
         },
         {
           "name": "matrixUnit",
           "value": "0x2000",
-          "unit": "fixed-point scale 8192 per unit vector, static",
+          "unit": "fixed point scale, 8192 for a unit vector",
           "source": "src/text/text_elements.c:346"
         },
         {
-          "name": "terrainQueryLift",
+          "name": "terrainQueryArgument",
           "value": "0x100000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "fourth argument of the height query, 16.16 fixed point, purpose not recovered",
           "source": "src/text/text_elements.c:362"
         },
         {
           "name": "groundClearance",
           "value": "0xA0000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, clearance added to the track height",
           "source": "src/text/text_elements.c:363"
+        },
+        {
+          "name": "aimHeightStep",
+          "value": "0x3000",
+          "unit": "world units per update, 16.16 fixed point, clamp on the aim height change, rate unverified",
+          "source": "src/text/text_elements.c:290"
         }
       ],
       "sources": [
@@ -1782,9 +1779,11 @@
         }
       ],
       "capabilities": [
-        "eased distance and aim height",
+        "eased distance",
+        "aim height step",
         "distance clamp band",
-        "terrain clearance for the look-at point"
+        "terrain clearance",
+        "look-back view"
       ],
       "tags": [
         "camera",
@@ -1797,31 +1796,31 @@
       "id": "item-boost-timers",
       "node": "hit-and-items",
       "name": "Boost and shield durations",
-      "summary": "Each boost and shield arms a state and runs on a fixed update counter that a hit clears",
-      "behavior": "Item activation is gated on the rider having no boost in progress. The rocket boost sets a start state chosen by the rider facing and writes a countdown; the speed fan sets its own forward or reverse state with a countdown twice as long; wings use a separate active flag with an even longer countdown, and invincibility uses its own timer with a sound cue. The boost counters are cleared whenever a hit reaction begins, so a hit cancels a boost instead of leaving it running underneath the stun. The rocket start state advances to a sustain state once the impulse has been applied, which is how the short launch push and the longer sustained push share one counter.",
+      "summary": "Rocket and fan boosts need no boost in progress, and wings and invincibility have their own gates. Each arms a countdown that an effect task runs, and a hit clears the countdowns",
+      "behavior": "The rocket and the fan boost start only when no boost is in progress and their effect spawns. They set a start or fan state chosen by the reverse flag. The rocket gets a countdown of 90 updates and the fan gets 180, twice as long. Wings need their active flag clear and get 300. Invincibility needs its timer at zero and gets 150 with a sound. The countdowns are run by the effect tasks, not by the activation code. They step down by one per unpaused update, and the boost state returns to none when the timer reaches zero. The rocket countdown starts only after its effect has grown to full size, and then the start state moves up by 2 to the impulse state. The impulse state is applied once and becomes the sustain state. For one board type per effect, the timer is set back to 1 when it reaches zero, so that boost does not end by time. A hit reaction clears the boost, wings and invincibility timers, which ends them.",
       "constants": [
         {
           "name": "rocketBoostUpdates",
           "value": "0x5A",
-          "unit": "updates, per update, rate unverified",
+          "unit": "updates, the effect task counts down once per unpaused update, rate unverified",
           "source": "src/race/hit_reactions.c:163"
         },
         {
           "name": "speedFanUpdates",
           "value": "0xB4",
-          "unit": "updates, per update, rate unverified",
+          "unit": "updates, the effect task counts down once per unpaused update, rate unverified",
           "source": "src/race/hit_reactions.c:189"
         },
         {
           "name": "wingsUpdates",
           "value": 300,
-          "unit": "updates, per update, rate unverified",
+          "unit": "updates, counted down once per unpaused update, rate unverified",
           "source": "src/race/hit_reactions.c:174"
         },
         {
           "name": "invincibilityUpdates",
           "value": "0x96",
-          "unit": "updates, per update, rate unverified",
+          "unit": "updates, timer start value, rate unverified",
           "source": "src/race/hit_reactions.c:198"
         }
       ],
@@ -1854,7 +1853,8 @@
       "capabilities": [
         "one boost at a time",
         "per-item countdown lengths",
-        "hit cancels boost timers"
+        "hit cancels timers",
+        "start to impulse to sustain steps"
       ],
       "tags": [
         "items",
@@ -1867,37 +1867,37 @@
       "id": "ai-waypoint-lookahead",
       "node": "ai-opponents",
       "name": "CPU look-ahead target",
-      "summary": "A CPU rider aims at a point found by walking sector links with lane offsets and a capped look-ahead distance",
-      "behavior": "The CPU first projects its own position onto the current sector centre line, then walks the sector links forward, choosing the left or right link when the stored path preference says so, until the waypoint ahead is further away than a fixed look-ahead limit. If a step overshoots, the offset is shortened to the limit, which keeps the aim point inside the visible track instead of jumping past a corner. Lane position on a sector comes from a lateral factor scaled by a fixed amount and from a lane width multiplier, and the blend between a sector start and end centre point uses a fixed number of interpolation steps. A separate random threshold out of 256 decides how often the CPU takes a shortcut branch, and the whole walk collapses to the lift entry point on the last sector of a lap.",
+      "summary": "A CPU rider aims at a point found by walking sector links with a capped look-ahead distance. A separate choice picks the lane or shortcut link per sector",
+      "behavior": "On the last sector of a lap the aim point is the lift entry. Otherwise the CPU projects its position onto the centre line of its sector. It then walks forward, following the left, next or right sector link that the stored path choice names. At each step it measures the distance from its projected point to that sector waypoint. When the distance is above 0xA00000 the offset is scaled to that length and the walk stops. A waypoint is a point between the sector centre vertex and a left or right edge vertex. A signed per-sector factor out of 32 sets the blend, and its sign picks the side. A separate choice function returns the stored path preference only when the rider sideways distance is under its speed cap times 6. The distance is divided by 0x2000. It then decides on a shortcut when one is available. In the special mode a roll of 192 or more out of 256 means no shortcut, the roll is repeated every update, and a lower roll latches the shortcut. In normal races a roll under a per-level table value latches it, and a rider with a character index of 6 or more always takes it. Training races take none.",
       "constants": [
         {
           "name": "lookAheadLimit",
           "value": "0xA00000",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, length cap of the aim offset",
           "source": "src/race/ai_pathfinding.c:25"
         },
         {
           "name": "lateralOffsetScale",
           "value": "0x2000",
-          "unit": "fixed-point scale 8192 per lane unit, static",
+          "unit": "fixed point scale, 8192 per unit, divisor of the sideways distance in the path choice",
           "source": "src/race/ai_pathfinding.c:28"
         },
         {
-          "name": "laneWidthMultiplier",
+          "name": "sidewaysDistanceMultiplier",
           "value": 6,
-          "unit": "lane units, static",
+          "unit": "multiplier of the smoothed speed cap, dimensionless",
           "source": "src/race/ai_pathfinding.c:29"
         },
         {
           "name": "interpolationSteps",
           "value": 32,
-          "unit": "sector fractions per centre-line blend, static",
+          "unit": "divisor of the signed lane factor, dimensionless",
           "source": "src/race/ai_pathfinding.c:32"
         },
         {
           "name": "shortcutChance",
           "value": "0xC0",
-          "unit": "parts out of 256, static",
+          "unit": "parts out of 256, a roll at or above this means no shortcut in the special mode, rerolled each update",
           "source": "src/race/ai_pathfinding.c:22"
         }
       ],
@@ -1929,8 +1929,8 @@
       ],
       "capabilities": [
         "sector-link look-ahead walk",
-        "lane offset blending",
-        "shortcut branch choice"
+        "lane blend by signed factor",
+        "shortcut latch"
       ],
       "tags": [
         "ai",
@@ -1943,19 +1943,19 @@
       "id": "lift-entry-gate",
       "node": "track-barriers",
       "name": "Course lift entry gate",
-      "summary": "The lift at the bottom of a lap accepts one rider inside an activation radius and hands out boarding order",
-      "behavior": "The gate accepts a rider only when its shared state is ready, the rider is not on the final lap, and the rider has reached the finish zone of the current lap. Ground distance to the course lift entry point is compared with an activation radius; inside that radius the gate moves to active, the rider receives the next boarding order and a shared order counter is decremented, so riders board in the order they arrive rather than all at once. A second proximity test with a smaller radius reports whether a rider is merely near the lift without touching the gate state, and the driving code consults it before handing a CPU rider over to the lift-approach phase.",
+      "summary": "The lift at the bottom of a lap accepts one rider inside an activation radius and hands out a boarding order",
+      "behavior": "The gate accepts a rider only when its shared state is ready, the rider is not on the final lap, and the sector of the rider has zero remaining lap progress. Ground distance to the course lift entry point is compared with an activation radius of about 48 units. Inside that radius the gate moves to active. The rider gets the next boarding order and a shared order counter is decremented, so riders board in the order they arrive. A second test with a radius of about 32 units reports whether a rider is near the lift. It changes no gate state. The driving code asks it before it hands a CPU rider to the lift-approach phase.",
       "constants": [
         {
           "name": "liftActivationRadius",
           "value": "0x2FFFFF",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, about 48 units",
           "source": "src/race/track_collision.c:414"
         },
         {
           "name": "liftProximityRadius",
           "value": "0x1FFFFF",
-          "unit": "world units in 16.16 fixed point, static",
+          "unit": "world units, 16.16 fixed point, about 32 units",
           "source": "src/race/track_collision.c:448"
         }
       ],
@@ -1995,88 +1995,6 @@
         "lift",
         "gate",
         "ai"
-      ]
-    },
-    {
-      "id": "snow-spray-puff",
-      "node": "snow-spray",
-      "name": "Snow spray billboard lifetime",
-      "summary": "A spray puff is a few billboards with a fixed frame count, a fixed alpha fade per update and a halved velocity",
-      "behavior": "A spray puff is scheduled as a task that draws the same billboard on several viewports. Its starting alpha is fixed, and every unpaused update advances the asset frame, subtracts a fixed amount from alpha and moves the billboard by a velocity the spawner halved, so the puff slows and fades as it drifts. The task terminates itself after a fixed number of updates instead of waiting on a condition. The two-sided spray used under a turning board starts at an alpha jittered inside a small random band, moves both billboards together and lives one update longer than the single puff, which keeps paired puffs from looking perfectly synchronised.",
-      "constants": [
-        {
-          "name": "sprayStartAlpha",
-          "value": "0xE0",
-          "unit": "8-bit alpha counts, static",
-          "source": "src/race/spray_particles.c:146"
-        },
-        {
-          "name": "sprayAlphaFade",
-          "value": "0x30",
-          "unit": "8-bit alpha counts per update, per update, rate unverified",
-          "source": "src/race/spray_particles.c:169"
-        },
-        {
-          "name": "sprayFrames",
-          "value": 4,
-          "unit": "updates, per update, rate unverified",
-          "source": "src/race/spray_particles.c:165"
-        },
-        {
-          "name": "sprayAlphaJitterMask",
-          "value": "0x1F",
-          "unit": "8-bit alpha counts, static",
-          "source": "src/race/spray_particles.c:199"
-        },
-        {
-          "name": "sprayAlphaJitterBase",
-          "value": "0x70",
-          "unit": "8-bit alpha counts, static",
-          "source": "src/race/spray_particles.c:199"
-        },
-        {
-          "name": "dualSprayFrames",
-          "value": 5,
-          "unit": "updates, per update, rate unverified",
-          "source": "src/race/spray_particles.c:234"
-        }
-      ],
-      "sources": [
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 146
-        },
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 165
-        },
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 169
-        },
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 184
-        },
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 199
-        },
-        {
-          "path": "src/race/spray_particles.c",
-          "line": 234
-        }
-      ],
-      "capabilities": [
-        "finite billboard lifetime",
-        "per-update alpha fade",
-        "velocity halving at spawn"
-      ],
-      "tags": [
-        "effects",
-        "particles",
-        "snow spray",
-        "feedback"
       ]
     }
   ]
