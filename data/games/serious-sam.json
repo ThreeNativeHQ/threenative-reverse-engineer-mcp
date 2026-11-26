@@ -1,0 +1,1882 @@
+{
+  "version": 1,
+  "id": "serious-sam",
+  "title": "Serious Sam: The First Encounter",
+  "repo": "https://github.com/Croteam-official/Serious-Engine",
+  "sha": "b408e88a16fd01aa1cfd0e0a999c86c2c1437c9e",
+  "nodes": [
+    {
+      "id": "engine-timing",
+      "name": "Fixed tick clock",
+      "purpose": "Drives the whole simulation from a fixed twenty-hertz tick and exposes the lerp position used to smooth rendering between ticks.",
+      "paths": [
+        "Sources/Engine/Base/Timer.cpp",
+        "Sources/Engine/Base/Timer.h"
+      ],
+      "functions": [
+        {
+          "name": "CTimer::SetCurrentTick",
+          "path": "Sources/Engine/Base/Timer.cpp",
+          "lines": [
+            353,
+            356
+          ]
+        },
+        {
+          "name": "CTimer::GetLerpedCurrentTick",
+          "path": "Sources/Engine/Base/Timer.cpp",
+          "lines": [
+            365,
+            368
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "world-surfaces",
+      "name": "Surface and content defaults",
+      "purpose": "Holds the per-surface friction, stair height and slope cosine defaults, and the per-content density and fluid factors that the mover reads each tick.",
+      "paths": [
+        "Sources/Engine/World/WorldSettings.h"
+      ],
+      "functions": [
+        {
+          "name": "CSurfaceType",
+          "path": "Sources/Engine/World/WorldSettings.h",
+          "lines": [
+            62,
+            72
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "movable-physics",
+      "name": "Movable entity physics",
+      "purpose": "The shared mover: blends velocity toward a request, integrates gravity and force fields, resolves collisions with sliding, detects standing surfaces, and turns blocked motion into impact damage.",
+      "paths": [
+        "Sources/Engine/Classes/MovableEntity.es"
+      ],
+      "functions": [
+        {
+          "name": "AddAcceleration",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            74,
+            91
+          ]
+        },
+        {
+          "name": "AddGAcceleration",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            94,
+            146
+          ]
+        },
+        {
+          "name": "SetDesiredTranslation",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            632,
+            638
+          ]
+        },
+        {
+          "name": "FakeJump",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            692,
+            736
+          ]
+        },
+        {
+          "name": "TestFields",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            860,
+            1001
+          ]
+        },
+        {
+          "name": "PreMovingNew",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            2025,
+            2437
+          ]
+        },
+        {
+          "name": "DoMoving",
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "lines": [
+            2854,
+            2929
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine-timing",
+        "world-surfaces"
+      ]
+    },
+    {
+      "id": "player-movement",
+      "name": "Player state and locomotion",
+      "purpose": "Turns input into an action packet, enforces per-axis speed ceilings, selects stand, crouch, swim, dive and fall states, sets eye heights, and applies incoming damage to armour and health.",
+      "paths": [
+        "Sources/EntitiesMP/Player.es"
+      ],
+      "functions": [
+        {
+          "name": "ctl_ComposeActionPacket",
+          "path": "Sources/EntitiesMP/Player.es",
+          "lines": [
+            446,
+            584
+          ]
+        },
+        {
+          "name": "ReceiveDamage",
+          "path": "Sources/EntitiesMP/Player.es",
+          "lines": [
+            3060,
+            3219
+          ]
+        },
+        {
+          "name": "ApplyAction",
+          "path": "Sources/EntitiesMP/Player.es",
+          "lines": [
+            3614,
+            3845
+          ]
+        },
+        {
+          "name": "ActiveActions",
+          "path": "Sources/EntitiesMP/Player.es",
+          "lines": [
+            3996,
+            4424
+          ]
+        }
+      ],
+      "dependsOn": [
+        "movable-physics",
+        "engine-timing",
+        "world-surfaces"
+      ]
+    },
+    {
+      "id": "player-view",
+      "name": "Player camera placement",
+      "purpose": "Builds the placement the player renders from: first-person eye with angle limits, interpolated view, third-person boom with ray probes, and cinematic camera states.",
+      "paths": [
+        "Sources/EntitiesMP/PlayerView.es",
+        "Sources/EntitiesMP/Player.es"
+      ],
+      "functions": [
+        {
+          "name": "SetCameraPosition",
+          "path": "Sources/EntitiesMP/PlayerView.es",
+          "lines": [
+            101,
+            212
+          ]
+        },
+        {
+          "name": "GetLerpedAbsoluteViewPlacement",
+          "path": "Sources/EntitiesMP/Player.es",
+          "lines": [
+            4694,
+            4766
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "movable-physics"
+      ]
+    },
+    {
+      "id": "player-animator",
+      "name": "View bob and body animation",
+      "purpose": "Animates the body and head, adds the banking roll and the damped eye and weapon bounce that make movement readable from the first-person view.",
+      "paths": [
+        "Sources/EntitiesMP/PlayerAnimator.es"
+      ],
+      "functions": [
+        {
+          "name": "AnimateBanking",
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "lines": [
+            860,
+            914
+          ]
+        },
+        {
+          "name": "AnimateSoftEyes",
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "lines": [
+            917,
+            948
+          ]
+        },
+        {
+          "name": "ChangeView",
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "lines": [
+            980,
+            1045
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "player-view"
+      ]
+    },
+    {
+      "id": "player-weapons",
+      "name": "Weapon firing logic",
+      "purpose": "Owns the weapon state, ammo tables, fire cadence, hitscan launches, projectile spawning and the sniper zoom ramp.",
+      "paths": [
+        "Sources/EntitiesMP/PlayerWeapons.es"
+      ],
+      "functions": [
+        {
+          "name": "FireSniperBullet",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2133,
+            2161
+          ]
+        },
+        {
+          "name": "FireOneBullet",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2163,
+            2171
+          ]
+        },
+        {
+          "name": "FireBullets",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2173,
+            2189
+          ]
+        },
+        {
+          "name": "FireMachineBullet",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2191,
+            2202
+          ]
+        },
+        {
+          "name": "FireGrenade",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2204,
+            2219
+          ]
+        },
+        {
+          "name": "FireRocket",
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "lines": [
+            2221,
+            2236
+          ]
+        }
+      ],
+      "dependsOn": [
+        "projectiles",
+        "engine-timing"
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Projectiles and bullet rays",
+      "purpose": "Spawns rockets, grenades and other flying bodies with their own speed, lifetime, bounce and splash settings, and traces instant bullet rays with per-pellet jitter.",
+      "paths": [
+        "Sources/EntitiesMP/Projectile.es",
+        "Sources/EntitiesMP/Bullet.es"
+      ],
+      "functions": [
+        {
+          "name": "CalcJitterTarget",
+          "path": "Sources/EntitiesMP/Bullet.es",
+          "lines": [
+            99,
+            121
+          ]
+        },
+        {
+          "name": "LaunchBullet",
+          "path": "Sources/EntitiesMP/Bullet.es",
+          "lines": [
+            136,
+            263
+          ]
+        },
+        {
+          "name": "PlayerRocket",
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "lines": [
+            964,
+            1000
+          ]
+        },
+        {
+          "name": "PlayerGrenade",
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "lines": [
+            1085,
+            1116
+          ]
+        }
+      ],
+      "dependsOn": [
+        "movable-physics",
+        "engine-timing"
+      ]
+    },
+    {
+      "id": "enemy-ai",
+      "name": "Base enemy behaviour",
+      "purpose": "Shared enemy decision layer: target selection and visibility, distance bands, firing delays, decision cadence and movement speeds toward the player.",
+      "paths": [
+        "Sources/EntitiesMP/EnemyBase.es"
+      ],
+      "functions": [
+        {
+          "name": "GetAttackMoveFrequency",
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "lines": [
+            1046,
+            1053
+          ]
+        },
+        {
+          "name": "SetSpeedsToDesiredPosition",
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "lines": [
+            1056,
+            1112
+          ]
+        },
+        {
+          "name": "SetDesiredMovement",
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "lines": [
+            1137,
+            1204
+          ]
+        }
+      ],
+      "dependsOn": [
+        "movable-physics",
+        "engine-timing"
+      ]
+    },
+    {
+      "id": "world-forces",
+      "name": "World gravity and launchers",
+      "purpose": "Defines the world default force and gravity marker behaviour that every mover samples, and the bounce pad that replaces an entrant velocity with a fixed launch.",
+      "paths": [
+        "Sources/EntitiesMP/WorldBase.es",
+        "Sources/EntitiesMP/GravityMarker.es",
+        "Sources/EntitiesMP/Bouncer.es"
+      ],
+      "functions": [
+        {
+          "name": "GetForce",
+          "path": "Sources/EntitiesMP/WorldBase.es",
+          "lines": [
+            1099,
+            1119
+          ]
+        },
+        {
+          "name": "GetForce",
+          "path": "Sources/EntitiesMP/GravityMarker.es",
+          "lines": [
+            70,
+            136
+          ]
+        },
+        {
+          "name": "JumpFromBouncer",
+          "path": "Sources/EntitiesMP/Bouncer.es",
+          "lines": [
+            23,
+            40
+          ]
+        }
+      ],
+      "dependsOn": [
+        "movable-physics"
+      ]
+    },
+    {
+      "id": "session-difficulty",
+      "name": "Difficulty presets",
+      "purpose": "Chooses one of five session presets and copies its damage, enemy movement, ammo and an unused enemy attack-rate multiplier into the session properties.",
+      "paths": [
+        "Sources/GameMP/Game.cpp",
+        "Sources/GameMP/SessionProperties.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SetDifficultyParameters",
+          "path": "Sources/GameMP/SessionProperties.cpp",
+          "lines": [
+            73,
+            123
+          ]
+        }
+      ],
+      "dependsOn": [
+        "engine-timing"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-run-and-acceleration",
+      "node": "player-movement",
+      "name": "Ground run speed and acceleration",
+      "summary": "Ground travel multiplies each input axis by a speed ceiling, caps the diagonal at the forward ceiling and blends velocity toward the request at separate accelerate and brake rates.",
+      "behavior": "Each movement axis, in the range minus one to one, is multiplied by an authored speed: 10 forward, 10 backward, 10 sideways and 11 for the vertical axis, all in metres per second. These are console-adjustable player variables. The walk button halves the forward and sideways requests. The result is clamped to the same limits, and the horizontal pair is scaled down whenever its length exceeds the forward ceiling, so a diagonal is not faster than a straight run. The request is then scaled again before it reaches the mover. Deathmatch multiplies both horizontal axes by 1.35, and the knife in deathmatch multiplies the whole request by 1.3. The speed power-up doubles both horizontal axes. So the 10 m/s ceiling holds only for solo and co-op play without the power-up. The mover moves the current velocity toward the request in a straight line and adds at most the acceleration each tick. When the requested speed is lower than the current speed, it uses the braking rate. On the ground both rates are also multiplied by the squared vertical component of the floor normal, the surface friction and the content control factor. With the defaults, full speed takes two ticks (0.1 s) and a stop from 10 m/s takes about 0.17 s.",
+      "constants": [
+        {
+          "name": "forward speed ceiling",
+          "value": 10,
+          "unit": "metres per second, per-axis request ceiling applied at the 20 Hz tick; deathmatch multiplies it by 1.35",
+          "source": "Sources/EntitiesMP/Player.es:381"
+        },
+        {
+          "name": "backward speed ceiling",
+          "value": 10,
+          "unit": "metres per second, per-axis request ceiling applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:382"
+        },
+        {
+          "name": "sideways speed ceiling",
+          "value": 10,
+          "unit": "metres per second, per-axis request ceiling applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:383"
+        },
+        {
+          "name": "vertical request ceiling",
+          "value": 11,
+          "unit": "metres per second, per-axis request ceiling applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:384"
+        },
+        {
+          "name": "ground acceleration",
+          "value": 100,
+          "unit": "metres per second squared, maximum velocity change toward the request, applied at the 20 Hz tick on a flat floor with friction 1",
+          "source": "Sources/EntitiesMP/Player.es:379"
+        },
+        {
+          "name": "ground deceleration",
+          "value": 60,
+          "unit": "metres per second squared, used instead of the acceleration when the requested speed is below the current speed, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:380"
+        },
+        {
+          "name": "deathmatch horizontal speed multiplier",
+          "value": 1.35,
+          "unit": "multiplier on the horizontal request, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4022"
+        },
+        {
+          "name": "deathmatch knife speed multiplier",
+          "value": 1.3,
+          "unit": "multiplier on the whole request while holding the knife, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4008"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 379
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 381
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 383
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3668
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3686
+        }
+      ],
+      "capabilities": [
+        "ground movement",
+        "speed ceiling per axis",
+        "diagonal speed clamp",
+        "separate accelerate and brake"
+      ],
+      "tags": [
+        "movement",
+        "locomotion",
+        "player"
+      ]
+    },
+    {
+      "id": "jump-arc-and-air-control",
+      "node": "player-movement",
+      "name": "Jump arc and airborne steering",
+      "summary": "A jump adds the upward request to the vertical velocity when a floor is under the feet. Air steering exists only for a short window after a jump, and a held button gives one jump.",
+      "behavior": "The jump request is the vertical movement axis, up to 11 m/s. When the entity has a floor reference and the floor is flat enough, the mover adds the request to the vertical velocity and records the jump time. A floor steeper than about 45 degrees still allows the jump if the entity has not moved vertically by more than 0.1 m/s for a quarter second. An entity without a floor can also jump when it has had no vertical movement for a quarter second. The player clears its jump permission when it detects take-off and sets it again only when the vertical request falls below 0.1, so holding the button gives one jump. The default world force is 30 m/s squared downward with a fall speed ceiling of 70 m/s, and levels can use other force presets. With a jump speed of 11 m/s and gravity of 30 m/s squared, the apex is about 2 m high and is reached after about 0.37 s. After a jump the entity steers in the air for 0.5 s with half of its acceleration and braking rates. Walking off a ledge gives no air steering, because the window starts at the jump. Bounce pads reuse this window with a longer time.",
+      "constants": [
+        {
+          "name": "upward jump speed",
+          "value": 11,
+          "unit": "metres per second, vertical request ceiling applied once at take-off",
+          "source": "Sources/EntitiesMP/Player.es:384"
+        },
+        {
+          "name": "default world gravity",
+          "value": 30,
+          "unit": "metres per second squared, default fixed downward force, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/WorldBase.es:910"
+        },
+        {
+          "name": "terminal fall speed",
+          "value": 70,
+          "unit": "metres per second, speed limit of the default downward force, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/WorldBase.es:910"
+        },
+        {
+          "name": "post-jump control window",
+          "value": 0.5,
+          "unit": "seconds after a jump during which air steering is allowed; the window is checked at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:276"
+        },
+        {
+          "name": "airborne steering multiplier",
+          "value": 0.5,
+          "unit": "multiplier on acceleration and braking while steering in the air; applied at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:277"
+        },
+        {
+          "name": "steep-slope jump delay",
+          "value": 0.25,
+          "unit": "seconds without significant vertical movement before a jump is allowed on a steep floor; checked at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:2349"
+        },
+        {
+          "name": "jump-from slope ceiling cosine",
+          "value": 0.7071067811865,
+          "unit": "cosine of the steepest floor that allows an immediate jump, equal to 45 degrees; a default that surface types can override, checked at the 20 Hz tick",
+          "source": "Sources/Engine/World/WorldSettings.h:66"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2348
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2359
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4273
+        },
+        {
+          "path": "Sources/EntitiesMP/WorldBase.es",
+          "line": 910
+        }
+      ],
+      "capabilities": [
+        "variable jump impulse from input",
+        "gravity arc",
+        "reduced air control",
+        "slope-limited jump",
+        "consecutive jump block"
+      ],
+      "tags": [
+        "jump",
+        "physics-feel",
+        "movement"
+      ]
+    },
+    {
+      "id": "stairs-and-ledge-tolerance",
+      "node": "movable-physics",
+      "name": "Stairs, step-up and ledge tolerance",
+      "summary": "The mover steps up low obstacles on stairs. A slow-walking player stops at a ledge, while a running player walks off it and falls.",
+      "behavior": "When a mostly horizontal move is blocked by a stair-flagged surface, or by any surface steeper than its climb slope (45 degrees by default), the mover tries three probes in order. It goes up by the step height, forward by the horizontal move and down by the step height. If all three fit, the entity ends on the step. The default step height is 1 m. A surface can set a stair value. A positive value raises the step height to at least that value. Zero turns stepping off for that surface. A negative value takes the smaller of the two, as the header comment says. How a negative value changes the probe direction is not verified. Separately, when the forward and sideways requests are both below about half of the full speed, the player sets a 1.5 m step-down check. The walk button halves the request, so walking is below the gate. With this check, the mover refuses any move that would leave no floor polygon within 1.5 m below the new position and sends a would-fall event. So a slow walker stops at a ledge. At run speed the check is off (the value is minus one), so the player walks off the ledge. The player enters the fall state only after half a second without a floor reference, so a short drop keeps the ground state.",
+      "constants": [
+        {
+          "name": "step-up height",
+          "value": 1,
+          "unit": "metres per step, entity default applied once per blocked move at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:282"
+        },
+        {
+          "name": "step-down check when running",
+          "value": -1,
+          "unit": "metres, a negative value turns the check off; set at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:283"
+        },
+        {
+          "name": "step-down tolerance while walking",
+          "value": 1.5,
+          "unit": "metres below the new position that must hold a floor polygon, set at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:3674"
+        },
+        {
+          "name": "walking gate divisor",
+          "value": 1.99,
+          "unit": "divisor of the speed ceiling; requests below ceiling over 1.99 count as walking, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:3671"
+        },
+        {
+          "name": "surface stair height modifier",
+          "value": 1,
+          "unit": "default stair value of a surface, used with the step-up height when a stair move is tried at the 20 Hz tick",
+          "source": "Sources/Engine/World/WorldSettings.h:64"
+        },
+        {
+          "name": "unsupported time before falling",
+          "value": 0.5,
+          "unit": "seconds without a floor reference before the fall state, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4066"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 1300
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3671
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3679
+        },
+        {
+          "path": "Sources/Engine/World/WorldSettings.h",
+          "line": 64
+        }
+      ],
+      "capabilities": [
+        "automatic step-up",
+        "step-down snapping",
+        "fall state trigger"
+      ],
+      "tags": [
+        "collision",
+        "locomotion",
+        "level-traversal"
+      ]
+    },
+    {
+      "id": "crouch-stance",
+      "node": "player-movement",
+      "name": "Crouch stance",
+      "summary": "Holding down crouches into a smaller collision box and a lower eye. It divides travel speed by 2.5 and blocks jumping.",
+      "behavior": "The player wants to crouch when the vertical request is below minus 0.01, the player is not in swimmable water and has not been without support for half a second. The state changes only if the smaller collision box fits at the current place. Standing up needs the standing box to fit as well, so a low ceiling keeps the player crouched. The eye point drops from 1.9 m to 0.7 m above the entity origin. These heights are console-adjustable player variables. While crouched, the whole movement request is divided by 2.5 and the vertical part is cleared. So a crouched run reaches about 4 m/s in solo play and cannot start a jump.",
+      "constants": [
+        {
+          "name": "standing eye height",
+          "value": 1.9,
+          "unit": "metres above the entity origin, applied when the stance changes at the 20 Hz tick; console-adjustable default",
+          "source": "Sources/EntitiesMP/Player.es:385"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 0.7,
+          "unit": "metres above the entity origin, applied when the stance changes at the 20 Hz tick; console-adjustable default",
+          "source": "Sources/EntitiesMP/Player.es:386"
+        },
+        {
+          "name": "crouch speed divisor",
+          "value": 2.5,
+          "unit": "divisor on all translation axes, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4229"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 386
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4115
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4227
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4231
+        }
+      ],
+      "capabilities": [
+        "crouch collision box",
+        "eye height change",
+        "crouch speed penalty",
+        "crouch blocks jumping"
+      ],
+      "tags": [
+        "movement",
+        "stance",
+        "player"
+      ]
+    },
+    {
+      "id": "swim-and-dive",
+      "node": "player-movement",
+      "name": "Swimming and diving",
+      "summary": "Immersion in swimmable content switches the player between swim and dive. Swim floats up, dive is neutral, and in dive the forward request follows the view pitch.",
+      "behavior": "Each tick the player checks the content above and below its body. If the lower content is swimmable and at least half immersed, or the upper content is swimmable, the player is in water. Dive is chosen when the upper content is swimmable or the immersion is at least 0.99. Otherwise the player swims. In dive the forward request is rotated by the view pitch, so looking down and pushing forward descends. In swim the same rotation applies only when the view pitch is at or below minus 30 degrees. The sign convention is not verified. The pitch limit of the view is 90 degrees, so this threshold is reachable and a swimmer normally keeps a horizontal course. Vertical speed is halved in both states. The vertical request is ignored for half a second after the swim state starts and after the player leaves water. Body density is 500 while swimming and during the move from swim into dive, and 1000 otherwise. The mover computes buoyancy as one minus the density ratio of the content. So density 500 gives a body that floats up, and density 1000 gives neutral buoyancy, as the source comment says water has the same density. The content also scales the requested speed and the control strength. The eye is 0.4 m above the origin when swimming and 0 m when diving.",
+      "constants": [
+        {
+          "name": "swim eye height",
+          "value": 0.4,
+          "unit": "metres above the entity origin, set when the swim state starts at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:387"
+        },
+        {
+          "name": "dive eye height",
+          "value": 0,
+          "unit": "metres above the entity origin, set when the dive state starts at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:388"
+        },
+        {
+          "name": "partial immersion threshold",
+          "value": 0.5,
+          "unit": "immersion fraction of the lower content for water entry, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4031"
+        },
+        {
+          "name": "full immersion threshold",
+          "value": 0.99,
+          "unit": "immersion fraction at which the player dives, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4030"
+        },
+        {
+          "name": "swim view-pitch threshold",
+          "value": -30,
+          "unit": "degrees of view pitch at or below which the swim state rotates the forward request, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4247"
+        },
+        {
+          "name": "swimming body density",
+          "value": 500,
+          "unit": "kilograms per cubic metre while swimming, set at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4208"
+        },
+        {
+          "name": "diving body density",
+          "value": 1000,
+          "unit": "kilograms per cubic metre when not swimming, set at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4210"
+        },
+        {
+          "name": "water vertical speed factor",
+          "value": 0.5,
+          "unit": "multiplier on vertical translation in swim and dive, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4259"
+        },
+        {
+          "name": "water entry grace period",
+          "value": 0.5,
+          "unit": "seconds without vertical control after the swim state starts or after leaving water, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:4263"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4030
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4208
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4257
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2100
+        }
+      ],
+      "capabilities": [
+        "swim state",
+        "dive state",
+        "buoyancy by density",
+        "water entry grace"
+      ],
+      "tags": [
+        "movement",
+        "water",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "fixed-tick-simulation",
+      "node": "engine-timing",
+      "name": "Fixed tick simulation",
+      "summary": "The simulation advances in fixed ticks of 0.05 s. Per-tick turn deltas are converted to rates, rendering interpolates between ticks, and each velocity axis is clamped to 300 m/s.",
+      "behavior": "Game logic, physics and entity code advance in fixed ticks of one twentieth of a second, so a tick is 50 milliseconds and a per-update value in this map covers one twentieth of a second. The player turns an accumulated look angle into a per-tick delta and divides it by the tick length to get a rate in degrees per second. Rendering interpolates between the previous and the current tick to hide the step. After each move, the applied velocity is clamped on each axis separately to 300 m/s. The source comment says this keeps a fast entity from outrunning the collision grid and slowing the physics.",
+      "constants": [
+        {
+          "name": "simulation rate",
+          "value": 20,
+          "unit": "ticks per second, one tick every 0.05 seconds",
+          "source": "Sources/Engine/Base/Timer.cpp:54"
+        },
+        {
+          "name": "absolute speed clamp",
+          "value": 300,
+          "unit": "metres per second on each velocity axis separately, applied at every 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:2070"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/Engine/Base/Timer.cpp",
+          "line": 54
+        },
+        {
+          "path": "Sources/Engine/Base/Timer.cpp",
+          "line": 365
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3650
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2070
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "render interpolation",
+        "speed clamp"
+      ],
+      "tags": [
+        "timing",
+        "simulation",
+        "determinism"
+      ]
+    },
+    {
+      "id": "first-person-view-limits",
+      "node": "player-view",
+      "name": "First-person view limits",
+      "summary": "The first-person camera is a body-relative eye with pitch, heading and roll limits, a 90 degree default field of view and a quarter-metre front clip. Console variables set the field of view, the clip and the button turn rates.",
+      "behavior": "The eye uses a field of view of 90 degrees by default. The player can change it between 1 and 160 degrees in solo play, and deathmatch forces 90. The front clip default is 0.25 m, adjustable between 0.05 and 0.5, and it is shortened by a third while swimming. Pitch is limited to 90 degrees and banking to 45 degrees. The heading of the view relative to the body is limited to 45 degrees. While the player is moving, the body turns to the view heading and the relative heading is reset to zero. While standing, the head may turn up to 45 degrees either way and the body turns only enough to stay inside that limit. Held turn buttons add 300 degrees per second horizontally and 150 per second vertically, as defaults. Zoom with the scoped rifle scales the look rotation by the ratio of the current to the maximum field of view.",
+      "constants": [
+        {
+          "name": "horizontal field of view",
+          "value": 90,
+          "unit": "degrees, default of a console variable; applied each rendered frame, rate unverified",
+          "source": "Sources/EntitiesMP/Player.es:394"
+        },
+        {
+          "name": "pitch limit",
+          "value": 90,
+          "unit": "degrees from level, clamped at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:241"
+        },
+        {
+          "name": "body-relative heading limit",
+          "value": 45,
+          "unit": "degrees, clamped at the 20 Hz tick while standing",
+          "source": "Sources/EntitiesMP/Player.es:240"
+        },
+        {
+          "name": "banking limit",
+          "value": 45,
+          "unit": "degrees, clamped at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:242"
+        },
+        {
+          "name": "front clip distance",
+          "value": 0.25,
+          "unit": "metres, default of a console variable; applied each rendered frame, rate unverified",
+          "source": "Sources/EntitiesMP/Player.es:393"
+        },
+        {
+          "name": "button turn speed, horizontal",
+          "value": 300,
+          "unit": "degrees per second, console-adjustable default; accumulated per tick as rate times 0.05",
+          "source": "Sources/EntitiesMP/Player.es:423"
+        },
+        {
+          "name": "button turn speed, pitch",
+          "value": 150,
+          "unit": "degrees per second, console-adjustable default; accumulated per tick as rate times 0.05",
+          "source": "Sources/EntitiesMP/Player.es:424"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 240
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 389
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4305
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 4694
+        }
+      ],
+      "capabilities": [
+        "first-person camera",
+        "pitch and heading clamps",
+        "button turning",
+        "near-plane clip"
+      ],
+      "tags": [
+        "camera",
+        "controls",
+        "player"
+      ]
+    },
+    {
+      "id": "third-person-boom-collision",
+      "node": "player-view",
+      "name": "Third-person boom and camera collision",
+      "summary": "The third-person camera sits on a 4.2 m boom behind the player, looks at the crosshair hit point and shortens the boom with five probe rays when level geometry intrudes.",
+      "behavior": "Third-person mode raises the view point by one metre, tilts the view down by 12 degrees and puts the camera 4.2 m behind the player along that view direction. Five rays go from the player centre to the boom end and to points one metre above, below, left and right of it. Any ray that hits shortens the boom to the hit distance minus half a metre. A ray that hits a level polygon also computes a back-off. The back-off is a quarter metre scaled by how directly the ray meets the polygon plane, and the largest value is subtracted from the boom. The boom never goes below zero. The camera then turns to look at the crosshair hit point of the weapon. The death camera uses a 3.5 m boom and does not follow the crosshair. The placement is recomputed from the player's update loop; its rate is unverified.",
+      "constants": [
+        {
+          "name": "third-person boom length",
+          "value": 4.2,
+          "unit": "metres, applied each camera placement update, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:112"
+        },
+        {
+          "name": "third-person boom rise",
+          "value": 1,
+          "unit": "metres added to the view point height, applied each camera placement update, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:111"
+        },
+        {
+          "name": "third-person pitch offset",
+          "value": 12,
+          "unit": "degrees subtracted from the view pitch, applied each camera placement update, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:110"
+        },
+        {
+          "name": "probe ray count",
+          "value": 5,
+          "unit": "rays per camera placement update, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:145"
+        },
+        {
+          "name": "camera clearance offset",
+          "value": -0.5,
+          "unit": "metres added to the probe hit distance, applied per hit ray, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:155"
+        },
+        {
+          "name": "hit-plane back-off factor",
+          "value": 0.25,
+          "unit": "metres of back-off at most, scaled by the cosine between ray and polygon plane; applied per hit ray, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:160"
+        },
+        {
+          "name": "death camera boom length",
+          "value": 3.5,
+          "unit": "metres, applied each camera placement update, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerView.es:116"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/PlayerView.es",
+          "line": 108
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerView.es",
+          "line": 136
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerView.es",
+          "line": 166
+        }
+      ],
+      "capabilities": [
+        "third-person camera",
+        "camera collision",
+        "probe rays",
+        "death camera"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "player"
+      ]
+    },
+    {
+      "id": "view-bob-and-banking",
+      "node": "player-animator",
+      "name": "View bob and banking",
+      "summary": "Movement rolls the camera by a small amount and bounces the eye through a damped spring. The spring has tighter limits in water, and a player option turns the banking off.",
+      "behavior": "While the player moves, a walk phase goes back and forth between minus one and one in steps of 0.35 per tick. A sidestep phase grows by 0.4 per tick up to one in the direction of the strafe. When movement stops, the walk phase falls back by 0.1 per tick and the sidestep phase by 0.4 per tick. The camera roll is the squared walk phase with its sign, times 0.25 degrees, plus the sidestep phase in degrees. The sum is clamped to 5 degrees. Because the largest possible roll is about 1.25 degrees, the clamp is never reached. Eye and weapon heights run a damped spring with a factor of 0.4 against the vertical motion of the body. The offset limits are 0.1 m up and 0.4 m down on the ground and 0.1 m either way in water. These are console-adjustable variables. For half a second after a jump, upward body motion is ignored by the spring, so the eye does not dip as the body rises. Swimming adds a slow wobble of up to 2 degrees on all three view axes. A per-player setting turns the banking off.",
+      "constants": [
+        {
+          "name": "walk banking step",
+          "value": 0.35,
+          "unit": "normalised banking units per tick, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:865"
+        },
+        {
+          "name": "sidestep banking step",
+          "value": 0.4,
+          "unit": "normalised banking units per tick, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:878"
+        },
+        {
+          "name": "banking return step",
+          "value": 0.1,
+          "unit": "normalised banking units per tick while the walk phase returns to zero, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:895"
+        },
+        {
+          "name": "walk banking scale",
+          "value": 0.25,
+          "unit": "degrees of roll at the largest walk phase, applied each rendered frame, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:986"
+        },
+        {
+          "name": "banking clamp",
+          "value": 5,
+          "unit": "degrees of camera roll, a limit that normal movement does not reach, applied each rendered frame, rate unverified",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:988"
+        },
+        {
+          "name": "view bounce damping",
+          "value": 0.4,
+          "unit": "spring factor per tick, console-adjustable default, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:389"
+        },
+        {
+          "name": "bounce limit, upward",
+          "value": 0.1,
+          "unit": "metres, console-adjustable default, clamped at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:390"
+        },
+        {
+          "name": "bounce limit, downward",
+          "value": 0.4,
+          "unit": "metres, console-adjustable default, clamped at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:391"
+        },
+        {
+          "name": "bounce limit in water",
+          "value": 0.1,
+          "unit": "metres in either direction, console-adjustable default, clamped at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Player.es:392"
+        },
+        {
+          "name": "post-jump bob mask offset",
+          "value": -0.5,
+          "unit": "seconds back from the current tick, forming the half-second window that ignores upward body motion; checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerAnimator.es:924"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "line": 860
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "line": 917
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "line": 935
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerAnimator.es",
+          "line": 986
+        }
+      ],
+      "capabilities": [
+        "camera roll",
+        "damped view bounce",
+        "water-limited bob",
+        "bob disable option"
+      ],
+      "tags": [
+        "camera",
+        "game-feel",
+        "animation"
+      ]
+    },
+    {
+      "id": "hitscan-spread-and-pellets",
+      "node": "player-weapons",
+      "name": "Hitscan bullets, spread and pellets",
+      "summary": "Hitscan weapons trace a ray from the weapon position with a weapon-specific range and damage. Machine guns jitter inside a sphere that is tighter in co-op, and the shotgun fires seven pellets in a fixed pattern.",
+      "behavior": "A bullet is an instant ray that stops at the first blocking polygon or model. Each weapon sets a test radius for the ray, so a wider ray hits models more easily than the level behind them. The sidearm ray reaches 500 m, uses a radius of 0.1 m and deals 10 damage in co-op and 20 in deathmatch. The single shotgun fires 7 pellets of 10 damage each at 500 m. A fixed pattern spreads the pellets over 0.2 of the range at the target point, and each pellet gets a random offset of 0.03 times that spread distance. The pellet ray radius is 0.1 m in co-op and 0.3 m in deathmatch. The automatic rifle reaches 500 m and the minigun 750 m, both with 10 damage per bullet. Their random offset is a point inside a sphere around the target. The sphere radius is 1 percent of the range in co-op and 3 percent in deathmatch. In co-op these weapons use a ray radius of 0.5 m, and in deathmatch 0.",
+      "constants": [
+        {
+          "name": "sidearm range",
+          "value": 500,
+          "unit": "metres of ray length, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4111"
+        },
+        {
+          "name": "sidearm damage in co-op",
+          "value": 10,
+          "unit": "damage per hit, applied once per shot; deathmatch uses 20",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4112"
+        },
+        {
+          "name": "sidearm damage in deathmatch",
+          "value": 20,
+          "unit": "damage per hit, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4112"
+        },
+        {
+          "name": "shotgun pellet count",
+          "value": 7,
+          "unit": "pellets per shot, fired once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4279"
+        },
+        {
+          "name": "shotgun pattern stretch",
+          "value": 0.2,
+          "unit": "fraction of range that scales the fixed pellet pattern at the target point, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4279"
+        },
+        {
+          "name": "shotgun pellet jitter",
+          "value": 0.03,
+          "unit": "fraction of the stretched range, random offset per pellet axis, applied once per pellet",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4279"
+        },
+        {
+          "name": "automatic rifle range",
+          "value": 500,
+          "unit": "metres of ray length, applied once per bullet",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4506"
+        },
+        {
+          "name": "automatic rifle jitter in co-op",
+          "value": 0.01,
+          "unit": "fraction of range as sphere radius around the target, applied once per bullet; deathmatch uses 0.03",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4506"
+        },
+        {
+          "name": "automatic rifle jitter in deathmatch",
+          "value": 0.03,
+          "unit": "fraction of range as sphere radius around the target, applied once per bullet",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4506"
+        },
+        {
+          "name": "minigun range",
+          "value": 750,
+          "unit": "metres of ray length, applied once per bullet",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4720"
+        },
+        {
+          "name": "shotgun ray radius in co-op",
+          "value": 0.1,
+          "unit": "metres of ray test radius, applied once per shot; deathmatch uses 0.3",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:2177"
+        },
+        {
+          "name": "shotgun ray radius in deathmatch",
+          "value": 0.3,
+          "unit": "metres of ray test radius, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:2177"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 2163
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 2173
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4279
+        },
+        {
+          "path": "Sources/EntitiesMP/Bullet.es",
+          "line": 136
+        },
+        {
+          "path": "Sources/EntitiesMP/Bullet.es",
+          "line": 144
+        }
+      ],
+      "capabilities": [
+        "hitscan raycast",
+        "spread cone",
+        "pellet pattern",
+        "co-op accuracy bonus"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "shooting"
+      ]
+    },
+    {
+      "id": "sniper-zoom",
+      "node": "player-weapons",
+      "name": "Sniper zoom and scoped shot",
+      "summary": "The scoped rifle trades field of view for reach and damage. A scope toggle jumps to a first zoom, held use ramps the field of view down by 2 degrees per tick, and discrete steps move between four stops.",
+      "behavior": "Pressing use with nothing to use under the cursor toggles the scope while the sniper is active. Entering sets the field of view to 53.1 degrees, and leaving resets it to 90. While the scope is on and the use button is held, the field of view drops by 2 degrees each tick down to 14.2 degrees. Releasing the button keeps the current value. The separate zoom input and the weapon-switch input step between four stops at 90, 53.1, 28 and 14.2 degrees, which are 1, 2, 4 and 6 times zoom. Going back to 90 turns the scope off. While zoomed, look rotation is multiplied by the ratio of the current to the maximum field of view. A scoped shot has no aim error, reaches 1500 m and deals 300 damage in co-op and 90 in deathmatch. A shot without the scope reaches 1000 m and deals 75 in co-op and 30 in deathmatch. It gets a random aim error of up to 2.5 degrees on each axis, from an imprecision value of 5 degrees centered on the aim.",
+      "constants": [
+        {
+          "name": "maximum field of view",
+          "value": 90,
+          "unit": "degrees, unzoomed value; set when the scope turns off",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:610"
+        },
+        {
+          "name": "first scope field of view",
+          "value": 53.1,
+          "unit": "degrees, set once when the scope turns on",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:614"
+        },
+        {
+          "name": "minimum field of view",
+          "value": 14.2,
+          "unit": "degrees, a six times zoom, reached by the ramp at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:611"
+        },
+        {
+          "name": "zoom step",
+          "value": 2,
+          "unit": "degrees per tick while use is held, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:612"
+        },
+        {
+          "name": "discrete zoom levels",
+          "value": 4,
+          "unit": "preset stops, evaluated per zoom input",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:222"
+        },
+        {
+          "name": "scoped range",
+          "value": 1500,
+          "unit": "metres of ray length, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4566"
+        },
+        {
+          "name": "scoped damage in co-op",
+          "value": 300,
+          "unit": "damage per shot, applied once per shot; deathmatch uses 90",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4567"
+        },
+        {
+          "name": "scoped damage in deathmatch",
+          "value": 90,
+          "unit": "damage per shot, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4567"
+        },
+        {
+          "name": "hip-fire range",
+          "value": 1000,
+          "unit": "metres of ray length, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4570"
+        },
+        {
+          "name": "hip-fire damage in co-op",
+          "value": 75,
+          "unit": "damage per shot, applied once per shot; deathmatch uses 30",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4571"
+        },
+        {
+          "name": "hip-fire damage in deathmatch",
+          "value": 30,
+          "unit": "damage per shot, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4571"
+        },
+        {
+          "name": "hip-fire imprecision",
+          "value": 5,
+          "unit": "degrees of total angular spread on each axis, centered on the aim, applied once per shot",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4571"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4566
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4570
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3637
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3707
+        }
+      ],
+      "capabilities": [
+        "zoom input ramp",
+        "aim sensitivity scaling",
+        "range and damage trade",
+        "discrete zoom presets"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "camera"
+      ]
+    },
+    {
+      "id": "rocket-and-grenade-flight",
+      "node": "projectiles",
+      "name": "Rocket and grenade flight",
+      "summary": "Explosives differ by flight. A propelled rocket flies straight and deals direct and blast damage, and a grenade bounces and explodes on a three second fuse. The grenade speed grows with the time the fire button is held.",
+      "behavior": "The rocket starts at 30 m/s along the aim line and flies under its own power for up to 30 seconds. On contact, a touched entity takes the direct hit damage, which is 100 in co-op and 75 in deathmatch. The blast then deals full damage inside 4 m, fading to nothing at 8 m. The blast damage is 50 in co-op and 75 in deathmatch. The rocket can hurt its own shooter. The grenade is a free body. The speed at launch is 20 m/s plus 5 m/s for each tick (0.05 s) that the fire button was held, up to 0.75 s, and the launch adds an upward 5 m/s in the local frame. The grenade bounces and keeps 0.75 of the normal and 0.6 of the parallel velocity at each bounce. The mover applies 25 m/s squared of braking toward rest while the grenade has a floor reference, scaled by the surface friction. In the air it does not brake. A grenade explodes three seconds after launch with 100 blast damage and the same 4 m and 8 m radii, and a direct hit deals 75.",
+      "constants": [
+        {
+          "name": "rocket launch velocity, local forward",
+          "value": -30,
+          "unit": "metres per second along the forward axis, applied once at launch (negative is forward)",
+          "source": "Sources/EntitiesMP/Projectile.es:972"
+        },
+        {
+          "name": "rocket lifetime",
+          "value": 30,
+          "unit": "seconds, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Projectile.es:977"
+        },
+        {
+          "name": "rocket impact damage in co-op",
+          "value": 100,
+          "unit": "damage per direct hit, applied once per hit",
+          "source": "Sources/EntitiesMP/Projectile.es:980"
+        },
+        {
+          "name": "rocket blast damage in co-op",
+          "value": 50,
+          "unit": "damage at full strength inside the hot spot, applied once per explosion",
+          "source": "Sources/EntitiesMP/Projectile.es:981"
+        },
+        {
+          "name": "rocket damage in deathmatch",
+          "value": 75,
+          "unit": "damage for both the direct hit and the blast, applied once per hit or explosion",
+          "source": "Sources/EntitiesMP/Projectile.es:985"
+        },
+        {
+          "name": "explosion hot spot radius",
+          "value": 4,
+          "unit": "metres of full blast damage, evaluated once per explosion",
+          "source": "Sources/EntitiesMP/Projectile.es:988"
+        },
+        {
+          "name": "explosion fall-off radius",
+          "value": 8,
+          "unit": "metres at which blast damage reaches zero, evaluated once per explosion",
+          "source": "Sources/EntitiesMP/Projectile.es:989"
+        },
+        {
+          "name": "grenade base speed",
+          "value": 20,
+          "unit": "metres per second at launch, applied once at launch",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:2216"
+        },
+        {
+          "name": "grenade speed per charge unit",
+          "value": 5,
+          "unit": "metres per second per 0.05 s tick of held fire, up to 0.75 s, applied once at launch",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:2216"
+        },
+        {
+          "name": "grenade charge time limit",
+          "value": 0.75,
+          "unit": "seconds of held fire that count toward the grenade speed, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4919"
+        },
+        {
+          "name": "grenade fuse time",
+          "value": 3,
+          "unit": "seconds after launch, checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Projectile.es:1100"
+        },
+        {
+          "name": "grenade normal bounce damping",
+          "value": 0.75,
+          "unit": "velocity fraction kept along the surface normal per bounce",
+          "source": "Sources/EntitiesMP/Projectile.es:1095"
+        },
+        {
+          "name": "grenade parallel bounce damping",
+          "value": 0.6,
+          "unit": "velocity fraction kept along the surface per bounce",
+          "source": "Sources/EntitiesMP/Projectile.es:1096"
+        },
+        {
+          "name": "grenade braking",
+          "value": 25,
+          "unit": "metres per second squared toward rest while supported by a floor, applied at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Projectile.es:1107"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "line": 972
+        },
+        {
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "line": 985
+        },
+        {
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "line": 1093
+        },
+        {
+          "path": "Sources/EntitiesMP/Projectile.es",
+          "line": 1101
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 2216
+        }
+      ],
+      "capabilities": [
+        "propelled projectile",
+        "free projectile",
+        "bounce damping",
+        "timed fuse",
+        "splash falloff"
+      ],
+      "tags": [
+        "combat",
+        "projectiles",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "impact-damage-and-armor",
+      "node": "player-movement",
+      "name": "Impact damage and armour split",
+      "summary": "A move that loses more than 20 m/s in one tick causes impact damage equal to the excess. A player splits each hit two thirds to armour and one third to health.",
+      "behavior": "Each tick the mover compares the intended and the applied velocity. If the change is more than the collision speed limit, the entity takes impact damage of (change minus limit) divided by limit, times the damage factor. With the defaults of 20 and 20, the damage equals the excess in metres per second. Both values are adjustable per entity, and the grenade uses 45 and 10. For a player, the incoming damage is first scaled by the difficulty multiplier. It is applied when the multiplier is 1 or below, or when the damage comes from another entity, so self damage is not raised on hard levels. Armour then takes two thirds of every hit, except drowning, and health takes the remaining third. If the armour drops below zero, the shortfall is added to the health damage. Drowning damage skips armour. Knock-back uses a separate path. It clamps the damage to 5000, adds half again for explosion and impact types, divides it by ten for drowning, chainsaw and close-range hits, and scales the push by 200 over the mass.",
+      "constants": [
+        {
+          "name": "impact speed threshold",
+          "value": 20,
+          "unit": "metres per second of velocity change per tick that is free of damage, default per entity, evaluated at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:287"
+        },
+        {
+          "name": "impact damage factor",
+          "value": 20,
+          "unit": "damage per limit-sized excess of velocity change, default per entity, evaluated at the 20 Hz tick",
+          "source": "Sources/Engine/Classes/MovableEntity.es:288"
+        },
+        {
+          "name": "armour share",
+          "value": 2,
+          "unit": "thirds of each hit taken by armour, applied once per hit",
+          "source": "Sources/EntitiesMP/Player.es:3120"
+        },
+        {
+          "name": "armour share divisor",
+          "value": 3,
+          "unit": "divisor applied to the damage to find the armour share, applied once per hit",
+          "source": "Sources/EntitiesMP/Player.es:3120"
+        },
+        {
+          "name": "knock damage clamp",
+          "value": 5000,
+          "unit": "damage cap used only for the knock-back calculation, applied once per hit",
+          "source": "Sources/EntitiesMP/Player.es:2930"
+        },
+        {
+          "name": "explosion knock multiplier",
+          "value": 1.5,
+          "unit": "multiplier on knock damage for explosion and impact types, applied once per hit",
+          "source": "Sources/EntitiesMP/Player.es:2935"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2972
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 2975
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 3120
+        },
+        {
+          "path": "Sources/EntitiesMP/Player.es",
+          "line": 2930
+        }
+      ],
+      "capabilities": [
+        "impact damage",
+        "armour absorption",
+        "difficulty damage scaling",
+        "knock-back scaling"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "survival"
+      ]
+    },
+    {
+      "id": "difficulty-presets",
+      "node": "session-difficulty",
+      "name": "Difficulty presets",
+      "summary": "Five presets scale incoming player damage, enemy movement and fire pacing, and ammo pickups. An enemy attack-rate value is stored but never read, and fire pacing follows the movement value.",
+      "behavior": "A session picks one of five presets: tourist, easy, normal, hard and extreme. Incoming damage to the player is multiplied by 0.25, 0.5, 1, 1.5 and 2. Enemy run and turn speeds are multiplied by 1, 1, 1, 1.25 and 1.25. Enemy fire times are divided by the same movement multiplier, because the enemy code reads the movement value for both. A separate attack-rate array of 0.75, 0.75, 1, 2 and 2 is copied into the session but no code reads it. Ammo pickups are multiplied by 2, 2, 1, 1 and 2. The tourist preset uses the easy spawn flags. The mental option sets a separate flag and uses the hard parameters. All five arrays are console variables, so a mod can change them. Weapon damage is not scaled.",
+      "constants": [
+        {
+          "name": "tourist incoming damage multiplier",
+          "value": 0.25,
+          "unit": "multiplier on damage to the player, applied once per hit",
+          "source": "Sources/GameMP/Game.cpp:81"
+        },
+        {
+          "name": "extreme incoming damage multiplier",
+          "value": 2,
+          "unit": "multiplier on damage to the player, applied once per hit",
+          "source": "Sources/GameMP/Game.cpp:81"
+        },
+        {
+          "name": "hard enemy movement speed",
+          "value": 1.25,
+          "unit": "multiplier on enemy run and turn speed, also used to divide enemy fire times; applied once when an enemy starts",
+          "source": "Sources/GameMP/Game.cpp:83"
+        },
+        {
+          "name": "tourist ammo quantity",
+          "value": 2,
+          "unit": "multiplier on ammo picked up, applied once per pickup",
+          "source": "Sources/GameMP/Game.cpp:80"
+        },
+        {
+          "name": "unused tourist enemy attack rate",
+          "value": 0.75,
+          "unit": "stored in the session but never read by enemy code, so it has no effect",
+          "source": "Sources/GameMP/Game.cpp:82"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/GameMP/Game.cpp",
+          "line": 81
+        },
+        {
+          "path": "Sources/GameMP/Game.cpp",
+          "line": 82
+        },
+        {
+          "path": "Sources/GameMP/Game.cpp",
+          "line": 83
+        },
+        {
+          "path": "Sources/GameMP/SessionProperties.cpp",
+          "line": 88
+        },
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 1874
+        }
+      ],
+      "capabilities": [
+        "difficulty presets",
+        "enemy pace scaling",
+        "damage scaling",
+        "ammo scaling"
+      ],
+      "tags": [
+        "balance",
+        "difficulty",
+        "session"
+      ]
+    },
+    {
+      "id": "enemy-engagement-bands",
+      "node": "enemy-ai",
+      "name": "Enemy engagement bands",
+      "summary": "Enemies fight in two distance bands. They attack only toward a 45 degree front cone and decide their movement more often when close. Each enemy type may change the base values.",
+      "behavior": "The base enemy class has an attack band of 50 m and a close band of 10 m, with fire times of 2 s at range and 1 s up close. Enemy types can override all four values. Inside the close band, an enemy with the player inside a 45 degree front cone uses the contact attack. Otherwise, if the player is inside the attack band and inside a 45 degree front cone, the enemy fires. The next shot time is the fire time of the band times one plus up to one third of random extra. A failed attempt tries again after a quarter second. In the base class the movement decision runs every half second outside the close band and every quarter second inside it. An enemy advances only when the player is inside a 45 degree cone and farther than the stop distance, which is zero by default. When it cannot advance, it turns in place if the player is more than 15 degrees off the facing, and otherwise it stands. The difficulty movement multiplier scales the run speeds, and the fire times are divided by the same value.",
+      "constants": [
+        {
+          "name": "base attack band distance",
+          "value": 50,
+          "unit": "metres from the target, enemy base default; types can override it; checked each shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:92"
+        },
+        {
+          "name": "base close band distance",
+          "value": 10,
+          "unit": "metres from the target, enemy base default; types can override it; checked each shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:93"
+        },
+        {
+          "name": "outer band fire interval",
+          "value": 2,
+          "unit": "seconds between shots, enemy base default before random extra and difficulty scaling; checked each shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:94"
+        },
+        {
+          "name": "close band fire interval",
+          "value": 1,
+          "unit": "seconds between shots, enemy base default before random extra and difficulty scaling; checked each shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:95"
+        },
+        {
+          "name": "firing cone half-angle",
+          "value": 45,
+          "unit": "degrees from the facing, checked each shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:2614"
+        },
+        {
+          "name": "advance cone half-angle",
+          "value": 45,
+          "unit": "degrees from the facing, checked at each movement decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:1066"
+        },
+        {
+          "name": "rotate-only cone half-angle",
+          "value": 15,
+          "unit": "degrees from the facing, checked at each movement decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:1090"
+        },
+        {
+          "name": "failed shot retry delay",
+          "value": 0.25,
+          "unit": "seconds of game time, applied after a failed shot decision",
+          "source": "Sources/EntitiesMP/EnemyBase.es:2631"
+        },
+        {
+          "name": "decision tick at range",
+          "value": 0.5,
+          "unit": "seconds between movement decisions outside the close band",
+          "source": "Sources/EntitiesMP/EnemyBase.es:1049"
+        },
+        {
+          "name": "decision tick up close",
+          "value": 0.25,
+          "unit": "seconds between movement decisions inside the close band",
+          "source": "Sources/EntitiesMP/EnemyBase.es:1051"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 92
+        },
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 1046
+        },
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 1064
+        },
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 2603
+        },
+        {
+          "path": "Sources/EntitiesMP/EnemyBase.es",
+          "line": 2631
+        }
+      ],
+      "capabilities": [
+        "distance bands",
+        "firing cadence",
+        "facing-gated advance",
+        "decision cadence"
+      ],
+      "tags": [
+        "combat",
+        "enemies",
+        "ai"
+      ]
+    },
+    {
+      "id": "bounce-pad-launch",
+      "node": "world-forces",
+      "name": "Bounce pad launch",
+      "summary": "A bounce pad replaces the entrant's velocity along its aim axis with a fixed launch speed and extends air steering. Each pad sets its own values, and the listed numbers are defaults.",
+      "behavior": "Touching a pad while standing on something makes the entity jump without input. The pad aim, by default straight up, is the launch axis. Its speed is added along the axis, the component of the old velocity along the axis is scaled by a multiplier, and the component across the axis is scaled by another. By default the first multiplier is 0 and the second is 1, so the old speed along the axis is dropped and the sideways speed is kept. The code passes the along-axis multiplier with its sign flipped, so a non-zero value acts in reverse. The total exit speed is then capped. The entity loses its floor reference at once. The pad sets the air steering window to its control time, which is 5 s by default instead of the usual half second. Steering in that window is still halved. The default launch speed is 20 m/s and the default exit cap is 200 m/s. Level designers can change all of these per pad.",
+      "constants": [
+        {
+          "name": "launch speed",
+          "value": 20,
+          "unit": "metres per second along the pad aim, default of a per-pad property; applied once per touch",
+          "source": "Sources/EntitiesMP/Bouncer.es:53"
+        },
+        {
+          "name": "airborne steering window",
+          "value": 5,
+          "unit": "seconds of air steering after launch, default of a per-pad property; checked at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/Bouncer.es:55"
+        },
+        {
+          "name": "maximum exit speed",
+          "value": 200,
+          "unit": "metres per second, default of a per-pad property; clamped once per touch",
+          "source": "Sources/EntitiesMP/Bouncer.es:57"
+        },
+        {
+          "name": "normal component multiplier",
+          "value": 1,
+          "unit": "fraction of the entry speed across the aim axis that is kept, default of a per-pad property; applied once per touch",
+          "source": "Sources/EntitiesMP/Bouncer.es:58"
+        },
+        {
+          "name": "parallel component multiplier",
+          "value": 0,
+          "unit": "fraction of the entry speed along the aim axis that is kept, default of a per-pad property, passed with its sign flipped; applied once per touch",
+          "source": "Sources/EntitiesMP/Bouncer.es:59"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/Bouncer.es",
+          "line": 23
+        },
+        {
+          "path": "Sources/EntitiesMP/Bouncer.es",
+          "line": 53
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 710
+        },
+        {
+          "path": "Sources/Engine/Classes/MovableEntity.es",
+          "line": 728
+        }
+      ],
+      "capabilities": [
+        "launch pad",
+        "velocity replacement",
+        "control delay",
+        "exit speed clamp"
+      ],
+      "tags": [
+        "physics-feel",
+        "traversal",
+        "level-mechanic"
+      ]
+    },
+    {
+      "id": "minigun-spin-up",
+      "node": "player-weapons",
+      "name": "Minigun spin-up and fire rate",
+      "summary": "The minigun must spin up before it fires, then fires one bullet per tick. Releasing fire spins the barrel down over three seconds.",
+      "behavior": "Holding fire raises the barrel speed by 1000 units per second squared until it reaches 500 units per second, which takes half a second. Only then does the barrel fire. It fires one bullet per tick, which is 20 bullets per second, and each bullet uses one round and deals 10 damage with a range of 750 m. The random offset of each bullet is a sphere of 1 percent of the range in co-op and 3 percent in deathmatch. Releasing fire, or running out of rounds, spins the barrel down by 500 over 3 seconds, so a quick re-press starts from the remaining speed. The barrel angle and speed are integrated once per tick.",
+      "constants": [
+        {
+          "name": "spin-up time",
+          "value": 0.5,
+          "unit": "seconds from rest to full spin, integrated at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:159"
+        },
+        {
+          "name": "spin-down time",
+          "value": 3,
+          "unit": "seconds from full spin to rest, integrated at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:160"
+        },
+        {
+          "name": "full spin speed",
+          "value": 500,
+          "unit": "angular units per second, reached by integration at the 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:163"
+        },
+        {
+          "name": "minigun bullet damage",
+          "value": 10,
+          "unit": "damage per bullet, one bullet per 20 Hz tick",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4720"
+        },
+        {
+          "name": "minigun jitter",
+          "value": 0.03,
+          "unit": "fraction of range as sphere radius around the target in deathmatch; co-op uses 0.01; one value per bullet",
+          "source": "Sources/EntitiesMP/PlayerWeapons.es:4720"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 159
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4670
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4720
+        },
+        {
+          "path": "Sources/EntitiesMP/PlayerWeapons.es",
+          "line": 4790
+        }
+      ],
+      "capabilities": [
+        "spin-up delay",
+        "per-tick fire rate",
+        "spin-down",
+        "weapon warm-up"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "game-feel"
+      ]
+    }
+  ]
+}
