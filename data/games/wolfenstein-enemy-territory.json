@@ -1,0 +1,3478 @@
+{
+  "version": 1,
+  "id": "wolfenstein-enemy-territory",
+  "title": "Wolfenstein: Enemy Territory",
+  "repo": "https://github.com/etlegacy/etlegacy",
+  "sha": "240d8ef68afd9e2129340dc827ba8af250a9bc42",
+  "nodes": [
+    {
+      "id": "player-movement",
+      "name": "Shared player movement step",
+      "purpose": "Movement code that runs identically on the server and in client prediction: step chopping, friction, acceleration, jump, crouch, prone, ground contact, stair stepping and fall landing.",
+      "paths": [
+        "src/game/bg_pmove.c",
+        "src/game/bg_slidemove.c",
+        "src/game/bg_local.h"
+      ],
+      "functions": [
+        {
+          "name": "PM_Friction",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            497,
+            587
+          ]
+        },
+        {
+          "name": "PM_Accelerate",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            595,
+            627
+          ]
+        },
+        {
+          "name": "PM_CmdScale",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            635,
+            701
+          ]
+        },
+        {
+          "name": "PM_CheckJump",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            782,
+            833
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            1255,
+            1303
+          ]
+        },
+        {
+          "name": "PM_WalkMove",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            1308,
+            1483
+          ]
+        },
+        {
+          "name": "PM_CrashLand",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            1594,
+            1742
+          ]
+        },
+        {
+          "name": "PM_GroundTrace",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            1840,
+            1978
+          ]
+        },
+        {
+          "name": "PmoveSingle",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            5035,
+            5428
+          ]
+        },
+        {
+          "name": "Pmove",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            5435,
+            5500
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove",
+          "path": "src/game/bg_slidemove.c",
+          "lines": [
+            315,
+            499
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "stance-stamina-lean",
+      "name": "Stance, sprint stamina and lean",
+      "purpose": "Crouch and prone state changes, hull sizes, the sprint bar that jumps also drain, and the lean offset with its wall trace.",
+      "paths": [
+        "src/game/bg_pmove.c",
+        "src/game/bg_public.h",
+        "src/game/g_client.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_CheckDuck",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            2027,
+            2085
+          ]
+        },
+        {
+          "name": "PM_CheckProne",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            890,
+            1105
+          ]
+        },
+        {
+          "name": "PM_Sprint",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            4965,
+            5027
+          ]
+        },
+        {
+          "name": "PM_UpdateLean",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            4151,
+            4270
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "weapon-state-spread",
+      "name": "Weapon state, aim spread, recoil and heat",
+      "purpose": "Per-step weapon state machine: fire cadence, charge gate for class weapons, aim spread scale, view recoil, overheat and grenade cooking.",
+      "paths": [
+        "src/game/bg_pmove.c",
+        "src/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "PM_Weapon",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            3427,
+            4100
+          ]
+        },
+        {
+          "name": "PM_AdjustAimSpreadScale",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            3125,
+            3239
+          ]
+        },
+        {
+          "name": "PM_HandleRecoil",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            3377,
+            3420
+          ]
+        },
+        {
+          "name": "PM_CoolWeapons",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            3053,
+            3108
+          ]
+        },
+        {
+          "name": "PM_CheckGrenade",
+          "path": "src/game/bg_pmove.c",
+          "lines": [
+            3328,
+            3370
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "weapon-tables"
+      ]
+    },
+    {
+      "id": "weapon-tables",
+      "name": "Weapon, skill and class tables",
+      "purpose": "Data tables that hold per-weapon damage, spread, clip, timing, splash, recoil and charge cost, the skill XP thresholds and the class loadouts.",
+      "paths": [
+        "src/game/bg_misc.c",
+        "src/game/bg_classes.c",
+        "src/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "weaponTable",
+          "path": "src/game/bg_misc.c",
+          "lines": [
+            158,
+            223
+          ]
+        },
+        {
+          "name": "skillTable",
+          "path": "src/game/bg_misc.c",
+          "lines": [
+            56,
+            66
+          ]
+        },
+        {
+          "name": "bg_playerClasses",
+          "path": "src/game/bg_classes.c",
+          "lines": [
+            38,
+            295
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "bullets-damage",
+      "name": "Bullet fire, damage, headshots and knockback",
+      "purpose": "Server hit-scan with spread, central damage routine with falloff, headshot and knockback, radius damage, knife attacks and fall damage.",
+      "paths": [
+        "src/game/g_weapon.c",
+        "src/game/g_combat.c",
+        "src/game/g_active.c"
+      ],
+      "functions": [
+        {
+          "name": "Bullet_Endpos",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3470,
+            3485
+          ]
+        },
+        {
+          "name": "Bullet_Fire",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3491,
+            3562
+          ]
+        },
+        {
+          "name": "Weapon_Knife",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            61,
+            151
+          ]
+        },
+        {
+          "name": "G_ClampExplosiveKnockbackVelocity",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            56,
+            64
+          ]
+        },
+        {
+          "name": "G_BuildHead",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            950,
+            1062
+          ]
+        },
+        {
+          "name": "IsHeadShot",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            1145,
+            1215
+          ]
+        },
+        {
+          "name": "G_DamageFalloff",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            1379,
+            1392
+          ]
+        },
+        {
+          "name": "G_DamageExt",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            1430,
+            2065
+          ]
+        },
+        {
+          "name": "G_RadiusDamage",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            2344,
+            2499
+          ]
+        },
+        {
+          "name": "G_FallDamage",
+          "path": "src/game/g_active.c",
+          "lines": [
+            975,
+            1018
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-tables",
+        "weapon-state-spread"
+      ]
+    },
+    {
+      "id": "class-charge",
+      "name": "Class charge bar",
+      "purpose": "Per-class charge time cvars and the timestamp scheme that gates medic packs, ammo packs, airstrikes, artillery, dynamite, landmines, construction and satchels.",
+      "paths": [
+        "src/game/g_cvars.c",
+        "src/game/g_active.c",
+        "src/game/bg_pmove.c",
+        "src/game/bg_misc.c",
+        "src/game/g_main.c"
+      ],
+      "functions": [
+        {
+          "name": "gameCvarTable",
+          "path": "src/game/g_cvars.c",
+          "lines": [
+            363,
+            671
+          ]
+        },
+        {
+          "name": "ReadyToCallArtillery",
+          "path": "src/game/g_active.c",
+          "lines": [
+            277,
+            292
+          ]
+        },
+        {
+          "name": "ReadyToConstruct",
+          "path": "src/game/g_active.c",
+          "lines": [
+            302,
+            350
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-tables",
+        "weapon-state-spread"
+      ]
+    },
+    {
+      "id": "medic-revive",
+      "name": "Medic, revive and health model",
+      "purpose": "Syringe revive, health packs, adrenaline, class health scaling with medic count, medic regeneration and the downed-body rules.",
+      "paths": [
+        "src/game/g_weapon.c",
+        "src/game/g_items.c",
+        "src/game/g_client.c",
+        "src/game/g_active.c",
+        "src/game/g_combat.c",
+        "src/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "Weapon_Medic",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            157,
+            184
+          ]
+        },
+        {
+          "name": "ReviveEntity",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            341,
+            433
+          ]
+        },
+        {
+          "name": "G_TrySyringeHeal",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            442,
+            492
+          ]
+        },
+        {
+          "name": "Weapon_Syringe",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            500,
+            609
+          ]
+        },
+        {
+          "name": "Weapon_AdrenalineSyringe",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            615,
+            620
+          ]
+        },
+        {
+          "name": "Pickup_Health",
+          "path": "src/game/g_items.c",
+          "lines": [
+            586,
+            616
+          ]
+        },
+        {
+          "name": "AddMedicTeamBonus",
+          "path": "src/game/g_client.c",
+          "lines": [
+            1427,
+            1448
+          ]
+        },
+        {
+          "name": "ClientTimerActions",
+          "path": "src/game/g_active.c",
+          "lines": [
+            897,
+            949
+          ]
+        }
+      ],
+      "dependsOn": [
+        "class-charge",
+        "bullets-damage"
+      ]
+    },
+    {
+      "id": "limbo-spawn-waves",
+      "name": "Death, limbo and reinforcement waves",
+      "purpose": "Death handling, limbo state, the shared per-team respawn wave clock and spawn invulnerability.",
+      "paths": [
+        "src/game/g_client.c",
+        "src/game/g_active.c",
+        "src/game/g_combat.c",
+        "src/game/g_cvars.c"
+      ],
+      "functions": [
+        {
+          "name": "player_die",
+          "path": "src/game/g_combat.c",
+          "lines": [
+            449,
+            939
+          ]
+        },
+        {
+          "name": "limbo",
+          "path": "src/game/g_client.c",
+          "lines": [
+            878,
+            992
+          ]
+        },
+        {
+          "name": "reinforce",
+          "path": "src/game/g_client.c",
+          "lines": [
+            998,
+            1022
+          ]
+        },
+        {
+          "name": "respawn",
+          "path": "src/game/g_client.c",
+          "lines": [
+            1028,
+            1058
+          ]
+        },
+        {
+          "name": "ClientSpawn",
+          "path": "src/game/g_client.c",
+          "lines": [
+            3001,
+            3505
+          ]
+        },
+        {
+          "name": "SpectatorClientEndFrame",
+          "path": "src/game/g_active.c",
+          "lines": [
+            1770,
+            1970
+          ]
+        }
+      ],
+      "dependsOn": [
+        "medic-revive"
+      ]
+    },
+    {
+      "id": "objectives-engineering",
+      "name": "Construction, dynamite and landmines",
+      "purpose": "Pliers-driven construction progress, dynamite arming and fuse, landmine arming, trigger and detonation.",
+      "paths": [
+        "src/game/g_weapon.c",
+        "src/game/g_missile.c",
+        "src/game/g_mover.c",
+        "src/game/g_active.c"
+      ],
+      "functions": [
+        {
+          "name": "TryConstructing",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            990,
+            1367
+          ]
+        },
+        {
+          "name": "G_ArmDynamite",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2173,
+            2244
+          ]
+        },
+        {
+          "name": "G_ArmLandmine",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            1799,
+            1853
+          ]
+        },
+        {
+          "name": "LandMinePostTrigger",
+          "path": "src/game/g_missile.c",
+          "lines": [
+            1608,
+            1612
+          ]
+        },
+        {
+          "name": "sEntWillTriggerMine",
+          "path": "src/game/g_missile.c",
+          "lines": [
+            1622,
+            1639
+          ]
+        },
+        {
+          "name": "G_LandmineThink",
+          "path": "src/game/g_missile.c",
+          "lines": [
+            1647,
+            1712
+          ]
+        },
+        {
+          "name": "LandminePostThink",
+          "path": "src/game/g_missile.c",
+          "lines": [
+            1718,
+            1758
+          ]
+        },
+        {
+          "name": "g_constructible_classes",
+          "path": "src/game/g_mover.c",
+          "lines": [
+            5585,
+            5590
+          ]
+        }
+      ],
+      "dependsOn": [
+        "class-charge",
+        "bullets-damage"
+      ]
+    },
+    {
+      "id": "fire-support",
+      "name": "Airstrike and artillery",
+      "purpose": "Smoke-marker airstrikes, field artillery barrages, shared per-team rate limiting counters and their decay.",
+      "paths": [
+        "src/game/g_weapon.c",
+        "src/game/g_main.c"
+      ],
+      "functions": [
+        {
+          "name": "G_AddAirstrikeToCounters",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2652,
+            2684
+          ]
+        },
+        {
+          "name": "weapon_checkAirStrikeThink",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2759,
+            2778
+          ]
+        },
+        {
+          "name": "weapon_checkAirStrike",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2785,
+            2812
+          ]
+        },
+        {
+          "name": "G_AirStrikeThink",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2818,
+            2879
+          ]
+        },
+        {
+          "name": "weapon_callAirStrike",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            2905,
+            3055
+          ]
+        },
+        {
+          "name": "artillerySpotterThink",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3113,
+            3200
+          ]
+        },
+        {
+          "name": "Weapon_Artillery",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3226,
+            3345
+          ]
+        },
+        {
+          "name": "G_RunFrame",
+          "path": "src/game/g_main.c",
+          "lines": [
+            4594,
+            4715
+          ]
+        }
+      ],
+      "dependsOn": [
+        "class-charge",
+        "bullets-damage"
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Grenades, rockets and mortar launch",
+      "purpose": "Launch speeds and arcs for thrown explosives, rocket launchers, rifle grenades and the mortar.",
+      "paths": [
+        "src/game/g_weapon.c",
+        "src/game/bg_pmove.c"
+      ],
+      "functions": [
+        {
+          "name": "weapon_gpg40_fire",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3710,
+            3748
+          ]
+        },
+        {
+          "name": "weapon_mortar_fire",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3756,
+            3786
+          ]
+        },
+        {
+          "name": "weapon_grenadelauncher_fire",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3794,
+            3878
+          ]
+        },
+        {
+          "name": "weapon_antitank_fire",
+          "path": "src/game/g_weapon.c",
+          "lines": [
+            3911,
+            3932
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-tables",
+        "bullets-damage"
+      ]
+    },
+    {
+      "id": "skills-xp",
+      "name": "Skill XP and covert disguise",
+      "purpose": "Skill point accrual, level thresholds, kill XP and the covert-ops uniform theft that feeds disguise.",
+      "paths": [
+        "src/game/g_stats.c",
+        "src/game/bg_misc.c",
+        "src/game/g_cmds.c",
+        "src/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "G_SetPlayerSkill",
+          "path": "src/game/g_stats.c",
+          "lines": [
+            163,
+            193
+          ]
+        },
+        {
+          "name": "G_AddSkillPoints",
+          "path": "src/game/g_stats.c",
+          "lines": [
+            404,
+            455
+          ]
+        },
+        {
+          "name": "G_AddKillSkillPoints",
+          "path": "src/game/g_stats.c",
+          "lines": [
+            488,
+            538
+          ]
+        },
+        {
+          "name": "Do_UniformStealing",
+          "path": "src/game/g_cmds.c",
+          "lines": [
+            4010,
+            4065
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-tables"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "pmove-step-timing",
+      "node": "player-movement",
+      "name": "Movement step chopping and base physics values",
+      "summary": "Player movement runs in slices of at most 50 ms and uses a gravity of 800 units per second squared. A fixed-step mode with an 8 ms floor exists but is off by default.",
+      "behavior": "Each client command carries a server time. The shared Pmove function splits the gap since the last processed command into slices. With the default pmove_fixed of 0 each slice is capped at 50 ms, which gives at least 20 slices per second. When an operator turns pmove_fixed on, the slice length becomes pmove_msec instead, and the server rounds each command time up to a multiple of that length. The server clamps pmove_msec to the range 8 to 33 ms. Gravity comes from the g_gravity cvar and defaults to 800 units per second squared. Speed comes from g_speed and defaults to 320 units per second. A command that is more than 1000 ms old is pulled forward so a lag spike cannot create one huge step. Legacy-only addition: the g_fixedphysics cvar (default 1) plus g_fixedphysicsfps (default 125) adds a small vertical velocity correction so that rounding of gravity per slice does not change jump height between frame rates. It does not change the slice length. All gameplay constants in the other cards are per slice scaled by frame time in seconds, unless a card says otherwise.",
+      "constants": [
+        {
+          "name": "maximum slice length when pmove_fixed is 0",
+          "value": 50,
+          "unit": "ms per movement slice",
+          "source": "src/game/bg_pmove.c:5475"
+        },
+        {
+          "name": "pmove_fixed default",
+          "value": 0,
+          "unit": "boolean flag, 0 means variable slices",
+          "source": "src/game/g_cvars.c:467"
+        },
+        {
+          "name": "pmove_msec default",
+          "value": 8,
+          "unit": "ms per slice when pmove_fixed is on",
+          "source": "src/game/g_cvars.c:468"
+        },
+        {
+          "name": "pmove_msec upper clamp",
+          "value": 33,
+          "unit": "ms per slice",
+          "source": "src/game/g_cvars.c:729"
+        },
+        {
+          "name": "gravity default",
+          "value": 800,
+          "unit": "units per second squared",
+          "source": "src/game/g_cvars.c:434"
+        },
+        {
+          "name": "base player speed default",
+          "value": 320,
+          "unit": "units per second",
+          "source": "src/game/g_cvars.c:433"
+        },
+        {
+          "name": "stale command pull-forward window",
+          "value": 1000,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:5446"
+        },
+        {
+          "name": "Legacy fixed-physics correction rate default",
+          "value": 125,
+          "unit": "frames per second used only for gravity rounding correction",
+          "source": "src/game/g_cvars.c:637"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 5435
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 1301
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 5404
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent movement slices",
+        "optional fixed-step prediction",
+        "configurable gravity and base speed"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "timing",
+        "fps"
+      ]
+    },
+    {
+      "id": "ground-friction-acceleration",
+      "node": "player-movement",
+      "name": "Ground friction, stop speed and acceleration",
+      "summary": "Friction removes speed at 6 per second with a 100 units per second floor for the drop calculation. Ground acceleration is 10 and air acceleration is only 1.",
+      "behavior": "Friction runs first in every ground and air slice. If speed is below 1 unit per second (horizontal speed while walking) the horizontal velocity is zeroed. Otherwise the drop equals the larger of current speed and the stop speed of 100, times friction 6, times slice time in seconds. The new speed is the old speed minus the drop, never below zero, applied as a scale on the whole velocity. Friction is skipped on slick surfaces and while the knockback timer is active. Water adds a drop proportional to speed, wading depth and a water friction of 1. Ladders add a strafe friction of 14. Acceleration uses the Quake style rule: it measures current speed along the wished direction and adds only the shortfall up to the wished speed, limited by acceleration times slice time times wished speed. Ground acceleration is 10. Air acceleration is 1, so air steering is weak and strafe-jump gains are small. Slick surfaces and the knockback timer replace ground acceleration with the air value and re-apply gravity. A per-player friction multiplier, normally 1, divides the ground acceleration and exists for scripted characters.",
+      "constants": [
+        {
+          "name": "friction coefficient",
+          "value": 6,
+          "unit": "per second, multiplied by slice time in seconds",
+          "source": "src/game/bg_pmove.c:93"
+        },
+        {
+          "name": "stop speed floor for friction drop",
+          "value": 100,
+          "unit": "units per second",
+          "source": "src/game/bg_pmove.c:78"
+        },
+        {
+          "name": "ground acceleration",
+          "value": 10,
+          "unit": "per second, multiplied by slice time and wished speed",
+          "source": "src/game/bg_pmove.c:87"
+        },
+        {
+          "name": "air acceleration",
+          "value": 1,
+          "unit": "per second, multiplied by slice time and wished speed",
+          "source": "src/game/bg_pmove.c:88"
+        },
+        {
+          "name": "water friction",
+          "value": 1,
+          "unit": "per second per water level",
+          "source": "src/game/bg_pmove.c:94"
+        },
+        {
+          "name": "ladder strafe friction",
+          "value": 14,
+          "unit": "per second",
+          "source": "src/game/bg_pmove.c:97"
+        },
+        {
+          "name": "zero-velocity threshold",
+          "value": 1,
+          "unit": "units per second horizontal",
+          "source": "src/game/bg_pmove.c:512"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 497
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 595
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1443
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1288
+        }
+      ],
+      "capabilities": [
+        "snappy ground control",
+        "weak air steering",
+        "slick surface handling",
+        "knockback control loss"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "speed-scales-stance-load",
+      "node": "player-movement",
+      "name": "Run, sprint, crouch, prone and heavy weapon speed",
+      "summary": "Base speed 320 is scaled to 256 when running, 352 when sprinting, 80 when crouched and about 67 when prone. Heavy weapons cut speed further.",
+      "behavior": "The command scale first converts the move keys to a unit-length wish direction multiplied by base speed. Then a class scale applies. Running multiplies by 0.8, giving 256 units per second at the default speed. Holding sprint multiplies by 1.1 instead, giving 352, but only while the stamina bar holds more than 50 units. Crouching caps the wished speed at base speed times 0.25, so 80 units per second. Prone caps it at base speed times 0.21, so 67.2. While reloading or mounting and unmounting an alternate weapon, the prone cap falls to 40. Wading scales speed linearly with water level between 1 and 0.5 for water or 0.3 for slag. Carrying a heavy weapon applies a further multiplier. The flamethrower multiplies by 0.7 whenever it is fired or when the Dexterity skill is missing. Other heavy weapons, such as the mobile machine gun, multiply by 0.5 without the Dexterity skill and 0.75 with it. Switching to a lighter weapon removes the penalty at once. A set mortar is exempt from the penalty.",
+      "constants": [
+        {
+          "name": "run speed scale",
+          "value": 0.8,
+          "unit": "multiplier on base speed",
+          "source": "src/game/g_client.c:3241"
+        },
+        {
+          "name": "sprint speed scale",
+          "value": 1.1,
+          "unit": "multiplier on base speed",
+          "source": "src/game/g_client.c:3242"
+        },
+        {
+          "name": "crouch speed cap scale",
+          "value": 0.25,
+          "unit": "multiplier on base speed",
+          "source": "src/game/g_client.c:3243"
+        },
+        {
+          "name": "prone speed cap scale",
+          "value": 0.21,
+          "unit": "multiplier on base speed",
+          "source": "src/game/bg_pmove.c:85"
+        },
+        {
+          "name": "sprint minimum stamina",
+          "value": 50,
+          "unit": "stamina units, 20000 is a full bar",
+          "source": "src/game/bg_pmove.c:659"
+        },
+        {
+          "name": "prone speed cap while reloading or switching alt mode",
+          "value": 40,
+          "unit": "units per second",
+          "source": "src/game/bg_pmove.c:1395"
+        },
+        {
+          "name": "water wading minimum scale",
+          "value": 0.5,
+          "unit": "multiplier at full submersion",
+          "source": "src/game/bg_pmove.c:80"
+        },
+        {
+          "name": "slag wading minimum scale",
+          "value": 0.3,
+          "unit": "multiplier at full submersion",
+          "source": "src/game/bg_pmove.c:82"
+        },
+        {
+          "name": "flamethrower penalty",
+          "value": 0.7,
+          "unit": "multiplier on speed",
+          "source": "src/game/bg_pmove.c:684"
+        },
+        {
+          "name": "heavy weapon penalty with Dexterity",
+          "value": 0.75,
+          "unit": "multiplier on speed",
+          "source": "src/game/bg_pmove.c:691"
+        },
+        {
+          "name": "heavy weapon penalty without Dexterity",
+          "value": 0.5,
+          "unit": "multiplier on speed",
+          "source": "src/game/bg_pmove.c:695"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 635
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1399
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1405
+        }
+      ],
+      "capabilities": [
+        "class speed tiers",
+        "stance speed caps",
+        "heavy weapon encumbrance"
+      ],
+      "tags": [
+        "movement",
+        "stamina",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-and-stamina-bar",
+      "node": "stance-stamina-lean",
+      "name": "Jump launch and the shared sprint and jump stamina bar",
+      "summary": "A jump sets vertical speed to 270 and costs 2500 of a 20000 stamina bar. Sprinting drains 5000 per second (4 seconds from full) and the bar refills at 500 to 1000 per second.",
+      "behavior": "A jump needs the jump key held with upmove of at least 10, no prone stance, no respawn lock, and the key must have been released since the last jump. At least 850 ms must pass since the previous jump. The jump sets vertical velocity to a flat 270 units per second, so with gravity 800 the apex is about 45.6 units above takeoff. Horizontal velocity is untouched. A jump also removes 2500 from the stamina bar, floored at zero. The bar is 20000 units, so a full bar of sprinting lasts 4 seconds. Sprinting needs the sprint key, a move key held, no crouch, no prone and no scoped weapon. While sprinting the bar loses 5000 units per second of slice time. When not sprinting the bar refills at 500 units per second, and at 1000 per second once it is above 5000. The Battle Sense recharge skill multiplies the base refill by 1.6. The adrenaline powerup and the no-fatigue flag pin the bar at full. Stamina does not block jumping. It only limits sprint speed, which needs more than 50 units. The server owns the bar value and copies it into the player state every slice.",
+      "constants": [
+        {
+          "name": "jump launch velocity",
+          "value": 270,
+          "unit": "units per second, set once at takeoff",
+          "source": "src/game/bg_local.h:53"
+        },
+        {
+          "name": "minimum time between jumps",
+          "value": 850,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:72"
+        },
+        {
+          "name": "stamina cost of one jump",
+          "value": 2500,
+          "unit": "stamina units, once per jump",
+          "source": "src/game/bg_pmove.c:1341"
+        },
+        {
+          "name": "full stamina bar",
+          "value": 20000,
+          "unit": "stamina units",
+          "source": "src/game/bg_public.h:53"
+        },
+        {
+          "name": "sprint drain",
+          "value": 5000,
+          "unit": "stamina units per second, scaled by slice time",
+          "source": "src/game/bg_pmove.c:4981"
+        },
+        {
+          "name": "base refill",
+          "value": 500,
+          "unit": "stamina units per second, scaled by slice time",
+          "source": "src/game/bg_pmove.c:5005"
+        },
+        {
+          "name": "fast refill threshold",
+          "value": 5000,
+          "unit": "stamina units, refill doubles above this",
+          "source": "src/game/bg_pmove.c:5013"
+        },
+        {
+          "name": "Battle Sense refill multiplier",
+          "value": 1.6,
+          "unit": "multiplier on base refill",
+          "source": "src/game/bg_pmove.c:5009"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 782
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 4965
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 828
+        }
+      ],
+      "capabilities": [
+        "single launch jump with fixed apex",
+        "jump cooldown",
+        "stamina-limited sprint",
+        "skill-boosted recovery"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "stamina",
+        "fps"
+      ]
+    },
+    {
+      "id": "ground-contact-stairs-slopes",
+      "node": "player-movement",
+      "name": "Stair stepping, slope limit and ground contact",
+      "summary": "The player climbs steps up to 18 units and refuses to stand on slopes steeper than a surface normal of 0.7. Velocity is clipped to surfaces with a small 1.001 overbounce.",
+      "behavior": "Ground contact is found by tracing the hull 0.25 units straight down, or 1 unit when mounted on a gun. A surface counts as walkable only when its normal vertical component is at least 0.7, about 45.6 degrees from flat. Steeper surfaces keep the player airborne and slide them. After a slide-move that did not reach its goal, the step logic retries the same move from 18 units higher. It refuses to step while the player still moves upward, unless the floor below is walkable. If the raised move gets farther, the player ends on the step, then a downward trace of 18 units puts the feet back on the floor. Velocity clipping against a plane adds a 0.001 overbounce so a player does not stick to walls. Ground speed is not reduced when going up or down slopes because the ground velocity is renormalized to its previous length after clipping. Slick surfaces make the player ignore ground friction and apply gravity as in the air. The player hull is 36 by 36 units wide and 72 units tall, described in the stance card.",
+      "constants": [
+        {
+          "name": "ground probe depth",
+          "value": 0.25,
+          "unit": "units below the origin",
+          "source": "src/game/bg_pmove.c:1780"
+        },
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "units",
+          "source": "src/game/bg_local.h:51"
+        },
+        {
+          "name": "minimum walkable surface normal Z",
+          "value": 0.7,
+          "unit": "unit-length normal component",
+          "source": "src/game/bg_local.h:49"
+        },
+        {
+          "name": "velocity clip overbounce",
+          "value": 1.001,
+          "unit": "multiplier on the into-plane component",
+          "source": "src/game/bg_public.h:2147"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_slidemove.c",
+          "line": 315
+        },
+        {
+          "path": "src/game/bg_slidemove.c",
+          "line": 384
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1840
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1466
+        }
+      ],
+      "capabilities": [
+        "stair climbing without jumping",
+        "steep slope sliding",
+        "speed-preserving slopes"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "collision",
+        "fps"
+      ]
+    },
+    {
+      "id": "stance-hulls-prone",
+      "node": "stance-stamina-lean",
+      "name": "Standing, crouched and prone hulls with prone entry rules",
+      "summary": "The standing hull is 36 wide and 72 tall with the eye 40 above the origin. Crouch drops the eye to 16 and prone to minus 8 with a 16 unit tall hull. Prone entry has a 750 ms lock.",
+      "behavior": "The hull is an axis-aligned box. The half extent is 18 units on X and Y, so the full width is 36. Vertical bounds run from minus 24 to plus 48 around the origin, so the full height is 72 and the box center is at the origin. Eye height is 40 when standing, 16 when crouched and minus 8 when prone. The crouched hull top is the standing top minus the 24 unit eye drop, so 24. The prone hull top is 16 units. Crouch is active while the crouch key is held (negative upmove). Standing up needs a clear hull trace. Prone is entered by double-tapping forward while crouched or by a prone key, and the player can only toggle at least 750 ms after the last toggle. A server option, g_pronedelay, adds stricter rules and is probably a Legacy addition (not checked against the original release). It defaults to 0, so the effective lock is 750 ms. Prone cannot start on a ladder, while mounted, while swimming, while a mortar is set, or during a panzerfaust delay. Leaving prone leaves the player crouched, sets a 400 ms extended-prone timer that the animation code reads, and blocks jumping for the next 200 ms. Movement while prone is flagged once speed passes 40 and the player holds a move key. The flag clears when speed falls below 20 without input. Prone also needs a legs-box and a head-box trace so the body does not enter a wall.",
+      "constants": [
+        {
+          "name": "hull half extent X and Y",
+          "value": 18,
+          "unit": "units, full width is 36",
+          "source": "src/game/g_client.c:54"
+        },
+        {
+          "name": "hull bottom Z",
+          "value": -24,
+          "unit": "units below the origin",
+          "source": "src/game/g_client.c:53"
+        },
+        {
+          "name": "hull top Z standing",
+          "value": 48,
+          "unit": "units above the origin",
+          "source": "src/game/g_client.c:54"
+        },
+        {
+          "name": "standing eye height",
+          "value": 40,
+          "unit": "units above the origin",
+          "source": "src/game/bg_public.h:72"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 16,
+          "unit": "units above the origin",
+          "source": "src/game/bg_public.h:73"
+        },
+        {
+          "name": "prone eye height",
+          "value": -8,
+          "unit": "units relative to the origin",
+          "source": "src/game/bg_public.h:75"
+        },
+        {
+          "name": "prone hull top",
+          "value": 16,
+          "unit": "units above the origin",
+          "source": "src/game/bg_public.h:89"
+        },
+        {
+          "name": "prone toggle lock",
+          "value": 750,
+          "unit": "ms since last prone change",
+          "source": "src/game/bg_pmove.c:893"
+        },
+        {
+          "name": "prone toggle lock with g_pronedelay toggle mode",
+          "value": 1750,
+          "unit": "ms since last prone change",
+          "source": "src/game/bg_pmove.c:897"
+        },
+        {
+          "name": "extended prone window",
+          "value": 400,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:71"
+        },
+        {
+          "name": "jump block offset after leaving prone",
+          "value": 650,
+          "unit": "ms subtracted from the jump clock so 200 ms of the 850 ms jump delay remain",
+          "source": "src/game/bg_pmove.c:1066"
+        },
+        {
+          "name": "prone moving flag speed on",
+          "value": 40,
+          "unit": "units per second",
+          "source": "src/game/bg_pmove.c:1078"
+        },
+        {
+          "name": "prone moving flag speed off",
+          "value": 20,
+          "unit": "units per second",
+          "source": "src/game/bg_pmove.c:1082"
+        },
+        {
+          "name": "g_pronedelay default",
+          "value": 0,
+          "unit": "bit flags, 0 means plain 750 ms lock",
+          "source": "src/game/g_cvars.c:638"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 890
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 2027
+        },
+        {
+          "path": "src/game/g_client.c",
+          "line": 3239
+        }
+      ],
+      "capabilities": [
+        "three stance hulls",
+        "prone entry and exit rules",
+        "headroom checks before standing"
+      ],
+      "tags": [
+        "movement",
+        "stance",
+        "prone",
+        "collision"
+      ]
+    },
+    {
+      "id": "lean-peek",
+      "node": "stance-stamina-lean",
+      "name": "Lean offset with wall trace",
+      "summary": "A stationary player can lean the eye up to 28 units sideways, reaching full lean in 200 ms and returning in 300 ms. A small box trace stops the lean at walls. Firing and reloading stop while leaned.",
+      "behavior": "Lean is a signed sideways offset of the eye. It needs the lean key and no forward or upward move command. New lean is blocked while firing, prone, dead, mounted, tossing dynamite or with a mortar set. Spectators may lean while moving. If both lean keys are held the result is no lean. Each slice moves the offset toward plus or minus 28 by slice time over 200 ms times 28. Without a lean key the offset moves back to zero over 300 ms. The view roll adds half of the offset value in degrees-like units. The lean is shortened by the hit fraction when a box of 16 by 16 by 11 units, swept from the eye to the leaned eye point, hits solid geometry. The server adds the lean offset to the shot origin. While any lean offset remains, normal weapons stop firing and cannot reload, and sideways move input is cancelled. Thrown items are exempt from the fire and reload block.",
+      "constants": [
+        {
+          "name": "maximum lean offset",
+          "value": 28,
+          "unit": "units sideways from the eye",
+          "source": "src/game/bg_pmove.c:4141"
+        },
+        {
+          "name": "time to full lean",
+          "value": 200,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:4142"
+        },
+        {
+          "name": "time to return to center",
+          "value": 300,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:4143"
+        },
+        {
+          "name": "lean trace box half extent X and Y",
+          "value": 8,
+          "unit": "units, full width 16",
+          "source": "src/game/bg_pmove.c:4252"
+        },
+        {
+          "name": "lean trace box bottom Z",
+          "value": -7,
+          "unit": "units below the eye",
+          "source": "src/game/bg_pmove.c:4251"
+        },
+        {
+          "name": "lean trace box top Z",
+          "value": 4,
+          "unit": "units above the eye",
+          "source": "src/game/bg_pmove.c:4252"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 4151
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 4247
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 4051
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3672
+        }
+      ],
+      "capabilities": [
+        "peek around corners",
+        "wall-limited lean",
+        "no lean while moving or firing"
+      ],
+      "tags": [
+        "camera",
+        "stance",
+        "movement",
+        "fps"
+      ]
+    },
+    {
+      "id": "fall-damage-landing",
+      "node": "player-movement",
+      "name": "Fall damage from landing speed",
+      "summary": "Landing speed squared times 0.0001 gives a score. Scores above 38.75 hurt for 10, 15, 25 or 50 and above 77 gibs the player.",
+      "behavior": "On landing the code solves for the exact vertical speed at impact using the fall distance and gravity, then computes delta equal to impact speed squared times 0.0001. A delta of 38.75 equals an impact speed of about 622 units per second. Water reduces it: delta times 0.25 when the waist is in water, times 0.5 for knee depth, and no fall damage at all when fully submerged. Surfaces flagged as no-damage skip all effects. Thresholds: over 7 plays a short-fall sound, over 38.75 deals 10 damage and clears the velocity, over 48 deals 15, over 58 deals 25, over 67 deals 50 and over 77 is a fatal fall that gibs. The 10, 15 and 50 damage levels lock out normal movement control for 1000 ms and the 25 level for 250 ms through the knockback timer. A delta of 77 equals an impact speed of about 877 units per second. A player who walks off a 150 unit ledge hits about 490 units per second and takes no damage. The first damage tier needs about 242 units of free fall. The damage runs through the normal damage routine, so adrenaline halves it.",
+      "constants": [
+        {
+          "name": "delta scale",
+          "value": 0.0001,
+          "unit": "multiplier on impact speed squared",
+          "source": "src/game/bg_pmove.c:1628"
+        },
+        {
+          "name": "first damage threshold",
+          "value": 38.75,
+          "unit": "delta score",
+          "source": "src/game/bg_pmove.c:1664"
+        },
+        {
+          "name": "15 damage threshold",
+          "value": 48,
+          "unit": "delta score",
+          "source": "src/game/bg_pmove.c:1704"
+        },
+        {
+          "name": "25 damage threshold",
+          "value": 58,
+          "unit": "delta score",
+          "source": "src/game/bg_pmove.c:1691"
+        },
+        {
+          "name": "50 damage threshold",
+          "value": 67,
+          "unit": "delta score",
+          "source": "src/game/bg_pmove.c:1678"
+        },
+        {
+          "name": "fatal gib threshold",
+          "value": 77,
+          "unit": "delta score",
+          "source": "src/game/bg_pmove.c:1674"
+        },
+        {
+          "name": "damage at first threshold",
+          "value": 10,
+          "unit": "health points",
+          "source": "src/game/g_active.c:1010"
+        },
+        {
+          "name": "damage at 25 threshold",
+          "value": 25,
+          "unit": "health points",
+          "source": "src/game/g_active.c:1002"
+        },
+        {
+          "name": "damage at 50 threshold",
+          "value": 50,
+          "unit": "health points",
+          "source": "src/game/g_active.c:998"
+        },
+        {
+          "name": "waist-deep water delta scale",
+          "value": 0.25,
+          "unit": "multiplier on delta",
+          "source": "src/game/bg_pmove.c:1642"
+        },
+        {
+          "name": "knee-deep water delta scale",
+          "value": 0.5,
+          "unit": "multiplier on delta",
+          "source": "src/game/bg_pmove.c:1646"
+        },
+        {
+          "name": "control lockout for the 25 damage tier",
+          "value": 250,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:1696"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 1594
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 975
+        }
+      ],
+      "capabilities": [
+        "tiered fall damage",
+        "water cushioning",
+        "brief loss of control after hard landing"
+      ],
+      "tags": [
+        "movement",
+        "combat",
+        "damage",
+        "physics"
+      ]
+    },
+    {
+      "id": "aim-spread-scale",
+      "node": "weapon-state-spread",
+      "name": "Dynamic aim spread driven by view turning and shots",
+      "summary": "An aim spread value from 0 to 255 grows with fast view turning and each shot and decays at 200 per second. Bullet cone is the weapon base spread times that value over 255.",
+      "behavior": "Every movement slice updates one number, the aim spread scale, which has a ceiling of 255. It is forced to 255 while zoomed with binoculars. Otherwise the slice computes how fast the view turned in degrees per second. With a weapon scale of 1, turn speed below 30 adds nothing and turn speed above 150 adds the full amount, with a linear ramp between. The full increase is 800 per second, truncated to a whole number per slice, and the base decay is 200 per second. Each weapon has a spread scale that divides the thresholds and the decay, so weapons with a larger scale recover more slowly. Crouching or prone halves that weapon scale, which doubles recovery. For scoped weapons, the horizontal velocity components are added to the turn measure, so moving ruins a scoped shot. Each shot also adds three times the weapon spread add value. Submachine guns add a random 0 to 9 to that value. Covert-ops Breath Control halves the scoped add. When the bullet is fired the server turns the number into a fraction from 0 to 1 by dividing by 255, adds 0.15 and caps at 1. An airborne shooter uses 2 as the factor. Rifles ignore the number and always use 1. The Light Weapons Handling skill multiplies the final spread of submachine guns and pistols by 0.65. A set machine gun uses 0.05 and a crouched or prone unset machine gun 0.6. Spread is a uniform random offset of up to plus or minus the spread value, in world units, on both the right and up axes at the end of a trace of 8192 units. The spread fraction comes from the g_userAim cvar, which defaults to 1 and is cheat protected. A scoped weapon instead ignores spread and sways the aim direction sinusoidally, with a 0.13 degree pitch amplitude scaled by the spread fraction and a 0.1 floor.",
+      "constants": [
+        {
+          "name": "maximum aim spread value",
+          "value": 255,
+          "unit": "unitless scale",
+          "source": "src/game/bg_pmove.c:69"
+        },
+        {
+          "name": "spread decay rate",
+          "value": 200,
+          "unit": "units per second, divided by weapon spread scale",
+          "source": "src/game/bg_pmove.c:3110"
+        },
+        {
+          "name": "spread increase rate at full turn",
+          "value": 800,
+          "unit": "units per second",
+          "source": "src/game/bg_pmove.c:3111"
+        },
+        {
+          "name": "view turn dead zone",
+          "value": 30,
+          "unit": "degrees per second",
+          "source": "src/game/bg_pmove.c:3112"
+        },
+        {
+          "name": "view turn range to full effect",
+          "value": 120,
+          "unit": "degrees per second above the dead zone",
+          "source": "src/game/bg_pmove.c:3113"
+        },
+        {
+          "name": "stance recovery multiplier on weapon scale",
+          "value": 0.5,
+          "unit": "multiplier, crouch or prone",
+          "source": "src/game/bg_pmove.c:3173"
+        },
+        {
+          "name": "per-shot spread gain factor",
+          "value": 3,
+          "unit": "multiplier on weapon spread add value",
+          "source": "src/game/bg_pmove.c:4021"
+        },
+        {
+          "name": "SMG random extra spread add",
+          "value": 10,
+          "unit": "exclusive upper bound of random add",
+          "source": "src/game/bg_pmove.c:4010"
+        },
+        {
+          "name": "server accuracy floor added to spread fraction",
+          "value": 0.15,
+          "unit": "fraction of full spread, result capped at 1",
+          "source": "src/game/g_weapon.c:3501"
+        },
+        {
+          "name": "airborne spread factor",
+          "value": 2,
+          "unit": "multiplier",
+          "source": "src/game/g_weapon.c:3514"
+        },
+        {
+          "name": "Light Weapons Handling spread multiplier",
+          "value": ".65f",
+          "unit": "multiplier on SMG and pistol spread",
+          "source": "src/game/g_weapon.c:3531"
+        },
+        {
+          "name": "set machine gun spread multiplier",
+          "value": ".05f",
+          "unit": "multiplier",
+          "source": "src/game/g_weapon.c:3538"
+        },
+        {
+          "name": "crouched or prone machine gun spread multiplier",
+          "value": ".6f",
+          "unit": "multiplier",
+          "source": "src/game/g_weapon.c:3542"
+        },
+        {
+          "name": "trace length used for spread",
+          "value": 8192,
+          "unit": "world units, spread is a lateral offset at this range",
+          "source": "src/game/bg_public.h:68"
+        },
+        {
+          "name": "scoped pitch sway amplitude",
+          "value": 0.13,
+          "unit": "degrees, scaled by spread fraction",
+          "source": "src/game/bg_public.h:221"
+        },
+        {
+          "name": "scoped pitch sway frequency",
+          "value": 0.24,
+          "unit": "cycles per second",
+          "source": "src/game/bg_public.h:222"
+        },
+        {
+          "name": "scoped yaw sway amplitude",
+          "value": 0.7,
+          "unit": "degrees, scaled by spread fraction",
+          "source": "src/game/bg_public.h:225"
+        },
+        {
+          "name": "scoped yaw sway frequency",
+          "value": 0.12,
+          "unit": "cycles per second",
+          "source": "src/game/bg_public.h:226"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3125
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 48
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3470
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 1407
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 4168
+        }
+      ],
+      "capabilities": [
+        "accuracy that rewards stopping and crouching",
+        "bloom on rapid fire",
+        "scope sway",
+        "airborne inaccuracy"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "spread",
+        "fps"
+      ]
+    },
+    {
+      "id": "view-recoil-kick",
+      "node": "weapon-state-spread",
+      "name": "View recoil kick per shot",
+      "summary": "Each shot starts a timed muzzle kick that moves the view in pitch and yaw. Pistols kick for 100 ms and the mobile machine gun for 200 ms.",
+      "behavior": "When a shot fires, the weapon table gives a duration, a pitch pair and a yaw pair. The code draws a random pitch amount from zero to the product of the pair, and a random signed yaw amount. For the length of the duration, each slice moves the actual view angles by a cosine shaped impulse with a small random jitter, and writes the result back into the delta angles so the player sees and keeps the kick. The factor in front of the impulse is 83 times slice time, so the kick is independent of frame rate. Scoped rifles ignore the table pitch and use 0.5, or 0.25 with Breath Control. The scoped FG42 keeps its table pitch but multiplies it by 0.75 with Breath Control. A machine gun fired crouched or prone uses a much smaller kick. A pistol with the Light Weapons Handling skill uses a 70 ms kick with a very small pitch.",
+      "constants": [
+        {
+          "name": "recoil frame factor",
+          "value": 83,
+          "unit": "multiplier on slice time in seconds",
+          "source": "src/game/bg_pmove.c:3372"
+        },
+        {
+          "name": "pistol recoil duration",
+          "value": 100,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:163"
+        },
+        {
+          "name": "mobile machine gun recoil duration",
+          "value": 200,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "scoped rifle recoil pitch without Breath Control",
+          "value": ".5f",
+          "unit": "view kick factor",
+          "source": "src/game/bg_pmove.c:3985"
+        },
+        {
+          "name": "scoped rifle recoil pitch with Breath Control",
+          "value": ".25f",
+          "unit": "view kick factor",
+          "source": "src/game/bg_pmove.c:3981"
+        },
+        {
+          "name": "pistol skill recoil duration",
+          "value": 70,
+          "unit": "ms",
+          "source": "src/game/bg_pmove.c:4001"
+        },
+        {
+          "name": "scoped FG42 Breath Control pitch multiplier",
+          "value": ".75f",
+          "unit": "multiplier on table pitch",
+          "source": "src/game/bg_pmove.c:3974"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3377
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3962
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3399
+        }
+      ],
+      "capabilities": [
+        "timed muzzle kick",
+        "frame-rate independent recoil",
+        "skill that reduces recoil"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "recoil",
+        "camera"
+      ]
+    },
+    {
+      "id": "hitscan-weapon-stats",
+      "node": "weapon-tables",
+      "name": "Hit-scan weapon table values",
+      "summary": "Submachine guns do 18 damage every 150 ms with a 400 spread, pistols 18 every 400 ms and bolt rifles 34 every 400 ms. Reload times run from 1500 to 3100 ms.",
+      "behavior": "One table row gives each weapon its damage per bullet, spread offset at 8192 units, clip size, total ammo, reload time and the minimum time between shots. The standard submachine gun, the MP40 and the Thompson, shoots 18 damage per bullet every 150 ms, which is 6.7 shots per second and 120 damage per second before misses. Its clip holds 30 and the reserve is 90, reload 2400 ms. The silenced Sten and MP34 share a 14 damage bullet, a 200 spread, a 32 round clip and a 3100 ms reload. The pistols do 18 damage, 600 spread, 8 round clip, 1500 ms reload and 400 ms between shots. The scoped Garand row has 50 damage and the K43 and Kar98 rows have 34, all with 10 round clips and 1500 ms reloads. The FG42 shoots 16 damage every 100 ms with a 20 round clip. The mobile machine gun deals 18 damage per bullet every 50 ms with a 150 round clip, a 2500 spread and a 3000 ms reload. The Allied Thompson and Colt copy the MP40 and Luger numbers. Spread is multiplied by the dynamic factors from the aim spread card. Only submachine guns, pistols and the FG42 carry the distance falloff attribute.",
+      "constants": [
+        {
+          "name": "MP40 damage per bullet",
+          "value": 18,
+          "unit": "health points",
+          "source": "src/game/bg_misc.c:164"
+        },
+        {
+          "name": "MP40 base spread",
+          "value": 400,
+          "unit": "world units lateral at 8192 unit range",
+          "source": "src/game/bg_misc.c:164"
+        },
+        {
+          "name": "MP40 time between shots",
+          "value": 150,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:164"
+        },
+        {
+          "name": "MP40 clip size",
+          "value": 30,
+          "unit": "rounds",
+          "source": "src/game/bg_misc.c:164"
+        },
+        {
+          "name": "MP40 reload time",
+          "value": 2400,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:164"
+        },
+        {
+          "name": "Sten damage per bullet",
+          "value": 14,
+          "unit": "health points",
+          "source": "src/game/bg_misc.c:172"
+        },
+        {
+          "name": "Sten base spread",
+          "value": 200,
+          "unit": "world units lateral at 8192 unit range",
+          "source": "src/game/bg_misc.c:172"
+        },
+        {
+          "name": "Sten reload time",
+          "value": 3100,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:172"
+        },
+        {
+          "name": "pistol time between shots",
+          "value": 400,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:163"
+        },
+        {
+          "name": "pistol base spread",
+          "value": 600,
+          "unit": "world units lateral at 8192 unit range",
+          "source": "src/game/bg_misc.c:163"
+        },
+        {
+          "name": "K43 damage per bullet",
+          "value": 34,
+          "unit": "health points",
+          "source": "src/game/bg_misc.c:195"
+        },
+        {
+          "name": "scoped Garand damage per bullet",
+          "value": 50,
+          "unit": "health points",
+          "source": "src/game/bg_misc.c:206"
+        },
+        {
+          "name": "FG42 time between shots",
+          "value": 100,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:196"
+        },
+        {
+          "name": "mobile machine gun spread",
+          "value": 2500,
+          "unit": "world units lateral at 8192 unit range",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "mobile machine gun clip size",
+          "value": 150,
+          "unit": "rounds",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "mobile machine gun time between shots",
+          "value": 50,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:194"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 158
+        },
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 164
+        },
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 163
+        },
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 186
+        },
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 194
+        }
+      ],
+      "capabilities": [
+        "data-driven weapon roster",
+        "fire rate and reload tuning",
+        "team-mirrored weapons"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps",
+        "data"
+      ]
+    },
+    {
+      "id": "machine-gun-overheat-set",
+      "node": "weapon-state-spread",
+      "name": "Machine gun heat, cooling and set mode",
+      "summary": "The mobile machine gun gains 50 heat per shot, cools at 330 per second and locks for 2000 ms when it reaches 1500. A set gun has a 0.05 spread factor.",
+      "behavior": "Weapons with a heat limit add their time-between-shots value to a heat counter on every shot. The mobile machine gun adds 50 per shot, so 30 shots in a burst, one and a half seconds of fire, reaches the limit of 1500. At the limit the heat is capped, an overheat event plays, the next shot delay becomes the heat recovery time of 2000 ms and the view lock is released. Every slice all weapons the player carries cool down by their cool rate times slice time. The mobile machine gun cools 330 per second. A soldier with the Overheating Cooldown skill cools twice as fast. Heat is sent to the client as a value from 0 to 255 for the heat bar. The set mode is entered by the weapon alt switch. The table holds two transition times, 1250 ms and 1722 ms, and which one is deploy and which is pick up was not traced. A set gun has a 0.05 spread factor and fires with screen jitter. A fully submerged player cannot fire most weapons and hears a click.",
+      "constants": [
+        {
+          "name": "machine gun max heat",
+          "value": 1500,
+          "unit": "heat units, one unit equals one ms of firing",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "machine gun cool rate",
+          "value": 330,
+          "unit": "heat units per second, scaled by slice time",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "machine gun heat recovery lock",
+          "value": 2000,
+          "unit": "ms after overheat",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "set mode transition time A",
+          "value": 1250,
+          "unit": "ms, which direction is unverified",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "set mode transition time B",
+          "value": 1722,
+          "unit": "ms, which direction is unverified",
+          "source": "src/game/bg_misc.c:194"
+        },
+        {
+          "name": "Overheating Cooldown multiplier",
+          "value": 2,
+          "unit": "multiplier on cool rate for soldiers",
+          "source": "src/game/bg_pmove.c:3070"
+        },
+        {
+          "name": "set machine gun spread factor",
+          "value": ".05f",
+          "unit": "multiplier on weapon spread",
+          "source": "src/game/g_weapon.c:3538"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3053
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 4068
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 4076
+        }
+      ],
+      "capabilities": [
+        "sustained fire limit",
+        "deployable machine gun",
+        "skill that speeds cooling"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "heat",
+        "fps"
+      ]
+    },
+    {
+      "id": "damage-falloff-headshot",
+      "node": "bullets-damage",
+      "name": "Distance falloff and headshot damage",
+      "summary": "Submachine gun and pistol damage fades from full at 1500 units to half at 2500. A headshot does double damage with a 50 minimum, 0.8 of that with a helmet.",
+      "behavior": "Falloff applies only to weapons that carry the falloff attribute: submachine guns, pistols and the FG42. Rifles and machine guns keep full damage at any range. The scale is 1 up to 1500 units. It falls linearly to 0.5 at 2500 units and stays at 0.5 past that. Headshots use a separate and steeper curve: from 1500 to 2500 units the head scale falls from 1 to 0.2. A headshot is tested by tracing 64 units further along the bullet direction and checking if it hits a head box. The fallback head box is 12 units wide on X and Y and spans from minus 2 to plus 10 vertically relative to the head origin, a full extent of 12 by 12 by 12. When the realistic head option is on, which is the default, the box is 12 by 12 by 12 centered on the animated head bone. The base damage is doubled, with a floor of 50 damage, so any weapon can do 50 on a headshot. Falloff applies twice to a headshot: the body falloff scale first, then the doubling and floor, then the head falloff scale. An 18 damage submachine gun headshot at 2500 units ends at 10 before the helmet scale. The first headshot on a player removes the helmet and reduces damage by 0.8, except from the scoped rifles. Wounded players waiting for revive have no head box, so they cannot be headshot. Adrenaline halves incoming damage, and the Engineer flak jacket halves explosive damage.",
+      "constants": [
+        {
+          "name": "falloff start distance",
+          "value": 1500,
+          "unit": "world units from muzzle to hit point",
+          "source": "src/game/g_combat.c:1384"
+        },
+        {
+          "name": "falloff end distance",
+          "value": 2500,
+          "unit": "world units",
+          "source": "src/game/g_combat.c:1384"
+        },
+        {
+          "name": "body falloff coefficient",
+          "value": 0.5,
+          "unit": "minimum scale is 1 minus this",
+          "source": "src/game/g_combat.c:1660"
+        },
+        {
+          "name": "head falloff coefficient",
+          "value": 0.8,
+          "unit": "minimum scale is 1 minus this",
+          "source": "src/game/g_combat.c:1708"
+        },
+        {
+          "name": "headshot damage multiplier",
+          "value": 2,
+          "unit": "multiplier on damage",
+          "source": "src/game/g_combat.c:1704"
+        },
+        {
+          "name": "headshot minimum damage",
+          "value": 50,
+          "unit": "health points",
+          "source": "src/game/g_combat.c:1704"
+        },
+        {
+          "name": "helmet protection on first headshot",
+          "value": ".8f",
+          "unit": "multiplier on damage",
+          "source": "src/game/g_combat.c:1717"
+        },
+        {
+          "name": "headshot confirm trace length",
+          "value": 64,
+          "unit": "world units",
+          "source": "src/game/g_combat.c:1181"
+        },
+        {
+          "name": "fallback head box half extent X and Y",
+          "value": 6,
+          "unit": "units, full width 12",
+          "source": "src/game/g_combat.c:959"
+        },
+        {
+          "name": "fallback head box top Z",
+          "value": 10,
+          "unit": "units above the head origin",
+          "source": "src/game/g_combat.c:959"
+        },
+        {
+          "name": "fallback head box bottom Z",
+          "value": -2,
+          "unit": "units below the head origin",
+          "source": "src/game/g_combat.c:958"
+        },
+        {
+          "name": "adrenaline damage multiplier",
+          "value": ".5f",
+          "unit": "multiplier on damage taken",
+          "source": "src/game/g_combat.c:1687"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1379
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1145
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 950
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1699
+        },
+        {
+          "path": "src/game/g_cvars.c",
+          "line": 647
+        }
+      ],
+      "capabilities": [
+        "range-based damage fade",
+        "headshot bonus with floor",
+        "helmet protection",
+        "no head hits on downed players"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "headshot",
+        "fps"
+      ]
+    },
+    {
+      "id": "knockback-explosive-clamp",
+      "node": "bullets-damage",
+      "name": "Knockback, control lockout and explosive clamp",
+      "summary": "Knockback speed is damage up to 200 times 1000 over 200, so up to 1000 units per second at full damage. Legacy clamps explosive knockback to 480 horizontal and 320 vertical.",
+      "behavior": "Knockback is the damage taken capped at 200. It is halved for half-knockback hits such as satchels and landmines, and halved again when the victim has a set weapon. The impulse is the normalized hit direction times the g_knockback cvar of 1000 times knockback over a fixed mass of 200. It is added to the current velocity. A knockback timer then removes ground control: the timer lasts twice the knockback value clamped between 50 and 200 ms. During the timer the player uses air acceleration on the ground and has no ground friction. Self-inflicted damage from grenades, dynamite, rifle grenades, the M7 and landmines multiplies the vertical velocity by 0.25, which keeps explosive jumps low. Legacy-only addition: for explosive hits the three velocity components are clamped after the impulse. The cap is a 96 unit horizontal and 64 unit vertical displacement over 200 ms, so 480 and 320 units per second. That keeps explosive jumps from launching the player across the map. Radius damage falls off linearly from full at the center to zero at the radius. A target hidden behind geometry takes 0.1 of the value, only when it is closer than 0.2 of the radius. The push direction gets 24 units added upward before it is normalized, so players get lifted.",
+      "constants": [
+        {
+          "name": "knockback damage cap",
+          "value": 200,
+          "unit": "health points of damage that count",
+          "source": "src/game/g_combat.c:1670"
+        },
+        {
+          "name": "knockback mass",
+          "value": 200,
+          "unit": "divisor",
+          "source": "src/game/g_combat.c:1806"
+        },
+        {
+          "name": "knockback cvar default",
+          "value": 1000,
+          "unit": "impulse scale in units per second per full knockback",
+          "source": "src/game/g_cvars.c:435"
+        },
+        {
+          "name": "knockback timer minimum",
+          "value": 50,
+          "unit": "ms",
+          "source": "src/game/g_combat.c:1840"
+        },
+        {
+          "name": "knockback timer maximum",
+          "value": 200,
+          "unit": "ms",
+          "source": "src/game/g_combat.c:1840"
+        },
+        {
+          "name": "half knockback multiplier",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/g_combat.c:1674"
+        },
+        {
+          "name": "self explosive vertical velocity scale",
+          "value": 0.25,
+          "unit": "multiplier on vertical velocity",
+          "source": "src/game/g_combat.c:1828"
+        },
+        {
+          "name": "Legacy explosive clamp horizontal distance",
+          "value": 96,
+          "unit": "units over the clamp window",
+          "source": "src/game/g_combat.c:49"
+        },
+        {
+          "name": "Legacy explosive clamp vertical distance",
+          "value": 64,
+          "unit": "units over the clamp window",
+          "source": "src/game/g_combat.c:50"
+        },
+        {
+          "name": "Legacy explosive clamp window",
+          "value": 200,
+          "unit": "ms",
+          "source": "src/game/g_combat.c:48"
+        },
+        {
+          "name": "occluded explosion scale",
+          "value": 0.1,
+          "unit": "multiplier on damage",
+          "source": "src/game/g_combat.c:2493"
+        },
+        {
+          "name": "occluded explosion range fraction",
+          "value": 0.2,
+          "unit": "fraction of radius",
+          "source": "src/game/g_combat.c:2475"
+        },
+        {
+          "name": "explosion lift offset",
+          "value": 24,
+          "unit": "units added to the push direction",
+          "source": "src/game/g_combat.c:2460"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1430
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 56
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 2344
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 2439
+        }
+      ],
+      "capabilities": [
+        "explosive jump control",
+        "temporary loss of air and ground control after hit",
+        "linear splash falloff"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "physics",
+        "knockback"
+      ]
+    },
+    {
+      "id": "class-charge-bar",
+      "node": "class-charge",
+      "name": "Class charge bar times and per-weapon costs",
+      "summary": "Each class has one recharge clock: soldier 20 s, medic 45 s, engineer 30 s, field ops 40 s, covert ops 30 s. Class weapons cost a fraction of it, from 0.15 to 1.",
+      "behavior": "The charge bar is not a stored meter. It is a timestamp. The class special weapon may fire only when the time since that timestamp is at least cost times the class full-bar time. After a shot the timestamp moves forward by cost times full-bar time, clamped so it cannot bank more than one full bar. This makes the bar refill in real time with no per-frame work. Full-bar times come from five server cvars. A map script can scale each one for one team with a modifier that starts at 1. The weapon table lists two cost values per charge weapon, one for no skill and one for a given class skill. The panzerfaust and bazooka cost 1 and 0.66, so a soldier with the Projectile Stamina skill fires three rockets per two bars. The landmine costs 0.5 and 0.33. Dynamite costs 1 and 0.66. The medic pack and the ammo pack cost 0.25 and 0.15. The rifle grenades cost 0.5 at both levels. The artillery call, the airstrike marker, the satchel, the smoke marker and the smoke bomb also cost 1 and 0.66. If the bar is not ready the weapon does nothing, and the medic pack and ammo pack play a no-power animation. Revive keeps the old charge timestamp, so dying does not give a free refill. Legacy-only addition: the g_stickyCharge cvar (default 0) keeps and reconstructs the bar across death and respawn.",
+      "constants": [
+        {
+          "name": "soldier full bar time",
+          "value": 20000,
+          "unit": "ms of real time",
+          "source": "src/game/g_cvars.c:384"
+        },
+        {
+          "name": "medic full bar time",
+          "value": 45000,
+          "unit": "ms of real time",
+          "source": "src/game/g_cvars.c:381"
+        },
+        {
+          "name": "engineer full bar time",
+          "value": 30000,
+          "unit": "ms of real time",
+          "source": "src/game/g_cvars.c:382"
+        },
+        {
+          "name": "field ops full bar time",
+          "value": 40000,
+          "unit": "ms of real time",
+          "source": "src/game/g_cvars.c:383"
+        },
+        {
+          "name": "covert ops full bar time",
+          "value": 30000,
+          "unit": "ms of real time",
+          "source": "src/game/g_cvars.c:385"
+        },
+        {
+          "name": "panzerfaust cost with and without skill",
+          "value": "{1, .66f}",
+          "unit": "fraction of the soldier full bar",
+          "source": "src/game/bg_misc.c:166"
+        },
+        {
+          "name": "landmine cost with and without skill",
+          "value": "{.5f, .33f}",
+          "unit": "fraction of the engineer full bar",
+          "source": "src/game/bg_misc.c:189"
+        },
+        {
+          "name": "dynamite cost with and without skill",
+          "value": "{1, .66f}",
+          "unit": "fraction of the engineer full bar",
+          "source": "src/game/bg_misc.c:177"
+        },
+        {
+          "name": "medic pack cost with and without skill",
+          "value": "{.25f, .15f}",
+          "unit": "fraction of the medic full bar",
+          "source": "src/game/bg_misc.c:181"
+        },
+        {
+          "name": "ammo pack cost with and without skill",
+          "value": "{.25f, .15f}",
+          "unit": "fraction of the field ops full bar",
+          "source": "src/game/bg_misc.c:174"
+        },
+        {
+          "name": "rifle grenade cost",
+          "value": "{.5f, .5f}",
+          "unit": "fraction of the engineer full bar",
+          "source": "src/game/bg_misc.c:202"
+        },
+        {
+          "name": "g_stickyCharge default",
+          "value": 0,
+          "unit": "boolean flag, Legacy only",
+          "source": "src/game/g_cvars.c:656"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3735
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3752
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 277
+        },
+        {
+          "path": "src/game/g_main.c",
+          "line": 1502
+        }
+      ],
+      "capabilities": [
+        "time-based class ability resource",
+        "skill-reduced costs",
+        "map-scripted charge speed"
+      ],
+      "tags": [
+        "classes",
+        "cooldown",
+        "balance",
+        "fps"
+      ]
+    },
+    {
+      "id": "revive-and-health-packs",
+      "node": "medic-revive",
+      "name": "Syringe revive, health packs and adrenaline",
+      "summary": "A medic revives a downed teammate within 64 units to half health, or full health with the Full Revive skill. A health pack gives 20 health. Adrenaline lasts 10 seconds.",
+      "behavior": "The syringe traces 64 units forward. The trace ignores enemy players and passes through planted dynamite, satchels and landmines. If it meets a downed teammate, the target respawns in place with the class timestamp kept, so the revive never refills their charge bar. Health after revive is half the target maximum, or the full maximum when the medic has the Full Revive skill. The reviver earns 4 first-aid XP unless the downed player was team-killed. A revived player gets an invulnerability window of 3000 ms, or only 1000 ms when the g_fastres cvar is on. That cvar defaults to 0 and its origin was not checked. The syringe does not heal living players in the stock rules. Legacy-only addition: with g_syringeHealing set to 1, which defaults to 0, a syringe shot on a living teammate at or below a quarter of max health sets health to the revive amount and earns 2 XP, otherwise the shot is refunded. The medic pack is a 20 health item thrown 75 units per second forward with a pitch clamp of 30 degrees. It lives 30000 ms and gives its health to the player who touches it, up to maximum health. The adrenaline needle sets a 10000 ms powerup that pins the stamina bar full and halves all damage the user takes.",
+      "constants": [
+        {
+          "name": "revive reach",
+          "value": 64,
+          "unit": "units from the muzzle",
+          "source": "src/game/bg_public.h:3163"
+        },
+        {
+          "name": "revive health fraction without skill",
+          "value": 0.5,
+          "unit": "fraction of max health",
+          "source": "src/game/g_weapon.c:362"
+        },
+        {
+          "name": "revive XP",
+          "value": 4,
+          "unit": "first aid XP",
+          "source": "src/game/g_weapon.c:593"
+        },
+        {
+          "name": "revive invulnerability",
+          "value": 3000,
+          "unit": "ms",
+          "source": "src/game/g_client.c:3321"
+        },
+        {
+          "name": "fast revive invulnerability",
+          "value": 1000,
+          "unit": "ms when g_fastres is 1",
+          "source": "src/game/g_client.c:3317"
+        },
+        {
+          "name": "Legacy syringe heal threshold",
+          "value": 0.25,
+          "unit": "fraction of max health, g_syringeHealing must be 1",
+          "source": "src/game/g_weapon.c:469"
+        },
+        {
+          "name": "health pack amount",
+          "value": 20,
+          "unit": "health points per pickup",
+          "source": "src/game/bg_misc.c:588"
+        },
+        {
+          "name": "health pack lifetime",
+          "value": 30000,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:221"
+        },
+        {
+          "name": "adrenaline duration",
+          "value": 10000,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:617"
+        },
+        {
+          "name": "Legacy g_syringeHealing default",
+          "value": 0,
+          "unit": "boolean flag",
+          "source": "src/game/g_cvars.c:460"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 341
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 500
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 442
+        },
+        {
+          "path": "src/game/g_items.c",
+          "line": 586
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 157
+        }
+      ],
+      "capabilities": [
+        "revive in place",
+        "throwable health packs",
+        "temporary stamina and damage boost"
+      ],
+      "tags": [
+        "classes",
+        "medic",
+        "revive",
+        "health"
+      ]
+    },
+    {
+      "id": "health-model-medic-bonus",
+      "node": "medic-revive",
+      "name": "Class health scaling and medic regeneration",
+      "summary": "Base health is 100, plus 10 for every medic on the team up to 125, plus 15 for Battle Sense. Medics get 1.12 times that and regenerate 3 then 2 health per second.",
+      "behavior": "Maximum health is recomputed every frame. It starts at 100 and adds 10 for each medic on the same team, capped at 125 before bonuses. The Battle Sense health skill then adds 15, though the player spawns 15 below that maximum, so the bonus shows after healing. A medic multiplies the result by 1.12 and spawns at the maximum divided by 1.12. Only medics regenerate. Once per second they gain 3 health while at or below the maximum divided by 1.11, capped at the maximum divided by 1.1. Above the maximum divided by 1.11 they gain 2 health per second up to the maximum. A health value above the maximum counts down by 1 per second. The regen timer pauses at full health and resets, so after damage the first tick takes a full second.",
+      "constants": [
+        {
+          "name": "base health",
+          "value": 100,
+          "unit": "health points",
+          "source": "src/game/bg_public.h:51"
+        },
+        {
+          "name": "health per medic on team",
+          "value": 10,
+          "unit": "health points per medic",
+          "source": "src/game/g_client.c:1430"
+        },
+        {
+          "name": "medic count health cap",
+          "value": 125,
+          "unit": "health points",
+          "source": "src/game/g_client.c:1432"
+        },
+        {
+          "name": "Battle Sense health bonus",
+          "value": 15,
+          "unit": "health points",
+          "source": "src/game/g_client.c:1439"
+        },
+        {
+          "name": "medic health multiplier",
+          "value": 1.12,
+          "unit": "multiplier on maximum health",
+          "source": "src/game/g_client.c:1444"
+        },
+        {
+          "name": "medic regen below threshold",
+          "value": 3,
+          "unit": "health points per second",
+          "source": "src/game/g_active.c:935"
+        },
+        {
+          "name": "medic regen above threshold",
+          "value": 2,
+          "unit": "health points per second",
+          "source": "src/game/g_active.c:926"
+        },
+        {
+          "name": "medic regen tick",
+          "value": 1000,
+          "unit": "ms between ticks",
+          "source": "src/game/g_active.c:914"
+        },
+        {
+          "name": "medic regen threshold divisor",
+          "value": 1.11,
+          "unit": "maximum health divisor for the slower rate",
+          "source": "src/game/g_active.c:924"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_client.c",
+          "line": 1427
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 897
+        },
+        {
+          "path": "src/game/g_client.c",
+          "line": 3390
+        }
+      ],
+      "capabilities": [
+        "team composition health bonus",
+        "medic self regeneration",
+        "skill health bonus"
+      ],
+      "tags": [
+        "classes",
+        "medic",
+        "health",
+        "balance"
+      ]
+    },
+    {
+      "id": "downed-gib-limbo",
+      "node": "limbo-spawn-waves",
+      "name": "Downed bodies, gib health and forced limbo",
+      "summary": "A player at zero health is a revivable body. Below minus 113 they go to limbo. Below minus 175 they gib, and bullets can never gib.",
+      "behavior": "Death does not remove the player at once. A player whose health falls to zero or below becomes a body that can be revived. They stay in the world for a medic, and their own respawn is held for 800 ms after death so the death animation can finish. Bodies keep taking damage. If damage to an already downed body takes its health below minus 113, the player is forced into limbo, the spectator-like waiting state, and cannot be revived. If health falls to minus 175 or lower the body gibs. Bullet and other non-explosive damage clamps health to just above the gib limit, so only explosive damage types gib by health alone. One damage event above 190 on a player still sets the health to the gib state. Headshots do not apply to bodies, to keep revive windows open. Optional health pack and ammo pack drops on death are controlled by the g_dropHealth and g_dropAmmo cvars, which default to 0. A player in limbo waits for the next respawn wave.",
+      "constants": [
+        {
+          "name": "forced limbo health",
+          "value": -113,
+          "unit": "health points",
+          "source": "src/game/bg_public.h:56"
+        },
+        {
+          "name": "gib health",
+          "value": -175,
+          "unit": "health points",
+          "source": "src/game/bg_public.h:58"
+        },
+        {
+          "name": "single hit gib damage",
+          "value": 190,
+          "unit": "health points in one damage event",
+          "source": "src/game/g_combat.c:1939"
+        },
+        {
+          "name": "respawn hold after death",
+          "value": 800,
+          "unit": "ms",
+          "source": "src/game/g_combat.c:858"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_combat.c",
+          "line": 449
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1963
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 1930
+        },
+        {
+          "path": "src/game/g_client.c",
+          "line": 878
+        }
+      ],
+      "capabilities": [
+        "revivable bodies",
+        "explosive gibbing",
+        "limbo threshold"
+      ],
+      "tags": [
+        "combat",
+        "death",
+        "revive",
+        "health"
+      ]
+    },
+    {
+      "id": "reinforcement-waves",
+      "node": "limbo-spawn-waves",
+      "name": "Reinforcement wave clock and spawn protection",
+      "summary": "Each team respawns on a shared 30 second repeating clock, not a per-death timer. Spawned players are invulnerable for 3000 ms.",
+      "behavior": "Players who wait in limbo respawn together when their team clock wraps. The clock for each team is the time since match start plus a team offset, modulo the team wave time. The wave time defaults to 30000 ms for both teams and a map script can change it per team with a respawn time command. Each team also gets a random offset of 0 to 15 seconds when the match is set up, so the two team waves do not line up. A waiting player respawns on the frame where the clock value is lower than the value stored for them on the previous frame. A player who dies right after a wave waits almost the full 30 seconds. A player who dies right before waits almost no time. During warmup players respawn after the 800 ms death hold. With g_forcerespawn set to minus 1 they respawn at once in play as well. Servers can limit lives with g_maxlives, which defaults to 0 for unlimited. On spawn the player gets 3000 ms of invulnerability. The window ends on its own timer and nothing in the code traced here ends it early when the player fires.",
+      "constants": [
+        {
+          "name": "Axis wave time default",
+          "value": 30000,
+          "unit": "ms per wave",
+          "source": "src/game/g_cvars.c:379"
+        },
+        {
+          "name": "Allied wave time default",
+          "value": 30000,
+          "unit": "ms per wave",
+          "source": "src/game/g_cvars.c:380"
+        },
+        {
+          "name": "spawn invulnerability",
+          "value": 3000,
+          "unit": "ms",
+          "source": "src/game/g_client.c:3321"
+        },
+        {
+          "name": "random wave offset range",
+          "value": 16,
+          "unit": "seconds, offset is 0 to 15 seconds per team",
+          "source": "src/game/bg_public.h:342"
+        },
+        {
+          "name": "maximum lives default",
+          "value": 0,
+          "unit": "lives, 0 means unlimited",
+          "source": "src/game/g_cvars.c:453"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_active.c",
+          "line": 1844
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 1850
+        },
+        {
+          "path": "src/game/g_client.c",
+          "line": 998
+        },
+        {
+          "path": "src/game/g_client.c",
+          "line": 3001
+        }
+      ],
+      "capabilities": [
+        "team spawn waves",
+        "spawn invulnerability",
+        "script-controlled wave time and offset"
+      ],
+      "tags": [
+        "multiplayer",
+        "respawn",
+        "objectives",
+        "balance"
+      ]
+    },
+    {
+      "id": "construction-pliers",
+      "node": "objectives-engineering",
+      "name": "Construction progress with pliers",
+      "summary": "A constructible has progress from 0 to 250. Each pliers use adds 255 divided by duration over 100 ms. Three classes set duration 2500, 5000 or 7500 ms.",
+      "behavior": "An engineer builds by holding the pliers on a constructible of the engineer team while the engineer has charge. Each pliers use adds a fixed amount to the progress value, the amount being 255 divided by the duration in ms over 100. The structure completes when progress reaches 250. Progress decays when nobody builds. A pause of 500 ms must pass between the end of a build and the next start, which prevents network spam. The pliers table row lists 50 ms between uses, so the real build time may be about half of the nominal duration. That was not measured. Three built-in classes define the cost and the reward. Class one has a charge cost of 0.5 of a full engineer bar, a duration of 2500 ms and a health of 350. Class two has 1 bar and 5000 ms. Class three has 1.5 bars and 7500 ms. Maps can override the duration, health and charge cost with script commands. On each use the charge check moves the engineer timestamp forward by the class charge cost times the full bar time divided by the number of progress ticks, so the whole job drains the cost in bars. The Engineer stamina skill multiplies that drain by 0.66. Players and loose items inside the structure volume are crushed or removed when the structure completes. Experience is paid per progress tick. The third class has a weapon class of 3, which no stock explosive reaches, so it needs a map script to be destroyable.",
+      "constants": [
+        {
+          "name": "progress target",
+          "value": 250,
+          "unit": "progress units",
+          "source": "src/game/g_weapon.c:1145"
+        },
+        {
+          "name": "progress scale",
+          "value": 255,
+          "unit": "progress units spread over the build duration",
+          "source": "src/game/g_weapon.c:1138"
+        },
+        {
+          "name": "game think frame time",
+          "value": 100,
+          "unit": "ms",
+          "source": "src/qcommon/q_math.h:123"
+        },
+        {
+          "name": "class 1 duration",
+          "value": 2500,
+          "unit": "ms nominal",
+          "source": "src/game/g_mover.c:5587"
+        },
+        {
+          "name": "class 2 duration",
+          "value": 5000,
+          "unit": "ms nominal",
+          "source": "src/game/g_mover.c:5588"
+        },
+        {
+          "name": "class 3 duration",
+          "value": 7500,
+          "unit": "ms nominal",
+          "source": "src/game/g_mover.c:5589"
+        },
+        {
+          "name": "class 1 health",
+          "value": 350,
+          "unit": "health points",
+          "source": "src/game/g_mover.c:5587"
+        },
+        {
+          "name": "class 3 charge cost",
+          "value": 1.5,
+          "unit": "fraction of the engineer full bar",
+          "source": "src/game/g_mover.c:5589"
+        },
+        {
+          "name": "post-build restart delay",
+          "value": 500,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:979"
+        },
+        {
+          "name": "Engineer stamina skill cost multiplier",
+          "value": 0.66,
+          "unit": "multiplier on charge drained",
+          "source": "src/game/g_active.c:320"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 990
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 302
+        },
+        {
+          "path": "src/game/g_mover.c",
+          "line": 5585
+        }
+      ],
+      "capabilities": [
+        "team-owned buildable objectives",
+        "charge-gated building",
+        "staged construction"
+      ],
+      "tags": [
+        "objectives",
+        "engineer",
+        "construction",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "dynamite-fuse-arming",
+      "node": "objectives-engineering",
+      "name": "Dynamite arming and fuse",
+      "summary": "Arming adds 7 per pliers use until 250, or 14 with the Pliers Dexterity skill. A planted charge explodes 30000 ms after arming for 400 damage in a 400 radius.",
+      "behavior": "A thrown dynamite stick lands with arming progress at zero. The engineer holds the pliers on it. The charge belongs to the thrower team, and only that team can arm it. Each pliers use adds 7, or 14 with the Pliers Dexterity skill, and arming completes at 250, so about 36 uses or 18 with the skill. The pliers weapon fires every 50 ms in the table, so arming takes about 1.8 seconds, or 0.9 with the skill. This time is derived from table values and was not measured. When complete the fuse is 30000 ms. The charge cannot be disarmed for the first 1000 ms. Enemy engineers disarm an armed charge, which sits at a health value of 5, by adding 3 per use (6 with Pliers Dexterity) until 248. That is about 81 uses, or about 4 seconds at 50 ms per use, derived and not measured. A successful enemy defuse pays 6 XP. Arming is refused during sudden death. Dynamite blast splash damage is 400 with a radius of 400, and linear falloff applies. Dynamite near an objective can chain: other charges on the same objective in range explode together. Each destroyable structure has a weapon class, and a weapon damages it only when its own class is at least as high. Plain explosives are class 0, satchels 1 and dynamite 2. So class 1 structures fall to satchel or dynamite and class 2 structures only to dynamite. The throw speed is 400 at most, lower than a grenade.",
+      "constants": [
+        {
+          "name": "arm progress per use",
+          "value": 7,
+          "unit": "progress units per pliers use",
+          "source": "src/game/g_weapon.c:1678"
+        },
+        {
+          "name": "arm progress complete",
+          "value": 250,
+          "unit": "progress units",
+          "source": "src/game/g_weapon.c:1679"
+        },
+        {
+          "name": "disarm progress per use",
+          "value": 3,
+          "unit": "progress units per pliers use",
+          "source": "src/game/g_weapon.c:1680"
+        },
+        {
+          "name": "fuse after arming",
+          "value": 30000,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:2233"
+        },
+        {
+          "name": "disarm lockout after arming",
+          "value": 1000,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:1845"
+        },
+        {
+          "name": "splash damage",
+          "value": 400,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:177"
+        },
+        {
+          "name": "splash radius",
+          "value": 400,
+          "unit": "world units",
+          "source": "src/game/bg_misc.c:177"
+        },
+        {
+          "name": "pliers time between uses",
+          "value": 50,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:184"
+        },
+        {
+          "name": "defuse XP",
+          "value": 6,
+          "unit": "engineering XP",
+          "source": "src/game/g_weapon.c:2344"
+        },
+        {
+          "name": "disarm completion value",
+          "value": 248,
+          "unit": "progress units",
+          "source": "src/game/g_weapon.c:1681"
+        },
+        {
+          "name": "dynamite weapon class",
+          "value": 2,
+          "unit": "weapon class used to compare with structure class",
+          "source": "src/game/bg_public.h:1318"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2173
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2204
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 2410
+        }
+      ],
+      "capabilities": [
+        "plant and defend objectives",
+        "defuse mechanic",
+        "chain explosions"
+      ],
+      "tags": [
+        "objectives",
+        "engineer",
+        "explosives",
+        "timer"
+      ]
+    },
+    {
+      "id": "landmine-arming-trigger",
+      "node": "objectives-engineering",
+      "name": "Landmine arming, trigger radius and delayed blast",
+      "summary": "A mine arms at 12 per pliers use up to 250, then primes after 2000 ms. A player within 64 units on the ground arms the trigger. It blows 300 ms after they step away.",
+      "behavior": "An engineer throws a mine at slow speed. It is then armed with the pliers at 12 progress per use, or 24 with the Engineer stamina skill. It completes at 250. When armed the mine becomes walk-through and waits 2000 ms before it primes. Its own team sees it. Enemies see it only with the right skill or a spotter. A primed mine checks every 100 ms for any player within 64 units of its origin with a vertical difference below 45, so a player who jumps over it does not trigger it. Teammates also trigger the mine because the same-team skip is disabled. When someone steps on the radius the mine marks itself triggered. It then waits until nobody is inside the radius and blows 300 ms later. That is the step-off blast design. A team can have 10 armed mines by default. The eleventh is refused and returned. The blast is 250 damage with a 250 radius, and the mine uses half knockback. The Battle Sense trap awareness skill shows enemy mines to the player, and a covert ops looking through binoculars reveals them to the team. Defusing an enemy mine pays 4 XP and returns one mine to the engineer. Disarming adds 3 progress per use, or 6 with the Engineer stamina skill, up to 250.",
+      "constants": [
+        {
+          "name": "arm progress per use",
+          "value": 12,
+          "unit": "progress units per pliers use",
+          "source": "src/game/g_weapon.c:1671"
+        },
+        {
+          "name": "arm progress complete",
+          "value": 250,
+          "unit": "progress units",
+          "source": "src/game/g_weapon.c:1673"
+        },
+        {
+          "name": "prime delay after arming",
+          "value": 2000,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:1851"
+        },
+        {
+          "name": "trigger radius",
+          "value": 64,
+          "unit": "world units, full distance not half extent",
+          "source": "src/game/g_missile.c:1614"
+        },
+        {
+          "name": "trigger vertical limit",
+          "value": 45,
+          "unit": "world units, absolute height difference",
+          "source": "src/game/g_missile.c:1632"
+        },
+        {
+          "name": "blast delay after stepping off",
+          "value": 300,
+          "unit": "ms",
+          "source": "src/game/g_missile.c:1610"
+        },
+        {
+          "name": "splash damage",
+          "value": 250,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:189"
+        },
+        {
+          "name": "splash radius",
+          "value": 250,
+          "unit": "world units",
+          "source": "src/game/bg_misc.c:189"
+        },
+        {
+          "name": "team mine limit default",
+          "value": 10,
+          "unit": "mines per team",
+          "source": "src/game/g_cvars.c:618"
+        },
+        {
+          "name": "defuse XP",
+          "value": 4,
+          "unit": "engineering XP",
+          "source": "src/game/g_weapon.c:1896"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 1799
+        },
+        {
+          "path": "src/game/g_missile.c",
+          "line": 1622
+        },
+        {
+          "path": "src/game/g_missile.c",
+          "line": 1647
+        },
+        {
+          "path": "src/game/g_missile.c",
+          "line": 1586
+        }
+      ],
+      "capabilities": [
+        "step-off delayed mine",
+        "team mine cap",
+        "jump-over safe mines"
+      ],
+      "tags": [
+        "objectives",
+        "engineer",
+        "explosives",
+        "traps"
+      ]
+    },
+    {
+      "id": "airstrike-call",
+      "node": "fire-support",
+      "name": "Smoke marker airstrike pass",
+      "summary": "A thrown smoke marker calls a plane 1500 ms later, or 2500 ms with the extra-support skill. The plane drops 10 bombs spaced 150 units apart along a line, one per 100 ms.",
+      "behavior": "The field ops throws a smoke marker. After the smoke lands the game checks that a team strike is available, then waits 1500 ms, or 2500 ms with the Extra Fire Support skill, and calls the plane. The call checks the sky above the marker. If a roof blocks the way the pilot aborts and the strike is lost. The marker charge is already spent at the throw. The team rate counter is only charged when the strike is accepted. A strike makes one pass, or two with the skill, and the second plane follows 2000 ms after the first. Each plane appears 250 ms after the call. A pass drops 10 bombs. Bomb positions run along a line through the marker, mostly perpendicular to the throw direction with a random tilt of up to 30 degrees. The line is 1500 units long, bombs are 150 units apart and each bomb gets a random offset of up to 75 units on both axes. One bomb drops every 100 ms of game time. Each bomb does 400 damage in a 400 radius. A shared counter limits strikes per team: each accepted strike adds 60000 divided by the allowed strikes per minute, and a new strike is refused while the counter is above 60000. The counter drains by real frame time. With team_maxAirstrikes at its default of 0, the allowed rate is the team player count times the field ops count clamped to 2 through 6, times the heavy weapon restriction percentage (default 100) over 100, rounded up.",
+      "constants": [
+        {
+          "name": "bombs per pass",
+          "value": 10,
+          "unit": "bombs",
+          "source": "src/game/g_weapon.c:2752"
+        },
+        {
+          "name": "bomb spacing",
+          "value": 150,
+          "unit": "world units along the pass line",
+          "source": "src/game/g_weapon.c:2753"
+        },
+        {
+          "name": "plane start delay after the call",
+          "value": 250,
+          "unit": "ms, plus 2000 ms per extra pass",
+          "source": "src/game/g_weapon.c:3013"
+        },
+        {
+          "name": "call delay",
+          "value": 1500,
+          "unit": "ms after the marker lands",
+          "source": "src/game/g_weapon.c:2776"
+        },
+        {
+          "name": "call delay with Extra Fire Support",
+          "value": 2500,
+          "unit": "ms after the marker lands",
+          "source": "src/game/g_weapon.c:2772"
+        },
+        {
+          "name": "bomb splash damage",
+          "value": 400,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:222"
+        },
+        {
+          "name": "bomb splash radius",
+          "value": 400,
+          "unit": "world units",
+          "source": "src/game/bg_misc.c:222"
+        },
+        {
+          "name": "rate limit window",
+          "value": 60000,
+          "unit": "ms, counter ceiling and unit of the per-minute rate",
+          "source": "src/game/g_weapon.c:2609"
+        },
+        {
+          "name": "random pass tilt",
+          "value": 30,
+          "unit": "degrees",
+          "source": "src/game/g_weapon.c:2967"
+        },
+        {
+          "name": "team_maxAirstrikes default",
+          "value": 0,
+          "unit": "strikes per minute, 0 means derived from team makeup",
+          "source": "src/game/g_cvars.c:603"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2759
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2905
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2818
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 2652
+        },
+        {
+          "path": "src/game/g_main.c",
+          "line": 4638
+        }
+      ],
+      "capabilities": [
+        "marker-guided bomb line",
+        "sky check abort",
+        "team strike rate limit"
+      ],
+      "tags": [
+        "combat",
+        "fieldops",
+        "support",
+        "explosives"
+      ]
+    },
+    {
+      "id": "artillery-barrage",
+      "node": "fire-support",
+      "name": "Field artillery spotter round and barrage",
+      "summary": "Artillery lands a spotter round after 5000 ms, then 4 shells, or 8 with the extra-support skill. The spotter does 90 damage in 50 units and the shells scatter within 250.",
+      "behavior": "The field ops fires the binoculars at a point. The game traces to the target, then up to the sky. If anything blocks the way the call aborts with a message and no charge is spent. Otherwise a spotter entity is created above the point and the team counter is charged. After 5000 ms the first round, the spotter, falls within 50 units of the target. The spotter has 90 damage and a 50 radius and marks the spot with colored smoke. The spotter timer gets an extra 3950 ms, so the first main shell follows about 5950 ms later, give or take 800 ms. A normal barrage then fires 4 more shells, the Extra Fire Support skill makes it 8. Later shells follow about 2000 ms apart, give or take 800 ms. Each shell lands within 250 units of the target and uses the table values of 400 damage in a 400 unit radius. The caller pays 1 full field ops bar, or 0.66 with the Fire Support Stamina skill, and the same shared counter as airstrikes limits the team. The call is refused unless the bar holds a full 1.0, or 0.66 with the skill.",
+      "constants": [
+        {
+          "name": "spotter delay",
+          "value": 5000,
+          "unit": "ms from the call to the first round",
+          "source": "src/game/g_weapon.c:3303"
+        },
+        {
+          "name": "spotter splash damage",
+          "value": 90,
+          "unit": "health points at the center",
+          "source": "src/game/g_weapon.c:3152"
+        },
+        {
+          "name": "spotter splash radius",
+          "value": 50,
+          "unit": "world units",
+          "source": "src/game/g_weapon.c:3153"
+        },
+        {
+          "name": "spotter scatter",
+          "value": 50,
+          "unit": "world units random offset per axis",
+          "source": "src/game/g_weapon.c:3128"
+        },
+        {
+          "name": "barrage scatter",
+          "value": 250,
+          "unit": "world units random offset per axis",
+          "source": "src/game/g_weapon.c:3162"
+        },
+        {
+          "name": "extra delay added after the spotter round",
+          "value": 3950,
+          "unit": "ms",
+          "source": "src/game/g_weapon.c:3151"
+        },
+        {
+          "name": "base gap between shells",
+          "value": 2000,
+          "unit": "ms, from the artillery missile table row",
+          "source": "src/game/g_weapon.c:4270"
+        },
+        {
+          "name": "shell gap random range",
+          "value": 800,
+          "unit": "ms, plus or minus around the base delay",
+          "source": "src/game/g_weapon.c:3187"
+        },
+        {
+          "name": "shells per barrage including spotter",
+          "value": 5,
+          "unit": "rounds",
+          "source": "src/game/g_weapon.c:3319"
+        },
+        {
+          "name": "shells per barrage with Extra Fire Support",
+          "value": 9,
+          "unit": "rounds",
+          "source": "src/game/g_weapon.c:3315"
+        },
+        {
+          "name": "shell splash damage",
+          "value": 400,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:175"
+        },
+        {
+          "name": "shell splash radius",
+          "value": 400,
+          "unit": "world units",
+          "source": "src/game/bg_misc.c:175"
+        },
+        {
+          "name": "skill charge cost",
+          "value": 0.66,
+          "unit": "fraction of the field ops full bar",
+          "source": "src/game/g_weapon.c:3329"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3226
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3113
+        },
+        {
+          "path": "src/game/g_active.c",
+          "line": 277
+        }
+      ],
+      "capabilities": [
+        "binocular-called barrage",
+        "spotter warning round",
+        "shared fire support rate limit"
+      ],
+      "tags": [
+        "combat",
+        "fieldops",
+        "support",
+        "explosives"
+      ]
+    },
+    {
+      "id": "thrown-projectile-launch",
+      "node": "projectiles",
+      "name": "Grenades, rockets, rifle grenades and mortar launch",
+      "summary": "Grenades fly at up to 900 units per second with a 4000 ms fuse that can be cooked. Rockets leave at 2500, rifle grenades at 2000. Placed items throw at 400.",
+      "behavior": "A thrown grenade takes its speed from the view pitch. Looking down gives an underhand toss and looking up an overhand one. Pitch is clamped to plus or minus 50, mapped to a 0.1 to 1 factor, then multiplied by 900 for grenades, smoke markers and smoke bombs, or by 400 for dynamite, landmines and satchels. There is also an upward bias of up to 0.5 on the direction and a boost of 1 to 1.3 for underhand pitch, so the real speed varies between about 90 and 1170. The grenade table fuse is 4000 ms. While the throw button is held the fuse counts down, and the game forces the throw when 100 ms remain, so cooking is possible. The throw has a fire delay of 250 ms and 1600 ms between throws. Rocket launchers send the rocket forward at 2500 units per second and push the shooter back by 64 units per second along the aim. Rifle grenades fly at 2000. The mortar fires at an angle of 60 degrees above the view pitch, with horizontal speed 3300 and vertical speed 1650. Rockets and grenades obey gravity as missiles with their own physics, except rockets which fly straight. A grenade does 250 damage in a 250 radius, a panzerfaust 400 in a 300 radius.",
+      "constants": [
+        {
+          "name": "grenade throw speed at full factor",
+          "value": 900,
+          "unit": "units per second",
+          "source": "src/game/g_weapon.c:3836"
+        },
+        {
+          "name": "dynamite, mine and satchel throw speed at full factor",
+          "value": 400,
+          "unit": "units per second",
+          "source": "src/game/g_weapon.c:3840"
+        },
+        {
+          "name": "grenade fuse",
+          "value": 4000,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:165"
+        },
+        {
+          "name": "forced throw time left",
+          "value": 100,
+          "unit": "ms of fuse left when a held grenade is thrown",
+          "source": "src/game/bg_pmove.c:3334"
+        },
+        {
+          "name": "minimum time between throws",
+          "value": 1600,
+          "unit": "ms",
+          "source": "src/game/bg_misc.c:165"
+        },
+        {
+          "name": "rocket speed",
+          "value": 2500,
+          "unit": "units per second",
+          "source": "src/game/g_weapon.c:3919"
+        },
+        {
+          "name": "rocket launcher kickback",
+          "value": -64,
+          "unit": "units per second added along the aim",
+          "source": "src/game/g_weapon.c:3928"
+        },
+        {
+          "name": "rifle grenade speed",
+          "value": 2000,
+          "unit": "units per second",
+          "source": "src/game/g_weapon.c:3744"
+        },
+        {
+          "name": "mortar horizontal launch speed base",
+          "value": 3000,
+          "unit": "units per second times 1.1",
+          "source": "src/game/g_weapon.c:3773"
+        },
+        {
+          "name": "mortar vertical launch speed base",
+          "value": 1500,
+          "unit": "units per second times 1.1",
+          "source": "src/game/g_weapon.c:3775"
+        },
+        {
+          "name": "mortar launch pitch offset",
+          "value": 60,
+          "unit": "degrees above the view pitch",
+          "source": "src/game/g_weapon.c:3763"
+        },
+        {
+          "name": "grenade splash damage",
+          "value": 250,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:165"
+        },
+        {
+          "name": "panzerfaust splash radius",
+          "value": 300,
+          "unit": "world units",
+          "source": "src/game/bg_misc.c:166"
+        },
+        {
+          "name": "panzerfaust splash damage",
+          "value": 400,
+          "unit": "health points at the center",
+          "source": "src/game/bg_misc.c:166"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3794
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3911
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3710
+        },
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 3756
+        },
+        {
+          "path": "src/game/bg_pmove.c",
+          "line": 3328
+        }
+      ],
+      "capabilities": [
+        "pitch-based throw arc",
+        "grenade cooking",
+        "rocket kickback",
+        "mortar lob"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "projectiles",
+        "explosives"
+      ]
+    },
+    {
+      "id": "skill-xp-levels",
+      "node": "skills-xp",
+      "name": "Skill XP thresholds and sources",
+      "summary": "Seven skills each have levels at 0, 20, 50, 90 and 140 XP. Kills, revives, builds and uniform theft add XP, and each level unlocks one perk.",
+      "behavior": "Every skill tracks its own XP and its level is the highest threshold reached: 20, 50, 90 and 140 give levels 1 to 4. Points are only awarded during real play, not in warmup, and not in last man standing. A level gain re-applies the loadout so new weapons appear. Sources of XP include kills, which come from a per-damage-type table: a submachine gun kill pays 3 with 5 for a headshot, and a backstab pays 5. Other sources are a revive at 4, health pack pickup by a teammate at 1, uniform theft at 5, defusing dynamite at 6, defusing a landmine at 4, kill assists up to 3 for Battle Sense and constructing, paid per progress tick. Perks by skill: Battle Sense gives binoculars, a faster stamina refill, 15 extra health and mine awareness. Heavy weapons gives faster charge, faster cooling, speed and an SMG for soldiers. First Aid gives extra ammo, cheaper medic packs, full revive and adrenaline. Engineering gives an extra grenade, faster pliers, cheaper mines and a flak jacket. Signals gives bigger ammo packs, cheaper support, extra strikes and enemy recognition. Light weapons gives more ammo, faster reload, steadier aim and akimbo pistols. Covert Ops gives more ammo, cheaper satchels, breath control and assassin knife kills.",
+      "constants": [
+        {
+          "name": "level 1 threshold",
+          "value": 20,
+          "unit": "XP points per skill",
+          "source": "src/game/bg_misc.c:59"
+        },
+        {
+          "name": "level 2 threshold",
+          "value": 50,
+          "unit": "XP points per skill",
+          "source": "src/game/bg_misc.c:59"
+        },
+        {
+          "name": "level 3 threshold",
+          "value": 90,
+          "unit": "XP points per skill",
+          "source": "src/game/bg_misc.c:59"
+        },
+        {
+          "name": "level 4 threshold",
+          "value": 140,
+          "unit": "XP points per skill",
+          "source": "src/game/bg_misc.c:59"
+        },
+        {
+          "name": "revive XP",
+          "value": 4,
+          "unit": "first aid XP",
+          "source": "src/game/g_weapon.c:593"
+        },
+        {
+          "name": "submachine gun headshot kill XP",
+          "value": 5,
+          "unit": "light weapons XP, first value of the hit-region list",
+          "source": "src/game/bg_misc.c:260"
+        },
+        {
+          "name": "backstab kill XP",
+          "value": 5,
+          "unit": "light weapons XP",
+          "source": "src/game/bg_misc.c:333"
+        },
+        {
+          "name": "kill assist maximum XP",
+          "value": 3,
+          "unit": "battle sense XP, scaled by damage dealt over max health",
+          "source": "src/game/g_stats.c:644"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_stats.c",
+          "line": 163
+        },
+        {
+          "path": "src/game/g_stats.c",
+          "line": 404
+        },
+        {
+          "path": "src/game/g_stats.c",
+          "line": 488
+        },
+        {
+          "path": "src/game/bg_public.h",
+          "line": 972
+        }
+      ],
+      "capabilities": [
+        "XP driven class perks",
+        "per-skill levels",
+        "kill and objective XP"
+      ],
+      "tags": [
+        "progression",
+        "xp",
+        "classes",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "covert-knife-backstab-disguise",
+      "node": "bullets-damage",
+      "name": "Knife damage, backstab and uniform theft",
+      "summary": "The knife does 10 damage from the front, doubled for covert ops. From behind it does 100. A covert ops steals a uniform by holding use on an enemy body for about 2.5 seconds.",
+      "behavior": "The knife reaches 48 units. Front damage comes from the weapon table, 10, with a small random 0 to 4 added. Covert ops double it. When the target is hit from behind the damage becomes 100, enough to kill a player with 100 health but not a medic-boosted player. The Assassin skill instead sets damage equal to the target current health, so it always kills. On a downed body, backstab damage reaches the gib line. Uniform theft needs a covert ops, alive, who does not carry an objective, near an enemy body. Each use of the activate button adds 5 to a body value, at most once every 50 ms. The value must reach 250, so 50 uses at least, giving 2.5 seconds at the minimum. When done the covert ops looks like the dead player, gains 5 skill XP and the body loses its hat. Firing a mounted gun, touching an objective flag, or picking up documents ends the disguise. Disguise also drops on death.",
+      "constants": [
+        {
+          "name": "knife damage",
+          "value": 10,
+          "unit": "health points",
+          "source": "src/game/bg_misc.c:162"
+        },
+        {
+          "name": "knife reach",
+          "value": 48,
+          "unit": "units",
+          "source": "src/game/bg_public.h:3164"
+        },
+        {
+          "name": "covert ops knife multiplier",
+          "value": 1,
+          "unit": "left shift amount, doubles damage",
+          "source": "src/game/g_weapon.c:120"
+        },
+        {
+          "name": "backstab damage",
+          "value": 100,
+          "unit": "health points",
+          "source": "src/game/g_weapon.c:130"
+        },
+        {
+          "name": "random extra damage bound",
+          "value": 5,
+          "unit": "exclusive upper bound of the random add",
+          "source": "src/game/g_weapon.c:148"
+        },
+        {
+          "name": "uniform progress required",
+          "value": 250,
+          "unit": "progress units",
+          "source": "src/game/g_cmds.c:4021"
+        },
+        {
+          "name": "uniform progress per use",
+          "value": 5,
+          "unit": "progress units per use",
+          "source": "src/game/g_cmds.c:4056"
+        },
+        {
+          "name": "minimum time between uses",
+          "value": 50,
+          "unit": "ms",
+          "source": "src/game/g_cmds.c:4019"
+        },
+        {
+          "name": "uniform theft XP",
+          "value": 5,
+          "unit": "covert ops XP",
+          "source": "src/game/g_cmds.c:4046"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/g_weapon.c",
+          "line": 61
+        },
+        {
+          "path": "src/game/g_cmds.c",
+          "line": 4010
+        },
+        {
+          "path": "src/game/g_combat.c",
+          "line": 654
+        }
+      ],
+      "capabilities": [
+        "silent backstab kill",
+        "enemy uniform disguise",
+        "assassin skill"
+      ],
+      "tags": [
+        "stealth",
+        "covertops",
+        "melee",
+        "classes"
+      ]
+    },
+    {
+      "id": "class-loadouts",
+      "node": "weapon-tables",
+      "name": "Class loadouts and ammo reserves",
+      "summary": "Five classes pick from a table of primary, sidearm and special weapons. The soldier starts with 60 spare submachine gun rounds and the medic with none.",
+      "behavior": "Each class lists a knife slot, primary weapons, sidearm choices, a grenade count and special items. Each entry has a skill gate, a spare ammo count and a loaded clip. The soldier chooses among the submachine gun with 60 spare, the mobile machine gun with a 150 round clip, the flamethrower with 200 fuel, the rocket launcher with 4 rockets and the mortar with 15 shells, and carries 4 grenades. The medic has a submachine gun with no spare clip, 1 grenade, a syringe with 10 charges, medic packs and adrenaline at the right skill. The engineer carries a submachine gun or rifle with 20 spare, 4 grenades, 5 rifle grenades, dynamite, pliers and a landmine. The field ops has a submachine gun with 30 spare, 1 grenade, ammo packs and the smoke marker. The covert ops has a silenced submachine gun with 64 spare, the FG42 or a scoped rifle, 2 grenades, the smoke bomb and satchel. Every class has the Light Weapons akimbo pistol upgrade, which uses 48 spare rounds. Sidearm pistols carry 24 spare rounds in 8 round clips.",
+      "constants": [
+        {
+          "name": "soldier SMG spare ammo",
+          "value": 60,
+          "unit": "rounds",
+          "source": "src/game/bg_classes.c:49"
+        },
+        {
+          "name": "soldier mortar shells",
+          "value": 15,
+          "unit": "shells",
+          "source": "src/game/bg_classes.c:53"
+        },
+        {
+          "name": "soldier rocket count",
+          "value": 4,
+          "unit": "rockets",
+          "source": "src/game/bg_classes.c:52"
+        },
+        {
+          "name": "soldier grenade count",
+          "value": 4,
+          "unit": "grenades",
+          "source": "src/game/bg_classes.c:60"
+        },
+        {
+          "name": "medic syringe charges",
+          "value": 10,
+          "unit": "revives before resupply",
+          "source": "src/game/bg_classes.c:83"
+        },
+        {
+          "name": "engineer rifle grenade count",
+          "value": 5,
+          "unit": "rounds",
+          "source": "src/game/bg_classes.c:108"
+        },
+        {
+          "name": "covert ops SMG spare ammo",
+          "value": 64,
+          "unit": "rounds",
+          "source": "src/game/bg_classes.c:148"
+        },
+        {
+          "name": "akimbo pistol spare ammo",
+          "value": 48,
+          "unit": "rounds",
+          "source": "src/game/bg_classes.c:57"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/bg_classes.c",
+          "line": 38
+        },
+        {
+          "path": "src/game/bg_misc.c",
+          "line": 158
+        }
+      ],
+      "capabilities": [
+        "five class roles",
+        "data-driven loadouts",
+        "skill-gated weapons"
+      ],
+      "tags": [
+        "classes",
+        "loadout",
+        "balance",
+        "data"
+      ]
+    }
+  ]
+}

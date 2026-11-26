@@ -1,0 +1,2786 @@
+{
+  "version": 1,
+  "id": "medal-of-honor-allied-assault",
+  "title": "Medal of Honor: Allied Assault",
+  "repo": "https://github.com/openmoh/openmohaa",
+  "sha": "a2f340195975f4f042e28a60b62561dd9a0b2700",
+  "nodes": [
+    {
+      "id": "pmove-core",
+      "name": "Shared player movement step",
+      "purpose": "Per-command player movement that both client prediction and server run: hull sizes, friction, acceleration, air control, slopes, steps, landing and the lean angle",
+      "paths": [
+        "code/fgame/bg_pmove.cpp",
+        "code/fgame/bg_slidemove.cpp",
+        "code/fgame/bg_local.h",
+        "code/fgame/bg_public.h",
+        "code/fgame/worldspawn.cpp",
+        "code/cgame/cg_view.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_Friction",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            166,
+            223
+          ]
+        },
+        {
+          "name": "PM_Accelerate",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            232,
+            249
+          ]
+        },
+        {
+          "name": "PM_CmdScale",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            260,
+            284
+          ]
+        },
+        {
+          "name": "PM_CheckTerminalVelocity",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            295,
+            317
+          ]
+        },
+        {
+          "name": "PM_GetMove",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            376,
+            383
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            391,
+            429
+          ]
+        },
+        {
+          "name": "PM_WalkMove",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            554,
+            629
+          ]
+        },
+        {
+          "name": "PM_CrashLand",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            746,
+            802
+          ]
+        },
+        {
+          "name": "PM_GroundTrace",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            871,
+            963
+          ]
+        },
+        {
+          "name": "PM_CheckDuck",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            1014,
+            1068
+          ]
+        },
+        {
+          "name": "PM_UpdateViewAngles",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            1252,
+            1286
+          ]
+        },
+        {
+          "name": "PmoveSingle",
+          "path": "code/fgame/bg_pmove.cpp",
+          "lines": [
+            1295,
+            1495
+          ]
+        },
+        {
+          "name": "PM_SlideMove",
+          "path": "code/fgame/bg_slidemove.cpp",
+          "lines": [
+            46,
+            224
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove",
+          "path": "code/fgame/bg_slidemove.cpp",
+          "lines": [
+            232,
+            308
+          ]
+        },
+        {
+          "name": "World::World",
+          "path": "code/fgame/worldspawn.cpp",
+          "lines": [
+            545,
+            631
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-control",
+      "name": "Player speed selection, jump and pmove events",
+      "purpose": "Server-side glue around the movement step: picks the per-frame speed from run, walk, crouch and weapon multipliers, turns jump and fall events into velocity and damage, and tracks the optional sprint timer",
+      "paths": [
+        "code/fgame/player.cpp",
+        "code/fgame/gamecvars.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Player::SetMoveInfo",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            3662,
+            3751
+          ]
+        },
+        {
+          "name": "Player::ClientMove",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            3970,
+            4188
+          ]
+        },
+        {
+          "name": "Player::ProcessPmoveEvents",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            6133,
+            6188
+          ]
+        },
+        {
+          "name": "Player::Jump",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            7920,
+            7953
+          ]
+        },
+        {
+          "name": "Player::SetMovePosFlags",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            8426,
+            8460
+          ]
+        },
+        {
+          "name": "Player::TickSprint",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            11930,
+            11943
+          ]
+        },
+        {
+          "name": "Player::GetRunSpeed",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            11945,
+            11962
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "weapon-fire",
+      "name": "Weapon firing, spread, recoil and cooking",
+      "purpose": "Generic weapon object whose numbers come from model data files: fire gating by movement speed, bullet spread blend, sustained-fire spread, view kick, charge and cook timing",
+      "paths": [
+        "code/fgame/weapon.cpp",
+        "code/fgame/player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Weapon::Weapon",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            580,
+            781
+          ]
+        },
+        {
+          "name": "Weapon::Shoot",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            1346,
+            1661
+          ]
+        },
+        {
+          "name": "Weapon::ReadyToFire",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            1802,
+            1842
+          ]
+        },
+        {
+          "name": "Weapon::Charge",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            2023,
+            2046
+          ]
+        },
+        {
+          "name": "Weapon::OnOverCooked",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            2056,
+            2107
+          ]
+        },
+        {
+          "name": "Weapon::ReleaseFire",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            2112,
+            2133
+          ]
+        },
+        {
+          "name": "Weapon::SetViewKick",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            3869,
+            3899
+          ]
+        },
+        {
+          "name": "Weapon::SetMaxFireMovement",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            3928,
+            3935
+          ]
+        },
+        {
+          "name": "Weapon::GetSpreadFactor",
+          "path": "code/fgame/weapon.cpp",
+          "lines": [
+            4205,
+            4222
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control"
+      ]
+    },
+    {
+      "id": "ballistics-damage",
+      "name": "Bullet traces, projectiles, explosions and location damage",
+      "purpose": "Hitscan bullet attack with spread and wall penetration, thrown and fired projectiles, radius damage with line-of-sight, knockback and the per-body-location damage multipliers",
+      "paths": [
+        "code/fgame/weaputils.cpp",
+        "code/fgame/sentient.cpp",
+        "code/fgame/barrels.cpp",
+        "code/fgame/entity.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Projectile::Projectile",
+          "path": "code/fgame/weaputils.cpp",
+          "lines": [
+            595,
+            653
+          ]
+        },
+        {
+          "name": "Projectile::Explode",
+          "path": "code/fgame/weaputils.cpp",
+          "lines": [
+            865,
+            923
+          ]
+        },
+        {
+          "name": "ProjectileAttack",
+          "path": "code/fgame/weaputils.cpp",
+          "lines": [
+            1896,
+            2038
+          ]
+        },
+        {
+          "name": "BulletAttack",
+          "path": "code/fgame/weaputils.cpp",
+          "lines": [
+            2137,
+            2624
+          ]
+        },
+        {
+          "name": "RadiusDamage",
+          "path": "code/fgame/weaputils.cpp",
+          "lines": [
+            3009,
+            3161
+          ]
+        },
+        {
+          "name": "Sentient::Sentient",
+          "path": "code/fgame/sentient.cpp",
+          "lines": [
+            713,
+            839
+          ]
+        },
+        {
+          "name": "Sentient::CheckHitLocation",
+          "path": "code/fgame/sentient.cpp",
+          "lines": [
+            1344,
+            1355
+          ]
+        },
+        {
+          "name": "Sentient::ArmorDamage",
+          "path": "code/fgame/sentient.cpp",
+          "lines": [
+            1359,
+            1635
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-fire"
+      ]
+    },
+    {
+      "id": "ai-perception",
+      "name": "Actor sight, hearing and notice timing",
+      "purpose": "How scripted soldiers notice the player and each other: view cone and range, gradual visibility build-up, the sound-event radius table, alertness and enemy threat ranking",
+      "paths": [
+        "code/fgame/actor.cpp",
+        "code/fgame/actorenemy.cpp",
+        "code/fgame/g_utils.cpp",
+        "code/fgame/player.cpp",
+        "code/fgame/gamecvars.cpp",
+        "code/fgame/worldspawn.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Actor::Actor",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            2755,
+            3000
+          ]
+        },
+        {
+          "name": "Actor::CanSee",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            3871,
+            3908
+          ]
+        },
+        {
+          "name": "Actor::UpdateEnemyInternal",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            6625,
+            6647
+          ]
+        },
+        {
+          "name": "Actor::CuriousSound",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9225,
+            9291
+          ]
+        },
+        {
+          "name": "Actor::WeaponSound",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9300,
+            9358
+          ]
+        },
+        {
+          "name": "Actor::NoticeFootstep",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9679,
+            9686
+          ]
+        },
+        {
+          "name": "Actor::RaiseAlertnessForEventType",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9585,
+            9627
+          ]
+        },
+        {
+          "name": "Actor::RaiseAlertness",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9636,
+            9643
+          ]
+        },
+        {
+          "name": "ActorEnemy::UpdateLMRF",
+          "path": "code/fgame/actorenemy.cpp",
+          "lines": [
+            30,
+            100
+          ]
+        },
+        {
+          "name": "ActorEnemy::UpdateVisibility",
+          "path": "code/fgame/actorenemy.cpp",
+          "lines": [
+            102,
+            126
+          ]
+        },
+        {
+          "name": "ActorEnemy::UpdateThreat",
+          "path": "code/fgame/actorenemy.cpp",
+          "lines": [
+            128,
+            266
+          ]
+        },
+        {
+          "name": "G_AIEventRadius",
+          "path": "code/fgame/g_utils.cpp",
+          "lines": [
+            1769,
+            1779
+          ]
+        },
+        {
+          "name": "G_BroadcastAIEvent",
+          "path": "code/fgame/g_utils.cpp",
+          "lines": [
+            1786,
+            1855
+          ]
+        },
+        {
+          "name": "Player::UpdateEnemies",
+          "path": "code/fgame/player.cpp",
+          "lines": [
+            4411,
+            4461
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-fire"
+      ]
+    },
+    {
+      "id": "ai-combat",
+      "name": "Actor cover, aiming error and firing",
+      "purpose": "How a soldier picks and holds cover, peeks to shoot, and how far its aim point is scattered from the target",
+      "paths": [
+        "code/fgame/actor_cover.cpp",
+        "code/fgame/actor.cpp",
+        "code/fgame/sentient.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Cover_HideTime",
+          "path": "code/fgame/actor_cover.cpp",
+          "lines": [
+            27,
+            34
+          ]
+        },
+        {
+          "name": "Actor::Cover_IsValid",
+          "path": "code/fgame/actor_cover.cpp",
+          "lines": [
+            36,
+            61
+          ]
+        },
+        {
+          "name": "Actor::State_Cover_Target",
+          "path": "code/fgame/actor_cover.cpp",
+          "lines": [
+            305,
+            338
+          ]
+        },
+        {
+          "name": "Actor::State_Cover_Hide",
+          "path": "code/fgame/actor_cover.cpp",
+          "lines": [
+            340,
+            464
+          ]
+        },
+        {
+          "name": "Actor::GunTarget",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            10615,
+            10744
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-perception"
+      ]
+    },
+    {
+      "id": "ai-grenades",
+      "name": "Actor grenade avoidance and throwing",
+      "purpose": "The grenade think state (flee, kick back, throw back, sacrifice) and the ballistic solver that decides how an actor tosses a grenade",
+      "paths": [
+        "code/fgame/actor_grenade.cpp",
+        "code/fgame/actor.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Actor::Grenade_Acquire",
+          "path": "code/fgame/actor_grenade.cpp",
+          "lines": [
+            28,
+            74
+          ]
+        },
+        {
+          "name": "Actor::Grenade_Flee",
+          "path": "code/fgame/actor_grenade.cpp",
+          "lines": [
+            88,
+            166
+          ]
+        },
+        {
+          "name": "Actor::Grenade_MartyrAcquire",
+          "path": "code/fgame/actor_grenade.cpp",
+          "lines": [
+            218,
+            261
+          ]
+        },
+        {
+          "name": "Actor::Begin_Grenade",
+          "path": "code/fgame/actor_grenade.cpp",
+          "lines": [
+            336,
+            444
+          ]
+        },
+        {
+          "name": "Actor::ValidGrenadePath",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9709,
+            9793
+          ]
+        },
+        {
+          "name": "Actor::CalcThrowVelocity",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9802,
+            9829
+          ]
+        },
+        {
+          "name": "Actor::CalcRollVelocity",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            9860,
+            9883
+          ]
+        },
+        {
+          "name": "Actor::CanGetGrenadeFromAToB",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            10120,
+            10200
+          ]
+        },
+        {
+          "name": "Actor::DecideToThrowGrenade",
+          "path": "code/fgame/actor.cpp",
+          "lines": [
+            10211,
+            10222
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-perception",
+        "ballistics-damage"
+      ]
+    },
+    {
+      "id": "mounted-guns",
+      "name": "Mounted machine gun for player and AI",
+      "purpose": "Stationary turret guns: angle caps, user attach arc, player view clamping and fire jitter, and the AI gunner track and suppress behaviour",
+      "paths": [
+        "code/fgame/weapturret.cpp",
+        "code/fgame/gamecvars.cpp"
+      ],
+      "functions": [
+        {
+          "name": "TurretGun::TurretGun",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            396,
+            494
+          ]
+        },
+        {
+          "name": "TurretGun::AI_SetTargetAngles",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            623,
+            694
+          ]
+        },
+        {
+          "name": "TurretGun::AI_CanTarget",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            752,
+            782
+          ]
+        },
+        {
+          "name": "TurretGun::P_ThinkActive",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            784,
+            888
+          ]
+        },
+        {
+          "name": "TurretGun::AI_DoTargetAutoTrack",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            967,
+            1022
+          ]
+        },
+        {
+          "name": "TurretGun::AI_DoSuppressionAiming",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            1024,
+            1104
+          ]
+        },
+        {
+          "name": "TurretGun::PitchCaps",
+          "path": "code/fgame/weapturret.cpp",
+          "lines": [
+            1652,
+            1661
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-fire"
+      ]
+    },
+    {
+      "id": "pickups",
+      "name": "Health pickups",
+      "purpose": "Health item pickup rules and the timed heal-over-time applied to the player",
+      "paths": [
+        "code/fgame/health.cpp",
+        "code/fgame/player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Health::Health",
+          "path": "code/fgame/health.cpp",
+          "lines": [
+            52,
+            70
+          ]
+        },
+        {
+          "name": "Health::PickupHealth",
+          "path": "code/fgame/health.cpp",
+          "lines": [
+            72,
+            127
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "player-hull-and-stance",
+      "node": "pmove-core",
+      "name": "Player hull and stance heights",
+      "summary": "A 30 by 30 unit footprint that is 94 units tall when standing, with the origin at the feet. Crouch, prone and dead states swap the hull top and the eye height.",
+      "behavior": "The hull is an axis-aligned box. The x and y limits are half-extents from the origin, so the full footprint is 30 units. The z range starts at 0 at the feet and ends at the top value. Standing, the top is 94 and the eye is 82. A short window after a jump starts lowers the eye to 52 while the hull stays full height. In the original game protocol, a crouch is the ducked flag plus the prone view flag together (top 54, eye 48). The ducked flag alone gives a crouch-run hull (top 60, eye 48), and the prone view flag alone gives a prone hull (top 20, eye 16). A dead body uses a hull that is 32 tall. The Spearhead and Breakthrough protocol path drops prone and the crouch-run hull and keeps only stand, crouch and jump-start. The stance flags are set by the player animation state machine in game script and model data, which this repository does not contain, so the code here only maps flags to sizes. Water level is sampled at one unit above the feet, then at half the eye height, then at the eye.",
+      "constants": [
+        {
+          "name": "hull half-extent x and y",
+          "value": 15,
+          "unit": "game units, half-extent from origin, static",
+          "source": "code/fgame/bg_public.h:35"
+        },
+        {
+          "name": "standing hull top",
+          "value": 94,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:39"
+        },
+        {
+          "name": "standing eye height",
+          "value": 82,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:46"
+        },
+        {
+          "name": "crouch hull top",
+          "value": 54,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:43"
+        },
+        {
+          "name": "crouch-run hull top (original protocol only)",
+          "value": 60,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:44"
+        },
+        {
+          "name": "crouch eye height",
+          "value": 48,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:49"
+        },
+        {
+          "name": "prone hull top (original protocol only)",
+          "value": 20,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:42"
+        },
+        {
+          "name": "prone eye height (original protocol only)",
+          "value": 16,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:50"
+        },
+        {
+          "name": "jump-start eye height",
+          "value": 52,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:48"
+        },
+        {
+          "name": "dead hull top",
+          "value": 32,
+          "unit": "game units above feet, static",
+          "source": "code/fgame/bg_public.h:41"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1047
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1025
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 985
+        }
+      ],
+      "capabilities": [
+        "hull sized by stance",
+        "eye height per stance",
+        "prone in the original game protocol"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "collision",
+        "crouch",
+        "prone"
+      ]
+    },
+    {
+      "id": "ground-friction-and-acceleration",
+      "node": "pmove-core",
+      "name": "Ground friction and steering acceleration",
+      "summary": "Ground speed steers toward the wished velocity at a rate proportional to the wished speed, while friction removes a fixed share of speed per second with a floor at the stop speed.",
+      "behavior": "Friction runs first each command. Speed below the stop speed is treated as the stop speed, so slow movement still loses a fixed amount and halts quickly. The drop is the control speed times the friction coefficient times the command time. Slippery ground uses a much smaller coefficient and also lets gravity act on the ground move. Acceleration then adds a push toward the wished velocity vector, not a Quake-style speed-along-direction cap. The push per command is the accelerate coefficient times command time times wished speed, and it is clipped to the remaining difference. Backward input is scaled by 0.8 and sideways input by 0.85 before the diagonal fix, so strafing and backpedaling are slower than forward running. The diagonal fix divides by the vector length so full diagonal input is not faster. Player friction uses these module values (6 and 50). The server cvars with friction 4 and stop speed 100 only drive the generic physics of non-player entities, so do not use them for the player. In the water, friction also adds a term scaled by water depth level, five times stronger in slime.",
+      "constants": [
+        {
+          "name": "ground friction coefficient",
+          "value": 6,
+          "unit": "1/second applied each command, command time clamped 1 to 200 ms",
+          "source": "code/fgame/bg_pmove.cpp:44"
+        },
+        {
+          "name": "stop speed (friction floor)",
+          "value": 50,
+          "unit": "units/second",
+          "source": "code/fgame/bg_pmove.cpp:35"
+        },
+        {
+          "name": "ground accelerate coefficient",
+          "value": 8,
+          "unit": "1/second applied each command",
+          "source": "code/fgame/bg_pmove.cpp:40"
+        },
+        {
+          "name": "slippery surface friction",
+          "value": 0.25,
+          "unit": "1/second applied each command",
+          "source": "code/fgame/bg_pmove.cpp:46"
+        },
+        {
+          "name": "backward move scale",
+          "value": 0.8,
+          "unit": "ratio of forward input, static",
+          "source": "code/fgame/bg_pmove.cpp:48"
+        },
+        {
+          "name": "sideways move scale",
+          "value": 0.85,
+          "unit": "ratio of forward input, static",
+          "source": "code/fgame/bg_pmove.cpp:47"
+        },
+        {
+          "name": "water friction coefficient",
+          "value": 2,
+          "unit": "1/second per water level, per command",
+          "source": "code/fgame/bg_pmove.cpp:45"
+        },
+        {
+          "name": "unused generic-physics stop speed (not the player)",
+          "value": 100,
+          "unit": "units/second",
+          "source": "code/fgame/gamecvars.cpp:384"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 199
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 243
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 614
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 281
+        }
+      ],
+      "capabilities": [
+        "grounded steering movement",
+        "exponential-style speed settling",
+        "slowdown for backward and strafe"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "friction",
+        "acceleration"
+      ]
+    },
+    {
+      "id": "air-control-gravity-and-terminal-speed",
+      "node": "pmove-core",
+      "name": "Air control, gravity and terminal speed",
+      "summary": "Airborne steering is very weak, uses a stored air speed instead of run speed, and gravity is 800 units per second squared after a map loads.",
+      "behavior": "In the air the wished velocity is built from the flat view direction and the same push rule as the ground, but with an accelerate coefficient of 1 instead of 8, so jumps are nearly ballistic. The wished speed in the air comes from the stored air speed of the last grounded frame (200 by default, or the distance value passed to a scripted directional jump), not from run speed. A steep surface under the player clips velocity instead of letting the player stand. A one-time event fires when downward speed first exceeds 1200 units per second. It only plays a sound and does not cap speed. Gravity is a server cvar. The code default of 512 in the cvar table is replaced when the world object is created, which sets 800 on every map load, and a map can override it with its own gravity key, so 800 is the effective base value. The player also has a per-entity gravity scale that multiplies it. Physics here run per command at the command time, and the dedicated server game frame rate default is 20 Hz.",
+      "constants": [
+        {
+          "name": "air accelerate coefficient",
+          "value": 1,
+          "unit": "1/second applied each command",
+          "source": "code/fgame/bg_pmove.cpp:41"
+        },
+        {
+          "name": "effective gravity at map load",
+          "value": 800,
+          "unit": "units/second squared",
+          "source": "code/fgame/worldspawn.cpp:570"
+        },
+        {
+          "name": "default stored air speed",
+          "value": 200,
+          "unit": "units/second, reset every grounded frame",
+          "source": "code/fgame/player.cpp:3630"
+        },
+        {
+          "name": "terminal velocity event threshold",
+          "value": 1200,
+          "unit": "units/second downward, one-shot event only",
+          "source": "code/fgame/bg_pmove.cpp:293"
+        },
+        {
+          "name": "server game frame rate default",
+          "value": 20,
+          "unit": "Hz",
+          "source": "code/fgame/gamecvars.cpp:389"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 417
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4074
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4112
+        },
+        {
+          "path": "code/fgame/gamecvars.cpp",
+          "line": 362
+        }
+      ],
+      "capabilities": [
+        "floaty jump arcs with little air steering",
+        "per-map gravity override"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "air control",
+        "gravity"
+      ]
+    },
+    {
+      "id": "run-walk-crouch-speeds",
+      "node": "player-control",
+      "name": "Run, walk, crouch and weapon speed multipliers",
+      "summary": "The command speed is run speed 250 (287 only when sprint is on), times 0.6 for walk or crouch, times the weapon movement factor, with an optional sprint bonus.",
+      "behavior": "On the ground the base speed is the run speed when the run button is held, otherwise the run speed times the walk multiplier of 0.6. A crouching position flag multiplies by the crouch multiplier of 0.6 again. The active weapon then multiplies by its own movement factor, or by its zoom movement factor while zoomed. Both factors come from model data and default to 1. Multiplayer multiplies by 1.1. The cvar default for run speed is 287, but when sprint is off (the default for the base game) the game rewrites 287 to 250, so 250 is the effective base-game value. Sprint is on by default only for the Spearhead and Breakthrough targets. With sprint on, holding run with forward input for more than 5 seconds without sideways or vertical input multiplies the run speed by 1.2. Any sideways input, vertical input or releasing run or forward resets the timer. A reimplementation-only list of extra speed multipliers is also applied at the end. In the air the speed is the stored air speed instead.",
+      "constants": [
+        {
+          "name": "run speed cvar default",
+          "value": 287,
+          "unit": "units/second",
+          "source": "code/fgame/gamecvars.cpp:397"
+        },
+        {
+          "name": "effective base-game run speed (sprint off)",
+          "value": 250,
+          "unit": "units/second",
+          "source": "code/fgame/gamecvars.cpp:417"
+        },
+        {
+          "name": "walk multiplier",
+          "value": 0.6,
+          "unit": "ratio of run speed",
+          "source": "code/fgame/gamecvars.cpp:398"
+        },
+        {
+          "name": "crouch multiplier",
+          "value": 0.6,
+          "unit": "ratio of current speed",
+          "source": "code/fgame/gamecvars.cpp:400"
+        },
+        {
+          "name": "multiplayer speed multiplier",
+          "value": 1.1,
+          "unit": "ratio of current speed",
+          "source": "code/fgame/gamecvars.cpp:399"
+        },
+        {
+          "name": "sprint delay",
+          "value": 5,
+          "unit": "seconds of held forward run, game time",
+          "source": "code/fgame/gamecvars.cpp:402"
+        },
+        {
+          "name": "sprint multiplier",
+          "value": 1.2,
+          "unit": "ratio of run speed",
+          "source": "code/fgame/gamecvars.cpp:403"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4079
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4085
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4094
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 11940
+        }
+      ],
+      "capabilities": [
+        "walk, run and crouch speed ratios",
+        "carried-weapon speed penalty",
+        "timed sprint boost"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "sprint",
+        "speed"
+      ]
+    },
+    {
+      "id": "scripted-jump-impulse",
+      "node": "player-control",
+      "name": "Jump impulse from a scripted height",
+      "summary": "Jump launches with the speed that reaches a requested peak height under current gravity, and is refused on top of another player or in a vehicle or turret.",
+      "behavior": "A jump is not a fixed speed. The animation script sends a jump event with a peak height. If the height is above 16 units, the vertical speed gained is the square root of two times gravity times that height, so a larger gravity cvar lowers the apparent jump time but keeps the height. The stored push velocity of the surface (for example a moving floor) is added when the player was grounded, and the walking flag is cleared so the next command is airborne. In multiplayer the jump is ignored when the player stands on another character. The height value itself lives in the animation scripts, not in this repository. An unused constant of 270 exists in the local header and is not read by this path. A separate scripted directional jump takes forward and side parts and a speed, sets the horizontal velocity to that speed, and picks the vertical speed that makes the airtime equal distance over speed.",
+      "constants": [
+        {
+          "name": "minimum accepted jump height",
+          "value": 16,
+          "unit": "game units, script-supplied height must exceed it",
+          "source": "code/fgame/player.cpp:7939"
+        },
+        {
+          "name": "unused legacy jump velocity constant",
+          "value": 270,
+          "unit": "units/second, defined but not read by the jump path",
+          "source": "code/fgame/bg_local.h:29"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 7941
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 7976
+        }
+      ],
+      "capabilities": [
+        "jump to a chosen peak height",
+        "moving-platform jump inheritance"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "jump"
+      ]
+    },
+    {
+      "id": "lean-left-right",
+      "node": "pmove-core",
+      "name": "Lean left and right",
+      "summary": "A lean angle up to 45 degrees (40 in the original multiplayer protocol, 0 in original single player) moves the eye sideways around a pivot below the camera. It only works while standing still unless a server flag allows it.",
+      "behavior": "The lean button pair is valid when exactly one side is held. In the Spearhead and Breakthrough protocol, lean also needs zero forward, sideways and vertical input unless the multiplayer allow-lean-while-moving flag is set. The original protocol always allows it. In the original protocol single player the maximum is 0, so lean is disabled. Multiplayer there uses 40. The angle approaches the target each command by the larger of two steps: an exponential step (command time times the remaining angle times the lean-add rate) and a minimum speed step (command time times the lean speed). The right side in this code takes only the exponential step, so it settles slowly near the limit while the left side honors the minimum speed. Treat that asymmetry as a quirk of the reimplementation. Releasing lean decays toward zero by the larger of an exponential recover step and the minimum speed step, then clamps at zero. The camera applies lean by rotating the eye about the forward axis around a point 28.7 units below the eye, and adds a small roll of 0.2 times the angle (0.3 in the old protocol). Walking view bob amplitude is multiplied by 0.75 while leaning. Lean is cleared on a talk menu, climbing, death and no-hud.",
+      "constants": [
+        {
+          "name": "lean max angle (Spearhead protocol)",
+          "value": 45,
+          "unit": "degrees, static",
+          "source": "code/fgame/player.cpp:3728"
+        },
+        {
+          "name": "lean add rate",
+          "value": 6,
+          "unit": "1/second exponential rate, per command",
+          "source": "code/fgame/player.cpp:3729"
+        },
+        {
+          "name": "lean minimum speed",
+          "value": 2,
+          "unit": "degrees/second, per command",
+          "source": "code/fgame/player.cpp:3731"
+        },
+        {
+          "name": "lean recover rate",
+          "value": 8.5,
+          "unit": "1/second exponential rate, per command",
+          "source": "code/fgame/player.cpp:3730"
+        },
+        {
+          "name": "lean max angle (original multiplayer protocol)",
+          "value": 40,
+          "unit": "degrees, static",
+          "source": "code/fgame/player.cpp:3735"
+        },
+        {
+          "name": "eye pivot below eye",
+          "value": 28.7,
+          "unit": "game units, camera only",
+          "source": "code/cgame/cg_view.c:378"
+        },
+        {
+          "name": "camera roll per lean degree (Spearhead protocol)",
+          "value": 0.2,
+          "unit": "ratio, camera only",
+          "source": "code/cgame/cg_view.c:296"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1349
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1357
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1384
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 3738
+        }
+      ],
+      "capabilities": [
+        "lean peeking around cover",
+        "lean disabled while moving",
+        "eye pivot rotation"
+      ],
+      "tags": [
+        "fps",
+        "lean",
+        "camera",
+        "stealth"
+      ]
+    },
+    {
+      "id": "steps-slopes-and-stair-snap",
+      "node": "pmove-core",
+      "name": "Step height, slope limit and stair snap",
+      "summary": "Walkable slopes have a surface normal z of at least 0.7. The player steps over 18 unit ledges and snaps down 18 units to stay on stairs.",
+      "behavior": "A ground trace extends 0.25 units below the feet. A hit with a normal z below 0.7 (about 45.6 degrees) counts as too steep: the code probes by sliding downward and treats the player as airborne when the probe moves farther than a small threshold. Moving into a wall runs up to four slide iterations against at most five planes and clips velocity with a 1.001 overclip. If a move is blocked, the step routine retries from 18 units higher, slides again, then drops back down at most 18 units. It refuses the step when the player still moves up and no floor is under, or when the landing slope is too steep. After a walking command that ends in the air, a final trace of 18 units down snaps the player back to the ground so descending stairs does not cause a fall. A kick-off check treats the player as airborne when upward velocity and the dot of velocity with the floor normal exceed 150.",
+      "constants": [
+        {
+          "name": "walkable slope minimum normal z",
+          "value": 0.7,
+          "unit": "ratio of surface normal z, static",
+          "source": "code/fgame/bg_local.h:27"
+        },
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "game units, static",
+          "source": "code/fgame/bg_public.h:190"
+        },
+        {
+          "name": "ground probe depth",
+          "value": 0.25,
+          "unit": "game units below feet, per command",
+          "source": "code/fgame/bg_pmove.cpp:878"
+        },
+        {
+          "name": "slide iterations per move",
+          "value": 4,
+          "unit": "iterations per command",
+          "source": "code/fgame/bg_slidemove.cpp:62"
+        },
+        {
+          "name": "slide clip planes",
+          "value": 5,
+          "unit": "planes, static",
+          "source": "code/fgame/bg_slidemove.cpp:44"
+        },
+        {
+          "name": "velocity overclip",
+          "value": 1.001,
+          "unit": "ratio, static",
+          "source": "code/fgame/bg_local.h:34"
+        },
+        {
+          "name": "kick-off speed along floor normal",
+          "value": 150,
+          "unit": "units/second, per command",
+          "source": "code/fgame/bg_pmove.cpp:904"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 919
+        },
+        {
+          "path": "code/fgame/bg_slidemove.cpp",
+          "line": 267
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1478
+        }
+      ],
+      "capabilities": [
+        "stair climbing and descending",
+        "steep slope sliding"
+      ],
+      "tags": [
+        "fps",
+        "movement",
+        "stairs",
+        "slopes"
+      ]
+    },
+    {
+      "id": "view-pitch-limit-and-command-time",
+      "node": "pmove-core",
+      "name": "View pitch limit and command time clamp",
+      "summary": "Looking up or down stops at 16000 of 65536 angle units, about 87.9 degrees, and each movement command covers between 1 and 200 milliseconds.",
+      "behavior": "Pitch is stored as a sixteen-bit angle plus a server delta, and the pitch of the command is limited so the sum stays within plus or minus 16000 units. A view cannot reach a full 90 degrees. Yaw wraps freely. Each command advances by the difference between the new and previous server time, forced into the range 1 to 200 ms. The time step in seconds is that value times 0.001. The server also clamps its fixed pmove step to between 8 and 33 ms when a fixed step is enabled. Frozen players and dead players ignore view changes, but noclip spectators can still turn.",
+      "constants": [
+        {
+          "name": "pitch limit",
+          "value": 16000,
+          "unit": "16-bit angle units (65536 per full turn), per command",
+          "source": "code/fgame/bg_pmove.cpp:1275"
+        },
+        {
+          "name": "minimum command time",
+          "value": 1,
+          "unit": "milliseconds",
+          "source": "code/fgame/bg_pmove.cpp:1333"
+        },
+        {
+          "name": "maximum command time",
+          "value": 200,
+          "unit": "milliseconds",
+          "source": "code/fgame/bg_pmove.cpp:1335"
+        },
+        {
+          "name": "fixed step lower clamp",
+          "value": 8,
+          "unit": "milliseconds",
+          "source": "code/fgame/player.cpp:3707"
+        },
+        {
+          "name": "fixed step upper clamp",
+          "value": 33,
+          "unit": "milliseconds",
+          "source": "code/fgame/player.cpp:3709"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1284
+        },
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 1347
+        }
+      ],
+      "capabilities": [
+        "look up and down limit",
+        "variable timestep movement"
+      ],
+      "tags": [
+        "fps",
+        "camera",
+        "timestep"
+      ]
+    },
+    {
+      "id": "fall-damage-thresholds",
+      "node": "player-control",
+      "name": "Fall impact bands and damage",
+      "summary": "Landing impact is scored as speed squared divided by 10000. Bands at 20, 40, 80 and 100 give 5, 10, 20 and fatal damage in the original game.",
+      "behavior": "On touching the ground the code reconstructs the exact landing speed from the previous velocity, the height dropped and gravity, then scores delta as that speed squared times 0.0001. Standing in water at level 2 scales delta by 0.25 and level 1 by 0.5. Full submersion has no scale here. A delta under 1 does nothing. Bands above 20, 40, 80 and 100 raise a short, medium, far and fatal event. The server maps the events to damage: in the original protocol, 5, 10, 20 and (max health plus 1). In the Spearhead protocol, 5, 15, 25 and 101, each multiplied by max health over 100. With gravity at 800 the band edges correspond to drops of about 125, 250, 500 and 625 units (derived, not stated in code). Fall damage ignores armor and is skipped in multiplayer when the no-falling flag is set.",
+      "constants": [
+        {
+          "name": "impact score scale",
+          "value": 0.0001,
+          "unit": "per squared units/second",
+          "source": "code/fgame/bg_pmove.cpp:774"
+        },
+        {
+          "name": "short fall band",
+          "value": 20,
+          "unit": "impact score",
+          "source": "code/fgame/bg_pmove.cpp:798"
+        },
+        {
+          "name": "medium fall band",
+          "value": 40,
+          "unit": "impact score",
+          "source": "code/fgame/bg_pmove.cpp:796"
+        },
+        {
+          "name": "far fall band",
+          "value": 80,
+          "unit": "impact score",
+          "source": "code/fgame/bg_pmove.cpp:794"
+        },
+        {
+          "name": "fatal fall band",
+          "value": 100,
+          "unit": "impact score",
+          "source": "code/fgame/bg_pmove.cpp:792"
+        },
+        {
+          "name": "medium fall damage (original protocol)",
+          "value": 10,
+          "unit": "health points, once per landing",
+          "source": "code/fgame/player.cpp:6160"
+        },
+        {
+          "name": "far fall damage (original protocol)",
+          "value": 20,
+          "unit": "health points, once per landing",
+          "source": "code/fgame/player.cpp:6154"
+        },
+        {
+          "name": "short fall damage",
+          "value": 5,
+          "unit": "health points, once per landing",
+          "source": "code/fgame/player.cpp:6163"
+        },
+        {
+          "name": "shallow water fall scale",
+          "value": 0.5,
+          "unit": "ratio of impact score",
+          "source": "code/fgame/bg_pmove.cpp:782"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/bg_pmove.cpp",
+          "line": 773
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 6169
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 6172
+        }
+      ],
+      "capabilities": [
+        "fall damage from height",
+        "water reduces fall damage"
+      ],
+      "tags": [
+        "fps",
+        "damage",
+        "fall"
+      ]
+    },
+    {
+      "id": "weapon-spread-and-sustained-fire",
+      "node": "weapon-fire",
+      "name": "Bullet spread by movement, sustained fire and zoom",
+      "summary": "Spread is a position offset at the end of the range, blended from a standing value to a moving value by speed over run speed, then grown by sustained fire and shrunk by zoom.",
+      "behavior": "For a player, the blend factor is horizontal and vertical speed divided by run speed, capped at 1. The spread vector is the max-spread value times the factor plus the standing value times one minus the factor. A sustained-fire multiplier then scales it by one plus the stored extra. Each shot adds an amount to the stored extra, bounded by a cap. The extra decays at a falloff rate times elapsed time and is cleared when the gap since the last shot exceeds a time cap. If the weapon is zoomed, the spread is scaled by one plus the standing share times the zoom factor minus one, so zooming tightens a standing shot most. Each pellet then offsets its end point by a Gaussian random number times the spread, along the right axis for x and the up axis for y, so the offset is in world units at the end of the range, not an angle: the angular error shrinks as range grows. Weapon numbers (spread values, bullet count, damage, range) come from model data. The engine defaults are range 4096 units, one bullet and fire delay 0.1 seconds. A shooter that is not a player client, such as a soldier, gets no weapon spread at all, because its vector stays zero. Its inaccuracy comes from the aim scatter of the actor. A weapon with no owner uses the midpoint of the standing and moving values. Single player ignores the multiplayer-only spread overrides, and multiplayer ignores the single-player ones.",
+      "constants": [
+        {
+          "name": "default bullet range",
+          "value": 4096,
+          "unit": "game units, model data default",
+          "source": "code/fgame/weapon.cpp:663"
+        },
+        {
+          "name": "default bullets per shot",
+          "value": 1,
+          "unit": "bullets per shot, model data default",
+          "source": "code/fgame/weapon.cpp:662"
+        },
+        {
+          "name": "default fire delay",
+          "value": 0.1,
+          "unit": "seconds, model data default",
+          "source": "code/fgame/weapon.cpp:656"
+        },
+        {
+          "name": "default zoom spread multiplier",
+          "value": 1,
+          "unit": "ratio, model data default",
+          "source": "code/fgame/weapon.cpp:718"
+        },
+        {
+          "name": "maximum pellets per attack",
+          "value": 63,
+          "unit": "bullets, static",
+          "source": "code/fgame/weaputils.cpp:2196"
+        },
+        {
+          "name": "ownerless weapon blend factor",
+          "value": 0.5,
+          "unit": "ratio between standing and moving spread",
+          "source": "code/fgame/weapon.cpp:1452"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1440
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1443
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1447
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 2207
+        }
+      ],
+      "capabilities": [
+        "accuracy worse while moving",
+        "spread bloom during sustained fire",
+        "tighter aim while zoomed"
+      ],
+      "tags": [
+        "fps",
+        "weapon",
+        "spread",
+        "accuracy"
+      ]
+    },
+    {
+      "id": "weapon-view-kick",
+      "node": "weapon-fire",
+      "name": "Per-shot view kick",
+      "summary": "Every shot adds a random pitch kick between a minimum and maximum, plus an optional random yaw kick, directly to the player view angles.",
+      "behavior": "The kick is set in weapon data as a pitch range and an optional yaw range for each fire mode. The range is swapped when written backwards. On each shot a uniform random value inside the range is added to the player view angle, so the kick is instant and does not recover on its own. The player pulls the aim back. Negative pitch lifts the aim. Defaults are zero, meaning no kick. The yaw branch tests the secondary-mode pitch entry instead of the current mode, so in this code a yaw kick applies only when the secondary pitch kick is non-zero and the first-mode yaw may be silently skipped. Treat that as a reimplementation quirk and verify against the original game before relying on it.",
+      "constants": [
+        {
+          "name": "default view kick",
+          "value": 0,
+          "unit": "degrees per shot, model data default",
+          "source": "code/fgame/weapon.cpp:676"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1623
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1626
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 3879
+        }
+      ],
+      "capabilities": [
+        "random recoil on every shot",
+        "instant view kick without recovery"
+      ],
+      "tags": [
+        "fps",
+        "weapon",
+        "recoil"
+      ]
+    },
+    {
+      "id": "weapon-movement-gating",
+      "node": "weapon-fire",
+      "name": "Movement speed limit for firing",
+      "summary": "Some weapons refuse to fire when the player moves faster than a fraction of run speed. The weapon gate and the view-model gate use slightly different tolerances.",
+      "behavior": "Each weapon has a movement factor that scales player speed (default 1) and a maximum fire movement fraction (default 1, capped at 1). If the fraction is below 1, the weapon will not fire while horizontal speed divided by run speed exceeds the movement factor times the fraction, and it plays a warning sound at most once per half second. The player view-model animation is switched to a disabled pose with a margin of 0.1 added to the same product, and the crosshair hides under the stricter test, so a player can see the gun lowered a little later than the shot is blocked. Zoom has its own movement factor, also capped at 1. These gates make heavy guns and scoped rifles need a near stop to fire. The numbers per weapon come from model data not stored in this repository.",
+      "constants": [
+        {
+          "name": "default weapon movement factor",
+          "value": 1,
+          "unit": "ratio of player speed, model data default",
+          "source": "code/fgame/weapon.cpp:755"
+        },
+        {
+          "name": "default max fire movement",
+          "value": 1,
+          "unit": "ratio of run speed, model data default",
+          "source": "code/fgame/weapon.cpp:756"
+        },
+        {
+          "name": "view-model gate tolerance",
+          "value": 0.1,
+          "unit": "ratio of run speed",
+          "source": "code/fgame/player.cpp:11869"
+        },
+        {
+          "name": "movement warning sound interval",
+          "value": 0.5,
+          "unit": "seconds of game time",
+          "source": "code/fgame/weapon.cpp:1832"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 1824
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 3931
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 11869
+        }
+      ],
+      "capabilities": [
+        "no shooting while sprinting with heavy weapons",
+        "scoped rifle steadiness"
+      ],
+      "tags": [
+        "fps",
+        "weapon",
+        "movement"
+      ]
+    },
+    {
+      "id": "bullet-penetration",
+      "node": "ballistics-damage",
+      "name": "Hitscan bullet penetration",
+      "summary": "A bullet trace passes through foliage, glass, puddles, paper and water, through wood or metal only when the weapon allows it, and through bodies only for large calibres.",
+      "behavior": "Each pellet traces up to 16216 units in segments. Foliage, glass, puddle and paper surfaces never stop the trace. Wood stops it unless the weapon has a non-zero through-wood factor, and a grill or metal surface stops it unless the through-metal factor is set. Metal and grill allow at most five passes. After passing a solid, the damage drops by the original damage times the thickness (plus 4 units) divided by the factor, with a mixed value when wood meets metal. The trace ends when the remaining damage falls below 1. A wood or metal surface marked as a fence ends the bullet at once. A large-calibre bullet (damage of 41 or more in the original protocol, a model flag later) continues past a damageable entity that is not a brush model, so it can hit more than one target. Hit events are sent to clients for effects only. Factors default to 0 and come from model data.",
+      "constants": [
+        {
+          "name": "maximum bullet travel",
+          "value": 16216,
+          "unit": "game units per trace segment",
+          "source": "code/fgame/weaputils.cpp:42"
+        },
+        {
+          "name": "large-calibre damage threshold (original protocol)",
+          "value": 41,
+          "unit": "health points per bullet",
+          "source": "code/fgame/weaputils.cpp:2192"
+        },
+        {
+          "name": "metal pass limit",
+          "value": 5,
+          "unit": "passes per bullet",
+          "source": "code/fgame/weaputils.cpp:2418"
+        },
+        {
+          "name": "minimum surviving damage",
+          "value": 1,
+          "unit": "health points",
+          "source": "code/fgame/weaputils.cpp:2293"
+        },
+        {
+          "name": "wall exit offset",
+          "value": 4,
+          "unit": "game units",
+          "source": "code/fgame/weaputils.cpp:2281"
+        },
+        {
+          "name": "default through-wood factor",
+          "value": 0,
+          "unit": "model data default, 0 means blocked",
+          "source": "code/fgame/weapon.cpp:665"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 2287
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 2254
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 2413
+        }
+      ],
+      "capabilities": [
+        "shooting through thin cover",
+        "wall bangs by material",
+        "piercing rounds"
+      ],
+      "tags": [
+        "fps",
+        "weapon",
+        "penetration",
+        "hitscan"
+      ]
+    },
+    {
+      "id": "location-damage-multipliers",
+      "node": "ballistics-damage",
+      "name": "Per body location damage multipliers",
+      "summary": "Head, helmet and neck hits multiply damage by 4 (5 in realism mode), the torso by about 1, limbs by 0.8 and 0.6, and hands and feet by 0.5.",
+      "behavior": "Each hit carries a location number from the model hit regions: head, helmet, neck, upper, middle and lower torso, pelvis, upper and lower arms and legs, hands and feet. Damage is multiplied by the entry for that location before armor and health. A helmet hit with no helmet worn is converted to a head hit. With a helmet it stays a helmet location, but the helmet multiplier equals the head one, so a helmet gives no reduction in these tables. The normal-mode table is head 4, torso 1, pelvis 0.9. Realism mode raises head to 5 and slightly lowers mid torso 0.95, lower torso 0.9 and pelvis 0.85. Upper limbs are 0.8, lower limbs 0.6, hands and feet 0.5 in both modes. The table applies to actors and to players outside single player. A single-player player ignores the table and instead multiplies damage from actor attackers by a cvar that defaults to 1. Shots at the general or miss locations are unscaled or ignored.",
+      "constants": [
+        {
+          "name": "head multiplier (normal mode)",
+          "value": 4,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:812"
+        },
+        {
+          "name": "head multiplier (realism mode)",
+          "value": 5,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:804"
+        },
+        {
+          "name": "pelvis multiplier (normal mode)",
+          "value": 0.9,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:818"
+        },
+        {
+          "name": "upper limb multiplier",
+          "value": 0.8,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:821"
+        },
+        {
+          "name": "lower limb multiplier",
+          "value": 0.6,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:825"
+        },
+        {
+          "name": "hand and foot multiplier",
+          "value": 0.5,
+          "unit": "ratio of base damage, static",
+          "source": "code/fgame/sentient.cpp:829"
+        },
+        {
+          "name": "AI-to-player damage scale cvar default",
+          "value": 1,
+          "unit": "ratio, single player only",
+          "source": "code/fgame/sentient.cpp:1385"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 1413
+        },
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 1350
+        },
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 803
+        }
+      ],
+      "capabilities": [
+        "headshot damage",
+        "limb damage reduction",
+        "realism mode tuning"
+      ],
+      "tags": [
+        "fps",
+        "damage",
+        "headshot",
+        "hitbox"
+      ]
+    },
+    {
+      "id": "damage-knockback-and-team-immunity",
+      "node": "ballistics-damage",
+      "name": "Knockback impulse and single-player team immunity",
+      "summary": "Damage adds an impulse of 500 times knockback over target mass, bullet upward kick is capped at 75, and single-player characters on the same team take no health loss from each other.",
+      "behavior": "The impulse is the hit direction times 500 times the knockback value divided by the larger of mass and 20. In multiplayer, self-damage uses 1700 in place of 500, which is the rocket-jump boost. Bullet damage limits the vertical part of the impulse to 75 units per second. Knockback is skipped for static, pushed, bounce and stop movement types and when the knockback-off flag is present. Health drops by the final damage unless god mode is on. In single player, damage from a same-team character is not subtracted from health, which protects squad mates from friendly fire. The player can still hurt themself. A knocked-back target also loses any fall-damage immunity. An actor flagged immortal stays at one health.",
+      "constants": [
+        {
+          "name": "knockback scale",
+          "value": 500,
+          "unit": "units/second per knockback point at mass 1 ratio",
+          "source": "code/fgame/sentient.cpp:1494"
+        },
+        {
+          "name": "multiplayer self-damage knockback scale",
+          "value": 1700,
+          "unit": "units/second per knockback point",
+          "source": "code/fgame/sentient.cpp:1492"
+        },
+        {
+          "name": "minimum mass for knockback",
+          "value": 20,
+          "unit": "mass units",
+          "source": "code/fgame/sentient.cpp:1484"
+        },
+        {
+          "name": "bullet upward impulse cap",
+          "value": 75,
+          "unit": "units/second",
+          "source": "code/fgame/sentient.cpp:1499"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 1522
+        },
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 1521
+        },
+        {
+          "path": "code/fgame/sentient.cpp",
+          "line": 1546
+        }
+      ],
+      "capabilities": [
+        "hit knockback",
+        "friendly fire off in squad play"
+      ],
+      "tags": [
+        "fps",
+        "damage",
+        "knockback",
+        "team"
+      ]
+    },
+    {
+      "id": "explosion-radius-damage",
+      "node": "ballistics-damage",
+      "name": "Explosion radius damage with line of sight",
+      "summary": "Blast damage falls off linearly with distance from the surface of the target box, needs a clear line to the target centre, and is cut by 10 percent for the thrower.",
+      "behavior": "Targets inside the radius are sorted nearest first. A target is skipped unless a sight trace from the blast point to its centroid is clear, with clay pigeons as the exception. Distance is measured to the centroid minus the target largest box dimension, floored at 0. Damage is the base damage times one minus distance over radius. Knockback uses the same linear fall-off. A constant-damage flag skips the fall-off. The attacker takes 0.9 of the result. A view shake is created at the origin with a radius of the blast plus 128 units, an edge strength of 0.05 of the centre, and a strength of 0.05 times the damage on x and y and 0.06 times the damage on z. An example is the gas barrel, which blasts with damage 200, radius 350 and knockback 24. The knockback variable is reduced in place inside the loop, so each later target in sort order gets a smaller knockback than its distance alone gives. Treat that as an implementation quirk.",
+      "constants": [
+        {
+          "name": "self-damage scale",
+          "value": 0.9,
+          "unit": "ratio of blast damage",
+          "source": "code/fgame/weaputils.cpp:3131"
+        },
+        {
+          "name": "shake radius padding",
+          "value": 128,
+          "unit": "game units",
+          "source": "code/fgame/weaputils.cpp:3158"
+        },
+        {
+          "name": "shake edge strength",
+          "value": 0.05,
+          "unit": "ratio of centre strength at the radius edge",
+          "source": "code/fgame/weaputils.cpp:3158"
+        },
+        {
+          "name": "shake strength per damage point",
+          "value": 0.05,
+          "unit": "jitter units per damage point on x and y",
+          "source": "code/fgame/weaputils.cpp:3158"
+        },
+        {
+          "name": "gas barrel damage",
+          "value": 200,
+          "unit": "health points at centre",
+          "source": "code/fgame/barrels.cpp:459"
+        },
+        {
+          "name": "gas barrel radius",
+          "value": 350,
+          "unit": "game units",
+          "source": "code/fgame/barrels.cpp:459"
+        },
+        {
+          "name": "gas barrel knockback",
+          "value": 24,
+          "unit": "knockback points",
+          "source": "code/fgame/barrels.cpp:459"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 3116
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 3111
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 3090
+        }
+      ],
+      "capabilities": [
+        "grenade and barrel splash",
+        "cover blocks blast",
+        "distance falloff"
+      ],
+      "tags": [
+        "fps",
+        "damage",
+        "explosion",
+        "grenade"
+      ]
+    },
+    {
+      "id": "grenade-charge-throw-and-cook",
+      "node": "weapon-fire",
+      "name": "Grenade charge, throw speed and cooking",
+      "summary": "Holding fire charges a grenade. The charge fraction scales throw speed and shortens the fuse, and a cook timer blows the grenade in the thrower hand if held too long.",
+      "behavior": "Charge time is clamped: below the minimum it gives fraction 0, above the maximum (default 5 seconds) it gives 1, otherwise time over maximum. Projectile speed interpolates from a minimum speed to full speed by that fraction when the model sets charge speed. When charge life is on, the remaining fuse is the model life times one minus the fraction, never below the minimum life, so a longer hold throws a faster grenade with a shorter fuse. Without charge life the fuse is the model life. The engine default is 5 seconds and multiplayer can set its own. If a cook time greater than zero is set in the weapon data, releasing too late detonates the grenade at the thrower position and cancels the throw. A warning event is posted one second earlier, but its handler is empty in this code. The projectile uses a bounce movement type with a 1 unit half-extent box, and gravity and bounce details come from the projectile model data. The thrown velocity can add the thrower velocity along the throw direction when the model asks for it.",
+      "constants": [
+        {
+          "name": "default max charge time",
+          "value": 5,
+          "unit": "seconds of game time, model data default",
+          "source": "code/fgame/weapon.cpp:688"
+        },
+        {
+          "name": "default projectile life (fuse)",
+          "value": 5,
+          "unit": "seconds of game time, model data default",
+          "source": "code/fgame/weaputils.cpp:609"
+        },
+        {
+          "name": "projectile hull half-extent",
+          "value": 1,
+          "unit": "game units, half-extent, default",
+          "source": "code/fgame/weaputils.cpp:616"
+        },
+        {
+          "name": "cook warning lead time",
+          "value": 1,
+          "unit": "seconds before detonation",
+          "source": "code/fgame/weapon.cpp:2032"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 2123
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 1945
+        },
+        {
+          "path": "code/fgame/weaputils.cpp",
+          "line": 1991
+        },
+        {
+          "path": "code/fgame/weapon.cpp",
+          "line": 2101
+        }
+      ],
+      "capabilities": [
+        "hold to throw farther",
+        "cooked grenade fuse",
+        "grenade overcook"
+      ],
+      "tags": [
+        "fps",
+        "grenade",
+        "weapon",
+        "charge"
+      ]
+    },
+    {
+      "id": "ai-sight-and-notice-time",
+      "node": "ai-perception",
+      "name": "Soldier sight range, view cone and gradual notice",
+      "summary": "A soldier sees up to the map AI vision distance (default 2048) inside a 90 degree cone. Noticing is not instant, because a visibility meter fills at a rate set by range, angle and the target stealth.",
+      "behavior": "Each soldier has a field of view of 90 degrees and a sight range equal to the world AI vision distance (default 2048 units), capped at 0.828 times the fog far plane when fog is set. Out of range, outside the cone or behind cover gives a sentinel of 8, which drains the meter at 0.25 per second while below full. When visible, the time to notice is a figure that grows with the square of an eased range term and the stealth scale of the target, times (distance plus 128) over the forward distance component, times the soldier current notice time scale. The meter rises by elapsed time over that figure per update, so a nearer, centered, moving target is noticed within a fraction of a second while a far or stealthy one takes seconds. The target stealth scale is 1 by default and is changed from game scripts. A smoke or other obfuscation value hides the target when the blocked share is high. A threat needs the summed visibility of at least 0.999. The notice time scale starts at 1, is lowered by noises, and recovers by 1 per 10000 ms of enemy-check time. The meter uses the game time elapsed since the last visibility check, so it does not depend on the frame rate.",
+      "constants": [
+        {
+          "name": "field of view",
+          "value": 90,
+          "unit": "degrees, full cone",
+          "source": "code/fgame/actor.cpp:2785"
+        },
+        {
+          "name": "default AI vision distance",
+          "value": 2048,
+          "unit": "game units, per-map override",
+          "source": "code/fgame/worldspawn.cpp:601"
+        },
+        {
+          "name": "far plane sight factor",
+          "value": 0.828,
+          "unit": "ratio of fog far plane",
+          "source": "code/fgame/actorenemy.cpp:51"
+        },
+        {
+          "name": "range offset in notice formula",
+          "value": 128,
+          "unit": "game units",
+          "source": "code/fgame/actorenemy.cpp:69"
+        },
+        {
+          "name": "meter decay rate",
+          "value": 0.25,
+          "unit": "meter per second when not visible",
+          "source": "code/fgame/actorenemy.cpp:114"
+        },
+        {
+          "name": "notice time scale recovery",
+          "value": 10000,
+          "unit": "milliseconds for full recovery",
+          "source": "code/fgame/actor.cpp:6640"
+        },
+        {
+          "name": "full-notice visibility threshold",
+          "value": 0.999,
+          "unit": "meter value",
+          "source": "code/fgame/actorenemy.cpp:164"
+        },
+        {
+          "name": "default notice time scale",
+          "value": 1,
+          "unit": "ratio",
+          "source": "code/fgame/actor.cpp:2921"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actorenemy.cpp",
+          "line": 93
+        },
+        {
+          "path": "code/fgame/actorenemy.cpp",
+          "line": 112
+        },
+        {
+          "path": "code/fgame/entity.cpp",
+          "line": 1790
+        }
+      ],
+      "capabilities": [
+        "gradual enemy detection",
+        "stealth scale from movement",
+        "field of view cone"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "perception",
+        "detection"
+      ]
+    },
+    {
+      "id": "ai-hearing-radii-and-alertness",
+      "node": "ai-perception",
+      "name": "Sound event radii and alertness",
+      "summary": "Noises are broadcast with fixed radii per kind, only reach soldiers in connected areas, and lower the notice time scale by a set amount per kind.",
+      "behavior": "Event kinds and radii in game units are weapon fire 2048, impact 384, explosion 4096, voices 1024, urgent voices 1536, misc 1500, loud misc 2250, footstep 512 and grenade 384, with 32768 for bad-place marks. A gun shot in single player is actually broadcast at 1500. Multiplayer in this reimplementation uses half the world radius clamped to 1500 to 8000, which is a reimplementation-only addition. The broadcast skips the source entity, dead listeners, listeners farther than the radius, listeners in areas not connected to the source, and kinds a soldier is set to ignore. When the event is heard, the chance to react is the sound awareness (default 100 percent) times a range factor that is 1 inside half the radius and falls to 0 at the edge. Then the notice time scale is lowered by 0.2 for fire, 0.1 for impact, 0.4 for explosion, 0.25 for enemy voices, 0.05 for footsteps and loud misc, 0.04 for grenades and 0.02 for misc, never by more than two thirds of the current value. An idle soldier turns curious toward the noise. Only enemy footsteps from targets that are not in view count, and the disguised player is ignored. Close events change the curious reaction: impact within 192, fire within 512, explosion within 768.",
+      "constants": [
+        {
+          "name": "weapon fire radius (table)",
+          "value": 2048,
+          "unit": "game units",
+          "source": "code/fgame/g_utils.cpp:1771"
+        },
+        {
+          "name": "explosion radius",
+          "value": 4096,
+          "unit": "game units",
+          "source": "code/fgame/g_utils.cpp:1771"
+        },
+        {
+          "name": "footstep radius",
+          "value": 512,
+          "unit": "game units",
+          "source": "code/fgame/g_utils.cpp:1771"
+        },
+        {
+          "name": "single-player shot broadcast radius",
+          "value": 1500,
+          "unit": "game units",
+          "source": "code/fgame/weapon.cpp:1608"
+        },
+        {
+          "name": "shot noise repeat interval",
+          "value": 1,
+          "unit": "seconds of game time",
+          "source": "code/fgame/weapon.cpp:1616"
+        },
+        {
+          "name": "default sound awareness",
+          "value": 100,
+          "unit": "percent chance at close range",
+          "source": "code/fgame/actor.cpp:2918"
+        },
+        {
+          "name": "explosion alertness drop",
+          "value": 0.4,
+          "unit": "notice time scale units per event",
+          "source": "code/fgame/actor.cpp:9595"
+        },
+        {
+          "name": "weapon fire alertness drop",
+          "value": 0.2,
+          "unit": "notice time scale units per event",
+          "source": "code/fgame/actor.cpp:9589"
+        },
+        {
+          "name": "footstep alertness drop",
+          "value": 0.05,
+          "unit": "notice time scale units per event",
+          "source": "code/fgame/actor.cpp:9614"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/g_utils.cpp",
+          "line": 1840
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 9245
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 9638
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 9685
+        }
+      ],
+      "capabilities": [
+        "soldiers react to gunfire and explosions",
+        "footsteps heard when unseen",
+        "noise radius by kind"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "hearing",
+        "noise"
+      ]
+    },
+    {
+      "id": "ai-threat-ranking",
+      "node": "ai-perception",
+      "name": "Enemy threat ranking",
+      "summary": "A soldier picks the highest-threat visible enemy by a score built from visibility, weapon class against range zone, distance and how many others already attack it.",
+      "behavior": "Only enemies whose visibility meter is full, who are not disguised and whose switch delay has passed can score. The base is 10000, or 10500 if the enemy is currently seen. A table adds up to 12 points by the enemy weapon class (none, pistol, rifle, submachine gun, machine gun, grenade, other) against four range zones, with boundaries at 256, 768, 1280 and 2048 units. A step list of 15 range values from 2048 down to 137 adds one point for each value the enemy is inside, so closer enemies score higher. Enemies closer than a safe distance (1.21 times the squared minimum distance plus 16384) get up to 500 more. Other terms are 4 less per squad mate of the enemy that stands closer to the soldier along the sight line, 2 less when the enemy actor is in pain, one more when the enemy is roughly in front, 5 more for the soldier current target in the first second after a switch, 5 more for the soldier last attacker, and a discount of up to 4 for the number of soldiers already attacking that enemy. The weapon-by-range table is tuning data for who is dangerous at which distance.",
+      "constants": [
+        {
+          "name": "base threat for a confirmed enemy",
+          "value": 10000,
+          "unit": "threat points",
+          "source": "code/fgame/actorenemy.cpp:168"
+        },
+        {
+          "name": "bonus for currently visible enemy",
+          "value": 10500,
+          "unit": "threat points total",
+          "source": "code/fgame/actorenemy.cpp:170"
+        },
+        {
+          "name": "near zone boundary",
+          "value": 256,
+          "unit": "game units",
+          "source": "code/fgame/actorenemy.cpp:176"
+        },
+        {
+          "name": "far zone boundary",
+          "value": 2048,
+          "unit": "game units",
+          "source": "code/fgame/actorenemy.cpp:182"
+        },
+        {
+          "name": "near-safe-distance bonus cap",
+          "value": 500,
+          "unit": "threat points",
+          "source": "code/fgame/actorenemy.cpp:215"
+        },
+        {
+          "name": "default minimum comfort distance",
+          "value": 128,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:2835"
+        },
+        {
+          "name": "default maximum fight distance",
+          "value": 1024,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:2837"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actorenemy.cpp",
+          "line": 147
+        },
+        {
+          "path": "code/fgame/actorenemy.cpp",
+          "line": 257
+        }
+      ],
+      "capabilities": [
+        "who the soldier shoots at first",
+        "target switching"
+      ],
+      "tags": [
+        "ai",
+        "targeting",
+        "threat"
+      ]
+    },
+    {
+      "id": "squad-inherits-player-gaze",
+      "node": "ai-perception",
+      "name": "Squad mates reveal enemies the player stares at",
+      "summary": "In single player with squad mates, each enemy the player looks at builds a sight level in seconds that is added to the visibility of that enemy for the squad.",
+      "behavior": "Each frame the player checks all enemy-side soldiers inside a view cone of 0.9 times the current field of view, up to 0.7867 times the fog far plane, and with a clear line. A looked-at enemy gains the frame time in seconds on its sight level. An enemy not looked at is reset to 0. The enemy nearest the view centre also becomes the player locked target. The soldier visibility total adds this sight level to the normal visibility meter, so an ally who has not yet noticed an enemy treats it as spotted once the player has stared long enough, and a sum of 1 or more counts as full. The loop does nothing in multiplayer or when the player has no squad mates.",
+      "constants": [
+        {
+          "name": "player gaze cone scale",
+          "value": 0.9,
+          "unit": "ratio of field of view",
+          "source": "code/fgame/player.cpp:4426"
+        },
+        {
+          "name": "player gaze range scale",
+          "value": 0.7867,
+          "unit": "ratio of fog far plane",
+          "source": "code/fgame/player.cpp:4427"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4443
+        },
+        {
+          "path": "code/fgame/actorenemy.cpp",
+          "line": 120
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4454
+        }
+      ],
+      "capabilities": [
+        "allies react to what the player targets",
+        "target lock by view centre"
+      ],
+      "tags": [
+        "ai",
+        "squad",
+        "perception",
+        "player-assist"
+      ]
+    },
+    {
+      "id": "ai-cover-and-hide-timing",
+      "node": "ai-combat",
+      "name": "Cover selection and peek cycle",
+      "summary": "A soldier picks a nearby cover node, runs to it, aims for 300 ms, then shoots if it can see and hit the enemy, otherwise hides for 2 to 4 seconds (allied) or 4 to 15 seconds (axis).",
+      "behavior": "Cover nodes are claimed so two soldiers do not share one. A node is valid when it hides the enemy view, is a concealment or low-wall node, or is a crouch node that passes a second check with the eye point lowered by 32 units. The path to the node is rejected when a segment passes closer to the enemy than 0.8 of the enemy distance (the squared test uses 0.64, capped at 192 units), or when the path is more than twice the straight distance and longer than 128 units. On arrival the soldier aims for at least 300 ms and a finished turn, then either throws a grenade, shoots if the enemy was seen and was shootable within the last 500 ms, or hides. The hide time is a random 2000 to 4000 ms for the American side and 4000 to 15000 ms for the German side. During hide, if the enemy is seen and shootable the soldier returns to the shoot state at once. If only one of the two is true the node is marked temporarily bad and the soldier searches for the enemy. An empty magazine forces a move to cover first. Allied soldiers look toward the nearest corner on the enemy path every 1000 ms. These cover times are the engine defaults. Scripts can swap think states.",
+      "constants": [
+        {
+          "name": "allied hide time minimum",
+          "value": 2000,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_cover.cpp:30"
+        },
+        {
+          "name": "axis hide time minimum",
+          "value": 4000,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_cover.cpp:32"
+        },
+        {
+          "name": "corner look interval",
+          "value": 1000,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_cover.cpp:395"
+        },
+        {
+          "name": "aim time before first shot",
+          "value": 300,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_cover.cpp:318"
+        },
+        {
+          "name": "visibility freshness window",
+          "value": 500,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_cover.cpp:333"
+        },
+        {
+          "name": "crouch node eye drop",
+          "value": 32,
+          "unit": "game units",
+          "source": "code/fgame/actor_cover.cpp:56"
+        },
+        {
+          "name": "cover path enemy clearance cap",
+          "value": 192,
+          "unit": "game units",
+          "source": "code/fgame/actor_cover.cpp:94"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actor_cover.cpp",
+          "line": 36
+        },
+        {
+          "path": "code/fgame/actor_cover.cpp",
+          "line": 298
+        },
+        {
+          "path": "code/fgame/actor_cover.cpp",
+          "line": 384
+        }
+      ],
+      "capabilities": [
+        "enemy soldiers take cover and peek out",
+        "suppression and flushing out hidden AI"
+      ],
+      "tags": [
+        "ai",
+        "cover",
+        "combat",
+        "timing"
+      ]
+    },
+    {
+      "id": "ai-aim-error",
+      "node": "ai-combat",
+      "name": "Soldier aim scatter around the target",
+      "summary": "A soldier aims at the target centre plus a random offset whose size shrinks with its accuracy and grows with range and when the target is obscured.",
+      "behavior": "Accuracy is a number from 0 to 1, stored from a percentage set in scripts (engine default 0.2). The cover factor is accuracy times a blend between a minimum accuracy of 0.33 and 1, weighted by how visible the target is, so a target half hidden by smoke is harder to hit. If the line from the gun to the player centre is blocked, the cover factor is multiplied again by 0.8, which increases the scatter. The scatter multiplier is the larger of 1 and distance over the weapon AI range class (500, 700, 1000 or 2200) times 0.75. The error amplitude is two times one minus the cover factor times the multiplier. Against the player each axis is a uniform random in minus 1 to 1 times amplitude, scaled by 16 units for x and y and 45 for z. Against others it is 32, 32 and 48. A sniper retarget state forces the multiplier to 2. A tank target aims 128 units lower. With the default accuracy of 0.2 and a visible target, the amplitude is 1.6 times the range multiplier, so the horizontal error is up to about 26 units at close range. The offset is in world units at the target, unlike player spread, which is at the range end. The maximum-deviation cone check is applied only for expansion targets and is not part of the base game.",
+      "constants": [
+        {
+          "name": "default actor accuracy",
+          "value": 0.2,
+          "unit": "ratio 0 to 1",
+          "source": "code/fgame/sentient.cpp:714"
+        },
+        {
+          "name": "minimum accuracy blend",
+          "value": 0.33,
+          "unit": "ratio",
+          "source": "code/fgame/actor.cpp:10620"
+        },
+        {
+          "name": "cover accuracy factor",
+          "value": 0.8,
+          "unit": "ratio",
+          "source": "code/fgame/actor.cpp:10618"
+        },
+        {
+          "name": "short range class",
+          "value": 500,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10631"
+        },
+        {
+          "name": "medium range class",
+          "value": 700,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10632"
+        },
+        {
+          "name": "long range class",
+          "value": 1000,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10633"
+        },
+        {
+          "name": "sniper range class",
+          "value": 2200,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10634"
+        },
+        {
+          "name": "horizontal scatter against player",
+          "value": 16,
+          "unit": "game units at the target, per shot",
+          "source": "code/fgame/actor.cpp:10621"
+        },
+        {
+          "name": "vertical scatter against player",
+          "value": 45,
+          "unit": "game units at the target, per shot",
+          "source": "code/fgame/actor.cpp:10622"
+        },
+        {
+          "name": "range scatter factor",
+          "value": 0.75,
+          "unit": "ratio",
+          "source": "code/fgame/actor.cpp:10700"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 10628
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 10722
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 10730
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 10695
+        }
+      ],
+      "capabilities": [
+        "enemy accuracy by range and cover",
+        "soldiers miss near the player at first"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "accuracy",
+        "aim"
+      ]
+    },
+    {
+      "id": "ai-grenade-reaction",
+      "node": "ai-grenades",
+      "name": "Soldier reaction to a nearby grenade",
+      "summary": "A soldier near a live grenade flees, kicks it back, throws it back, or throws itself on it, chosen by distance and whether teammates would be hurt.",
+      "behavior": "The reaction needs the grenade awareness check to pass. The default of 20 is compared with a random value from 0 to 1, so it always passes until a script lowers it. The whole state ends after 8 seconds. If the soldier threw the grenade, or another soldier already claimed it, the soldier flees. If it is 256 units or more away on the ground plane, it flees. If it is within 256 but farther than 128 and would hurt teammates at its position, the soldier runs to a point 88 units from it on its own side and, after 1 second there, becomes the martyr: the grenade then hurts only that soldier, which shields the team. If the grenade would hurt teammates at the last known enemy position, it flees. Otherwise it tries a kick toward the enemy. The fuse is postponed to 0.25 seconds and the soldier runs to a point 16 units from the grenade. If a kick is not possible but a throw-back solution exists, the fuse becomes 0.75 seconds. Flee sets a path 512 units away from the grenade and the soldier runs away. It counts as safe when the path ends 316 units or more from the grenade, or the grenade has no line of sight to it, otherwise it cowers. The soldier waits to kick or throw until the grenade horizontal speed drops under 32 units per second.",
+      "constants": [
+        {
+          "name": "react distance limit",
+          "value": 256,
+          "unit": "game units",
+          "source": "code/fgame/actor_grenade.cpp:387"
+        },
+        {
+          "name": "martyr minimum distance squared",
+          "value": 16384,
+          "unit": "game units squared (128 units)",
+          "source": "code/fgame/actor_grenade.cpp:393"
+        },
+        {
+          "name": "martyr run-to offset",
+          "value": 88,
+          "unit": "game units",
+          "source": "code/fgame/actor_grenade.cpp:227"
+        },
+        {
+          "name": "martyr delay",
+          "value": 1000,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_grenade.cpp:265"
+        },
+        {
+          "name": "kick fuse",
+          "value": 0.25,
+          "unit": "seconds of game time",
+          "source": "code/fgame/actor_grenade.cpp:418"
+        },
+        {
+          "name": "throw-back fuse",
+          "value": 0.75,
+          "unit": "seconds of game time",
+          "source": "code/fgame/actor_grenade.cpp:432"
+        },
+        {
+          "name": "flee path distance",
+          "value": 512,
+          "unit": "game units",
+          "source": "code/fgame/actor_grenade.cpp:108"
+        },
+        {
+          "name": "flee safe distance squared",
+          "value": 100352,
+          "unit": "game units squared (about 316 units)",
+          "source": "code/fgame/actor_grenade.cpp:154"
+        },
+        {
+          "name": "grenade state timeout",
+          "value": 8000,
+          "unit": "milliseconds of game time",
+          "source": "code/fgame/actor_grenade.cpp:493"
+        },
+        {
+          "name": "default grenade awareness",
+          "value": 20,
+          "unit": "compared with a 0 to 1 random, script-tunable",
+          "source": "code/fgame/actor.cpp:2919"
+        },
+        {
+          "name": "grenade settled speed squared",
+          "value": 32,
+          "unit": "units per second, squared test (speed under 32)",
+          "source": "code/fgame/actor_grenade.cpp:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actor_grenade.cpp",
+          "line": 396
+        },
+        {
+          "path": "code/fgame/actor_grenade.cpp",
+          "line": 408
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 8591
+        }
+      ],
+      "capabilities": [
+        "soldiers kick or throw back grenades",
+        "sacrificial grenade dive",
+        "flee from live grenade"
+      ],
+      "tags": [
+        "ai",
+        "grenade",
+        "reaction"
+      ]
+    },
+    {
+      "id": "ai-grenade-toss-solver",
+      "node": "ai-grenades",
+      "name": "Soldier grenade toss solver",
+      "summary": "To throw a grenade, a soldier solves a launch velocity with a vertical speed set by 0.8 times gravity, limited to 768 units per second and to targets between 256 and 1024 units away without hints.",
+      "behavior": "The solver rejects targets closer than 256 units. Under 1024 units it tries a low roll toss first, which needs the thrower above the target, then a lob throw. Beyond 1024 units a normal throw is refused and only a desperate throw-back can use grenade hint points. Under 1024 units hint points within 1024 units are a fallback. The solver assumes an effective gravity of 0.8 times the server gravity (640 at 800), so the thrown grenade is expected to use a matching gravity scale in its model data. That data is not in this repository, so this is unverified. The lob picks a vertical speed from the square root of 0.8 gravity times 0.5 times the squared flat distance over the straight distance, and a flat speed so the arc lands on the point. The roll uses a vertical speed from the drop height and a flat time scale of 0.2196. The path is accepted when the total speed is 768 or less, and three swept boxes with a 4 unit half-extent along the arc are clear, and the final point lies on flat world floor or on an enemy. The soldier throws only if it has grenades and none would hurt a team mate there.",
+      "constants": [
+        {
+          "name": "minimum toss distance",
+          "value": 256,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10143"
+        },
+        {
+          "name": "hint-free toss distance limit",
+          "value": 1024,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10151"
+        },
+        {
+          "name": "maximum launch speed",
+          "value": 768,
+          "unit": "units/second",
+          "source": "code/fgame/actor.cpp:9720"
+        },
+        {
+          "name": "effective gravity scale",
+          "value": 0.8,
+          "unit": "ratio of server gravity",
+          "source": "code/fgame/actor.cpp:9724"
+        },
+        {
+          "name": "arc probe box half-extent",
+          "value": 4,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:9718"
+        },
+        {
+          "name": "roll flat-time scale",
+          "value": 0.21961521,
+          "unit": "ratio",
+          "source": "code/fgame/actor.cpp:9879"
+        },
+        {
+          "name": "hint search radius",
+          "value": 1024,
+          "unit": "game units",
+          "source": "code/fgame/actor.cpp:10177"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 9817
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 9874
+        },
+        {
+          "path": "code/fgame/actor.cpp",
+          "line": 10217
+        }
+      ],
+      "capabilities": [
+        "AI throws grenades along a computed arc",
+        "low roll versus high lob"
+      ],
+      "tags": [
+        "ai",
+        "grenade",
+        "ballistics",
+        "throw"
+      ]
+    },
+    {
+      "id": "mounted-gun-player-use",
+      "node": "mounted-guns",
+      "name": "Player-operated mounted gun limits",
+      "summary": "A mounted gun limits pitch to 45 degrees each way and yaw to a configurable half-arc, attaches the player when facing within 80 degrees, and shakes the view when it fires.",
+      "behavior": "Defaults are pitch up cap minus 45 and down cap plus 45 degrees (a negative pitch is up), a yaw arc of up to 180 degrees on each side of the start yaw, and an invalid cap pair falls back to minus 30 and plus 10. The player can mount only if their view yaw is within 80 degrees of the gun direction. The player is placed 64 units behind the gun and dropped to the floor from 16 units below the gun origin. While mounted, view angles are clamped to the caps every frame, the player field of view is forced to 80 degrees, and the gun fires through the normal weapon path with a fire delay of 0.05 seconds. Each shot loads a view jitter value that is applied to the camera. The default is 0, so jitter exists only when scripts set it. The gun has a box of 32 by 32 units wide and 40 units tall for collision. The numbers can be changed per gun in scripts.",
+      "constants": [
+        {
+          "name": "pitch up cap",
+          "value": -45,
+          "unit": "degrees, default",
+          "source": "code/fgame/weapturret.cpp:435"
+        },
+        {
+          "name": "pitch down cap",
+          "value": 45,
+          "unit": "degrees, default",
+          "source": "code/fgame/weapturret.cpp:436"
+        },
+        {
+          "name": "yaw arc",
+          "value": 180,
+          "unit": "degrees each side of start yaw, default",
+          "source": "code/fgame/weapturret.cpp:437"
+        },
+        {
+          "name": "mount arc",
+          "value": 80,
+          "unit": "degrees, default",
+          "source": "code/fgame/weapturret.cpp:493"
+        },
+        {
+          "name": "user stand-back distance",
+          "value": 64,
+          "unit": "game units, default",
+          "source": "code/fgame/weapturret.cpp:438"
+        },
+        {
+          "name": "turret fire delay",
+          "value": 0.05,
+          "unit": "seconds of game time, default",
+          "source": "code/fgame/weapturret.cpp:492"
+        },
+        {
+          "name": "mounted zoom field of view",
+          "value": 80,
+          "unit": "degrees",
+          "source": "code/fgame/weapturret.cpp:856"
+        },
+        {
+          "name": "invalid-cap fallback pitch up",
+          "value": -30,
+          "unit": "degrees",
+          "source": "code/fgame/weapturret.cpp:1658"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 799
+        },
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 1463
+        },
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 832
+        }
+      ],
+      "capabilities": [
+        "stationary machine gun use",
+        "angle-limited turret",
+        "fire shake on mounted gun"
+      ],
+      "tags": [
+        "fps",
+        "turret",
+        "machine gun",
+        "camera"
+      ]
+    },
+    {
+      "id": "ai-gunner-converge-and-suppress",
+      "node": "mounted-guns",
+      "name": "AI gunner converge, track and suppress cycle",
+      "summary": "An AI gunner swings onto a target over a converge time of 2 seconds. If the target is lost it fires a sweep over a 256 by 64 box for 2 seconds, sweeps without firing for 2 seconds, then returns to its default pose.",
+      "behavior": "While the enemy is visible the gun tracks the target centre, falling back to the eye if the centre is hidden. The turn rate is the remaining angle divided by the remaining converge time, capped at 720 degrees per second per axis, so a new target is reached in about the converge time. If the target cannot be seen the gun enters suppress: it fires at random sweeping points inside a width of 256 and a height of 64 units around the last known position, with a step time of the width over 250, for the suppress time. It then stops firing for the wait time while still sweeping, and returns to its default pose. The gun turns at 180 degrees per second by default and cannot aim outside its pitch and yaw caps. The converge and suppress durations come from game cvars with defaults of 2 seconds each. A cvar for turret spread (16) exists but this file does not apply it to the bullets.",
+      "constants": [
+        {
+          "name": "converge time",
+          "value": 2,
+          "unit": "seconds of game time",
+          "source": "code/fgame/gamecvars.cpp:651"
+        },
+        {
+          "name": "suppress time",
+          "value": 2,
+          "unit": "seconds of game time",
+          "source": "code/fgame/gamecvars.cpp:652"
+        },
+        {
+          "name": "suppress wait time",
+          "value": 2,
+          "unit": "seconds of game time",
+          "source": "code/fgame/gamecvars.cpp:653"
+        },
+        {
+          "name": "suppress area width",
+          "value": 256,
+          "unit": "game units",
+          "source": "code/fgame/weapturret.cpp:489"
+        },
+        {
+          "name": "suppress area height",
+          "value": 64,
+          "unit": "game units",
+          "source": "code/fgame/weapturret.cpp:490"
+        },
+        {
+          "name": "default AI turn speed",
+          "value": 180,
+          "unit": "degrees/second",
+          "source": "code/fgame/weapturret.cpp:433"
+        },
+        {
+          "name": "maximum converge turn rate",
+          "value": 720,
+          "unit": "degrees/second",
+          "source": "code/fgame/weapturret.cpp:660"
+        },
+        {
+          "name": "suppress sweep speed base",
+          "value": 250,
+          "unit": "units/second",
+          "source": "code/fgame/weapturret.cpp:1038"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 1016
+        },
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 989
+        },
+        {
+          "path": "code/fgame/weapturret.cpp",
+          "line": 673
+        }
+      ],
+      "capabilities": [
+        "machine gunner suppressing fire",
+        "turret lead-in aim time"
+      ],
+      "tags": [
+        "ai",
+        "turret",
+        "suppression",
+        "machine gun"
+      ]
+    },
+    {
+      "id": "health-pickup-and-heal-rate",
+      "node": "pickups",
+      "name": "Health pickups and heal over time",
+      "summary": "A health item restores 20 percent of maximum health, is ignored at full health, and in the Spearhead protocol multiplayer the restore is paid out at 10 percent of maximum health per second.",
+      "behavior": "The default item amount is 20, read as a percentage of the player maximum health (default 100), so the base item gives 20 health. The item cannot be picked up when health is already full, and with heal rate on, when the pending heal would fill the bar (this check is a reimplementation addition). With the heal rate cvar set (default 10 for the Spearhead protocol, 0 before), the amount is stored as a pending heal that is applied each frame at max health times the rate over 100 times the frame time, then clamped to max health. Single player and rate 0 apply it at once. The item is dropped to the floor on spawn using a toss move and a 256 unit drop test. Multiplayer can remove health items with a no-health flag.",
+      "constants": [
+        {
+          "name": "default pickup amount",
+          "value": 20,
+          "unit": "percent of max health, per pickup",
+          "source": "code/fgame/health.cpp:63"
+        },
+        {
+          "name": "default max health",
+          "value": 100,
+          "unit": "health points",
+          "source": "code/fgame/player.cpp:2447"
+        },
+        {
+          "name": "multiplayer heal rate",
+          "value": 10,
+          "unit": "percent of max health per second, Spearhead protocol default",
+          "source": "code/fgame/gamecvars.cpp:495"
+        },
+        {
+          "name": "spawn floor drop test",
+          "value": 256,
+          "unit": "game units",
+          "source": "code/fgame/health.cpp:142"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/fgame/health.cpp",
+          "line": 109
+        },
+        {
+          "path": "code/fgame/player.cpp",
+          "line": 4971
+        },
+        {
+          "path": "code/fgame/health.cpp",
+          "line": 94
+        }
+      ],
+      "capabilities": [
+        "health packs",
+        "gradual healing",
+        "full health refusal"
+      ],
+      "tags": [
+        "fps",
+        "health",
+        "pickup"
+      ]
+    }
+  ]
+}
