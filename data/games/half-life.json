@@ -1,0 +1,2150 @@
+{
+  "version": 1,
+  "id": "half-life",
+  "title": "Half-Life",
+  "repo": "https://github.com/ValveSoftware/halflife",
+  "sha": "b1b5cf5892918535619b2937bb927e46cb097ba1",
+  "nodes": [
+    {
+      "id": "pm-ground-air",
+      "name": "Player ground, air and swim movement",
+      "purpose": "Shared player movement step that runs on client and server: friction, acceleration, air control, stairs, ground contact and half-step gravity",
+      "paths": [
+        "pm_shared/pm_shared.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_Accelerate",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            990,
+            1025
+          ]
+        },
+        {
+          "name": "PM_WalkMove",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1034,
+            1193
+          ]
+        },
+        {
+          "name": "PM_Friction",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1202,
+            1277
+          ]
+        },
+        {
+          "name": "PM_AirAccelerate",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1279,
+            1313
+          ]
+        },
+        {
+          "name": "PM_WaterMove",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1321,
+            1408
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1417,
+            1461
+          ]
+        },
+        {
+          "name": "PM_CatagorizePosition",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1546,
+            1597
+          ]
+        },
+        {
+          "name": "PM_AddCorrectGravity",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            747,
+            766
+          ]
+        },
+        {
+          "name": "PM_FixupGravityVelocity",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            769,
+            785
+          ]
+        },
+        {
+          "name": "PM_CheckParamters",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2837,
+            2914
+          ]
+        },
+        {
+          "name": "PM_PlayerMove",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2954,
+            3207
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "pm-actions",
+      "name": "Player jump, duck, ladder, water exit and landing",
+      "purpose": "Discrete player actions layered on the movement step: jump launch, crouch transition, ladder climbing, ledge hop out of water and fall handling",
+      "paths": [
+        "pm_shared/pm_shared.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_Jump",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2474,
+            2609
+          ]
+        },
+        {
+          "name": "PM_PreventMegaBunnyJumping",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2444,
+            2467
+          ]
+        },
+        {
+          "name": "PM_Duck",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1964,
+            2057
+          ]
+        },
+        {
+          "name": "PM_UnDuck",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            1920,
+            1962
+          ]
+        },
+        {
+          "name": "PM_LadderMove",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2059,
+            2188
+          ]
+        },
+        {
+          "name": "PM_CheckWaterJump",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2617,
+            2679
+          ]
+        },
+        {
+          "name": "PM_CheckFalling",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2681,
+            2748
+          ]
+        },
+        {
+          "name": "PM_DropPunchAngle",
+          "path": "pm_shared/pm_shared.c",
+          "lines": [
+            2821,
+            2829
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pm-ground-air"
+      ]
+    },
+    {
+      "id": "player-state",
+      "name": "Player damage, armor and noise emission",
+      "purpose": "Server-side player health rules: armor absorption, fall damage, and the noise the player advertises to listening monsters",
+      "paths": [
+        "dlls/player.cpp",
+        "dlls/singleplay_gamerules.cpp",
+        "dlls/player.h"
+      ],
+      "functions": [
+        {
+          "name": "TakeDamage",
+          "path": "dlls/player.cpp",
+          "lines": [
+            445,
+            675
+          ]
+        },
+        {
+          "name": "UpdatePlayerSound",
+          "path": "dlls/player.cpp",
+          "lines": [
+            2581,
+            2694
+          ]
+        },
+        {
+          "name": "FlPlayerFallDamage",
+          "path": "dlls/singleplay_gamerules.cpp",
+          "lines": [
+            192,
+            198
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pm-actions",
+        "monster-senses"
+      ]
+    },
+    {
+      "id": "weapons",
+      "name": "Player weapons and bullet spread",
+      "purpose": "Weapon fire cadence, ammo state, cone-spread bullet tracing and the client-side view kick events",
+      "paths": [
+        "dlls/weapons.cpp",
+        "dlls/mp5.cpp",
+        "dlls/shotgun.cpp",
+        "dlls/glock.cpp",
+        "dlls/combat.cpp",
+        "cl_dll/ev_hldm.cpp",
+        "dlls/weapons.h"
+      ],
+      "functions": [
+        {
+          "name": "PrimaryAttack",
+          "path": "dlls/mp5.cpp",
+          "lines": [
+            128,
+            194
+          ]
+        },
+        {
+          "name": "PrimaryAttack",
+          "path": "dlls/shotgun.cpp",
+          "lines": [
+            119,
+            187
+          ]
+        },
+        {
+          "name": "SecondaryAttack",
+          "path": "dlls/shotgun.cpp",
+          "lines": [
+            190,
+            262
+          ]
+        },
+        {
+          "name": "GlockFire",
+          "path": "dlls/glock.cpp",
+          "lines": [
+            128,
+            226
+          ]
+        },
+        {
+          "name": "GetNextAttackDelay",
+          "path": "dlls/weapons.cpp",
+          "lines": [
+            1213,
+            1239
+          ]
+        },
+        {
+          "name": "FireBulletsPlayer",
+          "path": "dlls/combat.cpp",
+          "lines": [
+            1506,
+            1586
+          ]
+        },
+        {
+          "name": "EV_FireShotGunDouble",
+          "path": "cl_dll/ev_hldm.cpp",
+          "lines": [
+            565,
+            618
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pm-actions"
+      ]
+    },
+    {
+      "id": "monster-senses",
+      "name": "Monster sight, hearing and the world sound list",
+      "purpose": "How monsters notice things: forward view cone plus eye line trace, an audible sound list with per-sound volume and expiry",
+      "paths": [
+        "dlls/monsters.cpp",
+        "dlls/combat.cpp",
+        "dlls/soundent.cpp",
+        "dlls/soundent.h",
+        "dlls/util.h",
+        "dlls/basemonster.h"
+      ],
+      "functions": [
+        {
+          "name": "Listen",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            199,
+            271
+          ]
+        },
+        {
+          "name": "Look",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            305,
+            398
+          ]
+        },
+        {
+          "name": "PBestSound",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            416,
+            461
+          ]
+        },
+        {
+          "name": "FInViewCone",
+          "path": "dlls/combat.cpp",
+          "lines": [
+            1169,
+            1189
+          ]
+        },
+        {
+          "name": "FVisible",
+          "path": "dlls/combat.cpp",
+          "lines": [
+            1222,
+            1249
+          ]
+        },
+        {
+          "name": "Think",
+          "path": "dlls/soundent.cpp",
+          "lines": [
+            93,
+            127
+          ]
+        },
+        {
+          "name": "InsertSound",
+          "path": "dlls/soundent.cpp",
+          "lines": [
+            200,
+            222
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "monster-ai-core",
+      "name": "Monster awareness states, schedules and enemy memory",
+      "purpose": "The generic AI loop: per-tick sensing, idle/alert/combat state selection, interruptible task schedules, last-known-position tracking and cover search",
+      "paths": [
+        "dlls/monsterstate.cpp",
+        "dlls/schedule.cpp",
+        "dlls/monsters.cpp",
+        "dlls/basemonster.h"
+      ],
+      "functions": [
+        {
+          "name": "RunAI",
+          "path": "dlls/monsterstate.cpp",
+          "lines": [
+            62,
+            113
+          ]
+        },
+        {
+          "name": "GetIdealState",
+          "path": "dlls/monsterstate.cpp",
+          "lines": [
+            119,
+            233
+          ]
+        },
+        {
+          "name": "MaintainSchedule",
+          "path": "dlls/schedule.cpp",
+          "lines": [
+            208,
+            300
+          ]
+        },
+        {
+          "name": "GetSchedule",
+          "path": "dlls/schedule.cpp",
+          "lines": [
+            1350,
+            1514
+          ]
+        },
+        {
+          "name": "GetEnemy",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            3344,
+            3397
+          ]
+        },
+        {
+          "name": "CheckEnemy",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            1057,
+            1166
+          ]
+        },
+        {
+          "name": "PushEnemy",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            1171,
+            1191
+          ]
+        },
+        {
+          "name": "FindCover",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            2235,
+            2329
+          ]
+        },
+        {
+          "name": "ChangeYaw",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            2532,
+            2593
+          ]
+        }
+      ],
+      "dependsOn": [
+        "monster-senses"
+      ]
+    },
+    {
+      "id": "squad-ai",
+      "name": "Squad formation, slots and shared enemy",
+      "purpose": "Groups nearby same-class monsters under a leader, rations attack slots, shares the enemy and keeps cover spots apart",
+      "paths": [
+        "dlls/squadmonster.cpp",
+        "dlls/squadmonster.h"
+      ],
+      "functions": [
+        {
+          "name": "OccupySlot",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            52,
+            99
+          ]
+        },
+        {
+          "name": "SquadMakeEnemy",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            244,
+            276
+          ]
+        },
+        {
+          "name": "SquadRecruit",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            308,
+            383
+          ]
+        },
+        {
+          "name": "CheckEnemy",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            388,
+            410
+          ]
+        },
+        {
+          "name": "NoFriendlyFire",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            453,
+            514
+          ]
+        },
+        {
+          "name": "FValidateCover",
+          "path": "dlls/squadmonster.cpp",
+          "lines": [
+            546,
+            560
+          ]
+        }
+      ],
+      "dependsOn": [
+        "monster-ai-core"
+      ]
+    },
+    {
+      "id": "grunt-ai",
+      "name": "Human grunt combat decisions",
+      "purpose": "The soldier enemy: attack eligibility checks, grenade tossing, cover and flank schedule choices, and helmet damage handling",
+      "paths": [
+        "dlls/hgrunt.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PrescheduleThink",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            365,
+            383
+          ]
+        },
+        {
+          "name": "CheckMeleeAttack1",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            413,
+            434
+          ]
+        },
+        {
+          "name": "CheckRangeAttack1",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            444,
+            468
+          ]
+        },
+        {
+          "name": "CheckRangeAttack2",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            474,
+            598
+          ]
+        },
+        {
+          "name": "TraceAttack",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            604,
+            624
+          ]
+        },
+        {
+          "name": "Spawn",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            979,
+            1041
+          ]
+        },
+        {
+          "name": "GetSchedule",
+          "path": "dlls/hgrunt.cpp",
+          "lines": [
+            1975,
+            2219
+          ]
+        }
+      ],
+      "dependsOn": [
+        "squad-ai"
+      ]
+    },
+    {
+      "id": "scripted-sequences",
+      "name": "Scripted sequences",
+      "purpose": "Level-authored cutscene control that borrows a monster, walks it to a mark and plays a named animation until done or interrupted",
+      "paths": [
+        "dlls/scripted.cpp",
+        "dlls/scripted.h"
+      ],
+      "functions": [
+        {
+          "name": "Spawn",
+          "path": "dlls/scripted.cpp",
+          "lines": [
+            129,
+            155
+          ]
+        },
+        {
+          "name": "FindEntity",
+          "path": "dlls/scripted.cpp",
+          "lines": [
+            272,
+            318
+          ]
+        },
+        {
+          "name": "PossessEntity",
+          "path": "dlls/scripted.cpp",
+          "lines": [
+            321,
+            390
+          ]
+        },
+        {
+          "name": "CineThink",
+          "path": "dlls/scripted.cpp",
+          "lines": [
+            476,
+            489
+          ]
+        },
+        {
+          "name": "CanInterrupt",
+          "path": "dlls/scripted.cpp",
+          "lines": [
+            654,
+            665
+          ]
+        },
+        {
+          "name": "CanPlaySequence",
+          "path": "dlls/monsters.cpp",
+          "lines": [
+            3110,
+            3135
+          ]
+        }
+      ],
+      "dependsOn": [
+        "monster-ai-core"
+      ]
+    },
+    {
+      "id": "level-transition",
+      "name": "Level change triggers and carried entities",
+      "purpose": "Landmark-aligned map changes: the trigger volume, which entities travel with the player and how the next map is chosen",
+      "paths": [
+        "dlls/triggers.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ChangeLevelNow",
+          "path": "dlls/triggers.cpp",
+          "lines": [
+            1478,
+            1534
+          ]
+        },
+        {
+          "name": "InTransitionVolume",
+          "path": "dlls/triggers.cpp",
+          "lines": [
+            1576,
+            1609
+          ]
+        },
+        {
+          "name": "ChangeList",
+          "path": "dlls/triggers.cpp",
+          "lines": [
+            1619,
+            1718
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-friction-accel",
+      "node": "pm-ground-air",
+      "name": "Ground friction and capped acceleration",
+      "summary": "Walking speed is shaped by a speed-proportional friction drop plus an acceleration that only adds speed up to the wished speed along the wished direction.",
+      "behavior": "Each movement step on the ground first removes speed with friction. The drop is the larger of the current speed and a stop-speed floor, times the friction coefficient and the step time, so slow movers still halt quickly and fast movers lose speed in proportion. Friction is skipped below 0.1 units per second. A short probe ahead of the feet along the velocity looks for floor; when no floor lies within the probe depth, the friction coefficient is additionally scaled by an engine-side edge-friction factor, which lets a designer make players brake near drops. Acceleration then compares current speed along the wished direction with the wished speed and adds at most the shortfall, limited by acceleration times step time times wished speed, so pushing against the current heading adds speed quickly and cruising at the cap adds nothing. The coefficients for acceleration, friction, stop speed and edge friction come from engine server variables, not from this repository, so tune them to taste.",
+      "constants": [
+        {
+          "name": "edge probe lead distance",
+          "value": 16,
+          "unit": "units ahead of the feet along velocity",
+          "source": "pm_shared/pm_shared.c:1234"
+        },
+        {
+          "name": "edge probe depth below feet",
+          "value": 34,
+          "unit": "units below the hull bottom",
+          "source": "pm_shared/pm_shared.c:1237"
+        },
+        {
+          "name": "friction minimum speed",
+          "value": 0.1,
+          "unit": "units per second; below it friction is skipped",
+          "source": "pm_shared/pm_shared.c:1221"
+        },
+        {
+          "name": "walk stop threshold",
+          "value": 1,
+          "unit": "units per second; below it ground velocity is zeroed",
+          "source": "pm_shared/pm_shared.c:1091"
+        },
+        {
+          "name": "use-button pull slowdown divisor",
+          "value": 3,
+          "unit": "max speed divided by this while using on ground",
+          "source": "pm_shared/pm_shared.c:2861"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1202
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 990
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1014
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2954
+        }
+      ],
+      "capabilities": [
+        "responsive ground acceleration without overshoot",
+        "speed-proportional braking with a stop floor",
+        "ledge edge friction",
+        "slow carry speed while pulling"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "air-strafe-bunnyhop-cap",
+      "node": "pm-ground-air",
+      "name": "Air strafing and bunny-hop speed cap",
+      "summary": "In the air the wished speed is clamped to 30 units per second for the add-speed test, which allows strafe turning, while a jump rescales speeds above 1.7 times the walk maximum.",
+      "behavior": "Airborne control reuses the ground acceleration idea but clamps the wished speed to 30 units per second when testing how much speed may be added, so at most 30 units per second of speed along the wished direction can accumulate. The size of each push still scales with the full wished speed, acceleration and step time, which is what lets a player curve a jump by strafing. No friction runs in the air. To stop jump chains from compounding speed, the jump action checks current speed against 1.7 times the maximum walk speed and, when above it, scales the whole velocity by the cap ratio multiplied by 0.65, an intentional extra bite so repeated hops decay instead of hold. The check runs only at the moment a jump starts, so airborne speed is otherwise uncapped.",
+      "constants": [
+        {
+          "name": "air wished-speed cap",
+          "value": 30,
+          "unit": "units per second used in the add-speed test",
+          "source": "pm_shared/pm_shared.c:1293"
+        },
+        {
+          "name": "bunny-hop cap factor",
+          "value": 1.7,
+          "unit": "multiple of maximum walk speed",
+          "source": "pm_shared/pm_shared.c:2436"
+        },
+        {
+          "name": "bunny-hop crop multiplier",
+          "value": 0.65,
+          "unit": "extra scale on the cap ratio when cropping velocity",
+          "source": "pm_shared/pm_shared.c:2464"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1279
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2444
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1417
+        }
+      ],
+      "capabilities": [
+        "air strafing to steer jumps",
+        "anti bunny-hop speed limiter",
+        "no air friction"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "ground-contact-stairs",
+      "node": "pm-ground-air",
+      "name": "Ground contact test and stair stepping",
+      "summary": "Standing is a two-unit downward probe that rejects slopes steeper than a 0.7 normal, and walking into a wall retries the move raised by the step height and keeps the farther result.",
+      "behavior": "Every step the controller traces two units straight down from the origin; the hull counts as grounded only when the surface normal points up with a vertical component of at least 0.7 and the player is not rising faster than 180 units per second, and a grounded player is snapped down onto the floor. Walking first tries the full move directly. If that is blocked and the player was grounded, it runs a normal slide move, then restarts from the original spot, lifts by the step height, slides again, and presses back down by the step height. The raised attempt is discarded when its landing surface is steeper than 0.7. Otherwise the controller compares squared horizontal distance covered by both attempts and keeps the longer one, which makes stairs climbable at full speed while walls still block. The step height is set by the server to 18 units.",
+      "constants": [
+        {
+          "name": "ground probe depth",
+          "value": 2,
+          "unit": "units below the origin",
+          "source": "pm_shared/pm_shared.c:1565"
+        },
+        {
+          "name": "walkable normal minimum",
+          "value": 0.7,
+          "unit": "vertical component of the floor normal",
+          "source": "pm_shared/pm_shared.c:1576"
+        },
+        {
+          "name": "airborne launch speed",
+          "value": 180,
+          "unit": "units per second upward; faster counts as off the ground",
+          "source": "pm_shared/pm_shared.c:1567"
+        },
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "units",
+          "source": "dlls/world.cpp:483"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1546
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1145
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1168
+        },
+        {
+          "path": "dlls/world.cpp",
+          "line": 483
+        }
+      ],
+      "capabilities": [
+        "climb stairs and curbs at full speed",
+        "reject steep slopes as floor",
+        "floor snapping while walking"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-gravity-longjump",
+      "node": "pm-ground-air",
+      "name": "Jump launch, half-step gravity and long jump",
+      "summary": "A jump sets vertical speed from a 45-unit height under 800 gravity, gravity is applied half before and half after the move, and a crouched jump with the module launches 1.6 times faster.",
+      "behavior": "Jumping is only allowed from the ground and only when the jump button was released since the last jump, so holding it does not pogo. Vertical speed is the square root of twice the gravity times the desired apex, here an apex of 45 units under gravity 800, about 268 units per second. Gravity integration uses a two-half scheme: half the gravity step is applied before the move and half after, and the jump itself subtracts the second half immediately, so the trajectory follows an exact parabola regardless of step time. A player who is ducking, holds duck with time left on the duck timer, has the long-jump module and moves above 50 units per second instead gets horizontal speed along the facing equal to 350 times 1.6 (560) and an apex of 56 units (about 299 units per second). Gravity is 800 units per second squared, set by the world on level load.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 800,
+          "unit": "units per second squared",
+          "source": "dlls/world.cpp:482"
+        },
+        {
+          "name": "jump apex height",
+          "value": 45,
+          "unit": "units; vertical speed is sqrt(2*800*45)",
+          "source": "pm_shared/pm_shared.c:2596"
+        },
+        {
+          "name": "long jump apex height",
+          "value": 56,
+          "unit": "units",
+          "source": "pm_shared/pm_shared.c:2592"
+        },
+        {
+          "name": "long jump base speed",
+          "value": 350,
+          "unit": "units per second before the multiplier",
+          "source": "pm_shared/pm_shared.c:121"
+        },
+        {
+          "name": "long jump speed multiplier",
+          "value": 1.6,
+          "unit": "scale on the base speed",
+          "source": "pm_shared/pm_shared.c:2589"
+        },
+        {
+          "name": "long jump minimum speed",
+          "value": 50,
+          "unit": "units per second required to trigger",
+          "source": "pm_shared/pm_shared.c:2583"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2474
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 747
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 769
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2596
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent jump height",
+        "no jump re-trigger while held",
+        "long jump while crouching"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "duck-transition",
+      "node": "pm-actions",
+      "name": "Crouch transition and hull swap",
+      "summary": "Crouching eases the eye height over 0.4 seconds, then swaps to a 36-unit hull, slows movement to a third and refuses to stand under a ceiling.",
+      "behavior": "Pressing duck on the ground starts a timer and eases the eye along a smoothstep curve over 0.4 seconds, dropping it about 34 units in total relative to the standing origin. When the timer ends, or immediately if the player is airborne, the collision hull switches from the 72-unit standing hull to the 36-unit crouch hull and the origin is shifted down 18 units so the feet stay planted, with a small upward unstick search of up to 36 one-unit steps; the crouched eye height of 12 units then applies relative to the new origin. While crouched, forward, side and up commands are multiplied by 0.333. Releasing duck tries to stand: the controller traces the standing hull at the raised origin and only commits when there is no solid, otherwise it stays crouched until clear. A dead player is forced to try standing.",
+      "constants": [
+        {
+          "name": "crouch transition time",
+          "value": 0.4,
+          "unit": "seconds",
+          "source": "pm_shared/pm_shared.c:77"
+        },
+        {
+          "name": "standing eye height",
+          "value": 28,
+          "unit": "units above the hull origin",
+          "source": "pm_shared/pm_shared.c:87"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 12,
+          "unit": "units above the hull origin",
+          "source": "pm_shared/pm_shared.c:80"
+        },
+        {
+          "name": "crouched hull half-height",
+          "value": 18,
+          "unit": "units; hull spans -18 to 18",
+          "source": "pm_shared/pm_shared.c:79"
+        },
+        {
+          "name": "standing hull half-height",
+          "value": 36,
+          "unit": "units; hull spans -36 to 36",
+          "source": "pm_shared/pm_shared.c:86"
+        },
+        {
+          "name": "crouch movement multiplier",
+          "value": 0.333,
+          "unit": "scale on move commands while crouched",
+          "source": "pm_shared/pm_shared.c:123"
+        },
+        {
+          "name": "unstick search steps",
+          "value": 36,
+          "unit": "one-unit moves tried when the hull change leaves the player inside geometry",
+          "source": "pm_shared/pm_shared.c:1909"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1964
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1920
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2046
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1898
+        }
+      ],
+      "capabilities": [
+        "smooth eased crouch camera",
+        "stand-up blocked by ceilings",
+        "half-height collision hull when crouched"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "stealth"
+      ]
+    },
+    {
+      "id": "ladder-climb",
+      "node": "pm-actions",
+      "name": "Ladder climbing in view space",
+      "summary": "On a ladder volume the player flies at up to 200 units per second where look direction decides up or down, and jump kicks off at 270 along the surface normal.",
+      "behavior": "Touching a ladder brush switches the player to a no-gravity fly mode and zeroes gravity. Movement buttons build an intended velocity from the view forward and right vectors, scaled by the climb speed limited to the maximum walk speed and cut to a third when crouched. That velocity is split into a part pushing into the ladder face and a lateral part; the into-face part is rotated into the vertical direction along the face, so looking up and pressing forward climbs and looking down and pressing forward descends. With no input the player stops dead on the ladder. Pressing jump returns to walking with 270 units per second of velocity pushed along the ladder surface normal. Standing on floor and pushing away from the ladder adds a 200-unit push away so the player can step off.",
+      "constants": [
+        {
+          "name": "maximum climb speed",
+          "value": 200,
+          "unit": "units per second",
+          "source": "pm_shared/pm_shared.c:82"
+        },
+        {
+          "name": "jump-off speed along the ladder normal",
+          "value": 270,
+          "unit": "units per second",
+          "source": "pm_shared/pm_shared.c:2134"
+        },
+        {
+          "name": "crouched climb multiplier",
+          "value": 0.333,
+          "unit": "scale on climb speed when crouching",
+          "source": "pm_shared/pm_shared.c:123"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2059
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2190
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2178
+        }
+      ],
+      "capabilities": [
+        "look-direction ladder climbing",
+        "wall kick-off from a ladder",
+        "step off at the bottom"
+      ],
+      "tags": [
+        "movement",
+        "ladder",
+        "fps"
+      ]
+    },
+    {
+      "id": "water-swim-ledge-hop",
+      "node": "pm-actions",
+      "name": "Swimming and ledge hop out of water",
+      "summary": "Swimming uses six-axis movement at 0.8 of walk speed with a slow 60 unit per second sink, and nudging a wall edge while chest-deep launches a 225 unit per second hop for two seconds.",
+      "behavior": "When the hull midpoint is under water the controller switches to swimming: the wished velocity follows the full view direction including pitch, is scaled to 0.8 of the capped speed, drag removes speed in proportion to the friction coefficient, and acceleration is capped like the ground version. With no input the player sinks at 60 units per second. Holding jump in water sets upward speed to 100 for water, 80 for slime and 50 for lava. While at waist depth, not falling faster than 180 and not backing away, the controller traces 24 units forward at 8 units above the origin with a point hull; if that hits a near-vertical wall it repeats the trace at hull-top height, and if the upper trace is clear it starts a water jump of 2000 milliseconds with 225 units per second upward and a push into the wall, during which steering and acceleration are locked.",
+      "constants": [
+        {
+          "name": "swim speed scale",
+          "value": 0.8,
+          "unit": "multiplier on wished swim speed",
+          "source": "pm_shared/pm_shared.c:1356"
+        },
+        {
+          "name": "idle sink speed",
+          "value": 60,
+          "unit": "units per second downward",
+          "source": "pm_shared/pm_shared.c:1341"
+        },
+        {
+          "name": "swim up speed in water",
+          "value": 100,
+          "unit": "units per second",
+          "source": "pm_shared/pm_shared.c:2513"
+        },
+        {
+          "name": "ledge probe distance",
+          "value": 24,
+          "unit": "units forward",
+          "source": "pm_shared/pm_shared.c:2655"
+        },
+        {
+          "name": "lower ledge probe rise above the origin",
+          "value": 8,
+          "unit": "units; the upper probe adds the hull top height minus this value, so it runs at hull top",
+          "source": "pm_shared/pm_shared.c:2616"
+        },
+        {
+          "name": "water jump lift",
+          "value": 225,
+          "unit": "units per second upward",
+          "source": "pm_shared/pm_shared.c:2671"
+        },
+        {
+          "name": "water jump duration",
+          "value": 2000,
+          "unit": "milliseconds",
+          "source": "pm_shared/pm_shared.c:2670"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 1321
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2617
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2224
+        }
+      ],
+      "capabilities": [
+        "free 3D swimming",
+        "sinking when idle",
+        "climb out of pools onto ledges"
+      ],
+      "tags": [
+        "movement",
+        "water",
+        "fps"
+      ]
+    },
+    {
+      "id": "fall-damage-armor",
+      "node": "player-state",
+      "name": "Fall damage and armor absorption",
+      "summary": "Landing faster than 580 units per second hurts in proportion to the excess and kills at 1024, while armor soaks 80 percent of non-fall damage at half a point per damage point.",
+      "behavior": "On landing the controller records the downward speed. Below 350 units per second nothing happens. At or above 350 the landing plays a step sound and kicks the view roll by 0.013 times the speed. Above the safe speed of 580 a pain sound plays and the server subtracts 580 and multiplies by 100 divided by the span to the fatal speed of 1024, so damage ramps linearly from 0 to 100 at 1024; no damage is dealt when landing in water. Armor works on every damage type except fall and drown: 20 percent of the damage goes to health and the other 80 percent is absorbed, each absorbed damage point costing the armor half a point. If armor runs out, the unabsorbed remainder returns to health and armor reaches zero. In single player any landing above 64 units per second also posts a 0.2 second noise to listening monsters whose volume equals the fall speed.",
+      "constants": [
+        {
+          "name": "safe fall speed",
+          "value": 580,
+          "unit": "units per second",
+          "source": "dlls/player.h:23"
+        },
+        {
+          "name": "fatal fall speed",
+          "value": 1024,
+          "unit": "units per second",
+          "source": "pm_shared/pm_shared.c:115"
+        },
+        {
+          "name": "landing feedback threshold",
+          "value": 350,
+          "unit": "units per second",
+          "source": "pm_shared/pm_shared.c:119"
+        },
+        {
+          "name": "landing roll kick factor",
+          "value": 0.013,
+          "unit": "view roll degrees per unit of fall speed",
+          "source": "pm_shared/pm_shared.c:2735"
+        },
+        {
+          "name": "armor health ratio",
+          "value": 0.2,
+          "unit": "fraction of damage that reaches health while armor lasts",
+          "source": "dlls/player.cpp:442"
+        },
+        {
+          "name": "armor point cost",
+          "value": 0.5,
+          "unit": "armor points spent per absorbed damage point",
+          "source": "dlls/player.cpp:443"
+        },
+        {
+          "name": "fall noise minimum speed",
+          "value": 64,
+          "unit": "units per second needed to alert monsters",
+          "source": "dlls/player.cpp:2766"
+        },
+        {
+          "name": "fall noise duration",
+          "value": 0.2,
+          "unit": "seconds the landing noise stays in the sound list",
+          "source": "dlls/player.cpp:2768"
+        }
+      ],
+      "sources": [
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2681
+        },
+        {
+          "path": "dlls/singleplay_gamerules.cpp",
+          "line": 192
+        },
+        {
+          "path": "dlls/player.cpp",
+          "line": 445
+        },
+        {
+          "path": "dlls/player.cpp",
+          "line": 485
+        }
+      ],
+      "capabilities": [
+        "linear fall damage ramp",
+        "armor that absorbs most damage but not falls",
+        "landing view kick"
+      ],
+      "tags": [
+        "damage",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "weapon-spread-cadence-recoil",
+      "node": "weapons",
+      "name": "Weapon spread, fire cadence and view kick",
+      "summary": "Each weapon fires a fixed cone of rays with triangular distribution at its own cycle time, with drift-corrected cadence and a decaying view punch.",
+      "behavior": "A shot picks, per pellet, a horizontal and a vertical offset, each the sum of two uniform values from minus a half to a half, which gives a triangular distribution biased toward the aim point, then scales each by the weapon cone and adds it along the camera right and up axes. The submachine gun fires every 0.1 seconds with a full cone of about 3 degrees in single player (6 in multiplayer), the shotgun fires 6 pellets in a 10 degree cone every 0.75 seconds (double barrel 12 pellets per 1.5 seconds), and the pistol offers a tight 0.3 second mode with a small spread of 0.01 and a loose fast 0.2 second mode with a spread of 0.1. Next-fire time is computed from the real gap between shots so frame jitter does not slow the rate. Underwater firing is refused for the rifle and shotgun. The client applies a pitch punch after a shot (about 2 degrees for small arms, 5 for the single shotgun barrel and 10 for the double), and that punch decays by 10 plus half its size per second.",
+      "constants": [
+        {
+          "name": "rifle cycle time",
+          "value": 0.1,
+          "unit": "seconds between shots",
+          "source": "dlls/mp5.cpp:188"
+        },
+        {
+          "name": "rifle single-player cone",
+          "value": 0.02618,
+          "unit": "maximum sideways offset per unit of aim distance; full cone about 3 degrees",
+          "source": "dlls/weapons.h:423"
+        },
+        {
+          "name": "shotgun cycle time",
+          "value": 0.75,
+          "unit": "seconds between shots",
+          "source": "dlls/shotgun.cpp:180"
+        },
+        {
+          "name": "shotgun single-player pellets",
+          "value": 6,
+          "unit": "pellets per shot",
+          "source": "dlls/shotgun.cpp:168"
+        },
+        {
+          "name": "shotgun cone",
+          "value": 0.08716,
+          "unit": "maximum sideways offset per unit of aim distance; full cone about 10 degrees",
+          "source": "dlls/weapons.h:430"
+        },
+        {
+          "name": "double barrel cycle time",
+          "value": 1.5,
+          "unit": "seconds between shots",
+          "source": "dlls/shotgun.cpp:253"
+        },
+        {
+          "name": "double barrel kick",
+          "value": -10,
+          "unit": "degrees of view pitch punch",
+          "source": "cl_dll/ev_hldm.cpp:595"
+        },
+        {
+          "name": "view punch decay base rate",
+          "value": 10,
+          "unit": "degrees per second plus half the current size",
+          "source": "pm_shared/pm_shared.c:2826"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/combat.cpp",
+          "line": 1506
+        },
+        {
+          "path": "dlls/combat.cpp",
+          "line": 1524
+        },
+        {
+          "path": "dlls/weapons.cpp",
+          "line": 1213
+        },
+        {
+          "path": "dlls/glock.cpp",
+          "line": 125
+        },
+        {
+          "path": "pm_shared/pm_shared.c",
+          "line": 2821
+        }
+      ],
+      "capabilities": [
+        "cone spread with a center-weighted distribution",
+        "frame-rate independent fire rate",
+        "view kick with exponential-style recovery",
+        "shotgun pellet fans"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps"
+      ]
+    },
+    {
+      "id": "vision-cone-line-of-sight",
+      "node": "monster-senses",
+      "name": "Monster vision cone and line of sight",
+      "summary": "A monster sees a target only inside a flat 2D view cone defined by a dot product, within its look radius, with an unobstructed eye trace and no water crossings.",
+      "behavior": "Each sensing tick the monster gathers living monsters and clients in a cube around itself with half-extent equal to its look distance, up to 100 candidates. A candidate counts as seen when the monster has any non-neutral relationship with it, the horizontal direction to it has a dot product with the facing above the monster field-of-view value, it is not flagged as untargetable, and an eye-to-eye trace ignoring monsters and glass reaches it. The cone has unlimited height because only X and Y are compared. The trace also fails when the target is fully submerged and the looker is not, or when the looker is fully submerged and the target is fully dry. Soldiers use a field of view of 0.2, roughly a 157 degree total cone, with a default look radius of 2048 units. Shared presets are full, wide, narrow and ultra narrow cones at dot -1, -0.7, 0.7 and 0.9.",
+      "constants": [
+        {
+          "name": "default look distance",
+          "value": 2048,
+          "unit": "units, half-extent of the scan box",
+          "source": "dlls/monsters.cpp:2042"
+        },
+        {
+          "name": "soldier field of view",
+          "value": 0.2,
+          "unit": "dot product of facing and target direction",
+          "source": "dlls/hgrunt.cpp:991"
+        },
+        {
+          "name": "wide preset",
+          "value": -0.7,
+          "unit": "dot product threshold",
+          "source": "dlls/util.h:161"
+        },
+        {
+          "name": "narrow preset",
+          "value": 0.7,
+          "unit": "dot product threshold",
+          "source": "dlls/util.h:162"
+        },
+        {
+          "name": "ultra narrow preset",
+          "value": 0.9,
+          "unit": "dot product threshold",
+          "source": "dlls/util.h:163"
+        },
+        {
+          "name": "candidates scanned per look",
+          "value": 100,
+          "unit": "entities",
+          "source": "dlls/monsters.cpp:319"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/combat.cpp",
+          "line": 1169
+        },
+        {
+          "path": "dlls/combat.cpp",
+          "line": 1222
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 305
+        },
+        {
+          "path": "dlls/monsterstate.cpp",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "guard sight cone defined by one dot-product number",
+        "eye line trace that ignores other monsters",
+        "no seeing across the water surface"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "perception"
+      ]
+    },
+    {
+      "id": "hearing-sound-list",
+      "node": "monster-senses",
+      "name": "Hearing through a world sound list",
+      "summary": "Noises are posted to a 64-slot shared list with a type, volume and lifetime, and a listener hears one when its distance is within volume times hearing sensitivity.",
+      "behavior": "Anything noisy inserts a sound record with an origin, a type bit, a volume and a lifetime. The pool holds 64 records, and a housekeeping think every 0.3 seconds frees expired ones. Each listening tick a monster walks the active list and keeps a sound when its type is in the monster mask, further narrowed by the running schedule sound mask, and the distance from its ears is less than or equal to volume times its hearing sensitivity, which is 1 by default, so volume is effectively a radius in units. Combat, world and player noises are always in the default mask, and soldiers also include danger noises. Heard sounds set a hear flag and scents set smell flags. The best sound is the audible one nearest to the ears, searched up to 8192 units.",
+      "constants": [
+        {
+          "name": "sound pool size",
+          "value": 64,
+          "unit": "records",
+          "source": "dlls/soundent.h:21"
+        },
+        {
+          "name": "sound list cleanup interval",
+          "value": 0.3,
+          "unit": "seconds",
+          "source": "dlls/soundent.cpp:98"
+        },
+        {
+          "name": "hearing sensitivity default",
+          "value": 1,
+          "unit": "multiplier on sound volume to give radius",
+          "source": "dlls/basemonster.h:264"
+        },
+        {
+          "name": "best sound search start distance",
+          "value": 8192,
+          "unit": "units",
+          "source": "dlls/monsters.cpp:420"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 199
+        },
+        {
+          "path": "dlls/soundent.cpp",
+          "line": 200
+        },
+        {
+          "path": "dlls/soundent.cpp",
+          "line": 93
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 416
+        }
+      ],
+      "capabilities": [
+        "volume-as-radius noise propagation",
+        "timed sound events with expiry",
+        "separate sound and scent channels",
+        "nearest-sound selection"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "perception"
+      ]
+    },
+    {
+      "id": "player-noise-emission",
+      "node": "player-state",
+      "name": "Player noise from movement and gunfire",
+      "summary": "The player always advertises a sound whose volume is walking speed plus 100 when jumping or the weapon loudness, and it falls toward the target at 250 units per second.",
+      "behavior": "While on the ground the body volume equals the speed of movement clamped to 512 units, then 100 is added when the jump key is held; in the air it is zero. When a gun was fired, the weapon volume (600 for normal guns, 1000 for loud ones, 200 for silenced ones) competes with the body volume; if it is louder, the sound is also tagged as combat so guards react as if to gunfire. A louder target replaces the current volume immediately but a quieter target lets it decay by 250 per second, which gives monsters time to hear short bursts. The weapon volume itself also drains 250 per second. Because volume is a hearing radius, a slow or crouched walker is far quieter than a runner and a silenced pistol is heard within 200 units.",
+      "constants": [
+        {
+          "name": "body noise clamp",
+          "value": 512,
+          "unit": "units of volume (hearing radius)",
+          "source": "dlls/player.cpp:2606"
+        },
+        {
+          "name": "jump noise bonus",
+          "value": 100,
+          "unit": "units of volume added while the jump key is held",
+          "source": "dlls/player.cpp:2618"
+        },
+        {
+          "name": "normal gun volume",
+          "value": 600,
+          "unit": "units of volume",
+          "source": "dlls/weapons.h:408"
+        },
+        {
+          "name": "loud gun volume",
+          "value": 1000,
+          "unit": "units of volume",
+          "source": "dlls/weapons.h:407"
+        },
+        {
+          "name": "silenced gun volume",
+          "value": 200,
+          "unit": "units of volume",
+          "source": "dlls/weapons.h:409"
+        },
+        {
+          "name": "noise decay rate",
+          "value": 250,
+          "unit": "units of volume per second",
+          "source": "dlls/player.cpp:2654"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/player.cpp",
+          "line": 2581
+        },
+        {
+          "path": "dlls/player.cpp",
+          "line": 2635
+        },
+        {
+          "path": "dlls/player.cpp",
+          "line": 2627
+        }
+      ],
+      "capabilities": [
+        "stealth by walking slowly",
+        "gunfire alerting guards in a radius",
+        "silenced weapons that shrink the audible radius"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "perception"
+      ]
+    },
+    {
+      "id": "awareness-state-machine",
+      "node": "monster-ai-core",
+      "name": "Idle, alert and combat awareness states",
+      "summary": "A monster runs its sensing only when a player is in view of the world or it is in combat, and states move idle to alert on noises, scents and pain, and to combat on a new enemy.",
+      "behavior": "The brain thinks every 0.1 seconds. Sensing (look, listen, pick enemy) only runs when a client is in the monster potentially visible set or the monster is in combat, so off-screen monsters cost nothing. In the idle state a new enemy jumps straight to combat, light or heavy damage turns to face the last known enemy spot and goes alert, any heard sound turns the monster toward it but only combat or danger sounds also go alert, and smell goes alert. In alert, a new or visible enemy goes to combat, and hearing a sound keeps alert while turning toward it. Combat falls back to alert when the enemy is gone. Idle and alert monsters also play an idle voice line with 1 percent chance per think.",
+      "constants": [
+        {
+          "name": "think interval",
+          "value": 0.1,
+          "unit": "seconds",
+          "source": "dlls/monsters.cpp:523"
+        },
+        {
+          "name": "idle voice roll upper bound",
+          "value": 99,
+          "unit": "random roll 0 to 99 per think; the voice plays on 0, a 1 percent chance",
+          "source": "dlls/monsterstate.cpp:69"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/monsterstate.cpp",
+          "line": 62
+        },
+        {
+          "path": "dlls/monsterstate.cpp",
+          "line": 119
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 521
+        }
+      ],
+      "capabilities": [
+        "three-state guard awareness",
+        "sound-driven alert and turn toward noise",
+        "perception budget that skips unseen monsters"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "state-machine"
+      ]
+    },
+    {
+      "id": "schedule-interrupts",
+      "node": "monster-ai-core",
+      "name": "Task schedules with interrupt masks",
+      "summary": "Behavior is a list of tasks per schedule, each schedule declares the conditions that interrupt it, and a priority ladder picks the next schedule in combat.",
+      "behavior": "A schedule is an ordered task list, an interrupt condition mask and a sound mask. Each tick the maintainer checks whether any active condition is in the mask, or the schedule is done or failed, and if so asks the state logic for a new ideal state and then a new schedule; this loop runs at most 10 times a tick so chains of instantly finished tasks settle. A failed task switches to the fail schedule. In combat the choice ladder is: wake angry on a new enemy, flinch on light damage if not flinched recently, face or chase when the enemy is not seen, then first available of ranged attack 1, ranged attack 2, melee 1, melee 2, then chase. An alert monster hit while facing within about (1 minus fov) times 60 degrees of the threat takes cover, otherwise flinches.",
+      "constants": [
+        {
+          "name": "schedule settle loop limit",
+          "value": 10,
+          "unit": "iterations per think",
+          "source": "dlls/schedule.cpp:214"
+        },
+        {
+          "name": "alert damage facing factor",
+          "value": 60,
+          "unit": "degrees multiplied by one minus field of view",
+          "source": "dlls/schedule.cpp:1391"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/schedule.cpp",
+          "line": 208
+        },
+        {
+          "path": "dlls/schedule.cpp",
+          "line": 174
+        },
+        {
+          "path": "dlls/schedule.cpp",
+          "line": 1350
+        }
+      ],
+      "capabilities": [
+        "interruptible behavior lists",
+        "combat priority ladder",
+        "fail schedules",
+        "react to new conditions mid-task"
+      ],
+      "tags": [
+        "ai",
+        "state-machine",
+        "combat"
+      ]
+    },
+    {
+      "id": "enemy-memory-lkp",
+      "node": "monster-ai-core",
+      "name": "Last known position and enemy memory",
+      "summary": "While the enemy is visible its position is stored with a small lead, within 256 units unseen enemies are still tracked, and the last 4 enemies are remembered.",
+      "behavior": "Each tick the monster tests whether its enemy is visible and flags occlusion. When sighted, it refreshes the last known position to the enemy origin, pushed ahead along its velocity by a random 0 to 0.05 seconds worth of travel, which makes pursuit slightly leading and imprecise. If the enemy is not occluded but also not currently sighted, for example behind the monster, and is closer than 256 units, the position still refreshes, giving an uncanny close-range sense. Enemy distance is the shortest of the origin and points half a body height above and below it, and beyond 1024 units a too-far flag stops the soldier attack checks. Whenever a route to the enemy ends more than 80 units from the stored position, the route is recomputed. A new threat pushes the old enemy into a 4-slot memory, and when the target dies the monster pops the latest still-alive remembered enemy.",
+      "constants": [
+        {
+          "name": "unseen close-range tracking",
+          "value": 256,
+          "unit": "units",
+          "source": "dlls/monsters.cpp:1126"
+        },
+        {
+          "name": "too-far distance",
+          "value": 1024,
+          "unit": "units",
+          "source": "dlls/monsters.cpp:2041"
+        },
+        {
+          "name": "route refresh drift",
+          "value": 80,
+          "unit": "units between route goal and last known position",
+          "source": "dlls/monsters.cpp:1155"
+        },
+        {
+          "name": "last known position lead range",
+          "value": -0.05,
+          "unit": "seconds; velocity times a random value between this and 0 is subtracted, so the point leads the target",
+          "source": "dlls/monsters.cpp:1119"
+        },
+        {
+          "name": "enemy memory slots",
+          "value": 4,
+          "unit": "remembered previous enemies",
+          "source": "dlls/cbase.h:582"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 1057
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 3344
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 1171
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 388
+        }
+      ],
+      "capabilities": [
+        "search at last seen spot",
+        "imperfect target leading",
+        "switch back to prior enemies",
+        "close-range proximity sense"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "pursuit"
+      ]
+    },
+    {
+      "id": "cover-search",
+      "node": "monster-ai-core",
+      "name": "Cover node search",
+      "summary": "Cover is the first graph node, in an order that rotates between monsters, within 784 units that the threat cannot see and that the monster can reach no later than the threat.",
+      "behavior": "The search scans the navigation graph beginning where the previous monster stopped so several monsters spread across nodes. A node qualifies when its distance from the monster lies between a minimum (capped to half the maximum) and the maximum, default 784 when none is given, and a line trace from the node at eye height to the threat eye is blocked. It must also be no farther by path from the monster than from the threat, so monsters do not run past the enemy, and the squad validator rejects a node within 128 units of another squad member. The first node that passes and is reachable becomes the run goal. Schedules vary the range; one soldier schedule that drops a grenade first searches for a far node at least 384 units away.",
+      "constants": [
+        {
+          "name": "default cover radius",
+          "value": 784,
+          "unit": "units",
+          "source": "dlls/basemonster.h:236"
+        },
+        {
+          "name": "min distance cap",
+          "value": 0.5,
+          "unit": "fraction of the maximum distance",
+          "source": "dlls/monsters.cpp:2251"
+        },
+        {
+          "name": "squad cover spacing",
+          "value": 128,
+          "unit": "units horizontal from other members",
+          "source": "dlls/squadmonster.cpp:553"
+        },
+        {
+          "name": "far-node cover minimum in the grenade-drop schedule",
+          "value": 384,
+          "unit": "units",
+          "source": "dlls/hgrunt.cpp:1525"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 2235
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 546
+        },
+        {
+          "path": "dlls/schedule.cpp",
+          "line": 699
+        }
+      ],
+      "capabilities": [
+        "hide from line of sight using graph nodes",
+        "avoid running toward the threat",
+        "spread squad members between cover spots"
+      ],
+      "tags": [
+        "ai",
+        "cover",
+        "navigation"
+      ]
+    },
+    {
+      "id": "squad-slots-sharing",
+      "node": "squad-ai",
+      "name": "Squad recruitment, slots and shared enemy",
+      "summary": "The first monster recruits up to 4 same-class neighbors within 1024 units, attack roles are limited by slot bits, and a new enemy is pushed to every member.",
+      "behavior": "At spawn a squad capable monster with no explicit group name recruits living, unsquadded same-class monsters within 1024 units that it has a clear eye line to, up to a total of 5 including itself; a named group instead joins by name under a flagged leader. Roles are slot bits kept on the leader: two engage slots, two grenade slots and a split slot used when members have different enemies. A member that wants a role takes a free bit and releases it on every schedule change or death, so at most two soldiers fire at the same time while the rest cover or hold. When a member spots a new enemy it overwrites the enemy of every member not currently seeing their own, pushing the old one to memory. Members copy the leader last-known position, and when the leader dies the squad dissolves.",
+      "constants": [
+        {
+          "name": "recruit radius",
+          "value": 1024,
+          "unit": "units",
+          "source": "dlls/squadmonster.cpp:431"
+        },
+        {
+          "name": "maximum squad size",
+          "value": 5,
+          "unit": "members including the leader",
+          "source": "dlls/squadmonster.h:51"
+        },
+        {
+          "name": "engage slots",
+          "value": 2,
+          "unit": "simultaneous firing roles",
+          "source": "dlls/squadmonster.h:27"
+        },
+        {
+          "name": "grenade slots",
+          "value": 2,
+          "unit": "simultaneous throwing roles",
+          "source": "dlls/squadmonster.h:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 308
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 52
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 244
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 415
+        }
+      ],
+      "capabilities": [
+        "squad leader and members",
+        "attack role rationing",
+        "enemy information sharing",
+        "squad collapse when leader dies"
+      ],
+      "tags": [
+        "ai",
+        "squad",
+        "combat"
+      ]
+    },
+    {
+      "id": "grunt-attack-gates",
+      "node": "grunt-ai",
+      "name": "Soldier fire, melee and friendly-fire gates",
+      "summary": "A soldier shoots only within 1024 units, inside a 0.5 dot cone, with a clear trace and no squad mate in the firing lane, and kicks instead inside 64 units.",
+      "behavior": "Ranged attack 1 is allowed when the enemy is not occluded, is inside a forward cone with dot 0.5, a friendly-fire check passes, and a gun-to-body trace reaches the target. The friendly-fire check builds a lane ahead of the shooter bounded by two planes 1.5 body widths to each side and a back plane at the shooter, and refuses to fire if any squad mate sits inside it. Against non-player targets the soldier does not shoot when closer than 64 units. The kick needs the enemy within 64 units and inside a 0.7 dot cone. Attack checks are skipped entirely once the enemy is flagged too far, which happens at 1024 units, so the range test of 2048 written in the attack check is never reached and the effective maximum fire range is 1024 units. A hit on the helmet area is converted to a head hit after the first 20 points of damage are absorbed when a helmet is worn, with a ricochet shown if nothing is left.",
+      "constants": [
+        {
+          "name": "effective maximum fire range",
+          "value": 1024,
+          "unit": "units; the too-far flag stops attack checks at this distance",
+          "source": "dlls/monsters.cpp:2041"
+        },
+        {
+          "name": "fire cone threshold",
+          "value": 0.5,
+          "unit": "dot product of facing and enemy direction",
+          "source": "dlls/hgrunt.cpp:446"
+        },
+        {
+          "name": "melee range",
+          "value": 64,
+          "unit": "units",
+          "source": "dlls/hgrunt.cpp:427"
+        },
+        {
+          "name": "melee cone threshold",
+          "value": 0.7,
+          "unit": "dot product of facing and enemy direction",
+          "source": "dlls/hgrunt.cpp:427"
+        },
+        {
+          "name": "friendly-fire plane side offset",
+          "value": 1.5,
+          "unit": "body widths either side",
+          "source": "dlls/squadmonster.cpp:482"
+        },
+        {
+          "name": "helmet damage absorbed",
+          "value": 20,
+          "unit": "damage points",
+          "source": "dlls/hgrunt.cpp:613"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 444
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 397
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 1138
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 413
+        },
+        {
+          "path": "dlls/squadmonster.cpp",
+          "line": 453
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 604
+        }
+      ],
+      "capabilities": [
+        "range and angle gating for enemy gunfire",
+        "squad mates never shot in the back",
+        "melee fallback at close range"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "squad"
+      ]
+    },
+    {
+      "id": "grunt-grenade-throw",
+      "node": "grunt-ai",
+      "name": "Soldier grenade throwing",
+      "summary": "A stationary soldier throws or launches a grenade only after a ballistic solution exists and the target is at least 256 units away, rechecking on a timer.",
+      "behavior": "The check needs a grenade-capable loadout and a stationary soldier; moving clears the flag. It obeys a timer and refuses when the enemy is airborne and above the soldier. A hand grenade targets either the enemy feet or the last known position with equal chance, while a launcher aims at the last known body position and leads a visible enemy by flight time. The throw is refused, and the next check delayed by 1 second, when the target is within 256 units horizontally. A second test for squad mates near the impact point also exists, but its result is overwritten by the lob solver that follows, so it has no runtime effect. A lob solver, using a gravity scale of 0.5 and rejecting hand-grenade targets more than 500 units above the thrower, must then return a velocity; success lets the throw proceed and the check repeats immediately for hand grenades or after 0.3 seconds for the launcher, while failure waits 1 second. A hand grenade has a 3.5 second fuse, and after the toss the soldier waits 6 seconds before considering another throw (a launcher on the hardest skill waits a random 2 to 5 seconds).",
+      "constants": [
+        {
+          "name": "minimum target distance",
+          "value": 256,
+          "unit": "units horizontal",
+          "source": "dlls/hgrunt.cpp:543"
+        },
+        {
+          "name": "retry delay after a refusal",
+          "value": 1,
+          "unit": "seconds",
+          "source": "dlls/hgrunt.cpp:546"
+        },
+        {
+          "name": "launcher recheck delay",
+          "value": 0.3,
+          "unit": "seconds",
+          "source": "dlls/hgrunt.cpp:584"
+        },
+        {
+          "name": "toss gravity scale",
+          "value": 0.5,
+          "unit": "multiplier on world gravity for the grenade arc",
+          "source": "dlls/hgrunt.cpp:554"
+        },
+        {
+          "name": "post-throw wait",
+          "value": 6,
+          "unit": "seconds before the next grenade check",
+          "source": "dlls/hgrunt.cpp:889"
+        },
+        {
+          "name": "hand grenade fuse",
+          "value": 3.5,
+          "unit": "seconds",
+          "source": "dlls/hgrunt.cpp:886"
+        },
+        {
+          "name": "hand grenade height limit",
+          "value": 500,
+          "unit": "units the target may sit above the thrower",
+          "source": "dlls/h_ai.cpp:89"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 474
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 842
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 900
+        }
+      ],
+      "capabilities": [
+        "lobbing grenades at hiding players",
+        "ballistic solution check before throwing",
+        "stand-still requirement"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "grenade"
+      ]
+    },
+    {
+      "id": "grunt-tactics-priority",
+      "node": "grunt-ai",
+      "name": "Soldier combat tactics and flanking",
+      "summary": "Followers cover first while the leader suppresses, damage sends a soldier to cover 90 percent of the time, and a squad that lost sight for 5 seconds flags the enemy as eluded.",
+      "behavior": "On a new enemy a squad leader calls out and suppresses if it can shoot, else moves to establish a line of fire, while every other member takes cover. A soldier with an empty magazine hides and reloads. Light damage sends the soldier to cover when a 0 to 99 roll is at most 90, about 91 percent, otherwise it flinches. After that melee comes first when possible, then a launcher grenade if a slot is free, then ranged fire if an engage slot is free; with no engage slot the soldier throws a grenade or takes cover. With an occluded enemy it throws a grenade, advances to a line of fire using an engage slot, or holds a standoff and sometimes taunts. On the hardest skill a squad soldier turns a cover run into a grenade toss followed by cover. A timer on the leader notes when the enemy was last seen; after 5 seconds unseen the squad marks it eluded, and the first member that sees it again while it is not facing that member plays a found-enemy signal.",
+      "constants": [
+        {
+          "name": "cover roll threshold when lightly hurt",
+          "value": 90,
+          "unit": "roll 0 to 99; cover when the roll is at most this, about 91 percent",
+          "source": "dlls/hgrunt.cpp:2109"
+        },
+        {
+          "name": "enemy eluded timeout",
+          "value": 5,
+          "unit": "seconds without sight",
+          "source": "dlls/hgrunt.cpp:376"
+        },
+        {
+          "name": "magazine size",
+          "value": 36,
+          "unit": "rounds for the rifle loadout",
+          "source": "dlls/hgrunt.cpp:52"
+        },
+        {
+          "name": "shotgun magazine size",
+          "value": 8,
+          "unit": "rounds",
+          "source": "dlls/hgrunt.cpp:1015"
+        },
+        {
+          "name": "stance reroll upper bound",
+          "value": 9,
+          "unit": "random roll 0 to 9 per attack choice; on 0 the stand or kneel stance is re-picked at random, a 10 percent chance",
+          "source": "dlls/hgrunt.cpp:2285"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 1975
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 365
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
+          "line": 2223
+        }
+      ],
+      "capabilities": [
+        "suppress then flank behavior",
+        "cover when hurt",
+        "squad aware search state",
+        "standoff when engage slots are full"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "squad"
+      ]
+    },
+    {
+      "id": "scripted-sequence-possession",
+      "node": "scripted-sequences",
+      "name": "Scripted sequence possession and interrupts",
+      "summary": "A level entity finds its named monster every second until it can take control, walks it to the mark or teleports it, plays the animation, and only hurt can break non-protected scripts.",
+      "behavior": "A script with no trigger name starts one second after spawn, and every failed search retries after another 1 second. The search looks first for monsters with the target name and falls back to monsters of a class within the script radius; it accepts one only when it is alive, not already scripted and in a suitable state: idle or about to be idle, or alert if the lookup was by name, or any state if the script overrides state. On possession the move-to mode is read: 0 waits in place, 1 walks to the mark, 2 runs to it and 4 teleports the monster and snaps its heading; the AI variant treats 5 as wait. The monster switches to a script state and plays the idle then the action animation. While the script runs, light or heavy damage cancels it unless it was marked not interruptible, in which case those conditions are ignored.",
+      "constants": [
+        {
+          "name": "search retry interval",
+          "value": 1,
+          "unit": "seconds",
+          "source": "dlls/scripted.cpp:487"
+        },
+        {
+          "name": "first start delay",
+          "value": 1,
+          "unit": "seconds after spawn",
+          "source": "dlls/scripted.cpp:146"
+        },
+        {
+          "name": "teleport mode",
+          "value": 4,
+          "unit": "move-to value that places the monster instantly",
+          "source": "dlls/scripted.cpp:365"
+        },
+        {
+          "name": "run mode",
+          "value": 2,
+          "unit": "move-to value that runs to the mark",
+          "source": "dlls/scripted.cpp:360"
+        },
+        {
+          "name": "walk mode",
+          "value": 1,
+          "unit": "move-to value that walks to the mark",
+          "source": "dlls/scripted.cpp:355"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/scripted.cpp",
+          "line": 476
+        },
+        {
+          "path": "dlls/scripted.cpp",
+          "line": 272
+        },
+        {
+          "path": "dlls/scripted.cpp",
+          "line": 321
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 3110
+        },
+        {
+          "path": "dlls/scripted.h",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "scripted cutscene takeover of a live monster",
+        "walk, run or teleport to a mark",
+        "damage interruption unless locked",
+        "retry until the actor is available"
+      ],
+      "tags": [
+        "ai",
+        "cutscene",
+        "scripting"
+      ]
+    },
+    {
+      "id": "level-transition-landmarks",
+      "node": "level-transition",
+      "name": "Level change with landmark carry-over",
+      "summary": "A change trigger only fires for the player in the transition volume, offsets the next map by the landmark origin, and carries up to 512 entities flagged as transferable.",
+      "behavior": "Touching the trigger, or using it by name, starts the change only in single player. The change aborts when the player is not inside a transition volume that shares the landmark name; with no such volume, everything counts as inside. It runs the targets, remembers the next map and landmark name, and stores the landmark origin as an offset so the next map places the player at the matching landmark. When the engine builds the save for the change, each possible transition lists entities that are near the landmark in the potentially visible set, are not marked do-not-save, and either declare the across-transition capability or have a global name; each is kept only if it lies inside the transition volume. The list holds up to 16 levels and 512 entities.",
+      "constants": [
+        {
+          "name": "level transitions per map",
+          "value": 16,
+          "unit": "entries in the change list handed to the builder",
+          "source": "engine/eiface.h:323"
+        },
+        {
+          "name": "carried entity limit",
+          "value": 512,
+          "unit": "entities in one transition",
+          "source": "dlls/triggers.cpp:1613"
+        }
+      ],
+      "sources": [
+        {
+          "path": "dlls/triggers.cpp",
+          "line": 1478
+        },
+        {
+          "path": "dlls/triggers.cpp",
+          "line": 1576
+        },
+        {
+          "path": "dlls/triggers.cpp",
+          "line": 1619
+        },
+        {
+          "path": "dlls/triggers.cpp",
+          "line": 52
+        },
+        {
+          "path": "dlls/client.cpp",
+          "line": 787
+        }
+      ],
+      "capabilities": [
+        "seamless map changes with an offset landmark",
+        "carry allies and items across maps",
+        "transition volumes that gate the change"
+      ],
+      "tags": [
+        "level",
+        "save",
+        "transition"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3456 @@
+{
+  "version": 1,
+  "id": "driver-2",
+  "title": "Driver 2",
+  "repo": "https://github.com/OpenDriver2/REDRIVER2",
+  "sha": "b2d8857426f815007486def9bd23f9a6007a2c64",
+  "nodes": [
+    {
+      "id": "car-integrator",
+      "name": "Car rigid-body integrator",
+      "purpose": "Steps every car at a fixed rate, builds the broadphase, and resolves car-to-car impulses in substeps.",
+      "paths": [
+        "src_rebuild/Game/C/handling.c",
+        "src_rebuild/Game/C/wheelforces.c",
+        "src_rebuild/Game/C/main.c"
+      ],
+      "functions": [
+        {
+          "name": "GlobalTimeStep",
+          "path": "src_rebuild/Game/C/handling.c",
+          "lines": [
+            279,
+            742
+          ]
+        },
+        {
+          "name": "RebuildCarMatrix",
+          "path": "src_rebuild/Game/C/handling.c",
+          "lines": [
+            851,
+            889
+          ]
+        },
+        {
+          "name": "CheckCarToCarCollisions",
+          "path": "src_rebuild/Game/C/handling.c",
+          "lines": [
+            954,
+            1102
+          ]
+        },
+        {
+          "name": "StepCars",
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "lines": [
+            40,
+            54
+          ]
+        },
+        {
+          "name": "StepOneCar",
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "lines": [
+            535,
+            759
+          ]
+        },
+        {
+          "name": "StepSim",
+          "path": "src_rebuild/Game/C/main.c",
+          "lines": [
+            836,
+            1262
+          ]
+        }
+      ],
+      "dependsOn": [
+        "wheel-forces"
+      ]
+    },
+    {
+      "id": "wheel-forces",
+      "name": "Wheel, suspension and tyre forces",
+      "purpose": "Turns each wheel contact into spring force, tyre friction and torque on the car body.",
+      "paths": [
+        "src_rebuild/Game/C/wheelforces.c"
+      ],
+      "functions": [
+        {
+          "name": "GetFrictionScalesDriver1",
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "lines": [
+            57,
+            166
+          ]
+        },
+        {
+          "name": "AddWheelForcesDriver1",
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "lines": [
+            191,
+            532
+          ]
+        },
+        {
+          "name": "ConvertTorqueToAngularAcceleration",
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "lines": [
+            169,
+            187
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "car-controls",
+      "name": "Car control, engine and effects",
+      "purpose": "Converts pad input into steering, thrust and brake values, then derives engine revs and skid effects.",
+      "paths": [
+        "src_rebuild/Game/C/handling.c",
+        "src_rebuild/Game/C/gamesnd.c"
+      ],
+      "functions": [
+        {
+          "name": "ProcessCarPad",
+          "path": "src_rebuild/Game/C/handling.c",
+          "lines": [
+            1105,
+            1354
+          ]
+        },
+        {
+          "name": "CheckCarEffects",
+          "path": "src_rebuild/Game/C/handling.c",
+          "lines": [
+            1463,
+            1696
+          ]
+        },
+        {
+          "name": "GetEngineRevs",
+          "path": "src_rebuild/Game/C/gamesnd.c",
+          "lines": [
+            638,
+            702
+          ]
+        },
+        {
+          "name": "ControlCarRevs",
+          "path": "src_rebuild/Game/C/gamesnd.c",
+          "lines": [
+            708,
+            802
+          ]
+        }
+      ],
+      "dependsOn": [
+        "wheel-forces"
+      ]
+    },
+    {
+      "id": "collision-damage",
+      "name": "Collision response and damage",
+      "purpose": "Handles car-versus-scenery and car-versus-car hits, damage zones, dent meshes and the damage meter.",
+      "paths": [
+        "src_rebuild/Game/C/bcollide.c",
+        "src_rebuild/Game/C/bcoll3d.c",
+        "src_rebuild/Game/C/objcoll.c",
+        "src_rebuild/Game/C/denting.c",
+        "src_rebuild/Game/C/main.c",
+        "src_rebuild/Game/C/cars.c"
+      ],
+      "functions": [
+        {
+          "name": "ApplyDamage",
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "lines": [
+            304,
+            369
+          ]
+        },
+        {
+          "name": "DamageCar3D",
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "lines": [
+            372,
+            482
+          ]
+        },
+        {
+          "name": "DamageCar",
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "lines": [
+            486,
+            546
+          ]
+        },
+        {
+          "name": "CarBuildingCollision",
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "lines": [
+            549,
+            990
+          ]
+        },
+        {
+          "name": "CarCarCollision3",
+          "path": "src_rebuild/Game/C/bcoll3d.c",
+          "lines": [
+            131,
+            152
+          ]
+        },
+        {
+          "name": "CheckScenaryCollisions",
+          "path": "src_rebuild/Game/C/objcoll.c",
+          "lines": [
+            605,
+            788
+          ]
+        },
+        {
+          "name": "DentCar",
+          "path": "src_rebuild/Game/C/denting.c",
+          "lines": [
+            64,
+            171
+          ]
+        },
+        {
+          "name": "UpdatePlayerInformation",
+          "path": "src_rebuild/Game/C/main.c",
+          "lines": [
+            2116,
+            2211
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-integrator"
+      ]
+    },
+    {
+      "id": "civ-traffic",
+      "name": "Civilian traffic AI",
+      "purpose": "Spawns, steers, brakes and removes ambient cars, runs traffic lights and builds police roadblocks.",
+      "paths": [
+        "src_rebuild/Game/C/civ_ai.c"
+      ],
+      "functions": [
+        {
+          "name": "PingInCivCar",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            1875,
+            2445
+          ]
+        },
+        {
+          "name": "CheckPingOut",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            1626,
+            1645
+          ]
+        },
+        {
+          "name": "TrafficLightCycle",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            1655,
+            1677
+          ]
+        },
+        {
+          "name": "CivSteerAngle",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            3185,
+            3272
+          ]
+        },
+        {
+          "name": "CivAccelTrafficRules",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            2476,
+            2718
+          ]
+        },
+        {
+          "name": "CivAccel",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            2931,
+            3029
+          ]
+        },
+        {
+          "name": "SetUpCivCollFlags",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            2727,
+            2928
+          ]
+        },
+        {
+          "name": "CivControl",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            3569,
+            3722
+          ]
+        },
+        {
+          "name": "CreateRoadblock",
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "lines": [
+            3275,
+            3565
+          ]
+        }
+      ],
+      "dependsOn": [
+        "car-controls"
+      ]
+    },
+    {
+      "id": "felony-system",
+      "name": "Felony rating",
+      "purpose": "Scores player offences, decays the rating, and decides when the player counts as wanted.",
+      "paths": [
+        "src_rebuild/Game/C/felony.c",
+        "src_rebuild/Game/C/felony.h"
+      ],
+      "functions": [
+        {
+          "name": "NoteFelony",
+          "path": "src_rebuild/Game/C/felony.c",
+          "lines": [
+            102,
+            235
+          ]
+        },
+        {
+          "name": "AdjustFelony",
+          "path": "src_rebuild/Game/C/felony.c",
+          "lines": [
+            239,
+            277
+          ]
+        },
+        {
+          "name": "CheckPlayerMiscFelonies",
+          "path": "src_rebuild/Game/C/felony.c",
+          "lines": [
+            282,
+            421
+          ]
+        },
+        {
+          "name": "CarHitByPlayer",
+          "path": "src_rebuild/Game/C/felony.c",
+          "lines": [
+            438,
+            474
+          ]
+        },
+        {
+          "name": "InitFelonySystem",
+          "path": "src_rebuild/Game/C/felony.c",
+          "lines": [
+            424,
+            432
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "cop-ai",
+      "name": "Police pursuit AI",
+      "purpose": "Decides how many police cars exist, steers pursuers at the player, detects the player and ends pursuits.",
+      "paths": [
+        "src_rebuild/Game/C/cop_ai.c",
+        "src_rebuild/Game/C/main.c"
+      ],
+      "functions": [
+        {
+          "name": "InitCopState",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            82,
+            96
+          ]
+        },
+        {
+          "name": "UpdateCopSightData",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            218,
+            234
+          ]
+        },
+        {
+          "name": "InitCops",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            258,
+            322
+          ]
+        },
+        {
+          "name": "CopControl1",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            327,
+            747
+          ]
+        },
+        {
+          "name": "ControlCopDetection",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            750,
+            962
+          ]
+        },
+        {
+          "name": "ControlNumberOfCops",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            987,
+            1067
+          ]
+        },
+        {
+          "name": "ControlCops",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            1070,
+            1208
+          ]
+        },
+        {
+          "name": "PassiveCopTasks",
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "lines": [
+            965,
+            984
+          ]
+        }
+      ],
+      "dependsOn": [
+        "felony-system",
+        "civ-traffic",
+        "car-controls"
+      ]
+    },
+    {
+      "id": "pedestrians",
+      "name": "Civilian pedestrians",
+      "purpose": "Spawns walkers on pavement, makes them leap from cars and horns, and removes them when far away.",
+      "paths": [
+        "src_rebuild/Game/C/pedest.c",
+        "src_rebuild/Game/dr2limits.h"
+      ],
+      "functions": [
+        {
+          "name": "PingInPedestrians",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1419,
+            1539
+          ]
+        },
+        {
+          "name": "CheckForCar",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            2420,
+            2451
+          ]
+        },
+        {
+          "name": "set_coll_box",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            2310,
+            2344
+          ]
+        },
+        {
+          "name": "SetupCivJump",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1789,
+            1866
+          ]
+        },
+        {
+          "name": "CivPedJump",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1869,
+            1889
+          ]
+        },
+        {
+          "name": "CivPedWalk",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1907,
+            1984
+          ]
+        },
+        {
+          "name": "PingOutPed",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1771,
+            1786
+          ]
+        },
+        {
+          "name": "PlaceRoadBlockCops",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            358,
+            419
+          ]
+        }
+      ],
+      "dependsOn": [
+        "felony-system",
+        "civ-traffic"
+      ]
+    },
+    {
+      "id": "on-foot",
+      "name": "On-foot player control",
+      "purpose": "Runs the player character on foot, including leaving and entering cars.",
+      "paths": [
+        "src_rebuild/Game/C/pedest.c",
+        "src_rebuild/Game/C/ai.c"
+      ],
+      "functions": [
+        {
+          "name": "ProcessTannerPad",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            2589,
+            2773
+          ]
+        },
+        {
+          "name": "PedDoNothing",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            781,
+            892
+          ]
+        },
+        {
+          "name": "PedUserRunner",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            895,
+            970
+          ]
+        },
+        {
+          "name": "PedGetOutCar",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            1077,
+            1101
+          ]
+        },
+        {
+          "name": "ActivatePlayerPedestrian",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            2777,
+            2980
+          ]
+        },
+        {
+          "name": "DeActivatePlayerPedestrian",
+          "path": "src_rebuild/Game/C/pedest.c",
+          "lines": [
+            2983,
+            3016
+          ]
+        },
+        {
+          "name": "TannerCanEnterCar",
+          "path": "src_rebuild/Game/C/ai.c",
+          "lines": [
+            20,
+            47
+          ]
+        },
+        {
+          "name": "TannerStuckInCar",
+          "path": "src_rebuild/Game/C/ai.c",
+          "lines": [
+            50,
+            90
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pedestrians"
+      ]
+    },
+    {
+      "id": "player-camera",
+      "name": "Player cameras",
+      "purpose": "Places the chase camera, the in-car camera and the fixed tracking camera for the player.",
+      "paths": [
+        "src_rebuild/Game/C/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "TurnHead",
+          "path": "src_rebuild/Game/C/camera.c",
+          "lines": [
+            363,
+            405
+          ]
+        },
+        {
+          "name": "PlaceCameraFollowCar",
+          "path": "src_rebuild/Game/C/camera.c",
+          "lines": [
+            421,
+            551
+          ]
+        },
+        {
+          "name": "PlaceCameraInCar",
+          "path": "src_rebuild/Game/C/camera.c",
+          "lines": [
+            573,
+            655
+          ]
+        },
+        {
+          "name": "ModifyCamera",
+          "path": "src_rebuild/Game/C/camera.c",
+          "lines": [
+            200,
+            253
+          ]
+        },
+        {
+          "name": "PlaceCameraAtLocation",
+          "path": "src_rebuild/Game/C/camera.c",
+          "lines": [
+            690,
+            732
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-damage"
+      ]
+    },
+    {
+      "id": "mission-rules",
+      "name": "Mission timers and objectives",
+      "purpose": "Counts mission time, tests point and car objectives, and decides game over.",
+      "paths": [
+        "src_rebuild/Game/C/mission.c"
+      ],
+      "functions": [
+        {
+          "name": "InitialiseMissionDefaults",
+          "path": "src_rebuild/Game/C/mission.c",
+          "lines": [
+            230,
+            322
+          ]
+        },
+        {
+          "name": "HandleTimer",
+          "path": "src_rebuild/Game/C/mission.c",
+          "lines": [
+            1077,
+            1140
+          ]
+        },
+        {
+          "name": "MRProcessTarget",
+          "path": "src_rebuild/Game/C/mission.c",
+          "lines": [
+            1943,
+            2631
+          ]
+        },
+        {
+          "name": "HandleGameOver",
+          "path": "src_rebuild/Game/C/mission.c",
+          "lines": [
+            2830,
+            2968
+          ]
+        }
+      ],
+      "dependsOn": [
+        "felony-system",
+        "collision-damage"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-step-integration",
+      "node": "car-integrator",
+      "name": "Fixed 30 Hz car integration with collision substeps",
+      "summary": "Every car integrates once per 30 Hz step, and cars near other bodies integrate in four substeps with a two-pass update.",
+      "behavior": "The game waits for two display refreshes between simulation steps, so physics runs at a fixed 30 Hz. At the start of each step the wheel code resets the car acceleration to a constant gravity vector and adds suspension and tyre forces. The integrator adds that acceleration to velocity, cuts an upward speed above a limit by one quarter, and clamps angular speed on each axis. A car with no contact candidate moves once per step, using velocity shifted down by eight bits because positions keep four extra fractional bits. A car flagged as possibly colliding runs four substeps. Each substep has a predict pass and a correct pass that averages two deltas, so impulses between cars resolve in small increments. A car with a zero speed counter and almost no velocity snaps to rest.",
+      "constants": [
+        {
+          "name": "Gravity acceleration",
+          "value": -7456,
+          "unit": "velocity units per step squared at 30 Hz (4096 velocity units = 1 world unit per step, y up)",
+          "source": "src_rebuild/Game/C/wheelforces.c:17"
+        },
+        {
+          "name": "Display refreshes per simulation step",
+          "value": 2,
+          "unit": "vblanks (60 Hz refresh, giving 30 Hz)",
+          "source": "src_rebuild/Game/C/main.c:1270"
+        },
+        {
+          "name": "Collision substeps per step",
+          "value": 4,
+          "unit": "substeps per 30 Hz step",
+          "source": "src_rebuild/Game/C/handling.c:389"
+        },
+        {
+          "name": "Passes per substep",
+          "value": 2,
+          "unit": "passes (predict then correct)",
+          "source": "src_rebuild/Game/C/handling.c:391"
+        },
+        {
+          "name": "Upward velocity trim threshold",
+          "value": 200000,
+          "unit": "velocity units (4096 = 1 world unit per step at 30 Hz); above it vy is multiplied by 3/4 each step",
+          "source": "src_rebuild/Game/C/handling.c:327"
+        },
+        {
+          "name": "Angular velocity clamp",
+          "value": "0x800000",
+          "unit": "per axis, internal angular units (8388608)",
+          "source": "src_rebuild/Game/C/handling.c:348"
+        },
+        {
+          "name": "Rest snap threshold",
+          "value": 1000,
+          "unit": "summed absolute velocity units, only when the speed counter is zero",
+          "source": "src_rebuild/Game/C/handling.c:332"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 572
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 367
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 328
+        },
+        {
+          "path": "src_rebuild/Game/C/main.c",
+          "line": 1269
+        }
+      ],
+      "capabilities": [
+        "fixed timestep",
+        "substepped contact resolution",
+        "rest snapping"
+      ],
+      "tags": [
+        "physics",
+        "vehicle",
+        "driving"
+      ]
+    },
+    {
+      "id": "body-contact-lift",
+      "node": "car-integrator",
+      "name": "Body contact points and ground lift",
+      "summary": "Up to twelve body points are tested against the ground, and the deepest one lifts the car with a damped impulse.",
+      "behavior": "Each step the car tests body points against the ground surface. An upright car checks four underside points. A car tilted more than about 60 degrees checks all twelve, so a roof landing still collides. Undamaged traffic cars check no points and rely on wheel forces alone. The deepest point, with a penetration of 1 to 799 units, defines the lift. The code applies a ground impulse from the approach speed and removes tangential speed at the contact with a gain of 67, clamped per axis, where underside points allow little sideways friction and the other body points allow a lot. The car then moves out of the ground by the lift, gets extra angular damping, and loses vertical speed when the lift exceeds 120 units.",
+      "constants": [
+        {
+          "name": "Body points tested when tilted",
+          "value": 12,
+          "unit": "contact points",
+          "source": "src_rebuild/Game/C/wheelforces.c:592"
+        },
+        {
+          "name": "Underside points tested when upright",
+          "value": 4,
+          "unit": "contact points",
+          "source": "src_rebuild/Game/C/wheelforces.c:599"
+        },
+        {
+          "name": "Upright test",
+          "value": 2048,
+          "unit": "cosine of tilt, 4096 = 1.0 (60 degrees)",
+          "source": "src_rebuild/Game/C/wheelforces.c:594"
+        },
+        {
+          "name": "Penetration window",
+          "value": 799,
+          "unit": "world units (contact counts when depth is 1 to 799)",
+          "source": "src_rebuild/Game/C/wheelforces.c:624"
+        },
+        {
+          "name": "Impulse gain",
+          "value": -2048,
+          "unit": "fixed-point factor, 4096 = 1.0",
+          "source": "src_rebuild/Game/C/wheelforces.c:676"
+        },
+        {
+          "name": "Contact friction gain",
+          "value": 67,
+          "unit": "multiplier on contact point velocity, per axis",
+          "source": "src_rebuild/Game/C/wheelforces.c:685"
+        },
+        {
+          "name": "Underside sideways friction clamp",
+          "value": 1005,
+          "unit": "velocity units times 4096, per horizontal axis",
+          "source": "src_rebuild/Game/C/wheelforces.c:538"
+        },
+        {
+          "name": "Underside vertical friction clamp",
+          "value": 6030,
+          "unit": "velocity units times 4096",
+          "source": "src_rebuild/Game/C/wheelforces.c:538"
+        },
+        {
+          "name": "Upper body sideways friction clamp",
+          "value": 5025,
+          "unit": "velocity units times 4096, per horizontal axis",
+          "source": "src_rebuild/Game/C/wheelforces.c:539"
+        },
+        {
+          "name": "Upper body vertical friction clamp",
+          "value": 1884,
+          "unit": "velocity units times 4096",
+          "source": "src_rebuild/Game/C/wheelforces.c:540"
+        },
+        {
+          "name": "Vertical speed cancel depth",
+          "value": 120,
+          "unit": "world units of lift",
+          "source": "src_rebuild/Game/C/wheelforces.c:750"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 592
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 596
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 630
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 739
+        }
+      ],
+      "capabilities": [
+        "ground contact from body points",
+        "roof and flip collision",
+        "depth-based pushout"
+      ],
+      "tags": [
+        "physics",
+        "vehicle",
+        "collision"
+      ]
+    },
+    {
+      "id": "wheel-suspension",
+      "node": "wheel-forces",
+      "name": "Four-point spring suspension with damping",
+      "summary": "Each wheel point pushes up with a spring-plus-damper force on its compression, producing pitch and roll.",
+      "behavior": "Every step each wheel point is projected onto the ground below it. Compression equals the gap along the surface normal plus a rest offset of 14. Negative values become zero, readings above 800 are treated as glitches and reset to 12, and the final value caps at 42. The spring force equals 230 times the new compression minus 100 times the old one, which acts as a spring of 130 per unit plus a damper of 100 times the compression change. The force acts along the surface normal at the wheel position relative to the centre of mass, so braking pitches the nose and cornering rolls the body. A drag force of twelve times velocity also acts at each wheel, and wheels in water add a drag of 75 times horizontal velocity. A wheel with zero compression on two consecutive steps adds no force.",
+      "constants": [
+        {
+          "name": "Rest compression offset",
+          "value": 14,
+          "unit": "world units added to the surface gap",
+          "source": "src_rebuild/Game/C/wheelforces.c:311"
+        },
+        {
+          "name": "Spring on new compression",
+          "value": 230,
+          "unit": "force units per unit of compression",
+          "source": "src_rebuild/Game/C/wheelforces.c:364"
+        },
+        {
+          "name": "Damping on old compression",
+          "value": 100,
+          "unit": "force units per unit of previous compression",
+          "source": "src_rebuild/Game/C/wheelforces.c:364"
+        },
+        {
+          "name": "Maximum compression",
+          "value": 42,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/wheelforces.c:344"
+        },
+        {
+          "name": "Glitch threshold",
+          "value": 800,
+          "unit": "world units, readings above reset to 12",
+          "source": "src_rebuild/Game/C/wheelforces.c:316"
+        },
+        {
+          "name": "Wheel velocity drag",
+          "value": 12,
+          "unit": "force units per velocity unit (4096 = 1 world unit per step at 30 Hz)",
+          "source": "src_rebuild/Game/C/wheelforces.c:492"
+        },
+        {
+          "name": "Water drag",
+          "value": 75,
+          "unit": "force units per velocity unit, horizontal, wheel in water",
+          "source": "src_rebuild/Game/C/wheelforces.c:471"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 311
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 363
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 509
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 468
+        }
+      ],
+      "capabilities": [
+        "arcade spring suspension",
+        "pitch and roll from wheel force",
+        "water drag"
+      ],
+      "tags": [
+        "physics",
+        "vehicle",
+        "driving"
+      ]
+    },
+    {
+      "id": "axle-grip-split",
+      "node": "wheel-forces",
+      "name": "Front and rear grip budget shifted by throttle state",
+      "summary": "Front grip is set by throttle state and the rear gets the remainder of a fixed budget, so braking and lifting change balance.",
+      "behavior": "The front axle grip value is 820 when accelerating, 937 when coasting and 1453 when braking. The rear axle gets the remainder of a 1920 budget, so braking moves grip forward and the tail gets looser. Front grip is then multiplied by 35/32 on asphalt or 39/32 on grass. A hard brake at speed skips that step and multiplies both axles by 10/8, but only for handling types with aggressive braking, which are the player and police. Rolling backwards without braking or handbrake lowers front grip by 400. Wheelspin and handbrake add their own front offsets. At the end a per-car traction value, where 4096 means 1.0, scales both axles.",
+      "constants": [
+        {
+          "name": "Front grip while accelerating",
+          "value": 820,
+          "unit": "grip units",
+          "source": "src_rebuild/Game/C/wheelforces.c:70"
+        },
+        {
+          "name": "Front grip while coasting",
+          "value": 937,
+          "unit": "grip units",
+          "source": "src_rebuild/Game/C/wheelforces.c:68"
+        },
+        {
+          "name": "Front grip while braking",
+          "value": 1453,
+          "unit": "grip units",
+          "source": "src_rebuild/Game/C/wheelforces.c:66"
+        },
+        {
+          "name": "Axle grip budget",
+          "value": "0x780",
+          "unit": "grip units (1920), rear = budget minus front",
+          "source": "src_rebuild/Game/C/wheelforces.c:130"
+        },
+        {
+          "name": "Asphalt front multiplier numerator",
+          "value": 36,
+          "unit": "over 32, minus one part: 35/32",
+          "source": "src_rebuild/Game/C/wheelforces.c:145"
+        },
+        {
+          "name": "Grass front multiplier numerator",
+          "value": 40,
+          "unit": "over 32, minus one part: 39/32",
+          "source": "src_rebuild/Game/C/wheelforces.c:147"
+        },
+        {
+          "name": "Reverse front grip cut",
+          "value": 400,
+          "unit": "grip units when wheel speed is negative and no handbrake",
+          "source": "src_rebuild/Game/C/wheelforces.c:127"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 65
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 130
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 159
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 137
+        }
+      ],
+      "capabilities": [
+        "weight-transfer feel",
+        "brake dive grip shift",
+        "surface grip scaling"
+      ],
+      "tags": [
+        "physics",
+        "vehicle",
+        "driving"
+      ]
+    },
+    {
+      "id": "handling-types-slip-surface",
+      "node": "wheel-forces",
+      "name": "Handling types, slip response and surface friction",
+      "summary": "A per-role grip ratio, a speed-dependent side stiffness and a surface-and-wetness friction term shape cornering.",
+      "behavior": "Every car has a handling type. The player car uses a grip ratio of 32, traffic uses 29, and police use 45, 55 or 68 on easy, medium and hard, so pursuers out-grip the player. The ratio is divided by 32 and multiplies both axles. Side force comes from wheel velocity along the tyre side direction, scaled by a stiffness of up to 3300 that falls with speed, then clamped to plus or minus 12500. Every horizontal wheel force is scaled by a friction coefficient of the surface factor times 32400 minus the wetness value, over 32768, plus 500. The surface factor is 4096 on asphalt and 2048 on grass, so dry asphalt gives about 4550, and a heavily tilted car loses friction too. Police wheel levers are scaled to 19/32, or 12/32 on hard, which cuts their roll.",
+      "constants": [
+        {
+          "name": "Grip ratio, player car",
+          "value": 32,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:30"
+        },
+        {
+          "name": "Grip ratio, traffic car",
+          "value": 29,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:31"
+        },
+        {
+          "name": "Grip ratio, police easy",
+          "value": 45,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:32"
+        },
+        {
+          "name": "Grip ratio, police hard",
+          "value": 68,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:34"
+        },
+        {
+          "name": "Side stiffness cap",
+          "value": 3300,
+          "unit": "stiffness units near standstill",
+          "source": "src_rebuild/Game/C/wheelforces.c:239"
+        },
+        {
+          "name": "Side force clamp",
+          "value": 12500,
+          "unit": "force units, either sign",
+          "source": "src_rebuild/Game/C/wheelforces.c:399"
+        },
+        {
+          "name": "Police roll lever scale, medium and easy",
+          "value": 19,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:502"
+        },
+        {
+          "name": "Police roll lever scale, hard",
+          "value": 12,
+          "unit": "over 32",
+          "source": "src_rebuild/Game/C/wheelforces.c:500"
+        },
+        {
+          "name": "Wetness reference",
+          "value": 32400,
+          "unit": "wetness scale, coefficient = surface factor times (32400 minus wetness) over 32768, plus 500",
+          "source": "src_rebuild/Game/C/wheelforces.c:266"
+        },
+        {
+          "name": "Grass surface factor",
+          "value": 2048,
+          "unit": "fixed-point, 4096 = full asphalt grip",
+          "source": "src_rebuild/Game/C/wheelforces.c:259"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 27
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 219
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 266
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 95
+        }
+      ],
+      "capabilities": [
+        "role-based handling tuning",
+        "speed-dependent cornering stiffness",
+        "wet and grass grip"
+      ],
+      "tags": [
+        "physics",
+        "vehicle",
+        "driving"
+      ]
+    },
+    {
+      "id": "steering-input",
+      "node": "car-controls",
+      "name": "Digital and analogue steering with auto-centre",
+      "summary": "Steering angle ramps with a digital button, follows a cubic curve on an analogue stick, and returns to centre by itself.",
+      "behavior": "The steering angle is a signed number where 4096 is a full turn. A held digital direction adds 32 per step up to 352, about 31 degrees. The fast-steer button adds 64 per step up to 511, about 45 degrees. With no direction held the angle moves back toward zero by 64 per step. An analogue stick is cubed and divided by 80, or by 60 with fast steer, then scaled by a fixed gain and shifted right by five bits, so small deflections stay fine. Full deflection gives roughly 320 in normal mode and roughly 570 in fast mode, because the stick value is the raw byte minus 128. A counter grows while a turn is held, and adds 45 front grip per count up to 13 counts, so 585 in total, but only for the player handling types.",
+      "constants": [
+        {
+          "name": "Digital steer step",
+          "value": 32,
+          "unit": "angle units per step at 30 Hz (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/handling.c:1215"
+        },
+        {
+          "name": "Digital steer limit",
+          "value": 352,
+          "unit": "angle units (about 31 degrees)",
+          "source": "src_rebuild/Game/C/handling.c:1217"
+        },
+        {
+          "name": "Fast steer step",
+          "value": 64,
+          "unit": "angle units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/handling.c:1196"
+        },
+        {
+          "name": "Fast steer limit",
+          "value": 511,
+          "unit": "angle units (about 45 degrees)",
+          "source": "src_rebuild/Game/C/handling.c:1198"
+        },
+        {
+          "name": "Recentre rate",
+          "value": 64,
+          "unit": "angle units per step at 30 Hz toward zero",
+          "source": "src_rebuild/Game/C/handling.c:1262"
+        },
+        {
+          "name": "Analogue cubic divisor, normal",
+          "value": 80,
+          "unit": "stick value cubed divided by 80",
+          "source": "src_rebuild/Game/C/handling.c:1244"
+        },
+        {
+          "name": "Analogue cubic divisor, fast steer",
+          "value": 60,
+          "unit": "stick value cubed divided by 60",
+          "source": "src_rebuild/Game/C/handling.c:1239"
+        },
+        {
+          "name": "Auto-brake counter cap",
+          "value": 13,
+          "unit": "steps at 30 Hz, extra front grip is (2n + n) times 15, so 45 per count",
+          "source": "src_rebuild/Game/C/wheelforces.c:78"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1191
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1248
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1258
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 227
+        },
+        {
+          "path": "src_rebuild/Game/C/pad.c",
+          "line": 184
+        }
+      ],
+      "capabilities": [
+        "button steering ramp",
+        "analogue cubic response",
+        "self-centring wheel"
+      ],
+      "tags": [
+        "driving",
+        "vehicle",
+        "input"
+      ]
+    },
+    {
+      "id": "handbrake-burnout",
+      "node": "wheel-forces",
+      "name": "Handbrake slide, burnout and lock-up braking",
+      "summary": "The handbrake locks the rear wheels and shifts grip forward, a burnout fixes throttle power, and hard braking locks all wheels.",
+      "behavior": "The handbrake button cancels throttle, locks the rear wheels, and adds 656 to front grip while moving or subtracts 375 when stopped. Locked wheels slide along their own velocity direction instead of the tyre direction, so the car keeps momentum and the tail swings. The burnout button forces a fixed engine power and adds 600 to front grip. It ends once wheel speed passes 452952, and normal acceleration then continues. The player car locks all four wheels when braking above a wheel speed of 41943. Locked front wheels blend two friction readings, which gives a longer slide than free-rolling tyres. Rear slip above 15000 lays skid marks, and the felony code counts rear slip above 11100 as reckless driving.",
+      "constants": [
+        {
+          "name": "Handbrake front grip gain",
+          "value": 656,
+          "unit": "grip units while wheel speed is positive",
+          "source": "src_rebuild/Game/C/wheelforces.c:118"
+        },
+        {
+          "name": "Handbrake front grip cut when stopped",
+          "value": 375,
+          "unit": "grip units",
+          "source": "src_rebuild/Game/C/wheelforces.c:116"
+        },
+        {
+          "name": "Burnout front grip gain",
+          "value": 600,
+          "unit": "grip units",
+          "source": "src_rebuild/Game/C/wheelforces.c:108"
+        },
+        {
+          "name": "Burnout thrust factor",
+          "value": 5000,
+          "unit": "multiplier on power ratio, divided by 4096",
+          "source": "src_rebuild/Game/C/wheelforces.c:134"
+        },
+        {
+          "name": "Burnout end speed",
+          "value": 452952,
+          "unit": "wheel speed units (4096 = 1 world unit per step at 30 Hz)",
+          "source": "src_rebuild/Game/C/handling.c:1181"
+        },
+        {
+          "name": "Lock-up braking speed",
+          "value": 41943,
+          "unit": "wheel speed units, player type only",
+          "source": "src_rebuild/Game/C/wheelforces.c:89"
+        },
+        {
+          "name": "Skid mark slip threshold",
+          "value": 15000,
+          "unit": "internal slip metric, rear axle",
+          "source": "src_rebuild/Game/C/handling.c:1508"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 120
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 105
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1169
+        },
+        {
+          "path": "src_rebuild/Game/C/wheelforces.c",
+          "line": 368
+        }
+      ],
+      "capabilities": [
+        "handbrake turns",
+        "burnouts",
+        "lock-up brake slides"
+      ],
+      "tags": [
+        "driving",
+        "vehicle",
+        "physics"
+      ]
+    },
+    {
+      "id": "engine-thrust-gears",
+      "node": "car-controls",
+      "name": "Throttle, brake curve and gear-band revs",
+      "summary": "Thrust is a fixed multiple of car power, the brake follows a speed curve, and revs ride a gear table with capped rise and fall.",
+      "behavior": "Throttle sets thrust to the car power ratio times 4915 over 4096. Braking while moving forward, or reversing slowly, gives a flat thrust of minus 5000 times the power ratio over 4096. Once the car reverses faster than about 16 units per step, brake input follows a curve of scaled wheel speed plus 278, times minus 4778 over 256, which fades to zero near 190 units per step. Holding brake therefore reverses the car up to that limit. Engine revs follow a gear table of wheel speed bands that end at 163, 260 and 360 for player-type cars, and at 50, 100 and 150 for traffic. Revs may rise by 1600 and fall by 1440 per step, and a bigger drop counts as a gear change that sets player thrust to 1 for that step. A car with both rear wheels off the ground jumps toward 30719 revs.",
+      "constants": [
+        {
+          "name": "Throttle thrust factor",
+          "value": 4915,
+          "unit": "multiplier on power ratio, divided by 4096",
+          "source": "src_rebuild/Game/C/handling.c:1311"
+        },
+        {
+          "name": "Flat brake thrust",
+          "value": -5000,
+          "unit": "multiplier on power ratio, divided by 4096",
+          "source": "src_rebuild/Game/C/handling.c:1281"
+        },
+        {
+          "name": "Brake curve offset",
+          "value": 278,
+          "unit": "scaled wheel speed units",
+          "source": "src_rebuild/Game/C/handling.c:1283"
+        },
+        {
+          "name": "Brake curve gain",
+          "value": -4778,
+          "unit": "divided by 256",
+          "source": "src_rebuild/Game/C/handling.c:1283"
+        },
+        {
+          "name": "First gear upper band",
+          "value": 163,
+          "unit": "wheel speed shifted right 11 bits, player table",
+          "source": "src_rebuild/Game/C/gamesnd.c:100"
+        },
+        {
+          "name": "Second gear upper band",
+          "value": 260,
+          "unit": "wheel speed shifted right 11 bits, player table",
+          "source": "src_rebuild/Game/C/gamesnd.c:101"
+        },
+        {
+          "name": "Maximum rev rise",
+          "value": 1600,
+          "unit": "rev units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/gamesnd.c:705"
+        },
+        {
+          "name": "Maximum rev drop",
+          "value": 1440,
+          "unit": "rev units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/gamesnd.c:704"
+        },
+        {
+          "name": "Airborne rev target",
+          "value": 30719,
+          "unit": "rev units, both rear wheels off the ground",
+          "source": "src_rebuild/Game/C/gamesnd.c:731"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1285
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1348
+        },
+        {
+          "path": "src_rebuild/Game/C/gamesnd.c",
+          "line": 97
+        },
+        {
+          "path": "src_rebuild/Game/C/gamesnd.c",
+          "line": 747
+        }
+      ],
+      "capabilities": [
+        "power-ratio engine model",
+        "speed-sensitive braking",
+        "gear shift thrust cut"
+      ],
+      "tags": [
+        "driving",
+        "vehicle",
+        "engine"
+      ]
+    },
+    {
+      "id": "chase-rubber-band",
+      "node": "car-controls",
+      "name": "Distance-based thrust boost toward a chase target",
+      "summary": "When the player has a target car, thrust scales up with distance so a lost player catches up and a close one gets a small handicap.",
+      "behavior": "When the player holds throttle and a target car is set, thrust is rescaled by a factor that depends on squared distance to the target, measured in blocks of 1024 units. Beyond 20 it is multiplied by 8000 over 7000. Between 6 and 20 it is multiplied by 7400 over 7000. Closer than 6 it is multiplied by 6700 over 7000, a small handicap. If the player car power ratio is above 3050, the target car power ratio replaces it as the base. Cars with handling type 5, the free-roaming type, use a table instead: thrust 3000 beyond 40 blocks squared, 4000 beyond 20, 4900 beyond 9, and 6000 when closer, so they stay near the player.",
+      "constants": [
+        {
+          "name": "Far boost factor",
+          "value": 8000,
+          "unit": "numerator over 7000",
+          "source": "src_rebuild/Game/C/handling.c:1340"
+        },
+        {
+          "name": "Mid boost factor",
+          "value": 7400,
+          "unit": "numerator over 7000",
+          "source": "src_rebuild/Game/C/handling.c:1342"
+        },
+        {
+          "name": "Near handicap factor",
+          "value": 6700,
+          "unit": "numerator over 7000",
+          "source": "src_rebuild/Game/C/handling.c:1344"
+        },
+        {
+          "name": "Far distance threshold",
+          "value": 20,
+          "unit": "squared distance in blocks of 1024 world units",
+          "source": "src_rebuild/Game/C/handling.c:1339"
+        },
+        {
+          "name": "Mid distance threshold",
+          "value": 6,
+          "unit": "squared distance in blocks of 1024 world units",
+          "source": "src_rebuild/Game/C/handling.c:1341"
+        },
+        {
+          "name": "Target power swap threshold",
+          "value": 3050,
+          "unit": "power ratio units",
+          "source": "src_rebuild/Game/C/handling.c:1331"
+        },
+        {
+          "name": "Free-roamer far thrust",
+          "value": 3000,
+          "unit": "thrust units beyond 40 blocks squared",
+          "source": "src_rebuild/Game/C/handling.c:1301"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1326
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1291
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1337
+        }
+      ],
+      "capabilities": [
+        "catch-up assist",
+        "pursuit rubber banding",
+        "ambient car leashing"
+      ],
+      "tags": [
+        "driving",
+        "ai",
+        "balance"
+      ]
+    },
+    {
+      "id": "car-car-impulse",
+      "node": "car-integrator",
+      "name": "Oriented-box car collision with mass-ratio impulse",
+      "summary": "A broadphase flags overlapping cars, a separating-axis test finds depth and normal, and an impulse is shared by mass ratio.",
+      "behavior": "A broadphase builds a box for each car from its collision box, widened by one eighth and stretched by velocity, with a vertical range of two heights below to four above. Overlapping pairs get a flag, and player cars are always flagged. The narrow phase is a separating-axis test between oriented boxes that returns depth, contact point and normal. Hit hardness is the relative point velocity along the normal. Strike strength is depth times 49152 plus nine quarters of the hardness, capped at 0x69000, and it rises by a factor of 2.5 against a car with infinite mass. The lighter car takes the full impulse and the heavier car takes it scaled by the mass ratio, while an infinite-mass car takes none. When a police car hits a car that is not the player, both impulses scale by 7 minus the difficulty level over 8.",
+      "constants": [
+        {
+          "name": "Broadphase box widening numerator",
+          "value": 9,
+          "unit": "over 8 on box length and width",
+          "source": "src_rebuild/Game/C/handling.c:990"
+        },
+        {
+          "name": "Strike depth gain",
+          "value": "0xc000",
+          "unit": "per depth unit (49152)",
+          "source": "src_rebuild/Game/C/handling.c:483"
+        },
+        {
+          "name": "Strike hardness gain",
+          "value": 9,
+          "unit": "divided by 4",
+          "source": "src_rebuild/Game/C/handling.c:567"
+        },
+        {
+          "name": "Strike cap",
+          "value": "0x69000",
+          "unit": "internal impulse units (430080)",
+          "source": "src_rebuild/Game/C/handling.c:569"
+        },
+        {
+          "name": "Infinite mass marker",
+          "value": "0x7fff",
+          "unit": "mass value, treated as immovable",
+          "source": "src_rebuild/Game/C/handling.c:586"
+        },
+        {
+          "name": "Spark and rumble hardness",
+          "value": "0x1b00",
+          "unit": "hardness units (6912), player involved",
+          "source": "src_rebuild/Game/C/handling.c:533"
+        },
+        {
+          "name": "Debris hardness",
+          "value": "0x2400",
+          "unit": "hardness units (9216)",
+          "source": "src_rebuild/Game/C/handling.c:552"
+        },
+        {
+          "name": "Police impulse scale",
+          "value": 7,
+          "unit": "minus difficulty level, over 8, police against non-player cars",
+          "source": "src_rebuild/Game/C/handling.c:600"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 990
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 455
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 577
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 592
+        },
+        {
+          "path": "src_rebuild/Game/C/bcoll3d.c",
+          "line": 98
+        }
+      ],
+      "capabilities": [
+        "car-to-car bumps",
+        "mass-ratio response",
+        "collision feedback thresholds"
+      ],
+      "tags": [
+        "collision",
+        "vehicle",
+        "physics"
+      ]
+    },
+    {
+      "id": "building-collision",
+      "node": "collision-damage",
+      "name": "Car versus scenery box collision and smashables",
+      "summary": "Cars are 2D boxes against per-model scenery boxes, with pushout, a bounce impulse and smashable props that break instead.",
+      "behavior": "Every step the car searches scenery models within the model bounding sphere plus 580 plus its speed. The car becomes a 2D box with length and width each increased by 15, and four-wheel-drive types are narrowed to 13/16 width. On overlap the code pushes the car out along the normal by the penetration, then applies an impulse with torque if the car moves into the surface, and pursuer cars take half of the angular terms. The player gains felony for each hit, scaled by strike speed up to 32. Smashable props such as signs break and leave the car unchanged in position and speed. Damage applies only when strike speed is at least 20480 and car speed is above 9, as the strike over 300 times 1024 over 1500, capped at 2048, then reduced by the current damage of that zone. A fast hit on trees sheds leaves, and on lamps at night it breaks the lamp.",
+      "constants": [
+        {
+          "name": "Search margin",
+          "value": 580,
+          "unit": "world units added to the model bounding sphere",
+          "source": "src_rebuild/Game/C/objcoll.c:643"
+        },
+        {
+          "name": "Car box padding",
+          "value": 15,
+          "unit": "world units added to length and width",
+          "source": "src_rebuild/Game/C/bcollide.c:645"
+        },
+        {
+          "name": "Narrow type width",
+          "value": 13,
+          "unit": "over 16, four-wheel-drive and free-roam types",
+          "source": "src_rebuild/Game/C/bcollide.c:649"
+        },
+        {
+          "name": "Damage strike threshold",
+          "value": 20480,
+          "unit": "internal strike units",
+          "source": "src_rebuild/Game/C/bcollide.c:499"
+        },
+        {
+          "name": "Damage speed threshold",
+          "value": 9,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/bcollide.c:499"
+        },
+        {
+          "name": "Damage value cap",
+          "value": 2048,
+          "unit": "damage units per hit before role scaling",
+          "source": "src_rebuild/Game/C/bcollide.c:530"
+        },
+        {
+          "name": "Leaf shedding strike",
+          "value": "0x3600",
+          "unit": "internal strike units (13824)",
+          "source": "src_rebuild/Game/C/bcollide.c:894"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 645
+        },
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 848
+        },
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 799
+        },
+        {
+          "path": "src_rebuild/Game/C/objcoll.c",
+          "line": 678
+        }
+      ],
+      "capabilities": [
+        "scenery collision",
+        "smashable props",
+        "strike-based damage gate"
+      ],
+      "tags": [
+        "collision",
+        "vehicle",
+        "damage"
+      ]
+    },
+    {
+      "id": "damage-regions",
+      "node": "collision-damage",
+      "name": "Six-zone damage by impact side with role scaling",
+      "summary": "A hit picks one of six body zones by contact position and adds damage that depends on car role and police difficulty.",
+      "behavior": "The car-car code passes half of the hit hardness to the damage routine, which scales it by 375 over 256. Below 40960 no zone is hurt, so a hit needs a hardness near 55900. The contact lever is projected onto the car axes, and the side comes from the sideways offset, and front, middle or rear comes from the forward offset against half of the collision box length value. A player car takes strike over 350 plus 512, times three eighths, capped at 1143, which is at least 235 for a qualifying hit. Traffic and other cars take strike over 400 plus 1024, times seven eighths, and a chase-target car uses the player formula against the player and a weaker one capped at 762 otherwise. The result is multiplied by the player damage factor, where 4096 is 1.0, or doubled for non-player cars, and police take 12/16 on medium and 7/16 on hard. Zones cap at 4095, and the mirrored front or rear zone gets half if lower.",
+      "constants": [
+        {
+          "name": "Strike scale",
+          "value": 375,
+          "unit": "multiplier, then shift right 8",
+          "source": "src_rebuild/Game/C/bcollide.c:383"
+        },
+        {
+          "name": "Minimum strike for damage",
+          "value": 40960,
+          "unit": "internal strike units",
+          "source": "src_rebuild/Game/C/bcollide.c:389"
+        },
+        {
+          "name": "Player damage divisor",
+          "value": 350,
+          "unit": "strike units",
+          "source": "src_rebuild/Game/C/bcollide.c:421"
+        },
+        {
+          "name": "Player damage cap",
+          "value": 1143,
+          "unit": "damage units per hit",
+          "source": "src_rebuild/Game/C/bcollide.c:425"
+        },
+        {
+          "name": "Traffic damage divisor",
+          "value": 400,
+          "unit": "strike units",
+          "source": "src_rebuild/Game/C/bcollide.c:456"
+        },
+        {
+          "name": "Zone cap",
+          "value": 4095,
+          "unit": "damage units per zone",
+          "source": "src_rebuild/Game/C/bcollide.c:336"
+        },
+        {
+          "name": "Police medium scale",
+          "value": 12,
+          "unit": "over 16",
+          "source": "src_rebuild/Game/C/bcollide.c:317"
+        },
+        {
+          "name": "Police hard scale",
+          "value": 7,
+          "unit": "over 16",
+          "source": "src_rebuild/Game/C/bcollide.c:321"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 397
+        },
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 462
+        },
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 460
+        },
+        {
+          "path": "src_rebuild/Game/C/bcollide.c",
+          "line": 339
+        }
+      ],
+      "capabilities": [
+        "zoned damage",
+        "role-based damage tuning",
+        "difficulty-scaled police damage"
+      ],
+      "tags": [
+        "damage",
+        "vehicle",
+        "collision"
+      ]
+    },
+    {
+      "id": "wreck-and-meter",
+      "node": "collision-damage",
+      "name": "Damage meter, wreck lock, drowning and flip-over death",
+      "summary": "Total damage fills a meter with a mission limit, and at the limit the car loses control while water and roof time add damage.",
+      "behavior": "The damage bar shows total damage out of a limit set by the mission, 22000 by default. At the limit the pad is replaced by a handbrake, or by a brake while wheel speed is above 36864, steering is forced to zero, and the car shows flames and smoke. Front zone damage above 2000 makes light smoke and above 3000 heavy smoke. When all four wheels are in water the total rises by one eightieth of the limit each step, so the car sinks in about 2.7 seconds. The death check runs only while the player cannot leave the car, such as when wanted and seen, flipped, in water or locked in. A car lying on its side or roof for more than 180 steps, six seconds, gets damage set to the limit and starts dying. A car with a wheel hovering over water and a height below the world floor ends the run with a fade.",
+      "constants": [
+        {
+          "name": "Default damage limit",
+          "value": 22000,
+          "unit": "damage units",
+          "source": "src_rebuild/Game/C/mission.c:262"
+        },
+        {
+          "name": "Water damage divisor",
+          "value": 80,
+          "unit": "limit divided by 80 per step at 30 Hz with four wheels in water",
+          "source": "src_rebuild/Game/C/main.c:2185"
+        },
+        {
+          "name": "Light smoke zone damage",
+          "value": 2000,
+          "unit": "damage units on a front zone",
+          "source": "src_rebuild/Game/C/cars.c:1561"
+        },
+        {
+          "name": "Heavy smoke zone damage",
+          "value": 3000,
+          "unit": "damage units on a front zone",
+          "source": "src_rebuild/Game/C/cars.c:1563"
+        },
+        {
+          "name": "Roof or side time limit",
+          "value": 180,
+          "unit": "steps at 30 Hz (6 seconds)",
+          "source": "src_rebuild/Game/C/mission.c:2897"
+        },
+        {
+          "name": "Roof or side tilt test",
+          "value": 100,
+          "unit": "cosine of tilt, 4096 = 1.0",
+          "source": "src_rebuild/Game/C/mission.c:2893"
+        },
+        {
+          "name": "Wreck brake speed",
+          "value": 36864,
+          "unit": "wheel speed units",
+          "source": "src_rebuild/Game/C/handling.c:1146"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1141
+        },
+        {
+          "path": "src_rebuild/Game/C/main.c",
+          "line": 2184
+        },
+        {
+          "path": "src_rebuild/Game/C/cars.c",
+          "line": 1552
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2899
+        }
+      ],
+      "capabilities": [
+        "health meter",
+        "wreck state",
+        "drowning and flip-over loss"
+      ],
+      "tags": [
+        "damage",
+        "vehicle",
+        "mission"
+      ]
+    },
+    {
+      "id": "civ-spawn-despawn",
+      "node": "civ-traffic",
+      "name": "Ring-based traffic spawning and removal",
+      "summary": "Traffic cars appear on roads in a ring around the player, are rejected when crowded, and vanish when far away.",
+      "behavior": "While fewer than 14 traffic cars exist, the game makes up to five spawn attempts per step. Each attempt moves a cycling index to one of 44 evenly spaced angles around the player and converts it to a point 16384 units away, or 20480 units for a police car, which uses 56 angles. It keeps the first point that lies on a straight or curved road segment. It picks a random driveable lane, or a parking lane while fewer than seven parked cars exist, and places the car along the segment, away from the segment ends. The attempt fails when more than three other cars are within 3000 units or the nearest car is closer than eight body half-lengths, which is four full lengths. A car farther than 24000 units from the player is removed at once.",
+      "constants": [
+        {
+          "name": "Traffic car cap",
+          "value": 14,
+          "unit": "cars",
+          "source": "src_rebuild/Game/C/mission.c:104"
+        },
+        {
+          "name": "Parked car cap",
+          "value": 7,
+          "unit": "cars",
+          "source": "src_rebuild/Game/C/mission.c:105"
+        },
+        {
+          "name": "Normal spawn radius multiplier",
+          "value": 8,
+          "unit": "times 2048 world units (16384)",
+          "source": "src_rebuild/Game/C/civ_ai.c:1872"
+        },
+        {
+          "name": "Police spawn radius multiplier",
+          "value": 10,
+          "unit": "times 2048 world units (20480)",
+          "source": "src_rebuild/Game/C/civ_ai.c:1871"
+        },
+        {
+          "name": "Removal distance",
+          "value": 24000,
+          "unit": "world units from the player",
+          "source": "src_rebuild/Game/C/civ_ai.c:1635"
+        },
+        {
+          "name": "Spawn attempts per step",
+          "value": 5,
+          "unit": "attempts",
+          "source": "src_rebuild/Game/C/main.c:913"
+        },
+        {
+          "name": "Crowding distance squared",
+          "value": 9000000,
+          "unit": "squared world units (3000)",
+          "source": "src_rebuild/Game/C/civ_ai.c:2382"
+        },
+        {
+          "name": "Allowed close neighbours",
+          "value": 3,
+          "unit": "cars",
+          "source": "src_rebuild/Game/C/civ_ai.c:62"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2049
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2397
+        },
+        {
+          "path": "src_rebuild/Game/C/main.c",
+          "line": 910
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2123
+        }
+      ],
+      "capabilities": [
+        "ambient traffic density control",
+        "spawn ring around the player",
+        "lane-aware placement"
+      ],
+      "tags": [
+        "ai",
+        "traffic",
+        "driving"
+      ]
+    },
+    {
+      "id": "civ-lane-follow",
+      "node": "civ-traffic",
+      "name": "Route-node lane following with look-ahead steering",
+      "summary": "Traffic cars steer toward a point on their lane route that is a speed-dependent distance ahead, and throttle by road speed limit.",
+      "behavior": "Each traffic car owns a ring of 13 route nodes along its lane, and a node marked 127 is invalid and makes the car generate the next one. Every step the car finds its position along the route and picks a target point ahead by its speed times 20 steps plus one body half-length. The wheel angle is the signed angle from heading to that point, clamped to plus or minus 512, which is 45 degrees. Cruise thrust is 2000, cut to a quarter when speed is above the road limit of 56, 97 or 138 units per step. Thrust loses three times the steering angle, with a minimum angle of 4 counted. A negative thrust at very low speed is set to zero. A car that cannot make a valid route becomes confused and stops.",
+      "constants": [
+        {
+          "name": "Look-ahead time",
+          "value": 20,
+          "unit": "steps at 30 Hz of current speed",
+          "source": "src_rebuild/Game/C/civ_ai.c:3181"
+        },
+        {
+          "name": "Steering clamp",
+          "value": 512,
+          "unit": "angle units (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/civ_ai.c:3182"
+        },
+        {
+          "name": "Cruise thrust",
+          "value": 2000,
+          "unit": "thrust units",
+          "source": "src_rebuild/Game/C/civ_ai.c:2473"
+        },
+        {
+          "name": "Steering thrust penalty",
+          "value": 3,
+          "unit": "thrust units per steering angle unit",
+          "source": "src_rebuild/Game/C/civ_ai.c:3593"
+        },
+        {
+          "name": "Route nodes per car",
+          "value": 13,
+          "unit": "nodes in the ring",
+          "source": "src_rebuild/Game/C/civ_ai.c:3130"
+        },
+        {
+          "name": "Lowest road speed limit",
+          "value": 56,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:29"
+        },
+        {
+          "name": "Highest road speed limit",
+          "value": 138,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:29"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 3239
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2541
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 3593
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 838
+        }
+      ],
+      "capabilities": [
+        "lane following",
+        "speed-limit compliance",
+        "corner slowdown"
+      ],
+      "tags": [
+        "ai",
+        "traffic",
+        "driving"
+      ]
+    },
+    {
+      "id": "civ-obstacle-braking",
+      "node": "civ-traffic",
+      "name": "Forward sensor box braking, horns and pedestrian waits",
+      "summary": "Each traffic car projects a box ahead whose length grows with speed and brakes when another car or the on-foot player is in it.",
+      "behavior": "Each traffic car projects a sensor box ahead of its body. The extra length is 93 units plus speed times 13 when the wheel angle is below 61, or speed times 4 otherwise, and the signed test means any left turn counts as straight. Any other car or the on-foot player within 500 units of height whose box overlaps the sensor sets a brake length equal to the free distance to it. With a free distance of two body half-lengths or more, which is one full length, the car cuts throttle to zero. Between half a half-length and two half-lengths a ramp rises from 0 to 100, and below that it stays at 100. The brake demand is the smaller of a quarter of wheel speed and 40 times the ramp, so it is at most 4000, twice cruise thrust. A car blocked by the on-foot player waits up to 100 steps after it stops, and a yielding car checks 2048 units ahead at a turn and 512 at a straight yield.",
+      "constants": [
+        {
+          "name": "Sensor length factor, straight wheels",
+          "value": 13,
+          "unit": "times speed in world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:2755"
+        },
+        {
+          "name": "Sensor length factor, turning",
+          "value": 4,
+          "unit": "times speed in world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:2757"
+        },
+        {
+          "name": "Straight wheel angle limit",
+          "value": 61,
+          "unit": "angle units",
+          "source": "src_rebuild/Game/C/civ_ai.c:2754"
+        },
+        {
+          "name": "Sensor extra length",
+          "value": 93,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/civ_ai.c:2764"
+        },
+        {
+          "name": "Height filter",
+          "value": 500,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/civ_ai.c:2815"
+        },
+        {
+          "name": "Pedestrian wait",
+          "value": 100,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:2722"
+        },
+        {
+          "name": "Turn yield check distance",
+          "value": 2048,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/civ_ai.c:2633"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2844
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2967
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2861
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 3000
+        }
+      ],
+      "capabilities": [
+        "obstacle braking",
+        "pedestrian yielding",
+        "horn reactions"
+      ],
+      "tags": [
+        "ai",
+        "traffic",
+        "driving"
+      ]
+    },
+    {
+      "id": "traffic-light-cycle",
+      "node": "civ-traffic",
+      "name": "Two-axis traffic light cycle with red-light felony",
+      "summary": "Junction lights run a 512-step cycle per axis, traffic obeys them, and crossing on red adds felony.",
+      "behavior": "The light state comes from a counter that wraps at 512 steps, about 17 seconds. One axis is red for the first 256 steps. The other axis is red for its second half. During the other half each axis shows green for 150 steps, amber for 50 steps and red for the final 56. Traffic cars wait at a junction while the light for their approach is not green and move off when it turns green. When the player drives from a road onto a junction that has lights, and the light for the road just left is red, a red-light offence is noted. A cooldown makes it count once per crossing.",
+      "constants": [
+        {
+          "name": "Cycle mask",
+          "value": 511,
+          "unit": "steps at 30 Hz, cycle length is 512",
+          "source": "src_rebuild/Game/C/civ_ai.c:1659"
+        },
+        {
+          "name": "Red half length",
+          "value": 256,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/civ_ai.c:1663"
+        },
+        {
+          "name": "Green duration",
+          "value": 150,
+          "unit": "steps at 30 Hz (5 seconds)",
+          "source": "src_rebuild/Game/C/civ_ai.c:1671"
+        },
+        {
+          "name": "Amber ends",
+          "value": 200,
+          "unit": "steps at 30 Hz into the green half (amber lasts 50)",
+          "source": "src_rebuild/Game/C/civ_ai.c:1673"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 1655
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 327
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 2699
+        }
+      ],
+      "capabilities": [
+        "traffic lights",
+        "red-light offence",
+        "phase-offset junction axes"
+      ],
+      "tags": [
+        "ai",
+        "traffic",
+        "police"
+      ]
+    },
+    {
+      "id": "felony-ladder",
+      "node": "felony-system",
+      "name": "Felony rating thresholds, offence values and decay",
+      "summary": "A 0 to 4096 rating jumps past the pursuit threshold on a first offence, only rises while cops watch, and decays only at low values.",
+      "behavior": "Felony is a number from 0 to 4096 kept per player. An offence scores only while cops can see the player, except stealing a police car. At 658 or below, an offence adds its placid value, 659 for every type, so one offence starts a pursuit. Above 658, an offence adds its angry value scaled by 3000 over 4096, and most angry values are zero. Only scaring pedestrians at 75, hitting traffic, buildings or patrol cars at 659, and damaging property at 25 still add points. Hitting a patrol car from a low rating adds 1318, which reaches the roadblock level but does not pass it, and stealing a police car adds the maximum. At 658 or below the rating falls by one every 32 steps, but above 658 it rises by one every 32 steps while cops see the player and never falls by time.",
+      "constants": [
+        {
+          "name": "Pursuit threshold",
+          "value": 658,
+          "unit": "felony points",
+          "source": "src_rebuild/Game/C/felony.h:4"
+        },
+        {
+          "name": "Roadblock threshold",
+          "value": 1318,
+          "unit": "felony points",
+          "source": "src_rebuild/Game/C/felony.h:5"
+        },
+        {
+          "name": "Maximum felony",
+          "value": 4096,
+          "unit": "felony points",
+          "source": "src_rebuild/Game/C/felony.h:7"
+        },
+        {
+          "name": "Placid offence value",
+          "value": 659,
+          "unit": "felony points added when rating is at or below 658",
+          "source": "src_rebuild/Game/C/felony.c:24"
+        },
+        {
+          "name": "Patrol car hit placid value",
+          "value": 1318,
+          "unit": "felony points, full-strength hit from a low rating",
+          "source": "src_rebuild/Game/C/felony.c:28"
+        },
+        {
+          "name": "Angry scale",
+          "value": 3000,
+          "unit": "over 4096, applied to the angry value above 658",
+          "source": "src_rebuild/Game/C/cop_ai.c:266"
+        },
+        {
+          "name": "Decay and growth interval",
+          "value": 31,
+          "unit": "counter limit, one change per 32 steps at 30 Hz",
+          "source": "src_rebuild/Game/C/felony.c:427"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 166
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 157
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 248
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 34
+        }
+      ],
+      "capabilities": [
+        "wanted rating",
+        "visibility-gated offences",
+        "rating thresholds"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "crime"
+      ]
+    },
+    {
+      "id": "felony-offences",
+      "node": "felony-system",
+      "name": "Offence types, cooldowns and detection rules",
+      "summary": "Eleven offence types each have a cooldown and a detection rule such as speed over limit, wrong way, sliding or collision hardness.",
+      "behavior": "Each offence type has a cooldown before it can score again, such as 128 steps for speeding, 64 for red lights and collisions, and 32 for hitting patrol cars or buildings. Wrong-way driving and reckless driving must also persist for 24 steps before they count. Wrong way means the car faces against the direction of an AI lane. Reckless means rear tyres slide above a slip level or the burnout is held. Speeding compares speed with the road class limit, with a tolerance of 1.5 times, or 19/16 on the fastest class. Driving at night with both front damage zones above 1000 counts as no lights. A hit on traffic scales by hardness up to 32, and a hit on a patrol car by hardness up to 16, after which the full value applies.",
+      "constants": [
+        {
+          "name": "Speeding cooldown",
+          "value": 128,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/felony.c:16"
+        },
+        {
+          "name": "Persistence before wrong way or reckless counts",
+          "value": 24,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/felony.c:15"
+        },
+        {
+          "name": "Reckless slip threshold",
+          "value": 11100,
+          "unit": "internal slip metric, rear axle",
+          "source": "src_rebuild/Game/C/felony.c:401"
+        },
+        {
+          "name": "Fast road tolerance",
+          "value": 19,
+          "unit": "over 16 of the road limit",
+          "source": "src_rebuild/Game/C/felony.c:415"
+        },
+        {
+          "name": "Other road tolerance",
+          "value": 3,
+          "unit": "over 2 of the road limit",
+          "source": "src_rebuild/Game/C/felony.c:417"
+        },
+        {
+          "name": "Traffic hit full-score hardness",
+          "value": 32,
+          "unit": "hardness units",
+          "source": "src_rebuild/Game/C/felony.c:453"
+        },
+        {
+          "name": "Broken lights damage",
+          "value": 1000,
+          "unit": "damage units on each front zone",
+          "source": "src_rebuild/Game/C/felony.c:394"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 353
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 420
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 394
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 463
+        }
+      ],
+      "capabilities": [
+        "offence detection",
+        "per-offence cooldowns",
+        "collision-scaled felony"
+      ],
+      "tags": [
+        "police",
+        "crime",
+        "driving"
+      ]
+    },
+    {
+      "id": "cop-count-respawn",
+      "node": "cop-ai",
+      "name": "Felony-driven cop count and respawn timer",
+      "summary": "The number of wanted pursuit cars steps up as felony crosses fixed levels, and missing cops respawn on a countdown.",
+      "behavior": "A trigger table holds felony levels of 0, 819, 1638 and 2457, ending in a large sentinel. The count of triggers at or below the current felony is the number of cops wanted, raised to the mission minimum and capped by the mission maximum, which defaults to four. When fewer cops exist than wanted, and the mission allows new cops, a timer counts steps and requests a cop car when it reaches the respawn time. That time is 320 steps at 30 Hz, about 10.7 seconds, minus four steps per mission number in early missions, and 10000 in the escape game type. A new cop car appears on a road 20480 units away, further than normal traffic. When too many cops exist, the cops beyond a cut-off distance run at half the desired speed scale. A cop car more than 24000 units from the player is removed.",
+      "constants": [
+        {
+          "name": "Trigger spacing",
+          "value": "0x333",
+          "unit": "felony points (819), triggers at 0, 819, 1638 and 2457",
+          "source": "src_rebuild/Game/C/cop_ai.c:250"
+        },
+        {
+          "name": "Default maximum cops",
+          "value": 4,
+          "unit": "cars, replaced by the mission header value",
+          "source": "src_rebuild/Game/C/mission.c:106"
+        },
+        {
+          "name": "Respawn time base",
+          "value": 320,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:300"
+        },
+        {
+          "name": "Respawn time reduction",
+          "value": -4,
+          "unit": "steps at 30 Hz per mission number, missions below 40",
+          "source": "src_rebuild/Game/C/cop_ai.c:300"
+        },
+        {
+          "name": "Escape game respawn time",
+          "value": 10000,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:284"
+        },
+        {
+          "name": "Cop spawn radius multiplier",
+          "value": 10,
+          "unit": "times 2048 world units (20480)",
+          "source": "src_rebuild/Game/C/civ_ai.c:1871"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 250
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 1008
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 1017
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 91
+        }
+      ],
+      "capabilities": [
+        "wanted level to cop count",
+        "respawn pacing",
+        "distance-based cop trimming"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "crime"
+      ]
+    },
+    {
+      "id": "cop-sight-lose-tail",
+      "node": "cop-ai",
+      "name": "Cop sight cones and lose-the-tail timer",
+      "summary": "Pursuit continues while any cop sees the player in a surround circle or front cone, and ends after about 8.5 seconds unseen.",
+      "behavior": "Each step every pursuit cop tests the player against two zones. A surround circle of 2720 units sees in all directions, and a forward cone of 7820 units with a half-angle of 512, which is 45 degrees, sees ahead. During a pursuit above the pursuit threshold these grow to 5440 and 16320 units and 1024, which is 90 degrees. The player must also be in the visibility set of the map cells, and a cop inside the close-pursuit distance always sees the player. If nobody sees the player, a counter rises by one per step. At 256 steps, about 8.5 seconds at 30 Hz, the player position becomes unknown and pursuit status ends. Cops out of view of the player for 51 steps are removed, and a roadblock within 1640 squared-block units also counts as seeing the player.",
+      "constants": [
+        {
+          "name": "Surround view radius, calm",
+          "value": 2720,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:231"
+        },
+        {
+          "name": "Front view distance, calm",
+          "value": 7820,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:232"
+        },
+        {
+          "name": "Front half-angle, calm",
+          "value": 512,
+          "unit": "angle units (4096 = 360 degrees, 45 degrees)",
+          "source": "src_rebuild/Game/C/cop_ai.c:233"
+        },
+        {
+          "name": "Surround view radius, pursuit",
+          "value": 5440,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:225"
+        },
+        {
+          "name": "Front view distance, pursuit",
+          "value": 16320,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:226"
+        },
+        {
+          "name": "Front half-angle, pursuit",
+          "value": 1024,
+          "unit": "angle units (90 degrees)",
+          "source": "src_rebuild/Game/C/cop_ai.c:227"
+        },
+        {
+          "name": "Unseen counter limit",
+          "value": 255,
+          "unit": "steps at 30 Hz, pursuit state is dropped on the step after 256",
+          "source": "src_rebuild/Game/C/cop_ai.c:885"
+        },
+        {
+          "name": "Hidden cop removal",
+          "value": 50,
+          "unit": "steps at 30 Hz, removal when the counter exceeds 50",
+          "source": "src_rebuild/Game/C/cop_ai.c:921"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 231
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 830
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 891
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 504
+        }
+      ],
+      "capabilities": [
+        "vision cones for pursuers",
+        "lose-the-tail escape",
+        "pursuit state machine"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "stealth"
+      ]
+    },
+    {
+      "id": "cop-pursuit-targeting",
+      "node": "cop-ai",
+      "name": "Cop target prediction, road following and unstick",
+      "summary": "Cops follow the road toward the player at range, aim at a predicted point near the player, and back out when stuck.",
+      "behavior": "When the player is farther than the close-pursuit distance of 2800 units, a cop follows the road map toward the player by walking four hops that together span ten times its speed plus 680 units. Within 8400 units the code predicts where the player will be, using the closing speed to pick a lead of up to 60 steps, scaled to three quarters when not ramming. The aim point is a spot behind the rear of the player car, or beside it when ramming. Steering uses the target offset in the cop frame, minus a side-slip term of velocity over 140. The side angle chooses front, left, right or back zones. A cop that moves slower than 6 units per step for more than 10 steps starts a 22-step recovery that drives at speed 200 in the opposite direction with a preset steer.",
+      "constants": [
+        {
+          "name": "Close pursuit distance",
+          "value": 2800,
+          "unit": "world units (cost metric)",
+          "source": "src_rebuild/Game/C/cop_ai.c:504"
+        },
+        {
+          "name": "Prediction range",
+          "value": 8400,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:510"
+        },
+        {
+          "name": "Maximum lead",
+          "value": 60,
+          "unit": "steps at 30 Hz of target velocity",
+          "source": "src_rebuild/Game/C/cop_ai.c:527"
+        },
+        {
+          "name": "Road look-ahead per speed unit",
+          "value": 10,
+          "unit": "world units per unit of cop speed",
+          "source": "src_rebuild/Game/C/cop_ai.c:552"
+        },
+        {
+          "name": "Road look-ahead base",
+          "value": 680,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/cop_ai.c:552"
+        },
+        {
+          "name": "Stuck speed threshold",
+          "value": 6,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:480"
+        },
+        {
+          "name": "Stuck time",
+          "value": 10,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:485"
+        },
+        {
+          "name": "Recovery time",
+          "value": 22,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:487"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 552
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 523
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 593
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 487
+        }
+      ],
+      "capabilities": [
+        "lead-the-target chasing",
+        "path-guided pursuit",
+        "stuck recovery"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "driving"
+      ]
+    },
+    {
+      "id": "cop-speed-thrust",
+      "node": "cop-ai",
+      "name": "Cop speed tables, thrust cap and steering slew",
+      "summary": "Desired speed comes from difficulty tables, thrust is proportional to speed error with a cap, and the wheel moves at most 200 units per step.",
+      "behavior": "Facing the target, a cop wants a speed from one of two tables indexed by difficulty, scaled by the mission speed scale where 4096 is 1.0. The medium values are 210 and, on straight roads, 266 units per step. In the left or right zones the cop wants 110 and spins the wheels, and in the back zone it wants minus 70 with a steer of 284. Within 4096 units a cop that is not ramming slows to the player speed minus 20, with a floor of 20. Thrust is proportional to the speed error and saturates at an error of 50, with a cap of 9216 on medium plus 5120 on straights, scaled by the mission power scale. Thrust is then cut to 7/10 and halved for four-wheel-drive cars. The steering wheel moves by at most 200 per step.",
+      "constants": [
+        {
+          "name": "Medium speed, bendy road",
+          "value": 210,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:48"
+        },
+        {
+          "name": "Medium speed, straight road",
+          "value": 266,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:49"
+        },
+        {
+          "name": "Side zone speed",
+          "value": 110,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:669"
+        },
+        {
+          "name": "Back zone speed",
+          "value": -70,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:660"
+        },
+        {
+          "name": "Back zone steer",
+          "value": 284,
+          "unit": "angle units (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/cop_ai.c:665"
+        },
+        {
+          "name": "Thrust base per level",
+          "value": 1024,
+          "unit": "thrust units, (difficulty + 8) times this",
+          "source": "src_rebuild/Game/C/cop_ai.c:705"
+        },
+        {
+          "name": "Proportional error band",
+          "value": 50,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:717"
+        },
+        {
+          "name": "Steering slew",
+          "value": 200,
+          "unit": "angle units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:735"
+        },
+        {
+          "name": "Thrust factor",
+          "value": 7,
+          "unit": "over 10",
+          "source": "src_rebuild/Game/C/cop_ai.c:728"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 630
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 738
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 709
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 701
+        }
+      ],
+      "capabilities": [
+        "difficulty tables",
+        "speed-error throttle",
+        "steering slew limit"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "driving"
+      ]
+    },
+    {
+      "id": "cop-ramming",
+      "node": "cop-ai",
+      "name": "Cop ramming mode and cop wreck",
+      "summary": "Above a felony level cops switch from tailing to side-ramming on a duty cycle set by difficulty, and cars die at heavy damage.",
+      "behavior": "Ramming is on when a mission flag requests it, or when felony is above 2048. In that second case a per-cop counter runs from 0 to 127 and wraps. The cop rams while the counter is above 80 on easy, above 50 on medium, and always on hard. When ramming, the aim point moves from behind the player car to its flank, the lead is full instead of three quarters, and the slow-down near the player is skipped. A cop whose damage exceeds 27000 stops driving and stays on the road as a wreck, unless the mission makes cops immortal. A wreck counter rises to 86 and then stops, with sirens off after 75 and cheaper scenery checks after 85. A roadblock cop car that the player touches turns into an active pursuer, if the felony is at least the pursuit level and fewer than four cop cars exist.",
+      "constants": [
+        {
+          "name": "Ram felony level",
+          "value": 2048,
+          "unit": "felony points",
+          "source": "src_rebuild/Game/C/cop_ai.c:1104"
+        },
+        {
+          "name": "Easy ram threshold",
+          "value": 80,
+          "unit": "counter value of 0 to 127, steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:379"
+        },
+        {
+          "name": "Medium ram threshold",
+          "value": 50,
+          "unit": "counter value of 0 to 127, steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:381"
+        },
+        {
+          "name": "Counter wrap mask",
+          "value": 127,
+          "unit": "counter value",
+          "source": "src_rebuild/Game/C/cop_ai.c:389"
+        },
+        {
+          "name": "Cop wreck damage",
+          "value": 27000,
+          "unit": "damage units",
+          "source": "src_rebuild/Game/C/cop_ai.c:396"
+        },
+        {
+          "name": "Wreck counter limit",
+          "value": 85,
+          "unit": "steps at 30 Hz, the counter stops rising above this and the car is not removed",
+          "source": "src_rebuild/Game/C/cop_ai.c:400"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 373
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 540
+        },
+        {
+          "path": "src_rebuild/Game/C/cop_ai.c",
+          "line": 406
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 518
+        }
+      ],
+      "capabilities": [
+        "pit-and-ram pursuit",
+        "difficulty duty cycle",
+        "cop wrecking"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "combat"
+      ]
+    },
+    {
+      "id": "cop-roadblock",
+      "node": "cop-ai",
+      "name": "Roadblock creation ahead of the player",
+      "summary": "Above a felony level, a timed roadblock of cop cars is laid across the road ahead and wakes when the player touches it.",
+      "behavior": "While felony is above 1318 and cops are in pursuit, a countdown runs and then requests a roadblock in most missions. The delay is 1500, 1000 or 800 steps by difficulty, plus up to 255 random steps. The game scans roads ahead of the player at a ring radius of 8 times 2048 world units and lays cop cars across each lane on a 1024-unit pitch, removing other cars within 600 units of each new car. On medium and hard it adds extra cars along the roadside, facing along the road on medium and across it on hard. The roadblock needs at least five free traffic slots. While a roadblock exists the countdown keeps resetting, and its cars stay passive until the player touches one.",
+      "constants": [
+        {
+          "name": "Roadblock felony level",
+          "value": 1318,
+          "unit": "felony points",
+          "source": "src_rebuild/Game/C/felony.h:5"
+        },
+        {
+          "name": "Delay, easy",
+          "value": 1500,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:56"
+        },
+        {
+          "name": "Delay, medium",
+          "value": 1000,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:56"
+        },
+        {
+          "name": "Delay, hard",
+          "value": 800,
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/cop_ai.c:56"
+        },
+        {
+          "name": "Random delay mask",
+          "value": "0xff",
+          "unit": "steps at 30 Hz added at random (0 to 255)",
+          "source": "src_rebuild/Game/C/civ_ai.c:3561"
+        },
+        {
+          "name": "Lane pitch",
+          "value": 1024,
+          "unit": "world units between cars across the road",
+          "source": "src_rebuild/Game/C/civ_ai.c:3480"
+        },
+        {
+          "name": "Clearing distance squared",
+          "value": 360000,
+          "unit": "squared world units (600)",
+          "source": "src_rebuild/Game/C/civ_ai.c:3471"
+        },
+        {
+          "name": "Free traffic slots needed",
+          "value": 4,
+          "unit": "slots, more than this must be free",
+          "source": "src_rebuild/Game/C/main.c:972"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/main.c",
+          "line": 893
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 3275
+        },
+        {
+          "path": "src_rebuild/Game/C/civ_ai.c",
+          "line": 3447
+        },
+        {
+          "path": "src_rebuild/Game/C/felony.c",
+          "line": 228
+        }
+      ],
+      "capabilities": [
+        "road-spanning blockades",
+        "difficulty-scaled spacing",
+        "touch-to-activate cops"
+      ],
+      "tags": [
+        "police",
+        "ai",
+        "driving"
+      ]
+    },
+    {
+      "id": "ped-spawn-ring",
+      "node": "pedestrians",
+      "name": "Pavement pedestrian spawn ring and removal",
+      "summary": "Walkers are placed on pavement about 12000 units from the player by sweeping a ring angle, and are removed beyond about 20500 units.",
+      "behavior": "Every step, if fewer than 15 civilian pedestrians exist, the game makes up to 50 tries to place one. Each try advances a ring angle by 81 units, about 7 degrees, and picks a distance of 1536 plus a random value below 128. That distance is multiplied by the rounded sine or cosine times 8, so the spawn point lies roughly 12000 to 13000 units out. The point is accepted only on pavement within 512 units of the player height, and the try fails if another pedestrian is within about 4000 units. A new walker gets a route along the pavement, a random clothing palette, and a run or walk action. A pedestrian is removed when it is farther than 20496 units horizontally or more than 512 units above or below the player. Civilian walkers move at 10 units per step and runners at 30.",
+      "constants": [
+        {
+          "name": "Pedestrian cap",
+          "value": 15,
+          "unit": "pedestrians",
+          "source": "src_rebuild/Game/dr2limits.h:32"
+        },
+        {
+          "name": "Placement tries per step",
+          "value": 50,
+          "unit": "tries",
+          "source": "src_rebuild/Game/C/pedest.c:1440"
+        },
+        {
+          "name": "Ring angle step",
+          "value": 81,
+          "unit": "angle units per try (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/pedest.c:1442"
+        },
+        {
+          "name": "Spawn distance base",
+          "value": 1536,
+          "unit": "world units, times a rounded factor of 8",
+          "source": "src_rebuild/Game/C/pedest.c:1444"
+        },
+        {
+          "name": "Vertical spawn window",
+          "value": 512,
+          "unit": "world units around the player height",
+          "source": "src_rebuild/Game/C/pedest.c:1452"
+        },
+        {
+          "name": "Spacing check",
+          "value": 15999999,
+          "unit": "squared world units (about 4000)",
+          "source": "src_rebuild/Game/C/pedest.c:1465"
+        },
+        {
+          "name": "Removal distance",
+          "value": 20496,
+          "unit": "world units horizontal",
+          "source": "src_rebuild/Game/C/pedest.c:1782"
+        },
+        {
+          "name": "Civilian walk speed",
+          "value": 10,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:1899"
+        },
+        {
+          "name": "Civilian run speed",
+          "value": 30,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:1897"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1442
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1454
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1771
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1934
+        }
+      ],
+      "capabilities": [
+        "ambient pedestrians",
+        "pavement-only placement",
+        "distance-based despawn"
+      ],
+      "tags": [
+        "pedestrian",
+        "ai",
+        "ambient"
+      ]
+    },
+    {
+      "id": "ped-scare-flee",
+      "node": "pedestrians",
+      "name": "Scare boxes, horn widening and the flee jump",
+      "summary": "A square box ahead of each car, wider for the player and with the horn, makes pedestrians inside it leap sideways and adds felony.",
+      "behavior": "Each car gets a square test box centred on its position plus its velocity shifted right by eight bits, which leads the car by 16 steps. The half-size is 400 for the player car and 260 for other cars, and the player horn makes it 1200 for the player car and 120 for other cars. The player car also gets a second box that leads by 8 steps. Explosions make boxes with a half-size of 1952, and an on-foot player makes a box of 148. A pedestrian inside any box jumps for 30 animation steps, starting at speed 30, doubling to 60 at the third step and halving back at step 15. The jump direction comes from the car velocity and the pedestrian offset from the car. Scaring a pedestrian with the player car adds felony at full value, or half when the horn is on.",
+      "constants": [
+        {
+          "name": "Car scare half-size",
+          "value": 400,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/pedest.c:2320"
+        },
+        {
+          "name": "Player horn half-size",
+          "value": 1200,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/pedest.c:2327"
+        },
+        {
+          "name": "Non-player reduction",
+          "value": 140,
+          "unit": "world units subtracted, so other cars are 260 normally and 120 with the player horn on",
+          "source": "src_rebuild/Game/C/pedest.c:2333"
+        },
+        {
+          "name": "Explosion half-size",
+          "value": 1952,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/pedest.c:2405"
+        },
+        {
+          "name": "On-foot player box half-size",
+          "value": 148,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/pedest.c:2389"
+        },
+        {
+          "name": "Jump start speed",
+          "value": 30,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:1800"
+        },
+        {
+          "name": "Jump length",
+          "value": 29,
+          "unit": "animation steps at 30 Hz, ends after frame 29",
+          "source": "src_rebuild/Game/C/pedest.c:1878"
+        },
+        {
+          "name": "Horn felony scale",
+          "value": 2048,
+          "unit": "fixed-point, 4096 = 1.0",
+          "source": "src_rebuild/Game/C/pedest.c:1806"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 2320
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 566
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1810
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 1872
+        }
+      ],
+      "capabilities": [
+        "pedestrian avoidance",
+        "horn scare",
+        "explosion avoidance"
+      ],
+      "tags": [
+        "pedestrian",
+        "ai",
+        "police"
+      ]
+    },
+    {
+      "id": "on-foot-movement",
+      "node": "on-foot",
+      "name": "On-foot run, walk-back and ramped turning",
+      "summary": "The player character runs at 40 units per step, backs up at 10, and turns with a ramp from slow to fast over eight steps.",
+      "behavior": "Forward input starts a run at 40 units per step at 30 Hz, reduced by half the death timer while wading in water that drowns the player. Back input walks backwards at 10 units per step, and without input the speed is zero. After 120 idle steps a waiting animation starts. A turn counter moves by two per step toward a limit of 16 in the pressed direction and decays by two when released. The heading change each step is 64 minus four times the distance of the counter from its limit, so turning starts near 8 and reaches 64 angle units per step, about 5.6 degrees. Running also leans the body sideways by 20 per step to a limit of 80. Walking onto a steep step or blocked ground stops the character.",
+      "constants": [
+        {
+          "name": "Run speed",
+          "value": 40,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:726"
+        },
+        {
+          "name": "Walk back speed",
+          "value": -10,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:982"
+        },
+        {
+          "name": "Turn counter limit",
+          "value": 16,
+          "unit": "counter units",
+          "source": "src_rebuild/Game/C/pedest.c:86"
+        },
+        {
+          "name": "Turn step multiplier",
+          "value": 4,
+          "unit": "angle units per counter unit",
+          "source": "src_rebuild/Game/C/pedest.c:87"
+        },
+        {
+          "name": "Maximum turn rate",
+          "value": 64,
+          "unit": "angle units per step at 30 Hz (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/pedest.c:869"
+        },
+        {
+          "name": "Idle wait animation",
+          "value": 119,
+          "unit": "idle steps at 30 Hz, the animation starts above this",
+          "source": "src_rebuild/Game/C/pedest.c:875"
+        },
+        {
+          "name": "Maximum slope step",
+          "value": 1010,
+          "unit": "world units height difference over the next step at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:2640"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 905
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 919
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 2635
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 2759
+        }
+      ],
+      "capabilities": [
+        "third-person on-foot control",
+        "ramped turning",
+        "slope and water blocking"
+      ],
+      "tags": [
+        "movement",
+        "on-foot",
+        "driving"
+      ]
+    },
+    {
+      "id": "car-enter-exit",
+      "node": "on-foot",
+      "name": "Leaving and entering cars on foot",
+      "summary": "The player may leave a car only when slow, upright and not in a chase, and may enter the nearest parked or ambient car in reach.",
+      "behavior": "Leaving is blocked when the felony is above the pursuit level and the cops still know the player position, when the rear wheels touch water, when the car speed is above 2, when the car is nearly sideways, and when doors are locked. The check passes if the car is upright to within about 88 degrees. Entering uses the closest car to the player. The car must be controlled by traffic AI or a cutscene, must not be a police car, must be upright, and must move slower than 3 units per step. The reach is one full car width, capped at 5000 units, compared as a squared distance. Entering takes 15 animation steps. A traffic car that was not parked makes the former driver appear as a pedestrian.",
+      "constants": [
+        {
+          "name": "Exit speed limit",
+          "value": 2,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/ai.c:78"
+        },
+        {
+          "name": "Upright test",
+          "value": 99,
+          "unit": "cosine of tilt, 4096 = 1.0",
+          "source": "src_rebuild/Game/C/ai.c:82"
+        },
+        {
+          "name": "Enter speed limit",
+          "value": 3,
+          "unit": "world units per step at 30 Hz, below this",
+          "source": "src_rebuild/Game/C/ai.c:32"
+        },
+        {
+          "name": "Reach cap",
+          "value": 5000,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/ai.c:39"
+        },
+        {
+          "name": "Get-in animation length",
+          "value": "0xf",
+          "unit": "steps at 30 Hz",
+          "source": "src_rebuild/Game/C/pedest.c:1223"
+        },
+        {
+          "name": "Pedestrian cap for the player",
+          "value": 7,
+          "unit": "pedestrians, activation fails above this",
+          "source": "src_rebuild/Game/C/pedest.c:2790"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/ai.c",
+          "line": 66
+        },
+        {
+          "path": "src_rebuild/Game/C/ai.c",
+          "line": 34
+        },
+        {
+          "path": "src_rebuild/Game/C/pedest.c",
+          "line": 2996
+        },
+        {
+          "path": "src_rebuild/Game/C/handling.c",
+          "line": 1123
+        }
+      ],
+      "capabilities": [
+        "car exit rules",
+        "nearest-car entry",
+        "chase-aware door lock"
+      ],
+      "tags": [
+        "on-foot",
+        "driving",
+        "movement"
+      ]
+    },
+    {
+      "id": "camera-chase-follow",
+      "node": "player-camera",
+      "name": "Chase camera with eased heading and distance growth",
+      "summary": "The chase camera sits behind the car at a size-based distance, turns by one eighth of its heading error each step, and is pushed out of walls.",
+      "behavior": "The target distance is twice the car half-length plus the car half-height plus the larger of 248 and three times the half-height. The camera starts at 1000 units and grows by 10 per step toward that distance, or by 20 when the car moves faster than 9 units per step and there is still room. The camera heading eases toward half a turn behind the car, closing one eighth of the angle difference each step. The height offset is 85 minus three car half-heights in the game vertical axis, where up is negative, and the view pitch is 25 angle units. When the camera would sit below ground plus 100 it is raised and tilted. A thin box along the line to the camera is tested against scenery, and the camera is pushed out of it. Holding look-left or look-right turns the view by up to 1024 units, 90 degrees, with half the remaining angle each step.",
+      "constants": [
+        {
+          "name": "Initial distance",
+          "value": 1000,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/camera.c:134"
+        },
+        {
+          "name": "Normal expansion",
+          "value": 10,
+          "unit": "world units per step at 30 Hz",
+          "source": "src_rebuild/Game/C/camera.c:436"
+        },
+        {
+          "name": "Fast expansion",
+          "value": 20,
+          "unit": "world units per step at 30 Hz, car above 9 units per step",
+          "source": "src_rebuild/Game/C/camera.c:463"
+        },
+        {
+          "name": "Distance minimum extra",
+          "value": 248,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/camera.c:453"
+        },
+        {
+          "name": "Heading offset",
+          "value": 2048,
+          "unit": "angle units (half turn, behind the car)",
+          "source": "src_rebuild/Game/C/camera.c:52"
+        },
+        {
+          "name": "Heading ease",
+          "value": 3,
+          "unit": "bits shifted, one eighth of the error per step at 30 Hz",
+          "source": "src_rebuild/Game/C/camera.c:485"
+        },
+        {
+          "name": "Height offset constant",
+          "value": 85,
+          "unit": "world units, offset is this minus three half-heights (up is negative)",
+          "source": "src_rebuild/Game/C/camera.c:450"
+        },
+        {
+          "name": "Pitch",
+          "value": 25,
+          "unit": "angle units (4096 = 360 degrees)",
+          "source": "src_rebuild/Game/C/camera.c:470"
+        },
+        {
+          "name": "Ground clearance",
+          "value": 100,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/camera.c:496"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 456
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 483
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 529
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 381
+        }
+      ],
+      "capabilities": [
+        "size-aware chase camera",
+        "wall avoidance",
+        "look-left and look-right"
+      ],
+      "tags": [
+        "camera",
+        "driving",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "camera-views-cycle",
+      "node": "player-camera",
+      "name": "In-car camera, tracking camera and view cycling",
+      "summary": "One button cycles chase, in-car and tracking views, with a fixed-position tracking camera that zooms with distance.",
+      "behavior": "The view button steps through a short list that goes tracking, then chase, then in-car, then back to tracking. The in-car camera has a vertical offset of 40 units and a body offset of the car half-length minus 250, and it uses the car own matrix so it pitches and rolls with the body. Head turn rotates this view left or right. Choosing the tracking view plants a fixed camera point at the car rear, a half-length minus 60 units behind it, and the camera then rotates to face the car. Its zoom grows with distance as the distance over 16 plus 256, capped at 800. When the car is farther than the draw distance of 22000 units on the PC build, the view returns to the chase camera. Detail switching distance is 10000 plus half the distance.",
+      "constants": [
+        {
+          "name": "Tracking zoom divisor",
+          "value": 4,
+          "unit": "bits shifted, scale is distance over 16",
+          "source": "src_rebuild/Game/C/camera.c:719"
+        },
+        {
+          "name": "Zoom cap",
+          "value": 800,
+          "unit": "screen distance units",
+          "source": "src_rebuild/Game/C/camera.c:721"
+        },
+        {
+          "name": "Default screen distance",
+          "value": 256,
+          "unit": "screen distance units",
+          "source": "src_rebuild/Game/C/camera.c:413"
+        },
+        {
+          "name": "In-car height",
+          "value": -40,
+          "unit": "world units from the car origin",
+          "source": "src_rebuild/Game/C/camera.c:601"
+        },
+        {
+          "name": "In-car seat offset",
+          "value": 250,
+          "unit": "world units subtracted from the half-length",
+          "source": "src_rebuild/Game/C/camera.c:605"
+        },
+        {
+          "name": "Tracking placement offset",
+          "value": 60,
+          "unit": "world units, half-length minus this",
+          "source": "src_rebuild/Game/C/camera.c:248"
+        },
+        {
+          "name": "Draw distance",
+          "value": 22000,
+          "unit": "world units, PC build",
+          "source": "src_rebuild/Game/C/camera.h:9"
+        },
+        {
+          "name": "Head target",
+          "value": "0x4000000",
+          "unit": "internal angle units (shifted right 16 bits gives 1024)",
+          "source": "src_rebuild/Game/C/camera.c:381"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 203
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 599
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 705
+        },
+        {
+          "path": "src_rebuild/Game/C/camera.c",
+          "line": 730
+        }
+      ],
+      "capabilities": [
+        "in-car cockpit view",
+        "fixed tracking camera with zoom",
+        "view cycling"
+      ],
+      "tags": [
+        "camera",
+        "driving",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "mission-timer",
+      "node": "mission-rules",
+      "name": "Mission countdown, count-up timer and bomb countdown",
+      "summary": "A mission timer counts in 1/3000 second units by 100 per step, fails or completes at zero, and can run up to a cap as a stopwatch.",
+      "behavior": "A mission may start a timer with its length in seconds. The code stores time in units of 1/3000 second, so the length times 3000, and each 30 Hz step changes it by 100. A countdown timer fails the mission at zero, or completes it when a flag says to complete on timeout. A count-up timer stops at 10799999, just under one hour, and a paused timer does not change. A bomb countdown timer detonates the player car at zero, and a bomb-timer flag can restart the clock once at 9000 units, 3 seconds. After a failure or completion the game waits 60 steps, 2 seconds at 30 Hz, before the end screen. Displayed minutes, seconds and hundredths come from integer division of the count.",
+      "constants": [
+        {
+          "name": "Time units per second",
+          "value": 3000,
+          "unit": "units, header seconds times this",
+          "source": "src_rebuild/Game/C/mission.c:583"
+        },
+        {
+          "name": "Change per step",
+          "value": 100,
+          "unit": "units per step at 30 Hz (1/30 second)",
+          "source": "src_rebuild/Game/C/mission.c:1094"
+        },
+        {
+          "name": "Count-up cap",
+          "value": 10799999,
+          "unit": "units (about 59 minutes 59.99 seconds)",
+          "source": "src_rebuild/Game/C/mission.c:1089"
+        },
+        {
+          "name": "Bomb reprieve",
+          "value": 9000,
+          "unit": "units (3 seconds)",
+          "source": "src_rebuild/Game/C/mission.c:1102"
+        },
+        {
+          "name": "End screen delay",
+          "value": 60,
+          "unit": "steps at 30 Hz (2 seconds)",
+          "source": "src_rebuild/Game/C/mission.c:3090"
+        },
+        {
+          "name": "Player death delay",
+          "value": 40,
+          "unit": "steps at 30 Hz, players count dead above this",
+          "source": "src_rebuild/Game/C/mission.c:2941"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 1087
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 1121
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 1128
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 1137
+        }
+      ],
+      "capabilities": [
+        "countdown and stopwatch timers",
+        "timeout fail or complete",
+        "bomb countdown"
+      ],
+      "tags": [
+        "mission",
+        "timer",
+        "rules"
+      ]
+    },
+    {
+      "id": "mission-point-target",
+      "node": "mission-rules",
+      "name": "Drive-to-point objectives with lose-the-cops and car gates",
+      "summary": "A point objective completes when the player is inside a radius, and can be blocked by an active pursuit or a missing car.",
+      "behavior": "A point target holds a ground position, a radius and an optional height limit, and it counts as reached when the flat distance to the player is at most the radius. If the target carries a lose-the-tail message, it does not complete while cops are in pursuit and shows that message instead. An action flag can require an on-foot button press first, and a height limit resets that press progress when the player is too far above or below. Another flag requires that the player is in a car. A stop-cops flag turns the same position and radius into a zone where cop cars halt. Secret-game targets need three checkpoints, then the start gate, to count a lap.",
+      "constants": [
+        {
+          "name": "Checkpoints per lap",
+          "value": "0x7",
+          "unit": "bit mask of three collected checkpoints",
+          "source": "src_rebuild/Game/C/mission.c:2029"
+        },
+        {
+          "name": "Car request distance",
+          "value": 18000,
+          "unit": "world units, target car is created inside this",
+          "source": "src_rebuild/Game/C/mission.c:2186"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2000
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2091
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 1988
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2113
+        }
+      ],
+      "capabilities": [
+        "reach-the-point goals",
+        "must-lose-cops gate",
+        "cop-free safe zone"
+      ],
+      "tags": [
+        "mission",
+        "objective",
+        "police"
+      ]
+    },
+    {
+      "id": "mission-tail-target",
+      "node": "mission-rules",
+      "name": "Chase and tail targets with distance warnings and fail ranges",
+      "summary": "A target car must be chased down to a damage limit or tailed within a distance band, with warnings and fail distances.",
+      "behavior": "A car target comes in several kinds. A chase target is a lead car that the player must wreck. When its damage reaches the target limit, it becomes confused and stops, and the objective is then complete or the car becomes one to steal. A tail target uses a proximity bar, and the player must stay inside a distance band behind it. For both kinds, a distance over 12900 units gives a getting-far warning, and over 15900 fails the mission. A tail target also fails closer than 4000 units and warns closer than 7000. A far target exists only as a map position, and it becomes a real car once the player is within 18000 units.",
+      "constants": [
+        {
+          "name": "Too close",
+          "value": 4000,
+          "unit": "world units, tail objective fails",
+          "source": "src_rebuild/Game/C/mission.c:190"
+        },
+        {
+          "name": "Getting close",
+          "value": 7000,
+          "unit": "world units, warning",
+          "source": "src_rebuild/Game/C/mission.c:188"
+        },
+        {
+          "name": "Getting far",
+          "value": 12900,
+          "unit": "world units, warning",
+          "source": "src_rebuild/Game/C/mission.c:189"
+        },
+        {
+          "name": "Too far",
+          "value": 15900,
+          "unit": "world units, objective fails",
+          "source": "src_rebuild/Game/C/mission.c:191"
+        },
+        {
+          "name": "Target car creation distance",
+          "value": 18000,
+          "unit": "world units",
+          "source": "src_rebuild/Game/C/mission.c:2186"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2373
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2406
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2268
+        },
+        {
+          "path": "src_rebuild/Game/C/mission.c",
+          "line": 2187
+        }
+      ],
+      "capabilities": [
+        "chase and tail objectives",
+        "distance warnings",
+        "damage-to-win targets"
+      ],
+      "tags": [
+        "mission",
+        "objective",
+        "ai"
+      ]
+    }
+  ]
+}

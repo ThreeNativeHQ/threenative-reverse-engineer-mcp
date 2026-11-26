@@ -1,0 +1,1829 @@
+{
+  "version": 1,
+  "id": "resident-evil-2",
+  "title": "Resident Evil 2",
+  "repo": "https://github.com/OpenBiohazard2/OpenBiohazard2",
+  "sha": "173f900d174a41af56bd478692892254a2e31aae",
+  "nodes": [
+    {
+      "id": "player-movement",
+      "name": "Tank controls and player step",
+      "purpose": "Turns the held direction keys into a predicted step along the facing, rotates the heading at a fixed rate and commits the step only when collision allows it.",
+      "paths": [
+        "game/player.go",
+        "state/inputhandler.go",
+        "client/inputhandler.go"
+      ],
+      "functions": [
+        {
+          "name": "HandlePlayerInputForward",
+          "path": "game/player.go",
+          "lines": [
+            48,
+            64
+          ]
+        },
+        {
+          "name": "HandlePlayerInputBackward",
+          "path": "game/player.go",
+          "lines": [
+            66,
+            80
+          ]
+        },
+        {
+          "name": "PredictPositionForward",
+          "path": "game/player.go",
+          "lines": [
+            82,
+            87
+          ]
+        },
+        {
+          "name": "PredictPositionBackward",
+          "path": "game/player.go",
+          "lines": [
+            89,
+            94
+          ]
+        },
+        {
+          "name": "RotatePlayerLeft",
+          "path": "game/player.go",
+          "lines": [
+            96,
+            101
+          ]
+        },
+        {
+          "name": "RotatePlayerRight",
+          "path": "game/player.go",
+          "lines": [
+            103,
+            108
+          ]
+        },
+        {
+          "name": "HandleTankMovement",
+          "path": "state/inputhandler.go",
+          "lines": [
+            22,
+            35
+          ]
+        },
+        {
+          "name": "HandleAllInput",
+          "path": "state/inputhandler.go",
+          "lines": [
+            59,
+            66
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-floors"
+      ]
+    },
+    {
+      "id": "collision-floors",
+      "name": "Floor boxes, slopes and climb edges",
+      "purpose": "Loads the per-room collision elements and tests a single player point against them, with per-floor masks, ramp height interpolation and box climb transitions.",
+      "paths": [
+        "world/collision.go",
+        "fileio/rdt_sca.go",
+        "game/player.go"
+      ],
+      "functions": [
+        {
+          "name": "CheckCollision",
+          "path": "world/collision.go",
+          "lines": [
+            21,
+            123
+          ]
+        },
+        {
+          "name": "CheckRamp",
+          "path": "world/collision.go",
+          "lines": [
+            125,
+            127
+          ]
+        },
+        {
+          "name": "CheckNearbyBoxClimb",
+          "path": "world/collision.go",
+          "lines": [
+            129,
+            162
+          ]
+        },
+        {
+          "name": "isPointInTriangle",
+          "path": "world/collision.go",
+          "lines": [
+            164,
+            177
+          ]
+        },
+        {
+          "name": "isPointInRectangle",
+          "path": "world/collision.go",
+          "lines": [
+            184,
+            209
+          ]
+        },
+        {
+          "name": "RemoveCollisionEntity",
+          "path": "world/collision.go",
+          "lines": [
+            11,
+            19
+          ]
+        },
+        {
+          "name": "LoadRDT_SCA",
+          "path": "fileio/rdt_sca.go",
+          "lines": [
+            53,
+            121
+          ]
+        },
+        {
+          "name": "PredictPositionSlope",
+          "path": "game/player.go",
+          "lines": [
+            127,
+            141
+          ]
+        },
+        {
+          "name": "PredictPositionClimbBox",
+          "path": "game/player.go",
+          "lines": [
+            143,
+            157
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera-switching",
+      "name": "Fixed camera regions and switching",
+      "purpose": "Stores the per-room camera cut volumes, builds which volumes are reachable from each camera, and swaps the active camera when the player enters one.",
+      "paths": [
+        "world/cameraswitch.go",
+        "fileio/rdt_rvd.go",
+        "game/gamemain.go",
+        "world/gameworld.go"
+      ],
+      "functions": [
+        {
+          "name": "NewCameraSwitchHandler",
+          "path": "world/cameraswitch.go",
+          "lines": [
+            15,
+            48
+          ]
+        },
+        {
+          "name": "GetCameraSwitchNewRegion",
+          "path": "world/cameraswitch.go",
+          "lines": [
+            50,
+            70
+          ]
+        },
+        {
+          "name": "LoadRDT_RVD",
+          "path": "fileio/rdt_rvd.go",
+          "lines": [
+            30,
+            53
+          ]
+        },
+        {
+          "name": "ChangeCamera",
+          "path": "game/gamemain.go",
+          "lines": [
+            42,
+            45
+          ]
+        },
+        {
+          "name": "HandleCameraSwitch",
+          "path": "game/gamemain.go",
+          "lines": [
+            47,
+            55
+          ]
+        },
+        {
+          "name": "ClampNewCameraId",
+          "path": "world/gameworld.go",
+          "lines": [
+            44,
+            53
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-floors"
+      ]
+    },
+    {
+      "id": "fixed-camera-view",
+      "name": "Pre-rendered background camera",
+      "purpose": "Applies the active fixed camera pose, derives its field of view, picks the matching pre-rendered background and composites foreground depth masks.",
+      "paths": [
+        "fileio/rdt_rid.go",
+        "render/camera.go",
+        "render/viewsystem.go",
+        "render/constants.go",
+        "render/cameramask.go",
+        "game/roomscript.go",
+        "state/gamestate.go"
+      ],
+      "functions": [
+        {
+          "name": "CalculateFOVDegrees",
+          "path": "fileio/rdt_rid.go",
+          "lines": [
+            87,
+            92
+          ]
+        },
+        {
+          "name": "BuildViewMatrix",
+          "path": "render/camera.go",
+          "lines": [
+            29,
+            37
+          ]
+        },
+        {
+          "name": "NormalizeMaskDepth",
+          "path": "render/camera.go",
+          "lines": [
+            45,
+            57
+          ]
+        },
+        {
+          "name": "UpdateMatrices",
+          "path": "render/viewsystem.go",
+          "lines": [
+            50,
+            53
+          ]
+        },
+        {
+          "name": "BuildCameraMaskDepthBuffer",
+          "path": "render/cameramask.go",
+          "lines": [
+            48,
+            59
+          ]
+        },
+        {
+          "name": "GetBackgroundImageNumber",
+          "path": "game/roomscript.go",
+          "lines": [
+            31,
+            36
+          ]
+        },
+        {
+          "name": "updateCameraView",
+          "path": "state/gamestate.go",
+          "lines": [
+            179,
+            189
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera-switching"
+      ]
+    },
+    {
+      "id": "room-flow",
+      "name": "Room load sequence and door transitions",
+      "purpose": "Runs the load-room, load-camera, play state machine, resets script threads on entry and moves the player through door volumes into the next room.",
+      "paths": [
+        "game/gamemain.go",
+        "state/gamestate.go",
+        "game/roomscript.go",
+        "resource/paths.go"
+      ],
+      "functions": [
+        {
+          "name": "HandleRoomSwitch",
+          "path": "game/gamemain.go",
+          "lines": [
+            57,
+            70
+          ]
+        },
+        {
+          "name": "HandleMainGame",
+          "path": "state/gamestate.go",
+          "lines": [
+            90,
+            106
+          ]
+        },
+        {
+          "name": "loadRoomState",
+          "path": "state/gamestate.go",
+          "lines": [
+            108,
+            145
+          ]
+        },
+        {
+          "name": "initScriptOnRoomLoad",
+          "path": "state/gamestate.go",
+          "lines": [
+            147,
+            168
+          ]
+        },
+        {
+          "name": "runGameLoop",
+          "path": "state/gamestate.go",
+          "lines": [
+            219,
+            268
+          ]
+        },
+        {
+          "name": "GetRoomFilename",
+          "path": "game/roomscript.go",
+          "lines": [
+            25,
+            29
+          ]
+        }
+      ],
+      "dependsOn": [
+        "aot-triggers",
+        "script-vm",
+        "fixed-camera-view"
+      ]
+    },
+    {
+      "id": "aot-triggers",
+      "name": "Script-placed doors, items and event volumes",
+      "purpose": "Keeps the doors, item pickups and event triggers that a room script places as ground rectangles, and answers which one holds the player.",
+      "paths": [
+        "world/aot.go",
+        "script/scriptaot.go"
+      ],
+      "functions": [
+        {
+          "name": "GetDoorNearPlayer",
+          "path": "world/aot.go",
+          "lines": [
+            77,
+            85
+          ]
+        },
+        {
+          "name": "GetAotTriggerNearPlayer",
+          "path": "world/aot.go",
+          "lines": [
+            87,
+            95
+          ]
+        },
+        {
+          "name": "AddItemAot",
+          "path": "world/aot.go",
+          "lines": [
+            169,
+            193
+          ]
+        },
+        {
+          "name": "ResetAotTrigger",
+          "path": "world/aot.go",
+          "lines": [
+            269,
+            295
+          ]
+        },
+        {
+          "name": "ScriptDoorAotSet",
+          "path": "script/scriptaot.go",
+          "lines": [
+            22,
+            38
+          ]
+        },
+        {
+          "name": "ScriptItemAotSet",
+          "path": "script/scriptaot.go",
+          "lines": [
+            40,
+            52
+          ]
+        },
+        {
+          "name": "ScriptAotReset",
+          "path": "script/scriptaot.go",
+          "lines": [
+            54,
+            61
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "script-vm",
+      "name": "Room script interpreter",
+      "purpose": "Executes the room bytecode as up to twenty cooperative threads at a throttled tick, with sub-function calls, thread spawning and a dispatch table of implemented opcodes.",
+      "paths": [
+        "script/script.go",
+        "script/scriptthread.go",
+        "script/scriptevent.go"
+      ],
+      "functions": [
+        {
+          "name": "shouldRunScriptFrame",
+          "path": "script/script.go",
+          "lines": [
+            69,
+            75
+          ]
+        },
+        {
+          "name": "RunScript",
+          "path": "script/script.go",
+          "lines": [
+            77,
+            92
+          ]
+        },
+        {
+          "name": "RunScriptThread",
+          "path": "script/script.go",
+          "lines": [
+            94,
+            116
+          ]
+        },
+        {
+          "name": "RunScriptUntilBreakControlFlow",
+          "path": "script/script.go",
+          "lines": [
+            118,
+            152
+          ]
+        },
+        {
+          "name": "ExecuteSingleInstruction",
+          "path": "script/script.go",
+          "lines": [
+            154,
+            261
+          ]
+        },
+        {
+          "name": "NewScriptThread",
+          "path": "script/scriptthread.go",
+          "lines": [
+            67,
+            84
+          ]
+        },
+        {
+          "name": "ShouldTerminate",
+          "path": "script/scriptthread.go",
+          "lines": [
+            134,
+            136
+          ]
+        },
+        {
+          "name": "ScriptEvtEnd",
+          "path": "script/scriptevent.go",
+          "lines": [
+            11,
+            30
+          ]
+        },
+        {
+          "name": "ScriptEvtExec",
+          "path": "script/scriptevent.go",
+          "lines": [
+            32,
+            60
+          ]
+        }
+      ],
+      "dependsOn": [
+        "script-logic"
+      ]
+    },
+    {
+      "id": "script-logic",
+      "name": "Script flow control, bits and arithmetic",
+      "purpose": "Implements conditional blocks, loops, switch, sleep, sub-calls, the global bit arrays and variables, and the compare and calculate instructions.",
+      "paths": [
+        "script/scriptcontrolflow.go",
+        "script/scriptcalculator.go",
+        "script/script.go"
+      ],
+      "functions": [
+        {
+          "name": "ScriptIfBlockStart",
+          "path": "script/scriptcontrolflow.go",
+          "lines": [
+            12,
+            23
+          ]
+        },
+        {
+          "name": "ScriptForLoopBegin",
+          "path": "script/scriptcontrolflow.go",
+          "lines": [
+            45,
+            75
+          ]
+        },
+        {
+          "name": "ScriptSwitchBegin",
+          "path": "script/scriptcontrolflow.go",
+          "lines": [
+            97,
+            150
+          ]
+        },
+        {
+          "name": "ScriptGoSub",
+          "path": "script/scriptcontrolflow.go",
+          "lines": [
+            172,
+            189
+          ]
+        },
+        {
+          "name": "ScriptSleep",
+          "path": "script/script.go",
+          "lines": [
+            263,
+            278
+          ]
+        },
+        {
+          "name": "ScriptSleeping",
+          "path": "script/script.go",
+          "lines": [
+            280,
+            294
+          ]
+        },
+        {
+          "name": "ScriptSetBit",
+          "path": "script/scriptcalculator.go",
+          "lines": [
+            53,
+            74
+          ]
+        },
+        {
+          "name": "ScriptCompare",
+          "path": "script/scriptcalculator.go",
+          "lines": [
+            76,
+            135
+          ]
+        },
+        {
+          "name": "ScriptVariableCalculator",
+          "path": "script/scriptcalculator.go",
+          "lines": [
+            180,
+            211
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "script-actors",
+      "name": "Script-driven placement of player and objects",
+      "purpose": "Applies the script instructions that move the player, rotate scene objects and delete collision elements.",
+      "paths": [
+        "script/script.go",
+        "render/item.go",
+        "world/collision.go"
+      ],
+      "functions": [
+        {
+          "name": "ScriptPositionSet",
+          "path": "script/script.go",
+          "lines": [
+            326,
+            338
+          ]
+        },
+        {
+          "name": "ScriptMemberSet",
+          "path": "script/script.go",
+          "lines": [
+            340,
+            362
+          ]
+        },
+        {
+          "name": "ScriptScaIdSet",
+          "path": "script/script.go",
+          "lines": [
+            364,
+            373
+          ]
+        },
+        {
+          "name": "SetItemEntity",
+          "path": "render/item.go",
+          "lines": [
+            42,
+            65
+          ]
+        }
+      ],
+      "dependsOn": [
+        "script-vm",
+        "collision-floors"
+      ]
+    },
+    {
+      "id": "inventory-ui",
+      "name": "Inventory grid and cursor",
+      "purpose": "Holds the starting inventory and drives the two-column item grid and top menu cursor with clamped steps and a reserved slot.",
+      "paths": [
+        "ui/inventorymenu.go",
+        "ui/inventorymanager.go",
+        "state/inventorymenustate.go"
+      ],
+      "functions": [
+        {
+          "name": "NextItemInList",
+          "path": "ui/inventorymenu.go",
+          "lines": [
+            75,
+            84
+          ]
+        },
+        {
+          "name": "NextRowInItemList",
+          "path": "ui/inventorymenu.go",
+          "lines": [
+            97,
+            106
+          ]
+        },
+        {
+          "name": "PrevRowInItemList",
+          "path": "ui/inventorymenu.go",
+          "lines": [
+            108,
+            121
+          ]
+        },
+        {
+          "name": "UpdateCursorBlink",
+          "path": "ui/inventorymenu.go",
+          "lines": [
+            148,
+            164
+          ]
+        },
+        {
+          "name": "initializeInventoryItems",
+          "path": "ui/inventorymanager.go",
+          "lines": [
+            27,
+            33
+          ]
+        },
+        {
+          "name": "HandleInventory",
+          "path": "state/inventorymenustate.go",
+          "lines": [
+            44,
+            76
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "tank-forward-back-speed",
+      "node": "player-movement",
+      "name": "Tank walk speeds, forward and back",
+      "summary": "Forward and backward travel use two fixed speeds along the facing direction, scaled by frame time and committed only if collision accepts the step.",
+      "behavior": "The held forward key proposes a step along the current heading at a high fixed speed, and the held backward key proposes a step in the opposite direction at a quarter of that speed. Each step is the speed multiplied by the frame time in seconds, so the distance covered per second does not depend on frame rate. The step is a prediction only: it becomes the new position when the collision test finds nothing at the destination, and otherwise the player is set to the idle pose. When both keys are held, the forward step is resolved first and the backward step second within the same frame. With neither key held the pose is forced back to idle. At a 30 Hz frame the forward speed is roughly 133 units per frame.",
+      "constants": [
+        {
+          "name": "forward speed",
+          "value": 4000,
+          "unit": "world units per second (frame-time scaled)",
+          "source": "game/player.go:13"
+        },
+        {
+          "name": "backward speed",
+          "value": 1000,
+          "unit": "world units per second (frame-time scaled)",
+          "source": "game/player.go:14"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/player.go",
+          "line": 48
+        },
+        {
+          "path": "game/player.go",
+          "line": 89
+        },
+        {
+          "path": "state/inputhandler.go",
+          "line": 22
+        }
+      ],
+      "capabilities": [
+        "asymmetric forward and reverse walk speeds",
+        "frame-rate independent tank stepping",
+        "predict-then-commit movement"
+      ],
+      "tags": [
+        "movement",
+        "horror",
+        "tank-controls"
+      ]
+    },
+    {
+      "id": "tank-turn-rate",
+      "node": "player-movement",
+      "name": "Tank turning at a fixed rate",
+      "summary": "The heading turns at a constant rate in degrees per second, wraps at a full circle, and is never blocked by collision.",
+      "behavior": "Holding the turn-left key subtracts a fixed number of degrees per second from the heading, scaled by frame time, and holding turn-right adds it. After each change the heading is wrapped back into the circle by adding or subtracting a full turn when it crosses zero or passes the full circle. Turning is handled right after movement in the same frame, so the player can walk and steer at once and trace an arc, and it works in place when no movement key is held. Turning never runs through the collision test, so a player pressed against a wall can still rotate freely. The heading is used directly as a yaw angle when building the step direction.",
+      "constants": [
+        {
+          "name": "turn rate left",
+          "value": 100,
+          "unit": "degrees per second (frame-time scaled)",
+          "source": "game/player.go:97"
+        },
+        {
+          "name": "turn rate right",
+          "value": 100,
+          "unit": "degrees per second (frame-time scaled)",
+          "source": "game/player.go:104"
+        },
+        {
+          "name": "wrap amount",
+          "value": 360,
+          "unit": "degrees, added when heading falls below zero",
+          "source": "game/player.go:99"
+        },
+        {
+          "name": "wrap limit",
+          "value": 360,
+          "unit": "degrees, subtracted when heading exceeds the circle",
+          "source": "game/player.go:105"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/player.go",
+          "line": 96
+        },
+        {
+          "path": "game/player.go",
+          "line": 103
+        },
+        {
+          "path": "state/inputhandler.go",
+          "line": 37
+        }
+      ],
+      "capabilities": [
+        "in-place rotation independent of walking",
+        "steady arc turning while moving",
+        "collision-free heading changes"
+      ],
+      "tags": [
+        "movement",
+        "horror",
+        "tank-controls"
+      ]
+    },
+    {
+      "id": "collision-point-no-slide",
+      "node": "collision-floors",
+      "name": "Point collision that blocks without sliding",
+      "summary": "Each step tests only the player origin at its predicted position against the room boundary list; a hit cancels the whole step.",
+      "behavior": "The player is treated as a single point on the ground plane, so level boundaries are expected to be padded by the level data rather than by a body radius. The predicted position is tested against every collision element active on the floor that the predicted height maps to, and the first element that contains the point is returned. If nothing contains it the position is committed and the walking pose starts. If an element is hit, the step is cancelled entirely and the idle pose is set, so there is no sliding along walls and corners stop the player dead. The only hit types that change the outcome are ramp, stair and climb-edge elements, which redirect the step into a height change instead of a stop. Each frame moves a full step in one go, so a very large frame time could skip over a thin boundary.",
+      "constants": [
+        {
+          "name": "idle pose id",
+          "value": -1,
+          "unit": "animation pose index",
+          "source": "game/player.go:17"
+        },
+        {
+          "name": "walking pose id",
+          "value": 0,
+          "unit": "animation pose index",
+          "source": "game/player.go:18"
+        }
+      ],
+      "sources": [
+        {
+          "path": "world/collision.go",
+          "line": 21
+        },
+        {
+          "path": "game/player.go",
+          "line": 50
+        },
+        {
+          "path": "game/player.go",
+          "line": 61
+        }
+      ],
+      "capabilities": [
+        "simple point-versus-shape wall blocking",
+        "whole-step cancel on contact",
+        "data-driven padded level boundaries"
+      ],
+      "tags": [
+        "collision",
+        "movement",
+        "horror"
+      ]
+    },
+    {
+      "id": "collision-shape-library",
+      "node": "collision-floors",
+      "name": "Boundary shape set",
+      "summary": "Room boundaries are rectangles, three right-triangle orientations, circles and two ellipse orientations, each with its own containment test.",
+      "behavior": "Every boundary element carries a shape code, an origin on the ground plane, a width and a depth. Code zero is a rectangle that is tested with four edge cross products, and the point must lie strictly on the same side of all four edges, so a point exactly on an edge counts as outside. Codes one to three are right triangles in three corner orientations and are tested by comparing the area of the triangle with the sum of the three areas made with the point, accepting a tiny numerical slack. Code six is a circle whose radius is half the width, centered at the origin shifted by that radius on both axes. Codes seven and eight are ellipses whose semi-axes are half the width and half the depth, with the major axis on x for seven and on the depth axis for eight, accepted when the normalized squared distance does not exceed one. Codes nine to twelve, used for climb edges, slopes and stairs, reuse the plain rectangle test.",
+      "constants": [
+        {
+          "name": "triangle area slack",
+          "value": 0.01,
+          "unit": "squared world units",
+          "source": "world/collision.go:176"
+        },
+        {
+          "name": "circle shape code",
+          "value": 6,
+          "unit": "shape id",
+          "source": "world/collision.go:63"
+        },
+        {
+          "name": "ellipse x-major shape code",
+          "value": 7,
+          "unit": "shape id",
+          "source": "world/collision.go:70"
+        },
+        {
+          "name": "ellipse z-major shape code",
+          "value": 8,
+          "unit": "shape id",
+          "source": "world/collision.go:78"
+        },
+        {
+          "name": "ellipse inclusion bound",
+          "value": 1,
+          "unit": "normalized distance",
+          "source": "world/collision.go:219"
+        }
+      ],
+      "sources": [
+        {
+          "path": "world/collision.go",
+          "line": 30
+        },
+        {
+          "path": "world/collision.go",
+          "line": 164
+        },
+        {
+          "path": "world/collision.go",
+          "line": 216
+        }
+      ],
+      "capabilities": [
+        "mixed convex boundary shapes on one plane",
+        "cheap point containment tests",
+        "triangular corners and round pillars"
+      ],
+      "tags": [
+        "collision",
+        "physics"
+      ]
+    },
+    {
+      "id": "floor-layers-by-height",
+      "node": "collision-floors",
+      "name": "Floor layers selected by height",
+      "summary": "Vertical height is quantized into discrete floors, and each boundary and camera region carries a mask of the floors it applies to.",
+      "behavior": "The floor index of a point is its height divided by one floor-height unit and rounded to the nearest integer; the unit is negative because the world treats negative height as up. Each collision element stores a 32-bit mask whose bit n enables the element on floor n, and an element whose bit is clear for the current floor is skipped before any shape test runs. This lets a room reuse the same ground footprint for a balcony and the floor below with different walls. Camera cut regions use a single floor number with a wildcard value that matches every floor. Door and trigger volumes do not carry a floor test at all.",
+      "constants": [
+        {
+          "name": "floor height unit",
+          "value": -1800,
+          "unit": "world units per floor (negative is up)",
+          "source": "fileio/rdt_sca.go:11"
+        },
+        {
+          "name": "floor mask width",
+          "value": 32,
+          "unit": "bits per boundary element",
+          "source": "fileio/rdt_sca.go:95"
+        },
+        {
+          "name": "any-floor camera region value",
+          "value": 255,
+          "unit": "floor field wildcard",
+          "source": "world/cameraswitch.go:61"
+        }
+      ],
+      "sources": [
+        {
+          "path": "world/collision.go",
+          "line": 22
+        },
+        {
+          "path": "world/collision.go",
+          "line": 25
+        },
+        {
+          "path": "fileio/rdt_sca.go",
+          "line": 98
+        }
+      ],
+      "capabilities": [
+        "multi-storey rooms on a flat collision plane",
+        "per-floor wall masks",
+        "height-quantized layer lookup"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "horror"
+      ]
+    },
+    {
+      "id": "slope-and-stairs-height",
+      "node": "collision-floors",
+      "name": "Slopes and stairs set the height from position",
+      "summary": "Inside a ramp or stair element the player height is set from how far along the ramp the planned position lies.",
+      "behavior": "Ramp and stair elements share one rule. The element stores a total rise equal to a multiplier times one floor-height unit, decoded from a bit field in its type word, and an orientation from two other bits that says which edge is the bottom: the low or high edge of the x extent, or the low or high edge of the depth extent. When the predicted step lands inside such an element, the height is the total rise multiplied by the fraction of the way from the bottom edge, measured along the matching axis and divided by that axis extent. The horizontal step is kept, and the height is written directly each frame with no smoothing, so the player stays glued to the surface in both walking directions. Ramps and stairs are treated identically; only the shape code differs.",
+      "constants": [
+        {
+          "name": "slope shape code",
+          "value": 11,
+          "unit": "shape id",
+          "source": "fileio/rdt_sca.go:13"
+        },
+        {
+          "name": "stairs shape code",
+          "value": 12,
+          "unit": "shape id",
+          "source": "fileio/rdt_sca.go:14"
+        },
+        {
+          "name": "rise multiplier shift",
+          "value": 6,
+          "unit": "bits to shift the type word",
+          "source": "fileio/rdt_sca.go:72"
+        },
+        {
+          "name": "rise multiplier mask",
+          "value": "0x1F",
+          "unit": "five-bit mask",
+          "source": "fileio/rdt_sca.go:72"
+        },
+        {
+          "name": "orientation shift",
+          "value": 4,
+          "unit": "bits to shift the type word",
+          "source": "fileio/rdt_sca.go:77"
+        }
+      ],
+      "sources": [
+        {
+          "path": "fileio/rdt_sca.go",
+          "line": 77
+        },
+        {
+          "path": "game/player.go",
+          "line": 127
+        },
+        {
+          "path": "world/collision.go",
+          "line": 125
+        }
+      ],
+      "capabilities": [
+        "stairs and ramps on a flat collision plane",
+        "rise stored in whole floor units",
+        "orientation-aware height interpolation"
+      ],
+      "tags": [
+        "collision",
+        "movement",
+        "physics"
+      ]
+    },
+    {
+      "id": "box-climb-toggle",
+      "node": "collision-floors",
+      "name": "Climbable box edges that toggle floor",
+      "summary": "Walking forward into a climb edge snaps the player between the ground and one floor-height up without moving sideways.",
+      "behavior": "Two shape codes mark the climb-up and the climb-down edges of a box or ledge. Only the forward key triggers them: when the predicted step lands inside such an element, the horizontal position stays put and the height is replaced. A player on floor zero is lifted to exactly one floor-height unit up, and a player on floor one is dropped back to zero, anything else is left alone. The change is instant with no animation or arc, and the climb elements, like every boundary, are gated by their floor mask. There is no prompt or action-button step: the action button handler is empty, so climbing is purely movement-driven.",
+      "constants": [
+        {
+          "name": "climb edge shape code",
+          "value": 9,
+          "unit": "shape id",
+          "source": "game/player.go:21"
+        },
+        {
+          "name": "drop edge shape code",
+          "value": 10,
+          "unit": "shape id",
+          "source": "game/player.go:22"
+        },
+        {
+          "name": "ground floor index",
+          "value": 0,
+          "unit": "floor index",
+          "source": "game/player.go:146"
+        },
+        {
+          "name": "box-top floor index",
+          "value": 1,
+          "unit": "floor index",
+          "source": "game/player.go:150"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/player.go",
+          "line": 143
+        },
+        {
+          "path": "game/player.go",
+          "line": 58
+        },
+        {
+          "path": "game/player.go",
+          "line": 159
+        }
+      ],
+      "capabilities": [
+        "vault onto and off boxes by walking into them",
+        "floor change without a jump arc",
+        "floor-restricted climb edges"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "horror"
+      ]
+    },
+    {
+      "id": "camera-cut-regions",
+      "node": "camera-switching",
+      "name": "Camera cut volumes",
+      "summary": "Each fixed camera owns a list of ground quads, and stepping into one cuts to that quad's target camera.",
+      "behavior": "A room stores cut regions as four-point quads with a source camera, a target camera and a floor number. When the room loads, a table is built per camera of the regions that start from it, with the exception that the regions whose target is camera zero are handled specially: with fewer than two of them for one source camera they are ignored, and with two or more only the last is kept as a real cut. Every frame the player position is tested against the regions of the current camera, skipping those whose floor does not match unless it holds the wildcard, and the first hit triggers the cut. The cut sets a new camera id clamped between zero and the room camera count minus one, so a bad id from a region or from the script camera-change instruction lands on the nearest valid camera. It then flags a camera reload that rebuilds the view, lighting, background and masks on the next update, so the picture changes in a hard cut with no blend. There is no hysteresis, so region edges should be placed so that the target camera has no region right back at the same spot.",
+      "constants": [
+        {
+          "name": "region read cap",
+          "value": 100,
+          "unit": "regions per room",
+          "source": "fileio/rdt_rvd.go:36"
+        },
+        {
+          "name": "duplicate zero-target threshold",
+          "value": 2,
+          "unit": "regions with target camera zero",
+          "source": "world/cameraswitch.go:36"
+        },
+        {
+          "name": "any-floor value",
+          "value": 255,
+          "unit": "floor field wildcard",
+          "source": "world/cameraswitch.go:61"
+        }
+      ],
+      "sources": [
+        {
+          "path": "world/cameraswitch.go",
+          "line": 15
+        },
+        {
+          "path": "world/cameraswitch.go",
+          "line": 50
+        },
+        {
+          "path": "game/gamemain.go",
+          "line": 47
+        },
+        {
+          "path": "game/gamemain.go",
+          "line": 42
+        },
+        {
+          "path": "world/gameworld.go",
+          "line": 44
+        }
+      ],
+      "capabilities": [
+        "hard camera cuts from player position",
+        "per-camera reachable region tables",
+        "floor-aware cut volumes",
+        "safe clamped scripted cuts"
+      ],
+      "tags": [
+        "camera",
+        "horror",
+        "fixed-camera"
+      ]
+    },
+    {
+      "id": "fixed-camera-pose-fov",
+      "node": "fixed-camera-view",
+      "name": "Fixed camera pose and field of view",
+      "summary": "Each camera is a stored eye point, target point and screen distance; the field of view comes from that distance and the 240-line background height.",
+      "behavior": "The active camera is replaced wholesale on every cut with its eye, target and field of view, and stays still until the next cut, so the player walks through a fixed viewpoint. The vertical field of view is twice the arc tangent of half the background height over the screen distance, where the stored distance is first shifted down by seven bits. The view matrix looks from eye to target with an up vector of negative one on the vertical axis, because the world measures height downward. The projection is rebuilt every frame from the camera field of view and the window aspect, with a near plane of sixteen and a far plane of forty-five thousand world units.",
+      "constants": [
+        {
+          "name": "distance shift",
+          "value": 7,
+          "unit": "bits",
+          "source": "fileio/rdt_rid.go:54"
+        },
+        {
+          "name": "half background height",
+          "value": 120,
+          "unit": "pixels of a 240-line image",
+          "source": "fileio/rdt_rid.go:88"
+        },
+        {
+          "name": "up vector y",
+          "value": -1,
+          "unit": "axis sign",
+          "source": "render/viewsystem.go:23"
+        },
+        {
+          "name": "near plane",
+          "value": 16,
+          "unit": "world units",
+          "source": "render/constants.go:19"
+        },
+        {
+          "name": "far plane",
+          "value": 45000,
+          "unit": "world units",
+          "source": "render/constants.go:20"
+        }
+      ],
+      "sources": [
+        {
+          "path": "fileio/rdt_rid.go",
+          "line": 87
+        },
+        {
+          "path": "state/gamestate.go",
+          "line": 184
+        },
+        {
+          "path": "render/rendermain.go",
+          "line": 78
+        }
+      ],
+      "capabilities": [
+        "pre-authored camera framing per angle",
+        "field of view derived from a screen distance",
+        "static viewpoint with moving subject"
+      ],
+      "tags": [
+        "camera",
+        "fixed-camera",
+        "horror"
+      ]
+    },
+    {
+      "id": "prerendered-background-lookup",
+      "node": "fixed-camera-view",
+      "name": "Pre-rendered background per camera",
+      "summary": "The background picture for a camera is found by a stage, room and camera index formula, and each camera also supplies its own ambient light.",
+      "behavior": "Backgrounds are a flat list of 320 by 240 images, and the index for the current view is the stage minus one times 512, plus the room number times 16, plus the camera number. This leaves up to 16 cameras per room and 32 rooms per stage. On every camera load the matching image replaces the background texture, and the camera ambient color, stored as three bytes, is divided by 255 and used as the light color for the player model so the character matches the picture. Rooms are file names built from the one-digit stage, the two-digit hexadecimal room number and the player character digit.",
+      "constants": [
+        {
+          "name": "background images per stage",
+          "value": 512,
+          "unit": "images per stage",
+          "source": "game/roomscript.go:35"
+        },
+        {
+          "name": "camera slots per room",
+          "value": 16,
+          "unit": "images per room",
+          "source": "game/roomscript.go:35"
+        },
+        {
+          "name": "background width",
+          "value": 320,
+          "unit": "pixels",
+          "source": "geometry/coordinate_utils.go:6"
+        },
+        {
+          "name": "background height",
+          "value": 240,
+          "unit": "pixels",
+          "source": "geometry/coordinate_utils.go:7"
+        },
+        {
+          "name": "color normalizer",
+          "value": 255,
+          "unit": "byte range",
+          "source": "render/room.go:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/roomscript.go",
+          "line": 31
+        },
+        {
+          "path": "state/gamestate.go",
+          "line": 188
+        },
+        {
+          "path": "resource/paths.go",
+          "line": 17
+        }
+      ],
+      "capabilities": [
+        "pre-rendered backdrops chosen by camera index",
+        "per-camera ambient light on dynamic models",
+        "compact room and camera addressing"
+      ],
+      "tags": [
+        "camera",
+        "fixed-camera",
+        "rendering"
+      ]
+    },
+    {
+      "id": "camera-mask-depth-occlusion",
+      "node": "fixed-camera-view",
+      "name": "Foreground depth masks over the backdrop",
+      "summary": "Pieces of the background that should hide the player are redrawn as depth-placed quads from a mask image.",
+      "behavior": "A camera can carry a list of mask rectangles, each with a source rectangle in a mask image, a destination on the 320 by 240 backdrop and a depth value. The mask pixels are copied over a duplicate of the backdrop, and each rectangle is drawn as a quad at a real depth in the scene so that the depth buffer decides whether the player model is in front or behind it. The depth is found by moving along the camera view direction by thirty-two times the stored depth from the eye, projecting that point, and taking its normalized depth. If a camera has no mask image, the mask layer is replaced by an empty texture. The result lets a character pass behind a foreground pillar that exists only in the flat picture.",
+      "constants": [
+        {
+          "name": "depth scale",
+          "value": 32,
+          "unit": "world units per stored depth step",
+          "source": "render/camera.go:51"
+        },
+        {
+          "name": "mask layer width",
+          "value": 320,
+          "unit": "pixels",
+          "source": "geometry/coordinate_utils.go:6"
+        },
+        {
+          "name": "mask layer height",
+          "value": 240,
+          "unit": "pixels",
+          "source": "geometry/coordinate_utils.go:7"
+        }
+      ],
+      "sources": [
+        {
+          "path": "render/camera.go",
+          "line": 45
+        },
+        {
+          "path": "render/cameramask.go",
+          "line": 48
+        },
+        {
+          "path": "render/cameramask.go",
+          "line": 34
+        }
+      ],
+      "capabilities": [
+        "character passes behind flat foreground art",
+        "depth-tested 2D cutouts",
+        "per-camera occluder lists"
+      ],
+      "tags": [
+        "camera",
+        "fixed-camera",
+        "rendering"
+      ]
+    },
+    {
+      "id": "door-room-transition",
+      "node": "room-flow",
+      "name": "Door volumes load the next room",
+      "summary": "Stepping into a door rectangle swaps stage, room and camera, teleports the player to the stored spawn point and starts a room load.",
+      "behavior": "A door is a script-created ground rectangle or quad that stores a target stage, room, camera and spawn position. Each frame after the camera check, the first door that contains the player point wins. The stage number is stored zero-based and is shifted by one when applied, the camera becomes the one named by the door, and the player is moved to the stored spawn point while keeping the current heading, because the stored exit direction is read but never applied. The whole script-object registry for the room (doors, items, triggers) is replaced by an empty one and the main state returns to the load-room step. There is no key test, open animation, floor test or lock check, even though the door record keeps key fields.",
+      "constants": [
+        {
+          "name": "door aot type",
+          "value": 1,
+          "unit": "script object type id",
+          "source": "world/aot.go:14"
+        },
+        {
+          "name": "stage index offset",
+          "value": 1,
+          "unit": "added to stored stage",
+          "source": "game/gamemain.go:61"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/gamemain.go",
+          "line": 57
+        },
+        {
+          "path": "world/aot.go",
+          "line": 77
+        },
+        {
+          "path": "script/scriptaot.go",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "room-to-room transitions from trigger rectangles",
+        "data-driven spawn position and camera",
+        "door list rebuilt per room"
+      ],
+      "tags": [
+        "transition",
+        "horror",
+        "level"
+      ]
+    },
+    {
+      "id": "room-load-sequence",
+      "node": "room-flow",
+      "name": "Room load, camera load and play sequence",
+      "summary": "Entering a room runs three states in order, rebuilding world data, resetting script threads and running the init script once.",
+      "behavior": "The main game state moves from load-room to load-camera to the play loop. Loading a room reads the room file, builds the collision and camera data, clears every enemy, stops all script threads and runs the room init function once with a very large elapsed time so each thread slot executes at once. The two persistent room threads then start at the first and second script functions and run in the play loop. Because only the threads are reset, bit flags and numeric variables persist between rooms, which is how story state follows the player. Load-camera then rebuilds the view, background and masks, and the play loop begins.",
+      "constants": [
+        {
+          "name": "init script elapsed time",
+          "value": 10,
+          "unit": "seconds, forces every thread slot to run",
+          "source": "state/gamestate.go:158"
+        },
+        {
+          "name": "second persistent thread slot",
+          "value": 1,
+          "unit": "thread index",
+          "source": "state/gamestate.go:165"
+        },
+        {
+          "name": "second persistent function",
+          "value": 1,
+          "unit": "function index",
+          "source": "state/gamestate.go:166"
+        }
+      ],
+      "sources": [
+        {
+          "path": "state/gamestate.go",
+          "line": 90
+        },
+        {
+          "path": "state/gamestate.go",
+          "line": 108
+        },
+        {
+          "path": "state/gamestate.go",
+          "line": 147
+        }
+      ],
+      "capabilities": [
+        "clean per-room reset with persistent story flags",
+        "init script then looping room script",
+        "staged room and camera loading"
+      ],
+      "tags": [
+        "transition",
+        "level",
+        "scripting"
+      ]
+    },
+    {
+      "id": "script-tick-throttle",
+      "node": "script-vm",
+      "name": "Script tick throttled to thirty per second",
+      "summary": "The script gate adds frame time once per thread slot, so which threads run, and how often, depends on the render rate rather than being a clean 30 Hz.",
+      "behavior": "The intended script rate is thirty ticks per second: an accumulator adds elapsed time and fires when it exceeds one thirtieth of a second, then resets to zero. In practice the accumulator is advanced and tested once for each of the twenty thread slots inside every frame, so each slot visit adds a whole frame time and only the slot that trips the gate runs. Simulating that loop with exact frame times, at 30 frames per second only the odd-numbered slots run, each at 30 Hz, and slot zero never runs; at 60 frames per second every slot runs at 20 Hz; at 120 frames per second only slots four, nine, fourteen and nineteen run, every frame, and slots zero to three starve. Effective thread rate and thread selection therefore depend on the render rate (the simulation is derived from the code, not measured in the game). A clean re-implementation should step all live threads together once per thirtieth of a second. The init pass bypasses the gate by passing a very large elapsed time.",
+      "constants": [
+        {
+          "name": "intended script tick rate",
+          "value": 30,
+          "unit": "ticks per second of accumulated time; effective per-slot rate depends on render rate",
+          "source": "script/script.go:17"
+        },
+        {
+          "name": "thread slot count",
+          "value": 20,
+          "unit": "threads",
+          "source": "script/script.go:39"
+        },
+        {
+          "name": "init pass elapsed time",
+          "value": 10,
+          "unit": "seconds",
+          "source": "state/gamestate.go:158"
+        }
+      ],
+      "sources": [
+        {
+          "path": "script/script.go",
+          "line": 69
+        },
+        {
+          "path": "script/script.go",
+          "line": 77
+        },
+        {
+          "path": "script/script.go",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "fixed-rate event scripting",
+        "decoupling script speed from rendering",
+        "cooperative multi-thread room logic"
+      ],
+      "tags": [
+        "scripting",
+        "timing"
+      ]
+    },
+    {
+      "id": "script-thread-model",
+      "node": "script-vm",
+      "name": "Script threads, sub-calls and spawn",
+      "summary": "Each thread has a program counter and a small call structure; events can start other threads or enter sub-functions.",
+      "behavior": "A thread holds a run flag, a program counter and up to four nested call levels, and each level has a stack of eight skip addresses and four loop states. The interpreter runs a thread instruction by instruction until an instruction asks to break flow, then pops the stored address and continues. An instruction that stops control flow, such as a false condition, jumps past the block it guards, and a thread whose next instruction slot is empty is stopped with a warning. A spawn instruction starts a function by index in the thread named by the instruction when the number is valid, otherwise in the first free thread. A sub-call saves a return address and enters the next call level, and an end instruction at a nested level returns while one at the top level stops the thread. Opcodes the dispatcher does not know are skipped as no-ops.",
+      "constants": [
+        {
+          "name": "thread slots",
+          "value": 20,
+          "unit": "threads",
+          "source": "script/script.go:39"
+        },
+        {
+          "name": "call levels per thread",
+          "value": 4,
+          "unit": "levels",
+          "source": "script/scriptthread.go:68"
+        },
+        {
+          "name": "skip stack depth",
+          "value": 8,
+          "unit": "entries per level",
+          "source": "script/scriptthread.go:46"
+        },
+        {
+          "name": "loop states per level",
+          "value": 4,
+          "unit": "entries per level",
+          "source": "script/scriptthread.go:37"
+        }
+      ],
+      "sources": [
+        {
+          "path": "script/scriptevent.go",
+          "line": 32
+        },
+        {
+          "path": "script/scriptevent.go",
+          "line": 11
+        },
+        {
+          "path": "script/script.go",
+          "line": 154
+        }
+      ],
+      "capabilities": [
+        "cooperative script threads",
+        "nested sub-function calls",
+        "spawn and end of concurrent events"
+      ],
+      "tags": [
+        "scripting",
+        "ai"
+      ]
+    },
+    {
+      "id": "script-control-flow",
+      "node": "script-logic",
+      "name": "Script conditionals, loops, switch and sleep",
+      "summary": "Blocks are skipped through stored end addresses, loops count down, a switch compares a variable and sleep waits a number of ticks.",
+      "behavior": "A conditional header pushes the address just after its block, and each following check instruction either passes or fails; a failing check ends the current run and the thread resumes at the popped address, skipping the guarded block. An else header jumps over the else body when the if body finished normally. A loop with a nonzero count stores its counter, the start and the break address, and the loop end decrements the counter and jumps back until it hits zero; a zero count skips the body at once. A switch walks the case list comparing the variable to each case value and jumps over non-matching blocks, falling to a default or the end. A sleep stores a count and then yields each time its thread is actually run until the count reaches zero, so one count equals one run of that thread, which is up to the intended thirty per second but depends on the render rate as described for the tick throttle. The jump instruction is disabled because it risked infinite loops.",
+      "constants": [
+        {
+          "name": "intended sleep tick rate",
+          "value": 30,
+          "unit": "ticks per second of accumulated time; one sleep count equals one run of the thread, effective rate render-rate dependent",
+          "source": "script/script.go:17"
+        },
+        {
+          "name": "loop nesting slots",
+          "value": 4,
+          "unit": "loop states per call level",
+          "source": "script/scriptthread.go:37"
+        }
+      ],
+      "sources": [
+        {
+          "path": "script/scriptcontrolflow.go",
+          "line": 12
+        },
+        {
+          "path": "script/scriptcontrolflow.go",
+          "line": 45
+        },
+        {
+          "path": "script/script.go",
+          "line": 280
+        }
+      ],
+      "capabilities": [
+        "structured conditionals in bytecode",
+        "tick-based waits",
+        "variable switch dispatch"
+      ],
+      "tags": [
+        "scripting"
+      ]
+    },
+    {
+      "id": "script-vars-bits-ops",
+      "node": "script-logic",
+      "name": "Script global bits, variables and arithmetic",
+      "summary": "Story state lives in global bit arrays and integer variables that scripts test, set and combine with a small operator set.",
+      "behavior": "Global state is a set of bit arrays and numeric variables that start at zero when first read. A set-bit instruction clears, sets or flips one bit; a check instruction passes only if the bit equals the expected value. Compare supports equal, greater, greater or equal, less, less or equal, not equal and a bit test of the variable against a mask. Calculate supports add, subtract, multiply, divide, remainder, or, and, xor, not, shift left and two right shifts, taking the shift distance modulo thirty-two, with the right operand a constant. A variable-operand form exists in the code, but the dispatcher routes both calculate opcodes to the constant form. Setup writes the difficulty into one bit and the active camera into one variable before the first room loads.",
+      "constants": [
+        {
+          "name": "flip operation code",
+          "value": 7,
+          "unit": "set-bit operation id",
+          "source": "script/scriptcalculator.go:65"
+        },
+        {
+          "name": "shift modulus",
+          "value": 32,
+          "unit": "bits",
+          "source": "script/scriptcalculator.go:201"
+        },
+        {
+          "name": "difficulty bit number",
+          "value": 25,
+          "unit": "bit index in array 0",
+          "source": "state/gamestate.go:46"
+        },
+        {
+          "name": "camera variable id",
+          "value": 26,
+          "unit": "variable index",
+          "source": "state/gamestate.go:48"
+        }
+      ],
+      "sources": [
+        {
+          "path": "script/scriptcalculator.go",
+          "line": 53
+        },
+        {
+          "path": "script/scriptcalculator.go",
+          "line": 76
+        },
+        {
+          "path": "script/scriptcalculator.go",
+          "line": 180
+        }
+      ],
+      "capabilities": [
+        "persistent story and puzzle flags",
+        "compare and arithmetic on script variables",
+        "difficulty stored as a flag"
+      ],
+      "tags": [
+        "scripting",
+        "state"
+      ]
+    },
+    {
+      "id": "aot-event-trigger",
+      "node": "aot-triggers",
+      "name": "Event trigger volumes run script functions",
+      "summary": "A trigger rectangle starts a script function every frame the player stands in it, and scripts re-arm or disarm it by resetting the trigger.",
+      "behavior": "The room script places triggers as ground rectangles with a type and six data bytes. Each frame the first trigger in the list that holds the player point is looked at, and only that one; if its type is the event kind, a synthetic spawn instruction is built from two of its data bytes, one naming the thread and one naming the function, and executed. There is no entry-edge detection or once-only flag, so a trigger fires continuously while the player stays inside, restarting the target thread at the start of the function each frame, and scripts normally guard it with a flag or turn it off. A reset instruction finds a trigger by its object id and rewrites its type and data, or creates a zero-size trigger if none exists. Doors and items are kept in their own lists, and the item record keeps the item id, an amount and a picked flag index, but picking up has no handler in this repository.",
+      "constants": [
+        {
+          "name": "event trigger type",
+          "value": 5,
+          "unit": "script object type id",
+          "source": "world/aot.go:16"
+        },
+        {
+          "name": "thread data byte index",
+          "value": 0,
+          "unit": "index into trigger data",
+          "source": "state/gamestate.go:275"
+        },
+        {
+          "name": "function data byte index",
+          "value": 3,
+          "unit": "index into trigger data",
+          "source": "state/gamestate.go:276"
+        },
+        {
+          "name": "item aot type",
+          "value": 2,
+          "unit": "script object type id",
+          "source": "world/aot.go:15"
+        }
+      ],
+      "sources": [
+        {
+          "path": "state/gamestate.go",
+          "line": 270
+        },
+        {
+          "path": "world/aot.go",
+          "line": 87
+        },
+        {
+          "path": "world/aot.go",
+          "line": 269
+        }
+      ],
+      "capabilities": [
+        "area-entry script events",
+        "level-driven cutscene triggers",
+        "script-rearmable volumes"
+      ],
+      "tags": [
+        "scripting",
+        "trigger",
+        "horror"
+      ]
+    },
+    {
+      "id": "script-world-edits",
+      "node": "script-actors",
+      "name": "Script edits to the player, objects and collision",
+      "summary": "Scripts can teleport the player, set heading, rotate scene models and delete a collision boundary.",
+      "behavior": "A work-set instruction picks a target class for the following instructions: the player, an enemy, or a scene object. The position instruction applies only to the player, writing the three stored coordinates; for other targets it does nothing. The member instruction supports one field, the heading, where the stored value is in a 4096-unit full turn and is converted to degrees by dividing by 4096 and multiplying by 360, for both the player and scene models. A model-placement instruction sets a scene model position and the same heading format, and skips entries whose model index is the 255 marker. A collision instruction with a zero flag removes the boundary with the given index from the room list, which scripts use to open a blocked route after a puzzle. The removal shifts later entries down within the shared list storage, so the final entry is left duplicated.",
+      "constants": [
+        {
+          "name": "full turn",
+          "value": 4096,
+          "unit": "script heading units per 360 degrees",
+          "source": "script/script.go:349"
+        },
+        {
+          "name": "heading member index",
+          "value": 15,
+          "unit": "member field id",
+          "source": "script/script.go:347"
+        },
+        {
+          "name": "scene object slots",
+          "value": 32,
+          "unit": "models",
+          "source": "render/item.go:17"
+        },
+        {
+          "name": "skip model marker",
+          "value": 255,
+          "unit": "model index",
+          "source": "render/item.go:48"
+        }
+      ],
+      "sources": [
+        {
+          "path": "script/script.go",
+          "line": 340
+        },
+        {
+          "path": "script/script.go",
+          "line": 364
+        },
+        {
+          "path": "world/collision.go",
+          "line": 11
+        }
+      ],
+      "capabilities": [
+        "scripted teleports and facing changes",
+        "puzzle gates that open by deleting collision",
+        "script-placed scene models"
+      ],
+      "tags": [
+        "scripting",
+        "level"
+      ]
+    },
+    {
+      "id": "inventory-grid-cursor",
+      "node": "inventory-ui",
+      "name": "Two-column inventory grid with a reserved slot",
+      "summary": "Eight slots sit in two columns with clamped cursor moves, plus a separate reserved slot reached from the top row.",
+      "behavior": "The inventory opens on a key press and the same key closes it, starting on the item grid. The player starts with a pistol holding eighteen rounds, a knife and a lighter kept in a reserved eleventh slot. The cursor addresses eight grid slots in two columns, row is slot divided by two and column is slot modulo two. Left and right step by one and up and down by two, all clamped at the ends with no wrap. Moving up from the second slot of the first row jumps to the reserved slot, from which left and right do nothing, up returns to the top menu and down goes to the second slot. The cursor highlight pulses on a 30 millisecond gate of accumulated frame time: each gate crossing moves a timer from fifty to a bit over one hundred twenty in steps of three and back, and the brightness is that timer over one hundred twenty-eight.",
+      "constants": [
+        {
+          "name": "grid slots",
+          "value": 8,
+          "unit": "inventory slots",
+          "source": "ui/inventorymenu.go:9"
+        },
+        {
+          "name": "reserved slot index",
+          "value": 10,
+          "unit": "slot index",
+          "source": "ui/inventorymenu.go:10"
+        },
+        {
+          "name": "starting pistol ammo",
+          "value": 18,
+          "unit": "rounds",
+          "source": "ui/inventorymanager.go:29"
+        },
+        {
+          "name": "cursor blink step",
+          "value": 3,
+          "unit": "timer units per 30 ms blink tick",
+          "source": "ui/inventorymenu.go:154"
+        },
+        {
+          "name": "cursor blink tick",
+          "value": 30,
+          "unit": "milliseconds of accumulated frame time",
+          "source": "ui/inventorymanager.go:21"
+        },
+        {
+          "name": "top menu slots",
+          "value": 4,
+          "unit": "menu options",
+          "source": "ui/inventorymenu.go:8"
+        }
+      ],
+      "sources": [
+        {
+          "path": "ui/inventorymenu.go",
+          "line": 97
+        },
+        {
+          "path": "ui/inventorymenu.go",
+          "line": 108
+        },
+        {
+          "path": "ui/inventorymanager.go",
+          "line": 27
+        }
+      ],
+      "capabilities": [
+        "grid inventory cursor with a special slot",
+        "starting loadout with ammo count",
+        "pulsing selection highlight"
+      ],
+      "tags": [
+        "inventory",
+        "ui",
+        "horror"
+      ]
+    }
+  ]
+}
