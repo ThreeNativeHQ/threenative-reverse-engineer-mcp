@@ -1434,7 +1434,7 @@
       "node": "player-movement",
       "name": "Lean, crouch and look control",
       "summary": "Lean and eye pitch advance at fixed rates, lean snaps back on release, and posture drives a crouch force and a movement damping curve.",
-      "behavior": "Lean is stored from -100 to 100 and advances at 400 units per second of game time at full input, so a full lean takes a quarter second. When no lean key is held and either a lean key was just released or forward speed has shrunk the allowed lean below the current lean, the lean is reset to zero in a single frame instead of easing back. The physics body receives one third of the lean value as a sideways tilt force. Look pitch moves at a quarter of a half turn per second (45 degrees) at full input and the eye angle is clamped to plus or minus 90 degrees. Each posture sends a different crouch force to the body (0 standing, 6 stooping, 10 prone), which overpowers a jump while held, and jumping forces the posture back to standing. The movement damping is computed from a filtered crouch height that follows the measured height of the body toward the intended height (full, half or zero of 0.74 units) with a weighted filter at rate 20, settling faster while moving, so crouching slows the player smoothly.",
+      "behavior": "Lean is stored from -100 to 100 and advances at 400 units per second of game time at full input, so a full lean takes a quarter second. When no lean key is held and either a lean key was just released or forward speed has shrunk the allowed lean below the current lean, the lean is reset to zero in a single frame instead of easing back. The physics body receives one third of the lean value as a sideways tilt force. Look pitch moves at a quarter of a half turn per second (45 degrees) at full input and the eye angle is clamped to plus or minus 90 degrees. Each posture sends a different crouch force to the body (0 standing, 6 stooping, 10 prone), which overpowers a jump while held, and jumping forces the posture back to standing. The movement damping is computed from a filtered crouch height that follows the measured height of the body toward the intended height (full, half or zero of 0.74 units) with a weighted filter whose weight is 20 per 256 ticks of elapsed time (about 22 per second), settling faster while moving, so crouching slows the player smoothly.",
       "constants": [
         {
           "name": "lean rate",
@@ -1469,7 +1469,7 @@
         {
           "name": "posture filter rate",
           "value": 20,
-          "unit": "weight of the crouch height smoothing filter",
+          "unit": "filter weight gained per 256 ticks (about 0.91 s) of elapsed time; weight = ticks times 20 divided by 256, new height = (weight times target plus old) divided by (weight plus 1)",
           "source": "src/GameSrc/leanmetr.c:192"
         }
       ],
@@ -1519,7 +1519,7 @@
       "node": "player-movement",
       "name": "Sprint fatigue and recovery",
       "summary": "Only the sprint portion of forward control builds fatigue, recovery speeds up the longer the player rests, and fatigue spreads weapon aim.",
-      "behavior": "Fatigue runs from 0 to 10000 and only the part of forward control above the jog threshold counts. Each game tick adds 5 times the excess over 70 divided by 30, so a full sprint adds 5 per tick, 1400 per second, and fills the meter in about seven seconds with a warning at 7000. Jump and thrust control counts double toward the same formula, stooping divides the gain by 4, prone by 9, skates by 8, and jump jets and climbing add nothing. Once per second update, fatigue recovers only while forward control is at or below the jog threshold: the amount removed starts at the base 100, grows by 100 each second of continuous rest up to 400, and is reset to the base the moment the player sprints again. Fatigue feeds back into combat because each 400 points add one unit of weapon spread, and drug wear-off gets faster as fatigue rises. A stamina patch pins fatigue at zero while it lasts and then slams it to the maximum.",
+      "behavior": "Fatigue runs from 0 to 10000 and only the part of forward control above the jog threshold counts. Each game tick adds 5 times the excess over 70 divided by 30, so a full sprint adds 5 per tick, 1400 per second, and fills the meter in about seven seconds with a warning at 7000. Jump and thrust control counts double toward the same formula, stooping divides the gain by 4, prone by 9, skates by 8, and jump jets and climbing add nothing. Once per periodic update (every 256 ticks, about 0.91 seconds), fatigue recovers only while forward control is at or below the jog threshold: the amount removed starts at the base 100, grows by 100 each update of continuous rest up to 400, and is reset to the base the moment the player sprints again. Fatigue feeds back into combat because each 400 points add one unit of weapon spread. A stamina patch pins fatigue at zero while it lasts and then slams it to the maximum.",
       "constants": [
         {
           "name": "fatigue gain rate",
@@ -1540,15 +1540,15 @@
           "source": "src/GameSrc/gamesys.c:90"
         },
         {
-          "name": "recovery growth per second",
+          "name": "recovery growth per update",
           "value": 100,
-          "unit": "fatigue points per second, added to the recovery amount each second of rest",
+          "unit": "fatigue points, added to the recovery amount on each 256 tick update (about 0.91 s) of rest",
           "source": "src/GameSrc/gamesys.c:124"
         },
         {
           "name": "recovery cap",
           "value": 400,
-          "unit": "fatigue points removed per second at most",
+          "unit": "fatigue points removed per 256 tick update (about 0.91 s) at most",
           "source": "src/GameSrc/player.c:140"
         },
         {
@@ -1579,7 +1579,7 @@
       "capabilities": [
         "stamina meter for sprinting",
         "rest accelerated recovery",
-        "fatigue affects aim and drug duration"
+        "fatigue widens weapon spread"
       ],
       "tags": [
         "movement",
@@ -1592,7 +1592,7 @@
       "node": "damage-model",
       "name": "Damage resolution pipeline",
       "summary": "Weapon damage passes through type effectiveness, armor penetration, a bell-curve critical roll, toughness and a randomized final value.",
-      "behavior": "Damage starts as the weapon damage value times a power percentage times an effectiveness multiplier: nothing when the target does not resist that damage type, 1 for a plain match, 2 when the primary class matches, and 3 or 4 when the special class matches (3 on the hardest combat setting). Armor then subtracts its rating minus the attack penetration, where penetration is randomized to 90 to 110 percent, and damage never drops below zero. Outside cyberspace a critical modifier is formed from the attacker offense minus the target defense (a fixed 4 when the target is the player) plus a bell-curve value of minus 12 to plus 12 built by summing several dice whose count and size depend on the combat difficulty. Below minus 3 the damage is divided by the square of the modifier plus 3, and above 3 it is multiplied by the modifier over 3 with the modifier capped at 12, except against targets whose defense is 255. Toughness then right-shifts the damage (toughness 3 means immune), and a final roll turns the number into half of it plus one d7 per 8 points, capped at 2500. On combat difficulty 0 every non-immune enemy dies in one hit.",
+      "behavior": "Damage starts as the weapon damage value times a power percentage times an effectiveness multiplier: nothing when the target is not susceptible to that damage type (a set bit in its type mask means susceptible), 1 for a plain match, 2 when the primary class matches, and 3 or 4 when the special class matches (3 on the hardest combat setting). Armor then subtracts its rating minus the attack penetration, where penetration is randomized to 90 to 110 percent, and damage never drops below zero. Outside cyberspace a critical modifier is formed from the attacker offense minus the target defense (a fixed 4 when the target is the player) plus a bell-curve value of minus 12 to plus 12 built by summing several dice whose count and size depend on the combat difficulty. Below minus 3 the damage is divided by the square of the modifier plus 3, and above 3 it is multiplied by the modifier over 3 with the modifier capped at 12, except against targets whose defense is 255. Toughness then right-shifts the damage (toughness 3 means immune), and a final roll turns the number into half of it plus one d7 per 8 points, capped at 2500. On combat difficulty 0 every non-immune enemy dies in one hit.",
       "constants": [
         {
           "name": "maximum damage",
@@ -1658,7 +1658,7 @@
         }
       ],
       "capabilities": [
-        "damage type resistance matrix",
+        "damage type susceptibility matrix",
         "armor versus penetration",
         "critical hits from offense defense and dice"
       ],
@@ -1673,7 +1673,7 @@
       "node": "damage-model",
       "name": "Player damage and shield absorption",
       "summary": "Incoming player damage is scaled by difficulty, partly or fully absorbed by a powered shield, and cyberspace health cannot be lost in one hit.",
-      "behavior": "Radiation and biological damage skip both the difficulty shift and the shield; all other player damage is first shifted right by 2 minus the damage difficulty setting, so the two easiest settings quarter or halve it. When a shield is on, a hit at or below the shield threshold is absorbed completely, and a larger hit loses the shield absorb percentage plus a random jitter of minus 8 to plus 8. The shield table by setting is 20, 40, 75 and 75 percent absorption with thresholds 0, 10, 15 and 30. Health is a single byte with a maximum of 255 and a new game starts at five sixths of that. Lethal damage zeroes health, drops any item held on the cursor and triggers the death sequence. In cyberspace the same function uses a separate cyberspace health value and a shield program, and a hit that would be lethal leaves exactly 1 health so that only a second hit kills.",
+      "behavior": "Radiation and biological damage skip both the difficulty shift and the shield; all other player damage is first shifted right by 2 minus the damage difficulty setting, so the two easiest settings quarter or halve it. When a shield is on, a hit larger than the shield threshold loses the shield absorb percentage plus a random jitter of minus 8 to plus 8; a hit at or below the threshold only triggers the full-absorb flash and sound and is not reduced at all, so a weak shield setting never protects against small hits. The shield table by setting is 20, 40, 75 and 75 percent absorption with thresholds 0, 10, 15 and 30. Health is a single byte with a maximum of 255 and a new game starts at five sixths of that. Lethal damage zeroes health, drops any item held on the cursor and triggers the death sequence. In cyberspace the same function uses a separate cyberspace health value and a shield program, and a hit that would be lethal leaves exactly 1 health so that only a second hit kills.",
       "constants": [
         {
           "name": "maximum health",
@@ -1690,7 +1690,7 @@
         {
           "name": "highest shield threshold",
           "value": 30,
-          "unit": "damage points below which a shield absorbs everything, for the strongest setting",
+          "unit": "damage points at or below which the shield gives only feedback and no reduction, for the strongest setting",
           "source": "src/GameSrc/wares.c:624"
         },
         {
@@ -1735,7 +1735,7 @@
         }
       ],
       "capabilities": [
-        "percentage shield with absorb threshold",
+        "percentage shield that only reduces hits above a threshold",
         "difficulty scaled incoming damage",
         "two hit minimum cyberspace death rule"
       ],
@@ -1892,7 +1892,7 @@
       "node": "vitals-drugs",
       "name": "Timed patch drugs",
       "summary": "Seven patch types run on a slow update tick, wear off by chance and can be stacked, with the medic patch healing on a tapering schedule.",
-      "behavior": "A patch is applied from a counted stack and either stacks its duration (for stackable types, up to a cap of 127 units) or resets it. Every 1024 ticks, about 3.7 seconds, each active patch runs its ongoing effect and then loses one duration unit with probability (8 plus fatigue divided by 16384) over 16, so a rested player sees a 50 percent chance per update and a tired one sees more. Durations are listed per type, for example 10 for stamina and medic, 20 for sight, 8 for reflex and 4 for berserk and genius. The medic patch adds 430 to the health regeneration rate when applied and then removes a shrinking slice from that rate on each update (110, 100, 55, 50, 30, 25, 25, 25, 5, 5), which gives roughly 90 health over ten updates if the patch lasts that long, and any unspent slices are removed immediately when it wears off. The detox patch clears negative and then active effects one at a time and divides all exposure damage. The sight patch brightens the world and leaves a short dimming after-effect when it ends.",
+      "behavior": "A patch is applied from a counted stack and either stacks its duration (for stackable types, up to a cap of 127 units) or resets it. Every 1024 ticks, about 3.7 seconds, each active patch runs its ongoing effect and then loses one duration unit with a flat probability of 8 in 16 (50 percent); the fatigue term in the formula is integer-divided and is always zero because fatigue tops out at 10000. Durations are listed per type, for example 10 for stamina and medic, 20 for sight, 8 for reflex and 4 for berserk and genius. The medic patch adds 430 to the health regeneration rate when applied and then removes a shrinking slice from that rate on each update (110, 100, 55, 50, 30, 25, 25, 25, 5, 5), which gives roughly 90 health over ten updates if the patch lasts that long, and any unspent slices are removed immediately when it wears off. The detox patch clears negative and then active effects one at a time and divides all exposure damage. The sight patch brightens the world and leaves a short dimming after-effect when it ends.",
       "constants": [
         {
           "name": "drug update period",
@@ -1903,7 +1903,7 @@
         {
           "name": "base wear-off numerator",
           "value": 8,
-          "unit": "chance out of the wear-off denominator per update, plus fatigue divided by 16384",
+          "unit": "chance out of the wear-off denominator per update; the added fatigue term is always zero",
           "source": "src/GameSrc/drugs.c:61"
         },
         {
@@ -2045,8 +2045,8 @@
       "id": "hardware-wares",
       "node": "wares-inventory",
       "name": "Hardware wares and energy costs",
-      "summary": "Installed hardware wares toggle on and off, charge a continuous energy drain by version or setting, and jump jets drain per second of thrust.",
-      "behavior": "Turning a hardware ware on first checks that stored energy is at least one fifth of its per-minute cost rounded up, then adds that cost to a continuous drain, and turning it off removes it again. Costs per minute are tabled by version or setting: infrared goggles 50, the 360 degree view 9, the bioscan 1, the shield 24, 60, 105 or 30, and the lantern 10, 25 or 30. Jump jets are charged per second of thrust (25, 30 or 35 by version) in real time as the thruster fires, set a vertical control of magnitude 25, 50 or 75, scale forward thrust by 1/64, 1/32 or 1/16 and zero the strafe, and the thrust shrinks in proportion when energy runs short. Hardware only works in real space and software only in cyberspace, so a ware of the wrong world is ignored. When energy reaches zero the outage pass switches off every active ware that has a cost, plus the jump jets.",
+      "summary": "Installed hardware wares toggle on and off, charge a continuous energy drain by version or setting, and jump jets drain per 256 ticks of thrust.",
+      "behavior": "Turning a hardware ware on first checks that stored energy is at least one fifth of its per-minute cost rounded up, then adds that cost to a continuous drain, and turning it off removes it again. Costs per minute are tabled by version or setting: infrared goggles 50, the 360 degree view 9, the bioscan 1, the shield 24, 60, 105 or 30, and the lantern 10, 25 or 30. Jump jets are charged per 256 ticks (about 0.91 seconds) of thrust (25, 30 or 35 by version) in real time as the thruster fires, set a vertical control of magnitude 25, 50 or 75, scale forward thrust by 1/64, 1/32 or 1/16 and zero the strafe, and the thrust shrinks in proportion when energy runs short. Hardware only works in real space and software only in cyberspace, so a ware of the wrong world is ignored. When energy reaches zero the outage pass switches off every active ware that has a cost, plus the jump jets.",
       "constants": [
         {
           "name": "infrared goggle cost",
@@ -2069,7 +2069,7 @@
         {
           "name": "top jump jet cost",
           "value": 35,
-          "unit": "energy points per second of thrust for the third version",
+          "unit": "energy points per 256 ticks (about 0.91 s) of thrust for the third version",
           "source": "src/GameSrc/wares.c:933"
         },
         {
@@ -2348,7 +2348,7 @@
       "node": "cyberspace",
       "name": "Cyberspace session rules and flight controls",
       "summary": "Cyberspace swaps in a separate health value, a countdown, six-axis flight controls and node pickups, with penalties when the player is thrown out.",
-      "behavior": "On entry the real-space position and level are stored, cyberspace health is refilled to the maximum and a countdown starts from the stored cyberspace time, capped by difficulty at 1800 seconds on the easiest setting and one third, one sixth or one twelfth of that on harder ones. Real-space hardware and patches are shut down on entry and restored on exit. Movement uses a free-flight frame instead of the walking body: turn and strafe input are squared and divided by 16 so small deflections are fine, the climb axis is limited to 8 on tiles with a floor light value, turbo doubles the thrust, climb and strafe axes, and above difficulty 1 a constant push on the thrust axis of 5 per difficulty step is added. Heal nodes restore 70 plus their own value, mines do 15 times their value plus 1, and a multiplexer node adds 30 seconds back to the time budget. At zero health the player is expelled to real space with half health (at least 10), full fatigue and a time penalty of 0, 3 or 12 seconds by difficulty, and leaving by the exit node costs 5 seconds only on the hardest setting. Hostile ICE fires a projectile every half second with a chance of 25, 50, 81 or 94 percent by level when the player is within 7 tiles.",
+      "behavior": "On entry the real-space position and level are stored, cyberspace health is refilled to the maximum and a countdown starts from the stored cyberspace time, capped by difficulty at 1800 seconds on the easiest setting and one third, one sixth or one twelfth of that on harder ones. Real-space hardware and patches are shut down on entry and restored on exit. Movement uses a free-flight frame instead of the walking body: bank and roll input are squared and divided by 16 so small deflections are fine, the climb axis is limited to 8 on tiles with a floor light value, turbo doubles the thrust, climb and roll axes, and above difficulty 1 a constant push on the thrust axis of 5 per difficulty step is added. Heal nodes restore 70 plus their own value, mines do 15 times their value plus 1, and a multiplexer node adds 30 seconds back to the time budget. At zero health the player is expelled to real space with half health (at least 10), full fatigue and a time penalty of 0, 3 or 12 seconds by difficulty, and leaving by the exit node costs 5 seconds only on the hardest setting. Hostile ICE fires a projectile every half second with a chance of 25, 50, 81 or 94 percent by level when the player is within 7 tiles.",
       "constants": [
         {
           "name": "base cyberspace time",
@@ -2383,7 +2383,7 @@
         {
           "name": "flight control squaring divisor",
           "value": 16,
-          "unit": "turn and strafe controls are multiplied by their absolute value then divided by this",
+          "unit": "bank (yaw) and roll controls are multiplied by their absolute value then divided by this",
           "source": "src/GameSrc/physics.c:555"
         }
       ],

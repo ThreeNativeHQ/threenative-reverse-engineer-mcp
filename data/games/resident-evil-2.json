@@ -616,13 +616,11 @@
     },
     {
       "id": "script-actors",
-      "name": "Script-driven placement of player, objects and enemies",
-      "purpose": "Applies the script instructions that move the player, rotate scene objects, delete collision elements and spawn enemy placeholders.",
+      "name": "Script-driven placement of player and objects",
+      "purpose": "Applies the script instructions that move the player, rotate scene objects and delete collision elements.",
       "paths": [
         "script/script.go",
         "render/item.go",
-        "render/enemyentity.go",
-        "render/enemyrenderer.go",
         "world/collision.go"
       ],
       "functions": [
@@ -651,35 +649,11 @@
           ]
         },
         {
-          "name": "ScriptSceEmSet",
-          "path": "script/script.go",
-          "lines": [
-            383,
-            413
-          ]
-        },
-        {
           "name": "SetItemEntity",
           "path": "render/item.go",
           "lines": [
             42,
             65
-          ]
-        },
-        {
-          "name": "SetEnemyData",
-          "path": "render/enemyentity.go",
-          "lines": [
-            25,
-            38
-          ]
-        },
-        {
-          "name": "RenderEnemyEntity",
-          "path": "render/enemyrenderer.go",
-          "lines": [
-            3,
-            12
           ]
         }
       ],
@@ -1079,7 +1053,7 @@
       "node": "collision-floors",
       "name": "Climbable box edges that toggle floor",
       "summary": "Walking forward into a climb edge snaps the player between the ground and one floor-height up without moving sideways.",
-      "behavior": "Two shape codes mark the climb-up and the climb-down edges of a box or ledge. Only the forward key triggers them: when the predicted step lands inside such an element, the horizontal position stays put and the height is replaced. A player on floor zero is lifted to exactly one floor-height unit up, and a player on floor one is dropped back to zero, anything else is left alone. The change is instant with no animation or arc, and the climb elements, like every boundary, are gated by their floor mask. A helper that tests whether the player is within a fixed radius of such an edge exists for a prompt, but the main loop does not call it and the action button handler is empty.",
+      "behavior": "Two shape codes mark the climb-up and the climb-down edges of a box or ledge. Only the forward key triggers them: when the predicted step lands inside such an element, the horizontal position stays put and the height is replaced. A player on floor zero is lifted to exactly one floor-height unit up, and a player on floor one is dropped back to zero, anything else is left alone. The change is instant with no animation or arc, and the climb elements, like every boundary, are gated by their floor mask. There is no prompt or action-button step: the action button handler is empty, so climbing is purely movement-driven.",
       "constants": [
         {
           "name": "climb edge shape code",
@@ -1104,12 +1078,6 @@
           "value": 1,
           "unit": "floor index",
           "source": "game/player.go:150"
-        },
-        {
-          "name": "unused prompt radius",
-          "value": 1000,
-          "unit": "world units",
-          "source": "world/collision.go:142"
         }
       ],
       "sources": [
@@ -1122,8 +1090,8 @@
           "line": 58
         },
         {
-          "path": "world/collision.go",
-          "line": 129
+          "path": "game/player.go",
+          "line": 159
         }
       ],
       "capabilities": [
@@ -1474,13 +1442,13 @@
       "id": "script-tick-throttle",
       "node": "script-vm",
       "name": "Script tick throttled to thirty per second",
-      "summary": "The room interpreter accumulates frame time and runs at about thirty ticks per second regardless of render rate.",
-      "behavior": "Script threads are stepped from the main loop each frame, but execution is gated by an accumulator that adds the frame time and fires when it exceeds one thirtieth of a second, then resets to zero. Twenty thread slots exist, and the accumulator is advanced and tested once for each slot rather than once per frame. At render rates well above thirty frames per second that means only some of the slots run in a given frame, and the order in which they run rotates with the timing. A clean re-implementation should step all live threads together once per thirtieth of a second. The init pass bypasses the gate by passing a very large elapsed time.",
+      "summary": "The script gate adds frame time once per thread slot, so which threads run, and how often, depends on the render rate rather than being a clean 30 Hz.",
+      "behavior": "The intended script rate is thirty ticks per second: an accumulator adds elapsed time and fires when it exceeds one thirtieth of a second, then resets to zero. In practice the accumulator is advanced and tested once for each of the twenty thread slots inside every frame, so each slot visit adds a whole frame time and only the slot that trips the gate runs. Simulating that loop with exact frame times, at 30 frames per second only the odd-numbered slots run, each at 30 Hz, and slot zero never runs; at 60 frames per second every slot runs at 20 Hz; at 120 frames per second only slots four, nine, fourteen and nineteen run, every frame, and slots zero to three starve. Effective thread rate and thread selection therefore depend on the render rate (the simulation is derived from the code, not measured in the game). A clean re-implementation should step all live threads together once per thirtieth of a second. The init pass bypasses the gate by passing a very large elapsed time.",
       "constants": [
         {
-          "name": "script tick rate",
+          "name": "intended script tick rate",
           "value": 30,
-          "unit": "ticks per second",
+          "unit": "ticks per second of accumulated time; effective per-slot rate depends on render rate",
           "source": "script/script.go:17"
         },
         {
@@ -1581,12 +1549,12 @@
       "node": "script-logic",
       "name": "Script conditionals, loops, switch and sleep",
       "summary": "Blocks are skipped through stored end addresses, loops count down, a switch compares a variable and sleep waits a number of ticks.",
-      "behavior": "A conditional header pushes the address just after its block, and each following check instruction either passes or fails; a failing check ends the current run and the thread resumes at the popped address, skipping the guarded block. An else header jumps over the else body when the if body finished normally. A loop with a nonzero count stores its counter, the start and the break address, and the loop end decrements the counter and jumps back until it hits zero; a zero count skips the body at once. A switch walks the case list comparing the variable to each case value and jumps over non-matching blocks, falling to a default or the end. A sleep stores a count and then yields every tick until the count reaches zero, so one count equals one script tick. The jump instruction is disabled because it risked infinite loops.",
+      "behavior": "A conditional header pushes the address just after its block, and each following check instruction either passes or fails; a failing check ends the current run and the thread resumes at the popped address, skipping the guarded block. An else header jumps over the else body when the if body finished normally. A loop with a nonzero count stores its counter, the start and the break address, and the loop end decrements the counter and jumps back until it hits zero; a zero count skips the body at once. A switch walks the case list comparing the variable to each case value and jumps over non-matching blocks, falling to a default or the end. A sleep stores a count and then yields each time its thread is actually run until the count reaches zero, so one count equals one run of that thread, which is up to the intended thirty per second but depends on the render rate as described for the tick throttle. The jump instruction is disabled because it risked infinite loops.",
       "constants": [
         {
-          "name": "sleep tick unit",
+          "name": "intended sleep tick rate",
           "value": 30,
-          "unit": "ticks per second; one sleep count equals one tick",
+          "unit": "ticks per second of accumulated time; one sleep count equals one run of the thread, effective rate render-rate dependent",
           "source": "script/script.go:17"
         },
         {
@@ -1789,56 +1757,11 @@
       ]
     },
     {
-      "id": "enemy-spawn-placeholder",
-      "node": "script-actors",
-      "name": "Script-spawned enemy placement, no behavior",
-      "summary": "The room script can spawn an enemy record at a position and heading, but the repository only draws a debug marker with no AI or damage.",
-      "behavior": "A spawn instruction creates an enemy record only when both its type and model values are nonzero, loads a model file named by the type in three hexadecimal digits, and appends it to the room enemy list. The record stores type, model, status, motion, a position, and a heading converted from a 16-bit direction where 32768 equals 180 degrees. Enemies are cleared on every room load before the init script runs again, so the room script is the owner of the spawn list. In this repository the enemy renderer draws only a placeholder, there is no health, hit test, shooting, damage, chase or attack code, and the script instructions that would drive enemies are no-ops. It is therefore a data pipeline for placement, not a combat model.",
-      "constants": [
-        {
-          "name": "direction to degrees scale",
-          "value": 180,
-          "unit": "degrees per half turn",
-          "source": "render/enemyentity.go:35"
-        },
-        {
-          "name": "half-turn direction units",
-          "value": 32768,
-          "unit": "direction units",
-          "source": "render/enemyentity.go:35"
-        }
-      ],
-      "sources": [
-        {
-          "path": "script/script.go",
-          "line": 383
-        },
-        {
-          "path": "render/enemyentity.go",
-          "line": 25
-        },
-        {
-          "path": "render/enemyrenderer.go",
-          "line": 8
-        }
-      ],
-      "capabilities": [
-        "room-scripted enemy placement data",
-        "per-room enemy list reset",
-        "model lookup by enemy type"
-      ],
-      "tags": [
-        "enemy",
-        "spawn",
-        "horror"
-      ]
-    },
-    {
       "id": "inventory-grid-cursor",
       "node": "inventory-ui",
       "name": "Two-column inventory grid with a reserved slot",
       "summary": "Eight slots sit in two columns with clamped cursor moves, plus a separate reserved slot reached from the top row.",
-      "behavior": "The inventory opens on a key press and the same key closes it, starting on the item grid. The player starts with a pistol holding eighteen rounds, a knife and a lighter kept in a reserved eleventh slot. The cursor addresses eight grid slots in two columns, row is slot divided by two and column is slot modulo two. Left and right step by one and up and down by two, all clamped at the ends with no wrap. Moving up from the second slot of the first row jumps to the reserved slot, from which left and right do nothing, up returns to the top menu and down goes to the second slot. The cursor highlight pulses by moving a timer from fifty to a bit over one hundred twenty in steps of three and back, and the brightness is that timer over one hundred twenty-eight.",
+      "behavior": "The inventory opens on a key press and the same key closes it, starting on the item grid. The player starts with a pistol holding eighteen rounds, a knife and a lighter kept in a reserved eleventh slot. The cursor addresses eight grid slots in two columns, row is slot divided by two and column is slot modulo two. Left and right step by one and up and down by two, all clamped at the ends with no wrap. Moving up from the second slot of the first row jumps to the reserved slot, from which left and right do nothing, up returns to the top menu and down goes to the second slot. The cursor highlight pulses on a 30 millisecond gate of accumulated frame time: each gate crossing moves a timer from fifty to a bit over one hundred twenty in steps of three and back, and the brightness is that timer over one hundred twenty-eight.",
       "constants": [
         {
           "name": "grid slots",
@@ -1861,8 +1784,14 @@
         {
           "name": "cursor blink step",
           "value": 3,
-          "unit": "timer units per update, rate unverified",
+          "unit": "timer units per 30 ms blink tick",
           "source": "ui/inventorymenu.go:154"
+        },
+        {
+          "name": "cursor blink tick",
+          "value": 30,
+          "unit": "milliseconds of accumulated frame time",
+          "source": "ui/inventorymanager.go:21"
         },
         {
           "name": "top menu slots",

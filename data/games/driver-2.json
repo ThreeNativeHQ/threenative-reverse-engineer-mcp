@@ -740,7 +740,7 @@
         {
           "name": "Upward velocity trim threshold",
           "value": 200000,
-          "unit": "velocity units (4096 = 1 world unit per step); above it vy is multiplied by 3/4 each step",
+          "unit": "velocity units (4096 = 1 world unit per step at 30 Hz); above it vy is multiplied by 3/4 each step",
           "source": "src_rebuild/Game/C/handling.c:327"
         },
         {
@@ -928,7 +928,7 @@
         {
           "name": "Wheel velocity drag",
           "value": 12,
-          "unit": "force units per velocity unit (4096 = 1 world unit per step)",
+          "unit": "force units per velocity unit (4096 = 1 world unit per step at 30 Hz)",
           "source": "src_rebuild/Game/C/wheelforces.c:492"
         },
         {
@@ -1148,12 +1148,12 @@
       "node": "car-controls",
       "name": "Digital and analogue steering with auto-centre",
       "summary": "Steering angle ramps with a digital button, follows a cubic curve on an analogue stick, and returns to centre by itself.",
-      "behavior": "The steering angle is a signed number where 4096 is a full turn. A held digital direction adds 32 per step up to 352, about 31 degrees. The fast-steer button adds 64 per step up to 511, about 45 degrees. With no direction held the angle moves back toward zero by 64 per step. An analogue stick is cubed and divided by 80, or by 60 with fast steer, then scaled by a fixed gain and shifted right by five bits, so small deflections stay fine. Full deflection gives roughly 320 in normal mode and roughly 570 in fast mode, assuming a stick range of plus or minus 127, which is unverified. A counter grows while a turn is held, and adds 45 front grip per count up to 13 counts, so 585 in total, but only for the player handling types.",
+      "behavior": "The steering angle is a signed number where 4096 is a full turn. A held digital direction adds 32 per step up to 352, about 31 degrees. The fast-steer button adds 64 per step up to 511, about 45 degrees. With no direction held the angle moves back toward zero by 64 per step. An analogue stick is cubed and divided by 80, or by 60 with fast steer, then scaled by a fixed gain and shifted right by five bits, so small deflections stay fine. Full deflection gives roughly 320 in normal mode and roughly 570 in fast mode, because the stick value is the raw byte minus 128. A counter grows while a turn is held, and adds 45 front grip per count up to 13 counts, so 585 in total, but only for the player handling types.",
       "constants": [
         {
           "name": "Digital steer step",
           "value": 32,
-          "unit": "angle units per step (4096 = 360 degrees)",
+          "unit": "angle units per step at 30 Hz (4096 = 360 degrees)",
           "source": "src_rebuild/Game/C/handling.c:1215"
         },
         {
@@ -1165,7 +1165,7 @@
         {
           "name": "Fast steer step",
           "value": 64,
-          "unit": "angle units per step",
+          "unit": "angle units per step at 30 Hz",
           "source": "src_rebuild/Game/C/handling.c:1196"
         },
         {
@@ -1177,7 +1177,7 @@
         {
           "name": "Recentre rate",
           "value": 64,
-          "unit": "angle units per step toward zero",
+          "unit": "angle units per step at 30 Hz toward zero",
           "source": "src_rebuild/Game/C/handling.c:1262"
         },
         {
@@ -1215,6 +1215,10 @@
         {
           "path": "src_rebuild/Game/C/wheelforces.c",
           "line": 227
+        },
+        {
+          "path": "src_rebuild/Game/C/pad.c",
+          "line": 184
         }
       ],
       "capabilities": [
@@ -1262,7 +1266,7 @@
         {
           "name": "Burnout end speed",
           "value": 452952,
-          "unit": "wheel speed units (4096 = 1 world unit per step)",
+          "unit": "wheel speed units (4096 = 1 world unit per step at 30 Hz)",
           "source": "src_rebuild/Game/C/handling.c:1181"
         },
         {
@@ -1353,13 +1357,13 @@
         {
           "name": "Maximum rev rise",
           "value": 1600,
-          "unit": "rev units per step",
+          "unit": "rev units per step at 30 Hz",
           "source": "src_rebuild/Game/C/gamesnd.c:705"
         },
         {
           "name": "Maximum rev drop",
           "value": 1440,
-          "unit": "rev units per step",
+          "unit": "rev units per step at 30 Hz",
           "source": "src_rebuild/Game/C/gamesnd.c:704"
         },
         {
@@ -1596,7 +1600,7 @@
         {
           "name": "Damage speed threshold",
           "value": 9,
-          "unit": "world units per step",
+          "unit": "world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/bcollide.c:499"
         },
         {
@@ -1742,7 +1746,7 @@
         {
           "name": "Water damage divisor",
           "value": 80,
-          "unit": "limit divided by 80 per step with four wheels in water",
+          "unit": "limit divided by 80 per step at 30 Hz with four wheels in water",
           "source": "src_rebuild/Game/C/main.c:2185"
         },
         {
@@ -1810,7 +1814,7 @@
       "node": "civ-traffic",
       "name": "Ring-based traffic spawning and removal",
       "summary": "Traffic cars appear on roads in a ring around the player, are rejected when crowded, and vanish when far away.",
-      "behavior": "While fewer than 14 traffic cars exist, the game makes up to five spawn attempts per step. Each attempt moves a cycling index to one of 44 evenly spaced angles around the player and converts it to a point 16384 units away, or 20480 units for a police car, which uses 56 angles. It keeps the first point that lies on a straight or curved road segment. It picks a random driveable lane, or a parking lane while fewer than seven parked cars exist, and places the car along the segment, away from the segment ends. The attempt fails when more than three other cars are within 3000 units or the nearest car is closer than eight body lengths. A car farther than 24000 units from the player is removed at once.",
+      "behavior": "While fewer than 14 traffic cars exist, the game makes up to five spawn attempts per step. Each attempt moves a cycling index to one of 44 evenly spaced angles around the player and converts it to a point 16384 units away, or 20480 units for a police car, which uses 56 angles. It keeps the first point that lies on a straight or curved road segment. It picks a random driveable lane, or a parking lane while fewer than seven parked cars exist, and places the car along the segment, away from the segment ends. The attempt fails when more than three other cars are within 3000 units or the nearest car is closer than eight body half-lengths, which is four full lengths. A car farther than 24000 units from the player is removed at once.",
       "constants": [
         {
           "name": "Traffic car cap",
@@ -1895,12 +1899,12 @@
       "node": "civ-traffic",
       "name": "Route-node lane following with look-ahead steering",
       "summary": "Traffic cars steer toward a point on their lane route that is a speed-dependent distance ahead, and throttle by road speed limit.",
-      "behavior": "Each traffic car owns a ring of 13 route nodes along its lane, and a node marked 127 is invalid and makes the car generate the next one. Every step the car finds its position along the route and picks a target point ahead by its speed times 20 steps plus one body length. The wheel angle is the signed angle from heading to that point, clamped to plus or minus 512, which is 45 degrees. Cruise thrust is 2000, cut to a quarter when speed is above the road limit of 56, 97 or 138 units per step. Thrust loses three times the steering angle, with a minimum angle of 4 counted. A negative thrust at very low speed is set to zero. A car that cannot make a valid route becomes confused and stops.",
+      "behavior": "Each traffic car owns a ring of 13 route nodes along its lane, and a node marked 127 is invalid and makes the car generate the next one. Every step the car finds its position along the route and picks a target point ahead by its speed times 20 steps plus one body half-length. The wheel angle is the signed angle from heading to that point, clamped to plus or minus 512, which is 45 degrees. Cruise thrust is 2000, cut to a quarter when speed is above the road limit of 56, 97 or 138 units per step. Thrust loses three times the steering angle, with a minimum angle of 4 counted. A negative thrust at very low speed is set to zero. A car that cannot make a valid route becomes confused and stops.",
       "constants": [
         {
           "name": "Look-ahead time",
           "value": 20,
-          "unit": "steps of current speed",
+          "unit": "steps at 30 Hz of current speed",
           "source": "src_rebuild/Game/C/civ_ai.c:3181"
         },
         {
@@ -1974,18 +1978,18 @@
       "node": "civ-traffic",
       "name": "Forward sensor box braking, horns and pedestrian waits",
       "summary": "Each traffic car projects a box ahead whose length grows with speed and brakes when another car or the on-foot player is in it.",
-      "behavior": "Each traffic car projects a sensor box ahead of its body. The extra length is 93 units plus speed times 13 when the wheel angle is below 61, or speed times 4 otherwise, and the signed test means any left turn counts as straight. Any other car or the on-foot player within 500 units of height whose box overlaps the sensor sets a brake length equal to the free part of the sensor. Inside two body lengths of free space the car replaces throttle with a brake demand of a quarter of wheel speed, limited by twice cruise thrust times a ramp of the brake length, and the ramp direction is unverified. A car blocked by the on-foot player waits up to 100 steps after it stops, and cars that sense the player honk on at most two sound channels. A yielding car at a turn checks 2048 units ahead, and a car at a straight yield checks 512.",
+      "behavior": "Each traffic car projects a sensor box ahead of its body. The extra length is 93 units plus speed times 13 when the wheel angle is below 61, or speed times 4 otherwise, and the signed test means any left turn counts as straight. Any other car or the on-foot player within 500 units of height whose box overlaps the sensor sets a brake length equal to the free distance to it. With a free distance of two body half-lengths or more, which is one full length, the car cuts throttle to zero. Between half a half-length and two half-lengths a ramp rises from 0 to 100, and below that it stays at 100. The brake demand is the smaller of a quarter of wheel speed and 40 times the ramp, so it is at most 4000, twice cruise thrust. A car blocked by the on-foot player waits up to 100 steps after it stops, and a yielding car checks 2048 units ahead at a turn and 512 at a straight yield.",
       "constants": [
         {
           "name": "Sensor length factor, straight wheels",
           "value": 13,
-          "unit": "times speed in world units per step",
+          "unit": "times speed in world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/civ_ai.c:2755"
         },
         {
           "name": "Sensor length factor, turning",
           "value": 4,
-          "unit": "times speed in world units per step",
+          "unit": "times speed in world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/civ_ai.c:2757"
         },
         {
@@ -2058,13 +2062,13 @@
         {
           "name": "Cycle mask",
           "value": 511,
-          "unit": "steps, cycle length is 512",
+          "unit": "steps at 30 Hz, cycle length is 512",
           "source": "src_rebuild/Game/C/civ_ai.c:1659"
         },
         {
           "name": "Red half length",
           "value": 256,
-          "unit": "steps",
+          "unit": "steps at 30 Hz",
           "source": "src_rebuild/Game/C/civ_ai.c:1663"
         },
         {
@@ -2076,7 +2080,7 @@
         {
           "name": "Amber ends",
           "value": 200,
-          "unit": "steps into the green half (amber lasts 50)",
+          "unit": "steps at 30 Hz into the green half (amber lasts 50)",
           "source": "src_rebuild/Game/C/civ_ai.c:1673"
         }
       ],
@@ -2291,7 +2295,7 @@
         {
           "name": "Respawn time reduction",
           "value": -4,
-          "unit": "steps per mission number, missions below 40",
+          "unit": "steps at 30 Hz per mission number, missions below 40",
           "source": "src_rebuild/Game/C/cop_ai.c:300"
         },
         {
@@ -2443,7 +2447,7 @@
         {
           "name": "Maximum lead",
           "value": 60,
-          "unit": "steps of target velocity",
+          "unit": "steps at 30 Hz of target velocity",
           "source": "src_rebuild/Game/C/cop_ai.c:527"
         },
         {
@@ -2461,7 +2465,7 @@
         {
           "name": "Stuck speed threshold",
           "value": 6,
-          "unit": "world units per step",
+          "unit": "world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/cop_ai.c:480"
         },
         {
@@ -2528,13 +2532,13 @@
         {
           "name": "Side zone speed",
           "value": 110,
-          "unit": "world units per step",
+          "unit": "world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/cop_ai.c:669"
         },
         {
           "name": "Back zone speed",
           "value": -70,
-          "unit": "world units per step",
+          "unit": "world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/cop_ai.c:660"
         },
         {
@@ -2552,13 +2556,13 @@
         {
           "name": "Proportional error band",
           "value": 50,
-          "unit": "world units per step",
+          "unit": "world units per step at 30 Hz",
           "source": "src_rebuild/Game/C/cop_ai.c:717"
         },
         {
           "name": "Steering slew",
           "value": 200,
-          "unit": "angle units per step",
+          "unit": "angle units per step at 30 Hz",
           "source": "src_rebuild/Game/C/cop_ai.c:735"
         },
         {
@@ -2602,7 +2606,7 @@
       "node": "cop-ai",
       "name": "Cop ramming mode and cop wreck",
       "summary": "Above a felony level cops switch from tailing to side-ramming on a duty cycle set by difficulty, and cars die at heavy damage.",
-      "behavior": "Ramming is on when a mission flag requests it, or when felony is above 2048. In that second case a per-cop counter runs from 0 to 127 and wraps. The cop rams while the counter is above 80 on easy, above 50 on medium, and always on hard. When ramming, the aim point moves from behind the player car to its flank, the lead is full instead of three quarters, and the slow-down near the player is skipped. A cop whose damage exceeds 27000 stops driving and counts 85 steps before it is removed, unless the mission makes cops immortal. A roadblock cop car that the player touches turns into an active pursuer, if the felony is at least the pursuit level and fewer than four cop cars exist.",
+      "behavior": "Ramming is on when a mission flag requests it, or when felony is above 2048. In that second case a per-cop counter runs from 0 to 127 and wraps. The cop rams while the counter is above 80 on easy, above 50 on medium, and always on hard. When ramming, the aim point moves from behind the player car to its flank, the lead is full instead of three quarters, and the slow-down near the player is skipped. A cop whose damage exceeds 27000 stops driving and stays on the road as a wreck, unless the mission makes cops immortal. A wreck counter rises to 86 and then stops, with sirens off after 75 and cheaper scenery checks after 85. A roadblock cop car that the player touches turns into an active pursuer, if the felony is at least the pursuit level and fewer than four cop cars exist.",
       "constants": [
         {
           "name": "Ram felony level",
@@ -2635,9 +2639,9 @@
           "source": "src_rebuild/Game/C/cop_ai.c:396"
         },
         {
-          "name": "Death countdown",
+          "name": "Wreck counter limit",
           "value": 85,
-          "unit": "steps at 30 Hz",
+          "unit": "steps at 30 Hz, the counter stops rising above this and the car is not removed",
           "source": "src_rebuild/Game/C/cop_ai.c:400"
         }
       ],
@@ -2704,7 +2708,7 @@
         {
           "name": "Random delay mask",
           "value": "0xff",
-          "unit": "steps added at random (0 to 255)",
+          "unit": "steps at 30 Hz added at random (0 to 255)",
           "source": "src_rebuild/Game/C/civ_ai.c:3561"
         },
         {
@@ -2851,7 +2855,7 @@
       "node": "pedestrians",
       "name": "Scare boxes, horn widening and the flee jump",
       "summary": "A square box ahead of each car, wider for the player and with the horn, makes pedestrians inside it leap sideways and adds felony.",
-      "behavior": "Each car gets a square test box centred on its position plus its velocity shifted right by eight bits, which leads the car by 16 steps. The half-size is 400 for the player car and 260 for other cars, and the horn makes it 1200 for the player and 120 for others. The player car also gets a second box that leads by 32 steps. Explosions make boxes with a half-size of 1952, and an on-foot player makes a box of 148. A pedestrian inside any box jumps for 30 animation steps, starting at speed 30, doubling to 60 at the third step and halving back at step 15. The jump direction comes from the car velocity and the pedestrian offset from the car. Scaring a pedestrian with the player car adds felony at full value, or half when the horn is on.",
+      "behavior": "Each car gets a square test box centred on its position plus its velocity shifted right by eight bits, which leads the car by 16 steps. The half-size is 400 for the player car and 260 for other cars, and the player horn makes it 1200 for the player car and 120 for other cars. The player car also gets a second box that leads by 8 steps. Explosions make boxes with a half-size of 1952, and an on-foot player makes a box of 148. A pedestrian inside any box jumps for 30 animation steps, starting at speed 30, doubling to 60 at the third step and halving back at step 15. The jump direction comes from the car velocity and the pedestrian offset from the car. Scaring a pedestrian with the player car adds felony at full value, or half when the horn is on.",
       "constants": [
         {
           "name": "Car scare half-size",
@@ -2866,15 +2870,9 @@
           "source": "src_rebuild/Game/C/pedest.c:2327"
         },
         {
-          "name": "Other car horn half-size",
-          "value": 260,
-          "unit": "world units, then minus 140",
-          "source": "src_rebuild/Game/C/pedest.c:2329"
-        },
-        {
           "name": "Non-player reduction",
           "value": 140,
-          "unit": "world units subtracted",
+          "unit": "world units subtracted, so other cars are 260 normally and 120 with the player horn on",
           "source": "src_rebuild/Game/C/pedest.c:2333"
         },
         {
@@ -2898,7 +2896,7 @@
         {
           "name": "Jump length",
           "value": 29,
-          "unit": "animation steps, ends after frame 29",
+          "unit": "animation steps at 30 Hz, ends after frame 29",
           "source": "src_rebuild/Game/C/pedest.c:1878"
         },
         {
@@ -2971,19 +2969,19 @@
         {
           "name": "Maximum turn rate",
           "value": 64,
-          "unit": "angle units per step (4096 = 360 degrees)",
+          "unit": "angle units per step at 30 Hz (4096 = 360 degrees)",
           "source": "src_rebuild/Game/C/pedest.c:869"
         },
         {
           "name": "Idle wait animation",
           "value": 119,
-          "unit": "idle steps, the animation starts above this",
+          "unit": "idle steps at 30 Hz, the animation starts above this",
           "source": "src_rebuild/Game/C/pedest.c:875"
         },
         {
           "name": "Maximum slope step",
           "value": 1010,
-          "unit": "world units height difference over the next step",
+          "unit": "world units height difference over the next step at 30 Hz",
           "source": "src_rebuild/Game/C/pedest.c:2640"
         }
       ],
@@ -3021,7 +3019,7 @@
       "node": "on-foot",
       "name": "Leaving and entering cars on foot",
       "summary": "The player may leave a car only when slow, upright and not in a chase, and may enter the nearest parked or ambient car in reach.",
-      "behavior": "Leaving is blocked when the felony is above the pursuit level and the cops still know the player position, when the rear wheels touch water, when the car speed is above 2, when the car is nearly sideways, and when doors are locked. The check passes if the car is upright to within about 88 degrees. Entering uses the closest car to the player. The car must be controlled by traffic AI or a cutscene, must not be a police car, must be upright, and must move slower than 3 units per step. The reach is twice the car width, capped at 5000 units, compared as a squared distance. Entering takes 15 animation steps. A traffic car that was not parked makes the former driver appear as a pedestrian.",
+      "behavior": "Leaving is blocked when the felony is above the pursuit level and the cops still know the player position, when the rear wheels touch water, when the car speed is above 2, when the car is nearly sideways, and when doors are locked. The check passes if the car is upright to within about 88 degrees. Entering uses the closest car to the player. The car must be controlled by traffic AI or a cutscene, must not be a police car, must be upright, and must move slower than 3 units per step. The reach is one full car width, capped at 5000 units, compared as a squared distance. Entering takes 15 animation steps. A traffic car that was not parked makes the former driver appear as a pedestrian.",
       "constants": [
         {
           "name": "Exit speed limit",
@@ -3129,7 +3127,7 @@
         {
           "name": "Heading ease",
           "value": 3,
-          "unit": "bits shifted, one eighth of the error per step",
+          "unit": "bits shifted, one eighth of the error per step at 30 Hz",
           "source": "src_rebuild/Game/C/camera.c:485"
         },
         {
@@ -3197,7 +3195,7 @@
           "name": "Zoom cap",
           "value": 800,
           "unit": "screen distance units",
-          "source": "src_rebuild/Game/C/camera.c:671"
+          "source": "src_rebuild/Game/C/camera.c:721"
         },
         {
           "name": "Default screen distance",

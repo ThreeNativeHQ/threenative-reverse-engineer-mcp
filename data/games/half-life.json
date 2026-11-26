@@ -1101,9 +1101,9 @@
           "source": "pm_shared/pm_shared.c:2655"
         },
         {
-          "name": "ledge probe drop below hull top",
+          "name": "lower ledge probe rise above the origin",
           "value": 8,
-          "unit": "units",
+          "unit": "units; the upper probe adds the hull top height minus this value, so it runs at hull top",
           "source": "pm_shared/pm_shared.c:2616"
         },
         {
@@ -1686,7 +1686,7 @@
       "id": "cover-search",
       "node": "monster-ai-core",
       "name": "Cover node search",
-      "summary": "Cover is the nearest graph node within 784 units that the threat cannot see and that the monster can reach no later than the threat, rotating the starting node between monsters.",
+      "summary": "Cover is the first graph node, in an order that rotates between monsters, within 784 units that the threat cannot see and that the monster can reach no later than the threat.",
       "behavior": "The search scans the navigation graph beginning where the previous monster stopped so several monsters spread across nodes. A node qualifies when its distance from the monster lies between a minimum (capped to half the maximum) and the maximum, default 784 when none is given, and a line trace from the node at eye height to the threat eye is blocked. It must also be no farther by path from the monster than from the threat, so monsters do not run past the enemy, and the squad validator rejects a node within 128 units of another squad member. The first node that passes and is reachable becomes the run goal. Schedules vary the range; one soldier schedule that drops a grenade first searches for a far node at least 384 units away.",
       "constants": [
         {
@@ -1805,14 +1805,14 @@
       "id": "grunt-attack-gates",
       "node": "grunt-ai",
       "name": "Soldier fire, melee and friendly-fire gates",
-      "summary": "A soldier shoots only within 2048 units, inside a 0.5 dot cone, with a clear trace and no squad mate in the firing lane, and kicks instead inside 64 units.",
-      "behavior": "Ranged attack 1 is allowed when the enemy is not occluded, is within 2048 units, is inside a forward cone with dot 0.5, a friendly-fire check passes, and a gun-to-body trace reaches the target. The friendly-fire check builds a lane ahead of the shooter bounded by two planes 1.5 body widths to each side and a back plane at the shooter, and refuses to fire if any squad mate sits inside it. Against non-player targets the soldier does not shoot when closer than 64 units. The kick needs the enemy within 64 units and inside a 0.7 dot cone. Attack checks are skipped entirely when the enemy is flagged too far. A hit on the helmet area is converted to a head hit after the first 20 points of damage are absorbed when a helmet is worn, with a ricochet shown if nothing is left.",
+      "summary": "A soldier shoots only within 1024 units, inside a 0.5 dot cone, with a clear trace and no squad mate in the firing lane, and kicks instead inside 64 units.",
+      "behavior": "Ranged attack 1 is allowed when the enemy is not occluded, is inside a forward cone with dot 0.5, a friendly-fire check passes, and a gun-to-body trace reaches the target. The friendly-fire check builds a lane ahead of the shooter bounded by two planes 1.5 body widths to each side and a back plane at the shooter, and refuses to fire if any squad mate sits inside it. Against non-player targets the soldier does not shoot when closer than 64 units. The kick needs the enemy within 64 units and inside a 0.7 dot cone. Attack checks are skipped entirely once the enemy is flagged too far, which happens at 1024 units, so the range test of 2048 written in the attack check is never reached and the effective maximum fire range is 1024 units. A hit on the helmet area is converted to a head hit after the first 20 points of damage are absorbed when a helmet is worn, with a ricochet shown if nothing is left.",
       "constants": [
         {
-          "name": "maximum fire range",
-          "value": 2048,
-          "unit": "units",
-          "source": "dlls/hgrunt.cpp:446"
+          "name": "effective maximum fire range",
+          "value": 1024,
+          "unit": "units; the too-far flag stops attack checks at this distance",
+          "source": "dlls/monsters.cpp:2041"
         },
         {
           "name": "fire cone threshold",
@@ -1852,6 +1852,14 @@
         },
         {
           "path": "dlls/hgrunt.cpp",
+          "line": 397
+        },
+        {
+          "path": "dlls/monsters.cpp",
+          "line": 1138
+        },
+        {
+          "path": "dlls/hgrunt.cpp",
           "line": 413
         },
         {
@@ -1878,20 +1886,14 @@
       "id": "grunt-grenade-throw",
       "node": "grunt-ai",
       "name": "Soldier grenade throwing",
-      "summary": "A stationary soldier throws or launches a grenade only after a ballistic solution exists, the target is at least 256 units away and no squad mate is near the impact, rechecking on a timer.",
-      "behavior": "The check needs a grenade-capable loadout and a stationary soldier; moving clears the flag. It obeys a timer and refuses when the enemy is airborne and above the soldier. A hand grenade targets either the enemy feet or the last known position with equal chance, while a launcher aims at the last known body position and leads a visible enemy by flight time. The throw is refused if the target is within 256 units horizontally or a squad mate stands within 256 units of the impact, each refusal delaying the next check by 1 second. A lob solver, using a gravity scale of 0.5 and rejecting hand-grenade targets more than 500 units above the thrower, must then return a velocity; success lets the throw proceed and the check repeats immediately for hand grenades or after 0.3 seconds for the launcher, while failure waits 1 second. A hand grenade has a 3.5 second fuse, and after the toss the soldier waits 6 seconds before considering another throw (a launcher on the hardest skill waits a random 2 to 5 seconds).",
+      "summary": "A stationary soldier throws or launches a grenade only after a ballistic solution exists and the target is at least 256 units away, rechecking on a timer.",
+      "behavior": "The check needs a grenade-capable loadout and a stationary soldier; moving clears the flag. It obeys a timer and refuses when the enemy is airborne and above the soldier. A hand grenade targets either the enemy feet or the last known position with equal chance, while a launcher aims at the last known body position and leads a visible enemy by flight time. The throw is refused, and the next check delayed by 1 second, when the target is within 256 units horizontally. A second test for squad mates near the impact point also exists, but its result is overwritten by the lob solver that follows, so it has no runtime effect. A lob solver, using a gravity scale of 0.5 and rejecting hand-grenade targets more than 500 units above the thrower, must then return a velocity; success lets the throw proceed and the check repeats immediately for hand grenades or after 0.3 seconds for the launcher, while failure waits 1 second. A hand grenade has a 3.5 second fuse, and after the toss the soldier waits 6 seconds before considering another throw (a launcher on the hardest skill waits a random 2 to 5 seconds).",
       "constants": [
         {
           "name": "minimum target distance",
           "value": 256,
           "unit": "units horizontal",
           "source": "dlls/hgrunt.cpp:543"
-        },
-        {
-          "name": "squad member clearance at impact",
-          "value": 256,
-          "unit": "units",
-          "source": "dlls/hgrunt.cpp:535"
         },
         {
           "name": "retry delay after a refusal",
@@ -1946,7 +1948,6 @@
       ],
       "capabilities": [
         "lobbing grenades at hiding players",
-        "friendly-fire safe throws",
         "ballistic solution check before throwing",
         "stand-still requirement"
       ],
@@ -2102,8 +2103,8 @@
         {
           "name": "level transitions per map",
           "value": 16,
-          "unit": "entries in the change list",
-          "source": "dlls/triggers.cpp:1481"
+          "unit": "entries in the change list handed to the builder",
+          "source": "engine/eiface.h:323"
         },
         {
           "name": "carried entity limit",
@@ -2128,6 +2129,10 @@
         {
           "path": "dlls/triggers.cpp",
           "line": 52
+        },
+        {
+          "path": "dlls/client.cpp",
+          "line": 787
         }
       ],
       "capabilities": [

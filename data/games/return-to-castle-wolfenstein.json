@@ -778,8 +778,8 @@
       "id": "sight-los-probes",
       "node": "ai-perception",
       "name": "Multi-probe line of sight from the head",
-      "summary": "A visibility test casts up to five rays from the observer eye at different parts of the target body, using the animated head position.",
-      "behavior": "After the cone test, the game traces from the eye to the center of the target bounding box with a mask that ignores anything a bullet can pass through. If that ray is blocked it tries the bottom of the box, then the top, then two rays from eye positions shifted sideways by roughly half the target width. The first three probes are gated by a potential visibility set test, and the side probes run only when one of those passed, which saves traces in separate rooms. Water surfaces are traced through, so a swimmer is visible. Enemy eyes come from the animated head bone, pushed 12 units along its up axis, so a guard that turns its head sees in that direction. Right after a save is loaded the head bone is ignored for 4 seconds, and for 2 seconds the player stays unseen unless already spotted, which gives a safe settling window.",
+      "summary": "A visibility test casts up to five rays from the observer standing eye height at different parts of the target body, after a cone test that uses the animated head.",
+      "behavior": "After the distance and cone checks, the game traces from the observer eye to the center of the target bounding box with a mask that ignores anything a bullet can pass through. The eye for these rays is the body origin raised by the current view height, not the animated head. If the first ray is blocked it tries the bottom of the box, then the top, then two rays from eye positions shifted sideways by roughly half the target width. The first three probes are gated by a potential visibility set test, and the side probes run only when one of those passed, which saves traces in separate rooms. Water surfaces are traced through, so a swimmer is visible. The animated head bone, pushed 12 units along its up axis, supplies the eye position and facing used for the distance and cone test, so a guard that turns its head sees in that direction. Right after a save is loaded the head bone is ignored for 4 seconds, and for 2 seconds the player stays unseen unless already spotted.",
       "constants": [
         {
           "name": "maximum probe rays per check",
@@ -788,7 +788,7 @@
           "source": "src/game/ai_cast_sight.c:154"
         },
         {
-          "name": "eye offset along head bone up axis",
+          "name": "head-bone eye offset for the cone test",
           "value": 12,
           "unit": "world units",
           "source": "src/game/ai_cast_sight.c:293"
@@ -813,16 +813,20 @@
         },
         {
           "path": "src/game/ai_cast_sight.c",
+          "line": 143
+        },
+        {
+          "path": "src/game/ai_cast_sight.c",
           "line": 225
         },
         {
           "path": "src/game/ai_cast_sight.c",
-          "line": 159
+          "line": 282
         }
       ],
       "capabilities": [
         "body-part sampling to catch half-hidden targets",
-        "head-direction based eyes",
+        "head-direction based view cone",
         "load-time grace so saves are not instantly punished"
       ],
       "tags": [
@@ -1362,12 +1366,6 @@
           "value": 14,
           "unit": "removable pieces",
           "source": "src/game/g_combat.c:809"
-        },
-        {
-          "name": "lightning weapon reach of the boss",
-          "value": 2000,
-          "unit": "world units",
-          "source": "src/game/bg_public.h:60"
         }
       ],
       "sources": [
@@ -1408,7 +1406,7 @@
       "node": "ai-monsters",
       "name": "Zombie that rises once, then gibs",
       "summary": "The first death of a zombie class enemy is temporary, and it stands back up with reduced health after a few seconds.",
-      "behavior": "When a zombie dies the first time it lies down and sets a rebirth timer of 5000 milliseconds plus a random 0 to 1999. If the level flag for no revive is set, or this is already its second death, it gibs instead. At the timer the game checks that the body area is free of solid entities, so a player standing on it delays the rise. It then restores health to its starting value minus 50, with a floor of 30, plays a get-up animation and thinks again. Zombies are immune to headshots, and bullets cannot gib an enemy, with health stopping just above minus 40, except for a zombie or fire from the heavy automatic weapon. Any non-bullet hit above 20 damage, such as an explosion, gibs a zombie at once and skips the revive.",
+      "behavior": "When a zombie dies the first time it lies down and sets a rebirth timer of 5000 milliseconds plus a random 0 to 1999. A zombie placed with the editor no-revive spawn flag, or one on its second death, gibs instead: the flag presets the second-life marker at spawn, so the first death is already treated as the last. At the timer the game checks that the body area is free of solid entities, so a player standing on it delays the rise. It then restores health to its starting value minus 50, with a floor of 30, plays a get-up animation and thinks again. Zombies are immune to headshots, and bullets cannot gib an enemy, with health stopping just above minus 40, except for a zombie or fire from the heavy automatic weapon. Any non-bullet hit above 20 damage, such as an explosion, gibs a zombie at once and skips the revive.",
       "constants": [
         {
           "name": "rebirth delay, base",
@@ -1543,8 +1541,8 @@
       "id": "zombie-flame-spirit-attacks",
       "node": "ai-monsters",
       "name": "Zombie flame breath and spirit attacks",
-      "summary": "Zombies have two ranged special attacks: a short burst of fire and a slow-charging skull projectile that blocks overlapping casts.",
-      "behavior": "The fire attack starts when the target is within the flame radius minus 50 units. The radius is 0.3 of the 1250 unit flamethrower range, so about 325 units to begin. It lasts 4000 milliseconds, keeps the zombie facing the target with the aim pitched 20 degrees down, and ends early if the target leaves the radius. A zombie that has a flame weapon is immune to flame damage. The spirit attack has a range of 1000 units and a 6000 millisecond build-up with a 1000 millisecond fade-out. It is aborted when the zombie loses direct sight of the target. A spirit cannot start within one second of another one beginning anywhere in the level, so a group never casts in lockstep.",
+      "summary": "Zombies have two ranged special attacks: a short burst of fire and a slow-charging skull projectile that blocks overlapping casts across the whole level.",
+      "behavior": "The fire attack starts when the target is within the flame radius minus 50 units. The radius is 0.3 of the 1250 unit flamethrower range, so about 325 units to begin. It lasts 4000 milliseconds, keeps the zombie facing the target with the aim pitched 20 degrees down, and ends early if the target leaves the radius. A zombie that has a flame weapon is immune to flame damage. The spirit attack has a range of 1000 units and a 6000 millisecond build-up with a 1000 millisecond fade-out. It is aborted when the zombie loses direct sight of the target. The cast time is stamped every update while a spirit attack runs, and a new spirit cannot start while the stamp is under one second old. So no zombie in the level can begin a spirit while another is casting, or within one second after it ends, which prevents a group from casting in lockstep.",
       "constants": [
         {
           "name": "flame radius scale",
@@ -1577,7 +1575,7 @@
           "source": "src/game/ai_cast_fight.c:519"
         },
         {
-          "name": "spirit cooldown between starts",
+          "name": "spirit lockout after the last cast update",
           "value": 1000,
           "unit": "milliseconds of level time, shared across all zombies",
           "source": "src/game/ai_cast_func_attack.c:236"
@@ -1591,6 +1589,10 @@
         {
           "path": "src/game/ai_cast_func_attack.c",
           "line": 189
+        },
+        {
+          "path": "src/game/ai_cast_func_attack.c",
+          "line": 205
         },
         {
           "path": "src/game/bg_pmove.c",
@@ -1830,7 +1832,7 @@
       "node": "weapons-fire",
       "name": "Knife stealth kill from behind",
       "summary": "The knife kills ordinary human enemies in one hit when the player stands behind them within 48 units, ignoring their alertness.",
-      "behavior": "Every frame the server traces the crosshair ray. With the knife selected and a standard human enemy on the cursor, it compares the forward vectors of the player and the target. If their dot product exceeds 0.9, so both face about the same way within 26 degrees, a knife hint appears within 48 units. A knife swing in that state deals 100 damage with a special stealth means of death, while a normal hit deals 5 plus a random 0 to 4. The enemy alert state is not tested at all, so being behind is the only requirement. Heavy soldiers and the large boss take no knife damage, and the swing repeats every 200 milliseconds.",
+      "behavior": "The server traces the crosshair ray at 10 hertz, once every 100 milliseconds. With the knife selected and a standard human enemy on the cursor, it compares the forward vectors of the player and the target. If their dot product exceeds 0.9, so both face about the same way within 26 degrees, a knife hint appears within 48 units. A knife swing in that state deals 100 plus a random 0 to 4 damage, so 100 to 104, with a special stealth means of death, while a normal hit deals 5 plus the same random 0 to 4. The enemy alert state is not tested at all, so being behind is the only requirement. Heavy soldiers and the large boss take no knife damage, and the swing repeats every 200 milliseconds.",
       "constants": [
         {
           "name": "knife reach",
@@ -1861,6 +1863,12 @@
           "value": 200,
           "unit": "milliseconds of level time",
           "source": "src/game/bg_misc.c:92"
+        },
+        {
+          "name": "cursor hint check interval",
+          "value": 100,
+          "unit": "milliseconds of level time (10 hertz)",
+          "source": "src/game/g_main.c:467"
         }
       ],
       "sources": [
@@ -1879,6 +1887,10 @@
         {
           "path": "src/game/g_weapon.c",
           "line": 114
+        },
+        {
+          "path": "src/game/g_main.c",
+          "line": 463
         }
       ],
       "capabilities": [

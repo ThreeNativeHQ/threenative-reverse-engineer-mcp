@@ -894,9 +894,9 @@
     {
       "id": "aim-stance-fire-gate",
       "node": "player-aim-fire",
-      "name": "Planted aim stance with tilt classes and fire gate",
-      "summary": "Holding the aim button with a weapon equipped stops translation, turns the body at a character-specific rate and allows fire after the raise animation passes a set frame.",
-      "behavior": "The aim button works only when an equipped item is a knife or firearm. While it is held the character cannot walk; left and right rotate the body by 72 yaw units per update for the first character and 56 for the second, about 6.3 and 4.9 degrees. The aim has three vertical tilt classes, up, level and down, chosen from the held direction bits and refreshed from the target height at the fire frame, and changing tilt plays a short transition before the next shot. Firing is accepted only after the raise animation reaches frame 9, or frame 4 for the first character with the handgun or one of the two revolver items. Releasing the aim button starts the holster animation and returns control, and the knife uses a different raise frame and its own swing routine.",
+      "name": "Planted aim stance, hold state and quick tilt gate",
+      "summary": "Holding the aim button with a weapon equipped plants the character, turns the body at a character-specific rate, and starts a shot from the hold state when fire is pressed and ammo exists.",
+      "behavior": "The aim button works only when the equipped item is a knife or a firearm. Raising the weapon plays a raise animation, and when it ends the character enters a hold state that accepts input; releasing the aim button there starts the holster animation. While aimed the character cannot walk, and left and right rotate the body by 72 yaw units per update for the first character and 56 for the second, about 6.3 and 4.9 degrees. Pressing fire in the hold state starts the shot only when the ammo check passes, otherwise an empty click plays. During the raise, the up and down pad bits start a quick tilt animation once the raise passes frame 9, or frame 4 for the first character with the handgun or either revolver item, and that sets the tilt class used by hit tests. The tilt class is a bit flag with 0x40 as level, and otherwise it comes from the height of the weapon joint of the player compared with per-character thresholds, not from the target height.",
       "constants": [
         {
           "name": "Aim turn rate, first character",
@@ -911,22 +911,28 @@
           "source": "src/game/PlayerAnimations.cpp:4419"
         },
         {
-          "name": "Fire gate frame",
+          "name": "Quick tilt frame gate",
           "value": 9,
           "unit": "animation frame of the raise motion",
           "source": "src/game/PlayerAnimations.cpp:4431"
         },
         {
-          "name": "Early fire gate frame",
+          "name": "Early quick tilt frame gate",
           "value": 4,
           "unit": "animation frame for the first character with weapons 2, 4 and 5",
           "source": "src/game/PlayerAnimations.cpp:4428"
         },
         {
-          "name": "Highest firearm item id range start",
-          "value": "0x6e",
-          "unit": "item id above which special weapons count as aimable",
-          "source": "src/game/PlayerAnimations.cpp:3217"
+          "name": "Aim button bit",
+          "value": "0x100",
+          "unit": "pad bit mask held to stay aimed",
+          "source": "src/game/PlayerAnimations.cpp:4606"
+        },
+        {
+          "name": "Fire button bit",
+          "value": "0x40",
+          "unit": "pad bit mask that starts a shot from the hold state",
+          "source": "src/game/PlayerAnimations.cpp:4613"
         }
       ],
       "sources": [
@@ -940,7 +946,11 @@
         },
         {
           "path": "src/game/PlayerAnimations.cpp",
-          "line": 4605
+          "line": 4614
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 3955
         }
       ],
       "capabilities": [
@@ -959,7 +969,7 @@
       "node": "player-aim-fire",
       "name": "Auto-aim reticle target pick and follow turn",
       "summary": "When the aim stance begins, the nearest eligible enemy becomes the lock target, upright enemies are preferred over prone ones, and the body turns toward it at a rate that drops once nearly aligned.",
-      "behavior": "On entering the aim stance the game scans the 30 enemy slots for entries that are active, alive, inside the current camera zone, not script-controlled and of a normal enemy type id below 19, and ignores any whose line to the player crosses a sight-blocking boundary. The knife locks the nearest candidate. Firearms track two nearest candidates, those with a height value below 1 and those at or above 1, where prone bodies sit at exactly 1, and the below-1 group wins when both exist, so upright enemies are targeted before crawling ones. The facing test in the scan uses a half-circle step, so it never rejects a candidate. While locked, the body turns toward the target by 240 yaw units per update for the first character and 272 for the second, then by 192 and 224 once within 512 units of angle. Pressing fire drops the lock for that shot, and the Western difficulty setting disables the follow turn entirely.",
+      "behavior": "On entering the aim stance the game scans the 30 enemy slots for entries that are active, alive, inside the current camera zone, not script-controlled and of a normal enemy type id below 19, and ignores any whose line to the player crosses a sight-blocking boundary. The knife locks the nearest candidate. Firearms track two nearest candidates, those with a height value below 1 and those at or above 1, where prone bodies sit at exactly 1, and the below-1 group wins when both exist, so upright enemies are targeted before crawling ones. The facing test in the scan uses a half-circle step, so it never rejects a candidate. While locked, the body turns toward the target at 240 yaw units per update for the first character and 272 for the second, then at 192 and 224 once within 512 units of angle. The first character with the handgun gets 32 more in both cases, so both characters turn at 272 and 224 with it. Pressing fire drops the lock for that shot, and the Western difficulty setting disables the follow turn entirely.",
       "constants": [
         {
           "name": "Far follow turn, base",
@@ -980,6 +990,12 @@
           "source": "src/game/PlayerAnimations.cpp:4404"
         },
         {
+          "name": "Handgun bonus, first character",
+          "value": "0x20",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz added to both follow turn rates (decimal 32)",
+          "source": "src/game/PlayerAnimations.cpp:4407"
+        },
+        {
           "name": "Near alignment window",
           "value": "0x200",
           "unit": "yaw units (decimal 512, about 45 degrees)",
@@ -990,12 +1006,6 @@
           "value": "0x13",
           "unit": "enemy ids below this value can be locked",
           "source": "src/game/PlayerAnimations.cpp:4207"
-        },
-        {
-          "name": "Enemy slot count",
-          "value": 30,
-          "unit": "slots in the active enemy list",
-          "source": "src/game/PlayerAnimations.cpp:4120"
         }
       ],
       "sources": [
@@ -1095,39 +1105,51 @@
     {
       "id": "gun-hit-wedge",
       "node": "weapon-damage",
-      "name": "Single-target gun hit wedge with height class and wall check",
-      "summary": "A shot hits only the closest enemy inside a two-tier wedge ahead of the player, gated by aim tilt class and by sight-blocking walls.",
-      "behavior": "When the fire frame arrives, every active enemy that is not already in a hit reaction is tested, and only the closest one inside the wedge is damaged. The wedge has a near tier reaching the enemy radius plus 200 units and a far tier reaching the enemy radius plus the weapon range: 1200 for the handgun (1300 for the second character), 2600 for the shotgun and 800 for the magnum. An enemy carries height class bits and the shot carries the aim tilt class, and the two must share a bit: a standing zombie exposes the level class plus the down class inside 4500 units and the up class inside 3000, while a prone one exposes only the down class, so a level shot misses it. A zombie cannot be hit by an upward-tilted shot unless the weapon is the shotgun. Walls block guns and knives through a four-layer sight test, while thrown or explosive weapons ignore it.",
+      "name": "Single-target gun hit strip with height class and wall check",
+      "summary": "A shot hits only the closest enemy inside a strip ahead of the player whose sideways width grows with a per-weapon spread value, gated by tilt class and by sight-blocking walls.",
+      "behavior": "When the fire frame arrives, every active enemy that is not already in a hit reaction and whose height-class bits overlap the tilt class of the shot is tested, and only the closest one inside the shape is damaged. The shape is built in the frame of the player: a near tier whose sideways half-width is the enemy radius plus 200, and a far tier whose half-width is the enemy radius plus a per-weapon value of 1200 for the first character handgun (1300 for the second), 2600 for the shotgun and 800 for the magnum, so the shotgun spreads widest and the magnum is the narrowest. Both tiers share a forward cut line 650 units ahead of the player. A zombie exposes height classes through status bits: while standing it always shows 0x40, adds 0x80 within 3000 units and 0x20 within 4500, and a prone one shows only 0x20 within 4500; a vertical offset beyond 100 units leaves a single class. A zombie cannot be hit by a shot in the 0x80 class unless the weapon is the shotgun, and a sight test against room walls blocks guns and knives.",
       "constants": [
         {
-          "name": "Handgun range, first character",
+          "name": "Handgun spread, first character",
           "value": 1200,
-          "unit": "world units, far tier depth",
+          "unit": "world units, sideways half-width added to the enemy radius at the far tier",
           "source": "src/game/WeaponDamage.cpp:572"
         },
         {
-          "name": "Handgun range, second character",
-          "value": 1300,
-          "unit": "world units, far tier depth",
-          "source": "src/game/WeaponDamage.cpp:583"
-        },
-        {
-          "name": "Shotgun range",
+          "name": "Shotgun spread",
           "value": 2600,
-          "unit": "world units, far tier depth",
+          "unit": "world units, sideways half-width added to the enemy radius at the far tier",
           "source": "src/game/WeaponDamage.cpp:573"
         },
         {
-          "name": "Magnum range",
+          "name": "Magnum spread",
           "value": 800,
-          "unit": "world units, far tier depth",
+          "unit": "world units, sideways half-width added to the enemy radius at the far tier",
           "source": "src/game/WeaponDamage.cpp:575"
         },
         {
-          "name": "Near tier reach",
+          "name": "Near tier half-width",
           "value": 200,
-          "unit": "world units added to the enemy radius",
+          "unit": "world units added to the enemy radius, sideways",
           "source": "src/game/WeaponDamage.cpp:238"
+        },
+        {
+          "name": "Forward cut line",
+          "value": "0x28A",
+          "unit": "world units ahead of the player (decimal 650)",
+          "source": "src/game/WeaponDamage.cpp:247"
+        },
+        {
+          "name": "Alert radius, low class",
+          "value": 3000,
+          "unit": "world units, Euclidean distance; sets status bit 0x80",
+          "source": "src/game/entities/Zombie.cpp:580"
+        },
+        {
+          "name": "Visual radius, high class",
+          "value": 4500,
+          "unit": "world units, Euclidean distance; sets status bit 0x20",
+          "source": "src/game/entities/Zombie.cpp:584"
         }
       ],
       "sources": [
@@ -1142,10 +1164,14 @@
         {
           "path": "src/game/WeaponDamage.cpp",
           "line": 41
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 591
         }
       ],
       "capabilities": [
-        "hitscan with cone tolerance",
+        "single-target hit shapes",
         "height-class gating",
         "wall-blocked shots"
       ],
@@ -1159,15 +1185,9 @@
       "id": "weapon-damage-table",
       "node": "weapon-damage",
       "name": "Per-enemy, per-weapon damage records with playthrough variants",
-      "summary": "Damage is read from a table of ten weapon records per enemy type, with a lower shotgun and magnum value after the game has been cleared once.",
-      "behavior": "The damage for a hit is a table lookup keyed by enemy type and weapon, with a separate hit-state class that later drives the reaction animation. Against the common zombie the first playthrough values are 8 for the knife, 9 for the handgun, 53 for the shotgun and 130 for the magnum, and after the first clear the shotgun drops to 20 and the magnum to 60. The enemy is hurt if its health stays at or above zero and dying once it falls below zero. A shotgun hit inside 3000 units at level or raised aim, and a magnum hit at level aim, set health to a large negative value and kill the zombie outright with a head burst. Against zombie-type enemies the second character adds 3 extra damage to every handgun hit, and 7 against dogs.",
+      "summary": "Damage is read from a table of ten weapon records per enemy type, with a lower shotgun and magnum value after the game has been cleared once and a small refund on far shotgun hits.",
+      "behavior": "The damage for a hit is a table lookup keyed by enemy type and weapon, with a separate hit-state class that later drives the reaction animation. Against the common zombie the first playthrough values are 9 for the handgun, 53 for the shotgun and 130 for the magnum, and after the first clear the shotgun drops to 20 and the magnum to 60. A shotgun hit from more than 9000 units gives 10 health back right after, so its net damage is 43 on the first playthrough and 10 after a clear. The enemy is hurt if its health stays at or above zero and dying once it falls below zero. A shotgun hit inside 3000 units with tilt class 0x40 or 0x80, and any python hit with tilt class 0x40, set a zombie health to a large negative value for a head burst; dogs are excluded. Against zombie-type enemies the second character adds 3 extra damage to every handgun hit, and 7 against dogs.",
       "constants": [
-        {
-          "name": "Knife vs zombie",
-          "value": 8,
-          "unit": "health points per hit, first playthrough",
-          "source": "src/game/WeaponDamage.cpp:612"
-        },
         {
           "name": "Handgun vs zombie",
           "value": 9,
@@ -1193,10 +1213,16 @@
           "source": "src/game/WeaponDamage.cpp:844"
         },
         {
-          "name": "Magnum vs zombie, after clear",
-          "value": 60,
-          "unit": "health points per hit",
-          "source": "src/game/WeaponDamage.cpp:846"
+          "name": "Far shotgun refund distance",
+          "value": 9000,
+          "unit": "world units beyond which the refund applies",
+          "source": "src/game/WeaponDamage.cpp:1307"
+        },
+        {
+          "name": "Far shotgun refund",
+          "value": 10,
+          "unit": "health points returned to the enemy",
+          "source": "src/game/WeaponDamage.cpp:1308"
         },
         {
           "name": "Head-burst kill value",
@@ -1217,6 +1243,10 @@
         {
           "path": "src/game/WeaponDamage.cpp",
           "line": 1256
+        },
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 20
         }
       ],
       "capabilities": [
@@ -1264,13 +1294,13 @@
         {
           "name": "Poise table, first row",
           "value": "4, 3, 5, 3, 4, 4, 3, 4,",
-          "unit": "poise points, first row of thirty-two entries",
+          "unit": "handgun hits absorbed before a knockdown, first row of thirty-two entries",
           "source": "src/game/entities/Zombie.cpp:112"
         },
         {
           "name": "Hit threshold, first playthrough row",
           "value": "1, 2, 3, 2, 3, 3, 2, 3,",
-          "unit": "bullet-class hits, first row of thirty-two entries",
+          "unit": "knife hits needed for a knockdown, first row of thirty-two entries (first playthrough table)",
           "source": "src/game/entities/Zombie.cpp:1113"
         }
       ],
@@ -1302,32 +1332,38 @@
     {
       "id": "zombie-detect-chase",
       "node": "zombie-ai",
-      "name": "Zombie detection ranges, waypoint chase and weave",
-      "summary": "Zombies sense the player inside 3000 and 4500 units, refresh a chase waypoint when sight is clear, and weave while walking at 45 units per update.",
-      "behavior": "Each update the zombie measures Euclidean distance to the player and raises awareness bits inside 3000 and 4500 units, and replaces them with a single above or below bit when the player is more than 100 units higher or lower. It steers toward a stored waypoint and runs a 16-update path cycle in which it tests sight across a 1512 unit half-angle and, on the fourth update of the cycle, replaces the waypoint with the player position if the line is clear. While chasing it walks at 45 units per update, and on a random timer of 10 to 137 updates it starts a weave of 20 to 35 updates in which it turns at twice its turn speed and crawls at 10. If the player is already being grabbed and is within 800 units, it stands still for 60 updates.",
+      "name": "Zombie approach, fast turn to face and waypoint chase",
+      "summary": "A zombie within 3000 units Manhattan distance of the player turns fast to face it, then chases a waypoint refreshed by sight checks at 45 units per update with random weaving.",
+      "behavior": "In its player-tracking walk the zombie measures Manhattan distance to the player each update. Inside 3000 units, if the player lies outside a 90 degree cone in front of it (1024 yaw units each side), it enters a fast-turn behaviour that rotates 84 yaw units per update for 30 to 93 updates, then sets its waypoint to the player position and starts walking. While chasing, a 16-update cycle runs a sight test over a window of 1512 yaw units on its first four updates, and on the fourth it moves the waypoint to the player position if the line was never blocked. It walks at 45 units per update, and after a random delay it weaves for 20 to 35 updates, turning at a fast reversed rate and crawling at 10 units per update. If another zombie already holds the player and the player is within 800 units, it stands still for 60 updates.",
       "constants": [
         {
-          "name": "Alert radius",
+          "name": "Approach distance",
           "value": 3000,
-          "unit": "world units, Euclidean distance",
-          "source": "src/game/entities/Zombie.cpp:580"
+          "unit": "world units, Manhattan distance |dx|+|dz|",
+          "source": "src/game/entities/Zombie.cpp:2498"
         },
         {
-          "name": "Visual radius",
-          "value": 4500,
-          "unit": "world units, Euclidean distance",
-          "source": "src/game/entities/Zombie.cpp:584"
+          "name": "Facing cone half-width",
+          "value": "0x400",
+          "unit": "yaw units (decimal 1024, 90 degrees) inside which the zombie skips the fast turn",
+          "source": "src/game/entities/Zombie.cpp:2500"
         },
         {
-          "name": "Vertical offset limit",
-          "value": 100,
-          "unit": "world units of height difference before the above or below bit replaces the level bits",
-          "source": "src/game/entities/Zombie.cpp:591"
+          "name": "Fast turn rate",
+          "value": "0x54",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz (decimal 84)",
+          "source": "src/game/entities/Zombie.cpp:1062"
         },
         {
-          "name": "Sight-check half angle",
+          "name": "Fast turn base duration",
+          "value": "0x1E",
+          "unit": "game updates at 30 Hz (decimal 30), plus a random 0 to 63",
+          "source": "src/game/entities/Zombie.cpp:1059"
+        },
+        {
+          "name": "Sight window",
           "value": 1512,
-          "unit": "yaw units (about 133 degrees) used when refreshing the waypoint",
+          "unit": "yaw units tested by the waypoint refresh",
           "source": "src/game/entities/EntityCommon.cpp:349"
         },
         {
@@ -1352,7 +1388,11 @@
       "sources": [
         {
           "path": "src/game/entities/Zombie.cpp",
-          "line": 560
+          "line": 20
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1047
         },
         {
           "path": "src/game/entities/EntityCommon.cpp",
@@ -1364,14 +1404,15 @@
         }
       ],
       "capabilities": [
-        "range-based awareness",
+        "range-triggered pursuit",
+        "fast turn to face target",
         "last-seen waypoint chase",
         "random weave"
       ],
       "tags": [
         "ai",
         "horror",
-        "stealth"
+        "movement"
       ]
     },
     {
@@ -1651,7 +1692,7 @@
       "node": "enemy-bosses",
       "name": "Dog chase ramp, leap decision and bite",
       "summary": "The dog ramps to 240 units per update, chooses between a running leap and a flanking strafe by player health, and bites for 12 on contact.",
-      "behavior": "The dog accelerates by 20 units per update until it reaches 240 and steers toward a waypoint, swerving off walls it probes. Inside 5000 units, and only when the player is not already held, it faces the player and decides: if the player health is below 13 on the first playthrough (17 after a clear) and the player faces the dog, a random 7-bit value below 126 (100 if the player is poisoned) selects a flanking strafe for a lethal lunge; otherwise it leaps. The leap runs at 280 units per update, and the bite lands when the jaw joint comes within 1000 units of the player, shrinking to 800 for a very weak player and growing to 1500 when poisoned. A normal bite takes 12 health, and a player below the health limit who faces away is mauled instead.",
+      "behavior": "The dog accelerates by 20 units per update until it reaches 240 and steers toward a waypoint, swerving off walls it probes. Inside 5000 units, and only when the player is not already held, it turns to face the player and decides: if the player health is below 13 on the first playthrough (17 after a clear) and the player faces the dog, a random 7-bit value below 126 selects a flanking strafe for a lethal lunge; otherwise it takes a running leap. The leap runs at 280 units per update, and the bite lands when the jaw joint comes within 1000 units of the player, shrinking to 800 when the player health is at the limit or lower. A normal bite takes 12 health, and a player below the health limit who faces away is mauled instead. The code comments tie a roll limit of 100 and a reach of 1500 to a status bit 0x08 they call poison, but the poison drain and cures use other bits, so those two cases are not part of the normal flow.",
       "constants": [
         {
           "name": "Chase acceleration",
@@ -1690,10 +1731,10 @@
           "source": "src/game/entities/Cerberus.cpp:1160"
         },
         {
-          "name": "Bite reach, poisoned player",
-          "value": "0x5DC",
-          "unit": "world units (decimal 1500)",
-          "source": "src/game/entities/Cerberus.cpp:1254"
+          "name": "Bite reach, normal",
+          "value": 1000,
+          "unit": "world units from the jaw joint; 800 when health is at or below 12",
+          "source": "src/game/entities/Cerberus.cpp:1249"
         }
       ],
       "sources": [
@@ -1724,9 +1765,9 @@
     {
       "id": "boss-attack-selection",
       "node": "enemy-bosses",
-      "name": "Heavy boss attack choice, damage and non-lethal clamp",
-      "summary": "The large boss picks claw attacks from distance and facing tests and never kills with a swipe: a fatal blow leaves the player at 1 health and arms a grab finisher.",
-      "behavior": "The boss has 220 health, or 600 for the id-16 variant. Each think step measures Manhattan distance: within 2000 units and aligned to 512 yaw units it uses the swipe, within 2700 and aligned to 832 it uses the slash, and at short range with the player below 16 health it switches to the grab finisher when the player faces away. Staying within 4000 units for more than 120 updates sets an aggression timer of 60 updates, and health under 60 sets an aggressive flag. Hits deal 10 to 20 health on the first playthrough and 18 to 30 after a clear. If a slash would leave the player below zero, health is set to 1 and the boss chains into a backhand grab instead.",
+      "name": "Heavy boss attack choice, damage and slash clamp",
+      "summary": "The large boss picks swipe, slash or impale from distance and facing tests; a lethal slash leaves the player at 1 health and rolls into a grab, while the swipe has no such clamp.",
+      "behavior": "The boss has 220 health, or 600 for the id-16 variant. Each think step measures Manhattan distance: within 2000 units and aligned to 512 yaw units it uses the swipe, within 2700 and aligned to 832 it uses the slash, and the swipe is swapped for an impale grab when the player has under 16 health and faces away. Staying within 4000 units for more than 120 updates arms a 60-update timer and raises the 0x80 flag, and health under 60 raises the same flag. Hits deal 10 to 20 health on the first playthrough and 18 to 30 after a clear. The swipe subtracts its damage with no floor and can kill. If a slash would leave the player below zero, health is set to 1, a flag records the would-be kill, and the boss chains into a backhand grab instead.",
       "constants": [
         {
           "name": "Boss health",
@@ -1787,7 +1828,7 @@
       ],
       "capabilities": [
         "distance-gated attack set",
-        "non-lethal clamp with finisher",
+        "non-lethal slash clamp with finisher",
         "two-tier damage"
       ],
       "tags": [
@@ -1926,19 +1967,19 @@
       "id": "poison-drain",
       "node": "inventory-health",
       "name": "Poison drain with a floor and a lethal variant",
-      "summary": "A poisoned player loses 2 health every 120 updates but never drops below 1, unless the rarer fast variant is active, which ticks every 7 updates.",
-      "behavior": "The status byte has separate bits for the common poison, a second venom type from one boss and a lethal fast variant. While any of the three is set a one-byte timer counts down once per update, and when it reaches zero the player loses 2 health and the timer reloads. The normal reload is 120 updates and the lethal variant uses 7. Only the fast variant may take health below zero; the others stop at 1 so poison alone never kills. A snake bite sets the common poison with an initial timer of 150 updates. A blue herb clears the common poison bit and a serum clears the second venom bit.",
+      "summary": "A poisoned player loses 2 health about every 120 updates but never drops below 1, unless the rarer fast variant is active, which ticks about every 7 updates.",
+      "behavior": "The status byte has separate bits for the common poison, a second venom type from one boss and a lethal fast variant. While any of the three is set a one-byte timer counts down once per update, and when it was already zero the player loses 2 health and the timer reloads. The timer is read before it is decremented, so each interval is one update longer than its reload value. The normal reload is 120 updates and the lethal variant uses 7. Only the fast variant may take health below zero; the others stop at 1 so poison alone never kills. A snake bite sets the common poison bit with an initial timer of 150 updates, but only on a one-in-four roll, since two coin flips must both succeed. A blue herb clears the common poison bit and a serum clears the second venom bit.",
       "constants": [
         {
-          "name": "Normal poison interval",
+          "name": "Normal poison reload",
           "value": 120,
-          "unit": "game updates at 30 Hz",
+          "unit": "game updates at 30 Hz, plus one because the timer is read before the decrement",
           "source": "src/game/PlayerAnimations.cpp:2368"
         },
         {
-          "name": "Lethal poison interval",
+          "name": "Lethal poison reload",
           "value": 7,
-          "unit": "game updates at 30 Hz",
+          "unit": "game updates at 30 Hz, plus one because the timer is read before the decrement",
           "source": "src/game/PlayerAnimations.cpp:2368"
         },
         {
@@ -1949,8 +1990,8 @@
         },
         {
           "name": "Bite starting timer",
-          "value": 150,
-          "unit": "game updates before the first tick",
+          "value": "0x96",
+          "unit": "game updates (decimal 150) before the first tick",
           "source": "src/game/entities/Adder.cpp:704"
         },
         {
@@ -1964,6 +2005,10 @@
         {
           "path": "src/game/PlayerAnimations.cpp",
           "line": 2329
+        },
+        {
+          "path": "src/game/entities/Adder.cpp",
+          "line": 702
         },
         {
           "path": "src/game/MainMenu.cpp",
@@ -1985,20 +2030,8 @@
       "node": "room-camera-collision",
       "name": "Fixed camera selection by quadrilateral switch zones",
       "summary": "Each fixed camera owns a list of four-corner trigger zones; stepping into one cuts instantly to the camera it names.",
-      "behavior": "A room stores one camera record per view and, for each camera, a group of trigger zones whose four corners form a quadrilateral on the floor plane. Every update the game tests the player position against the zones of the active camera with four cross-product edge tests, two anchored at corner 0 and two at corner 2. On a hit the active camera index becomes the zone destination and the new background and sprite masks are displayed at once. Cutscenes can lock the camera so no zone fires, and some updates defer the redraw to the main loop. Because the cut is instant and independent of movement, tank-control directions stay tied to the character, not to the view.",
+      "behavior": "A room stores, for each camera, a group of trigger zones whose four corners form a quadrilateral on the floor plane, and each zone names the camera to switch to. Every update the game tests the player position against the zones of the active camera with four cross-product edge tests, two anchored at corner 0 and two at corner 2, using only the horizontal axes. On a hit the active camera index becomes the zone destination and the background and sprite masks are displayed at once, or the redraw is deferred to the main loop when a defer flag is set. Cutscenes can lock the camera so no zone fires. If no zone matches on the first display of a room, the starting camera is shown anyway. Because the cut is instant and independent of movement, tank-control directions stay tied to the character and not to the view.",
       "constants": [
-        {
-          "name": "Camera record size",
-          "value": "0x2C",
-          "unit": "bytes per camera record in the room data",
-          "source": "src/game/PlayerAnimations.cpp:4265"
-        },
-        {
-          "name": "Camera table offset",
-          "value": "0x9C",
-          "unit": "bytes from the start of the room data",
-          "source": "src/game/PlayerAnimations.cpp:4265"
-        },
         {
           "name": "Immediate redisplay mask mode",
           "value": 4,
@@ -2167,7 +2200,7 @@
       "node": "doors-interaction",
       "name": "Door open sequence and full-screen door scene during load",
       "summary": "Opening a door turns the player, plays a four-step open animation, then blacks the screen and runs a full-screen door scene while the next room loads.",
-      "behavior": "The open sequence has four steps: turn to face the door by easing a quarter of the remaining angle each update until the residual is under a small window, start the open animation and size the shadow, play it with a latch sound on a fixed frame, then displace the player 4350 units through the doorway and raise a flag for the room change. The black cut is instant: a full-screen black rectangle is drawn, one frame is waited, and then the room loads. While it loads a scripted door scene plays full-screen from one of 34 door data files chosen by the door record, black for the first 3 updates and then a bytecode-driven animation of panels. A door that swings the other way mirrors the animation and the displacement.",
+      "behavior": "The open sequence has four steps: turn to face the door by nudging the facing by a quarter of its offset from the nearest door axis each update until it is within about 32 yaw units, start the open animation, play it with a latch sound on a fixed frame, then displace the player 4350 units through the doorway and raise a flag for the room change. The black cut is instant: a full-screen black rectangle is drawn, one frame is waited, and then the room loads. While it loads a scripted door scene plays full-screen from one of 34 door data files chosen by the door record, black for the first 3 updates and then a bytecode-driven animation of panels. A door that swings the other way mirrors the animation and the displacement.",
       "constants": [
         {
           "name": "Doorway displacement",
@@ -2190,8 +2223,8 @@
         {
           "name": "Initial black frames",
           "value": 3,
-          "unit": "game updates",
-          "source": "src/game/DoorSystem.cpp:13"
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/DoorSystem.cpp:1148"
         },
         {
           "name": "Cut rectangle width",

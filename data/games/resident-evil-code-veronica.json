@@ -754,7 +754,7 @@
         {
           "name": "Vsyncs per simulation frame",
           "value": 2,
-          "unit": "vsyncs at 60 Hz per frame, giving a 30 Hz update",
+          "unit": "vsyncs at 60 Hz per frame, giving a 30 Hz update at 30 Hz",
           "source": "src/ps2/veronica/prog/ps2_NaSystem.c:78"
         },
         {
@@ -815,7 +815,7 @@
         {
           "name": "Digital ramp step",
           "value": 4,
-          "unit": "ramp units per update while a lateral bit is held",
+          "unit": "ramp units per update at 30 Hz while a lateral bit is held",
           "source": "src/ps2/veronica/prog/pad.c:199"
         },
         {
@@ -876,31 +876,31 @@
         {
           "name": "Stand-turn step",
           "value": 7.2,
-          "unit": "degrees per 30 Hz update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:1999"
         },
         {
           "name": "Walk-turn step",
           "value": 4,
-          "unit": "degrees per 30 Hz update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:2016"
         },
         {
           "name": "Run-turn step",
           "value": 4.5,
-          "unit": "degrees per 30 Hz update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:2497"
         },
         {
           "name": "Backstep-turn step",
           "value": 4,
-          "unit": "degrees per 30 Hz update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:2813"
         },
         {
           "name": "Aim-turn step",
           "value": 2.4,
-          "unit": "degrees per 30 Hz update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:4754"
         },
         {
@@ -949,19 +949,19 @@
         {
           "name": "Wading speed multiplier",
           "value": 0.8,
-          "unit": "multiplier on per-frame translation speed",
+          "unit": "multiplier on per-frame translation speed (at 30 Hz)",
           "source": "src/ps2/veronica/prog/player.c:2338"
         },
         {
           "name": "Worst-tier walk multiplier in the special mode",
           "value": 0.6,
-          "unit": "multiplier on per-frame translation speed",
+          "unit": "multiplier on per-frame translation speed (at 30 Hz)",
           "source": "src/ps2/veronica/prog/player.c:2349"
         },
         {
           "name": "Push gait trigger",
           "value": 5,
-          "unit": "updates of walking into an obstacle before the push gait",
+          "unit": "updates at 30 Hz of walking into an obstacle before the push gait",
           "source": "src/ps2/veronica/prog/player.c:2401"
         },
         {
@@ -1004,8 +1004,8 @@
       "id": "quick-turn-180",
       "node": "player-control",
       "name": "Quick turn by pressing run while backing up",
-      "summary": "A fresh run press during the backstep spins the player a half circle over eight eased updates and drops straight into a run.",
-      "behavior": "While in the backstep gait, a newly pressed run button sets the target heading to the current heading plus half a circle and raises an eased-turn flag. Each update the heading moves by the remaining difference divided by a counter that starts at eight and decrements, so the step grows as the counter shrinks and the heading snaps exactly onto the target when the counter reaches zero. The run gait starts immediately with a long blend, a footstep sound and the wall probe lead extended to its run value. The player keeps translating during the turn, so the body arcs away and ends facing away from the starting direction.",
+      "summary": "A fresh run press during the backstep spins the player a half circle in eight equal steps at 30 Hz, nearly in place, and drops into a run.",
+      "behavior": "While in the backstep gait, a newly pressed run button sets the target heading to the current heading plus half a circle and raises an eased-turn flag. Each update the heading moves by the remaining difference divided by a counter that starts at eight and decrements. Because the remainder shrinks in step with the divisor, every step is the same size, one eighth of the half circle (4096 angle words, 22.5 degrees per update at 30 Hz), so the turn is linear, not accelerating, and the heading is forced onto the target when the counter reaches zero. The run gait starts immediately with a long blend, a footstep sound and the wall probe lead extended to its run value. The turn also sets a flag that makes the run gait zero its forward speed, so the player does not run forward during the turn; the body only slides sideways by a small fixed amount each update until the flag clears at the end. Afterward the player keeps running only if forward and run are still held.",
       "constants": [
         {
           "name": "Half circle offset",
@@ -1016,13 +1016,13 @@
         {
           "name": "Easing steps",
           "value": 8,
-          "unit": "updates for the heading ease; divisor starts here and decrements",
+          "unit": "updates at 30 Hz for the heading ease; divisor starts here and decrements",
           "source": "src/ps2/veronica/prog/player.c:2627"
         },
         {
           "name": "Run blend frames",
           "value": 16,
-          "unit": "animation blend updates when entering run from the quick turn",
+          "unit": "animation blend updates at 30 Hz when entering run from the quick turn",
           "source": "src/ps2/veronica/prog/player.c:2621"
         },
         {
@@ -1030,6 +1030,12 @@
           "value": 3,
           "unit": "units ahead of the body for wall probing",
           "source": "src/ps2/veronica/prog/player.c:2625"
+        },
+        {
+          "name": "Sideways slide during the turn",
+          "value": 0.2,
+          "unit": "units per update at 30 Hz, perpendicular to the target heading, while forward speed is zero",
+          "source": "src/ps2/veronica/prog/player.c:2513"
         }
       ],
       "sources": [
@@ -1044,11 +1050,15 @@
         {
           "path": "src/ps2/veronica/prog/player.c",
           "line": 1423
+        },
+        {
+          "path": "src/ps2/veronica/prog/player.c",
+          "line": 2513
         }
       ],
       "capabilities": [
         "180-turn",
-        "eased-yaw",
+        "linear-yaw-step",
         "escape-move"
       ],
       "tags": [
@@ -1079,7 +1089,7 @@
         {
           "name": "Retreat steering",
           "value": 4,
-          "unit": "degrees per update before the turn scalar",
+          "unit": "degrees per update at 30 Hz before the turn scalar",
           "source": "src/ps2/veronica/prog/player.c:2813"
         },
         {
@@ -1142,7 +1152,7 @@
         {
           "name": "Probe lead smoothing",
           "value": 0.5,
-          "unit": "fraction of the remaining gap per update",
+          "unit": "fraction of the remaining gap per update at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:1580"
         },
         {
@@ -1203,7 +1213,7 @@
         {
           "name": "Yaw ease steps",
           "value": 8,
-          "unit": "updates for the lock-on turn",
+          "unit": "updates at 30 Hz for the lock-on turn",
           "source": "src/ps2/veronica/prog/player.c:4622"
         },
         {
@@ -1264,7 +1274,7 @@
         {
           "name": "Retarget yaw ease steps",
           "value": 4,
-          "unit": "updates",
+          "unit": "updates at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:5189"
         },
         {
@@ -1276,7 +1286,7 @@
         {
           "name": "Pitch easing divisor",
           "value": 4,
-          "unit": "gap divided by 4 per update",
+          "unit": "gap divided by 4 per update at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:4834"
         }
       ],
@@ -1309,31 +1319,31 @@
       "id": "gun-capsule-sweep",
       "node": "player-weapons",
       "name": "Shot as a widening capsule sweep",
-      "summary": "A shot is a 200-unit line from 11 units above the feet; the hit capsule starts 2 units wide and widens with distance, which acts as built-in aim assistance.",
-      "behavior": "On firing, the shot starts slightly ahead of the player at 11 units above the ground and runs along the weapon yaw and pitch for the weapon length. The sweep tests every active enemy against a capsule whose radius is the weapon base radius plus the distance along the line times a growth factor, capped at a maximum. When aiming up or down the growth is doubled and the cap multiplied by 1.2 so slanted shots forgive more. Enemies behind the shooter are skipped, walls shorten the line and add a margin, and the nearest enemy hit takes the damage. Because the capsule widens with range, a far target is easier to hit than its model width suggests.",
+      "summary": "A shot is a 200-unit line from 11 units above the feet; the hit capsule starts 2 units wide and widens with distance by a capped amount, which acts as built-in aim assistance.",
+      "behavior": "On firing, the shot starts slightly ahead of the player at 11 units above the ground and runs along the weapon yaw and pitch for the weapon length. The sweep tests every active enemy against a capsule whose radius is the weapon base radius plus a growth term, the distance along the line times a growth factor. Only the growth term is capped; the base radius is added after the cap. For the sample weapon row the radius therefore tops out at 2 plus 4, which is 6 units. When aiming up or down the growth factor is doubled and the growth cap multiplied by 1.2 (to 4.8, so 6.8 units at most) so slanted shots forgive more. Other weapon rows use other numbers, for example growth 0.2 with a cap of 1.0, or growth 0.3 with a cap of 40. Enemies behind the shooter are skipped, walls shorten the line and add a margin, and the nearest enemy hit takes the damage. Because the capsule widens with range, a far target is easier to hit than its model width suggests.",
       "constants": [
         {
-          "name": "Shot length",
+          "name": "Shot length, sample weapon row",
           "value": 200,
           "unit": "units",
           "source": "src/ps2/veronica/prog/player.c:334"
         },
         {
-          "name": "Base hit radius",
+          "name": "Base hit radius, sample weapon row",
           "value": 2,
           "unit": "units",
           "source": "src/ps2/veronica/prog/player.c:334"
         },
         {
-          "name": "Radius growth per unit of range",
+          "name": "Radius growth per unit of range, sample weapon row",
           "value": 0.4,
           "unit": "units of radius per unit of distance",
           "source": "src/ps2/veronica/prog/player.c:334"
         },
         {
-          "name": "Maximum radius",
+          "name": "Radius growth cap, sample weapon row",
           "value": 4,
-          "unit": "units",
+          "unit": "units added on top of the base radius, so the capsule is at most 6.0 wide",
           "source": "src/ps2/veronica/prog/player.c:334"
         },
         {
@@ -1343,9 +1353,9 @@
           "source": "src/ps2/veronica/prog/player.c:5369"
         },
         {
-          "name": "Angled-aim radius cap multiplier",
+          "name": "Angled-aim growth cap multiplier",
           "value": 1.2,
-          "unit": "multiplier on maximum radius when aimed up or down",
+          "unit": "multiplier on the radius growth cap (not the whole radius) when aimed up or down",
           "source": "src/ps2/veronica/prog/weapon.c:590"
         }
       ],
@@ -1461,31 +1471,31 @@
         {
           "name": "Recoil speed, first character",
           "value": 0.5,
-          "unit": "units per update, halves each update",
+          "unit": "units per update at 30 Hz, halves each update",
           "source": "src/ps2/veronica/prog/player.c:5322"
         },
         {
           "name": "Recoil speed, second character",
           "value": 0.1,
-          "unit": "units per update, halves each update",
+          "unit": "units per update at 30 Hz, halves each update",
           "source": "src/ps2/veronica/prog/player.c:5326"
         },
         {
           "name": "Heavy weapon recoil, first character",
           "value": 0.8,
-          "unit": "units per update, halves each update",
+          "unit": "units per update at 30 Hz, halves each update",
           "source": "src/ps2/veronica/prog/player.c:5311"
         },
         {
           "name": "Recoil decay",
           "value": 0.5,
-          "unit": "multiplier per update",
+          "unit": "multiplier per update at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:1568"
         },
         {
           "name": "Recoil stop threshold",
           "value": 0.1,
-          "unit": "units per update",
+          "unit": "units per update at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:1570"
         }
       ],
@@ -1534,7 +1544,7 @@
         {
           "name": "Aim gain",
           "value": 4,
-          "unit": "angle words per stick unit per update",
+          "unit": "angle words per stick unit per update at 30 Hz",
           "source": "src/ps2/veronica/prog/playpch2.c:273"
         },
         {
@@ -1564,7 +1574,7 @@
         {
           "name": "Wobble length",
           "value": 30,
-          "unit": "updates",
+          "unit": "updates at 30 Hz",
           "source": "src/ps2/veronica/prog/playpch2.c:228"
         }
       ],
@@ -1637,12 +1647,12 @@
       "node": "camera-cuts",
       "name": "Eased aim and slide inside a fixed camera",
       "summary": "Inside one cut the camera position slides in proportion to where the player stands in the area, and its aim eases toward the player by a per-camera factor.",
-      "behavior": "The tracked player point eases halfway toward the smoothed player position each update, and its height is the floor height plus a per-camera offset. Camera position along the width and depth axes is an authored anchor plus the player offset scaled by authored percentages, so a camera drifts as the player walks. Aim angles ease by a per-camera percentage of the angle gap each update, and a camera can clamp its look range to limit pan and tilt. Position eases by an authored fraction of the gap, or in an alternate mode by one over one plus an authored count. The default camera distance is 256 and the default perspective is 8192 angle words.",
+      "behavior": "The tracked player point eases halfway toward the smoothed player position each update, and its height is the floor height plus a per-camera offset. Camera position along the width and depth axes is an authored anchor plus the player offset scaled by authored percentages, so a camera drifts as the player walks. Aim angles ease by a per-camera percentage of the angle gap each update, and a camera can clamp its look range to limit pan and tilt. Position eases by an authored fraction of the gap each update. Right after a cut that sets the transition flag, an alternate mode runs for one plus an authored count of updates: a counter starts at zero and each update the position moves by that counter times one over one plus the count of the remaining gap, so the pull ramps up from nothing and the mode ends when the counter reaches the count plus one. The default camera distance is 256 and the default perspective is 8192 angle words.",
       "constants": [
         {
           "name": "Tracked point easing",
           "value": 0.5,
-          "unit": "fraction of the gap per update",
+          "unit": "fraction of the gap per update at 30 Hz",
           "source": "src/ps2/veronica/prog/cut.c:1209"
         },
         {
@@ -1654,7 +1664,7 @@
         {
           "name": "Alternate easing numerator",
           "value": 1,
-          "unit": "divided by one plus an authored count",
+          "unit": "divided by one plus an authored count, then multiplied by a transition counter that rises by 1 each update at 30 Hz",
           "source": "src/ps2/veronica/prog/cut.c:1483"
         },
         {
@@ -1733,7 +1743,7 @@
         {
           "name": "Poison drain interval",
           "value": 30,
-          "unit": "updates counted before 1 hit point is lost (31 updates per point)",
+          "unit": "updates at 30 Hz counted before 1 hit point is lost (31 updates per point)",
           "source": "src/ps2/veronica/prog/player.c:1396"
         }
       ],
@@ -1776,7 +1786,7 @@
         {
           "name": "Stagger blend",
           "value": 4,
-          "unit": "updates",
+          "unit": "updates at 30 Hz",
           "source": "src/ps2/veronica/prog/player.c:6240"
         },
         {
@@ -1831,13 +1841,13 @@
         {
           "name": "Direction press bonus",
           "value": 4,
-          "unit": "countdown units per update when a direction edge occurred",
+          "unit": "countdown units per update at 30 Hz when a direction edge occurred",
           "source": "src/ps2/veronica/prog/zonzon.c:90"
         },
         {
           "name": "Action press bonus",
           "value": 3,
-          "unit": "countdown units per update when an action button edge occurred",
+          "unit": "countdown units per update at 30 Hz when an action button edge occurred",
           "source": "src/ps2/veronica/prog/zonzon.c:95"
         },
         {
@@ -1883,48 +1893,48 @@
       "node": "enemy-ai-shared",
       "name": "Sight cones with timed memory",
       "summary": "Enemies see the player only inside a facing cone with no distance limit, then keep tracking for a class-specific time after the player leaves the cone.",
-      "behavior": "The shared sight test compares the angle between an enemy facing and the direction to the player with a cone half-angle; a half-angle of zero means 180 degrees. The shambling class tests every update with an 80 or 60 degree cone depending on variant, holds a sighting until an update on which a 31-update cycle counter hits its last value without the player in view, and then keeps its alert flag for 15 more updates, so it forgets between half a second and one and a half seconds after losing the player. The clawed brute uses a 100 degree cone with the same cycle. The hound tests only during the first four updates of each sixteen-update cycle with a 100 degree cone. The leaping reptile needs a vertical gap under 30 units and an unobstructed ray at 15 units height, uses a 120 degree cone and forgets after 90 updates.",
+      "behavior": "The shared sight test compares the angle between an enemy facing and the direction to the player with a half-angle, the limit on either side of the facing, so each stored angle gives a cone twice as wide; a half-angle of zero means 180 degrees each side, which is all around the enemy. The shambling class tests every update with an 80 or 60 degree half-angle (a 160 or 120 degree cone) depending on variant and holds a sighting until the 31-update cycle counter reaches its last value without the player in view. The code also sets a 15-update afterglow counter for the alert flag, but that countdown is dead: the counter is an unsigned byte, so the check for a negative value never succeeds and the flag is cleared only by other code paths. The same dead countdown appears in the brute code. The clawed brute uses a 100 degree half-angle (a 200 degree cone) with the same cycle. The hound tests only during the first four updates of each sixteen-update cycle with the same 100 degree half-angle. The leaping reptile needs a vertical gap under 30 units and an unobstructed ray at 15 units height, uses a 120 degree half-angle (a 240 degree cone) and forgets after 90 updates.",
       "constants": [
         {
-          "name": "Shambling cone, wide variant",
+          "name": "Shambling cone half-angle, wide variant",
           "value": 14563,
-          "unit": "angle words (80 degrees)",
+          "unit": "angle words, half-angle (80 degrees each side, 160 degree cone)",
           "source": "src/ps2/veronica/prog/en01.c:1065"
         },
         {
-          "name": "Shambling cone, narrow variant",
+          "name": "Shambling cone half-angle, narrow variant",
           "value": 10922,
-          "unit": "angle words (60 degrees)",
+          "unit": "angle words, half-angle (60 degrees each side, 120 degree cone)",
           "source": "src/ps2/veronica/prog/en01.c:1066"
         },
         {
           "name": "Shambling check cycle",
           "value": 31,
-          "unit": "updates",
+          "unit": "updates at 30 Hz",
           "source": "src/ps2/veronica/prog/en01.c:4567"
         },
         {
-          "name": "Shambling alert afterglow",
+          "name": "Shambling alert afterglow (dead, never expires the flag)",
           "value": 15,
-          "unit": "updates after the sighting latch drops",
+          "unit": "updates at 30 Hz intended; the unsigned counter never goes negative, so it has no effect",
           "source": "src/ps2/veronica/prog/en01.c:4594"
         },
         {
-          "name": "Brute cone",
+          "name": "Brute cone half-angle",
           "value": "0x471C",
-          "unit": "angle words, 18204 (100 degrees)",
+          "unit": "angle words, half-angle 18204 (100 degrees each side, 200 degree cone)",
           "source": "src/ps2/veronica/prog/en09.c:3008"
         },
         {
-          "name": "Hound cone",
+          "name": "Hound cone half-angle",
           "value": 18204,
-          "unit": "angle words (100 degrees)",
+          "unit": "angle words, half-angle (100 degrees each side, 200 degree cone)",
           "source": "src/ps2/veronica/prog/en04.c:1379"
         },
         {
-          "name": "Reptile cone",
+          "name": "Reptile cone half-angle",
           "value": 21845,
-          "unit": "angle words (120 degrees)",
+          "unit": "angle words, half-angle (120 degrees each side, 240 degree cone)",
           "source": "src/ps2/veronica/prog/en05.c:4775"
         },
         {
@@ -1936,7 +1946,7 @@
         {
           "name": "Reptile memory",
           "value": 90,
-          "unit": "updates",
+          "unit": "updates at 30 Hz",
           "source": "src/ps2/veronica/prog/en05.c:4799"
         }
       ],
@@ -1973,25 +1983,25 @@
       "id": "enemy-steering-step",
       "node": "enemy-ai-shared",
       "name": "Fixed-step turn toward a target",
-      "summary": "Enemies rotate toward their goal by a fixed angle step per update that snaps when the gap is within two steps, with each class and state choosing its own step.",
-      "behavior": "The steering helper takes a goal point and a signed step. It computes the heading to the goal and the difference to the current heading. If the difference is smaller than twice the step the heading is set exactly to the goal; otherwise the heading moves one step in the shorter direction. A negative step turns away, which retreat states use. The shambling class steps 256 angle words (about 1.4 degrees) per update while approaching and 512 (about 2.8 degrees) once it is within about 20 units, so it turns slowly and can be circled. The hound steps 1152 (about 6.3 degrees) when sprinting.",
+      "summary": "Enemies rotate toward their goal by a fixed angle step per update at 30 Hz that snaps when the gap is within one step either side, with each class and state choosing its own step.",
+      "behavior": "The steering helper takes a goal point and a signed step. It computes the heading to the goal and the difference to the current heading. The difference is shifted by one step and wrapped to a half-open window; if the result is below twice the step, which means the gap is no more than one step either way, the heading is set exactly to the goal; otherwise the heading moves one step in the shorter direction. A negative step turns away, which retreat states use. The shambling class steps 256 angle words (about 1.4 degrees) per update while approaching and 512 (about 2.8 degrees) once it is within about 20 units, so it turns slowly and can be circled. The hound steps 1152 (about 6.3 degrees) when sprinting.",
       "constants": [
         {
           "name": "Shambling approach step",
           "value": 256,
-          "unit": "angle words per update (1.4 degrees)",
+          "unit": "angle words per update at 30 Hz (1.4 degrees)",
           "source": "src/ps2/veronica/prog/en01.c:5171"
         },
         {
           "name": "Shambling close step",
           "value": 512,
-          "unit": "angle words per update (2.8 degrees)",
+          "unit": "angle words per update at 30 Hz (2.8 degrees)",
           "source": "src/ps2/veronica/prog/en01.c:5234"
         },
         {
           "name": "Hound sprint step",
           "value": 1152,
-          "unit": "angle words per update (6.3 degrees)",
+          "unit": "angle words per update at 30 Hz (6.3 degrees)",
           "source": "src/ps2/veronica/prog/en04.c:1805"
         }
       ],
@@ -2292,7 +2302,7 @@
       "node": "enemy-classes",
       "name": "Four-legged hound: accelerating sprint and arc leap",
       "summary": "The hound starts a sprint slowly, adds 0.1 units per update up to 1.2, and from 20 units away leaps in an arc with distance-gated bite damage.",
-      "behavior": "Hit points come from a table of 60 to 120 normally and 30 to 75 in the alternate mode. In the sprint state the speed starts at 0.08 and grows by 0.1 per update until it reaches 1.2, while the hound turns toward the target at 1152 angle words per update. When the player is within 20 units but beyond 11 and the hound faces within about 6 degrees with a clear line, it starts the leap: an 11-update windup at 0.4 units per update, then a launch at 1.9 units per update with an initial vertical velocity of 2.2 that loses 0.28 each update, which gives a parabolic arc. A sphere of radius 1.2 on the head is tested; a hit from frame 13 on removes 12 hit points and an earlier one removes 6. Inside 11 units the hound does a close attack instead.",
+      "behavior": "Hit points come from a table of 60 to 120 normally and 30 to 75 in the alternate mode. In the sprint state the speed starts at 0.08 and grows by 0.1 per update until it reaches 1.2, while the hound turns toward the target at 1152 angle words per update. When the player is within 20 units but beyond 11 and the hound faces within about 6 degrees with a clear line, it starts the leap: an 11-update windup at 0.4 units per update, then a launch at 1.9 units per update with an initial vertical velocity of 2.2 upward that loses 0.28 each update at 30 Hz, which gives a parabolic arc. A sphere of radius 1.2 on the head is tested; a hit from frame 13 on removes 12 hit points and an earlier one removes 6. Inside 11 units the hound does a close attack instead.",
       "constants": [
         {
           "name": "Lowest hit point entry, normal mode",
@@ -2309,37 +2319,37 @@
         {
           "name": "Sprint start speed",
           "value": 0.08,
-          "unit": "units per update",
+          "unit": "units per update at 30 Hz",
           "source": "src/ps2/veronica/prog/en04.c:1817"
         },
         {
           "name": "Sprint acceleration",
           "value": 0.1,
-          "unit": "units per update, added each update",
+          "unit": "units per update at 30 Hz, added each update",
           "source": "src/ps2/veronica/prog/en04.c:1826"
         },
         {
           "name": "Sprint top speed",
           "value": 1.2,
-          "unit": "units per update",
+          "unit": "units per update at 30 Hz",
           "source": "src/ps2/veronica/prog/en04.c:1826"
         },
         {
           "name": "Leap launch speed",
           "value": 1.9,
-          "unit": "units per update",
+          "unit": "units per update at 30 Hz",
           "source": "src/ps2/veronica/prog/en04.c:2228"
         },
         {
           "name": "Leap launch vertical velocity",
           "value": 2.2,
-          "unit": "units per update",
+          "unit": "units per update at 30 Hz",
           "source": "src/ps2/veronica/prog/en04.c:2226"
         },
         {
           "name": "Leap gravity step",
           "value": 0.28,
-          "unit": "units per update added each update",
+          "unit": "units per update subtracted from the vertical velocity each update at 30 Hz (a downward pull of 0.28 units per update squared)",
           "source": "src/ps2/veronica/prog/en04.c:2235"
         },
         {
@@ -2406,13 +2416,13 @@
         {
           "name": "Small flinch threshold",
           "value": 30,
-          "unit": "damage in one update",
+          "unit": "damage in one update at 30 Hz",
           "source": "src/ps2/veronica/prog/en03.c:6610"
         },
         {
           "name": "Large flinch threshold",
           "value": 50,
-          "unit": "damage in one update",
+          "unit": "damage in one update at 30 Hz",
           "source": "src/ps2/veronica/prog/en03.c:6615"
         },
         {
@@ -2467,7 +2477,7 @@
         {
           "name": "Task slots",
           "value": 16,
-          "unit": "tasks executed in order every frame",
+          "unit": "tasks executed in order every frame (at 30 Hz)",
           "source": "src/ps2/veronica/prog/event.c:13046"
         },
         {
@@ -2484,8 +2494,14 @@
         },
         {
           "name": "Inventory words per character",
+          "value": 16,
+          "unit": "word stride between characters in the packed inventory array",
+          "source": "src/ps2/veronica/prog/event.c:1374"
+        },
+        {
+          "name": "Item check loop bound",
           "value": 12,
-          "unit": "words examined by the item check (index 1 to 11)",
+          "unit": "exclusive upper index offset: the check reads offsets 1 to 11 (11 words), not 12",
           "source": "src/ps2/veronica/prog/event.c:1374"
         }
       ],

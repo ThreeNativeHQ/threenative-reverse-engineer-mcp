@@ -507,16 +507,16 @@
           "name": "DoorCtrlOpen",
           "path": "src/ingame/map/door_ctl.c",
           "lines": [
-            62,
-            111
+            1055,
+            1396
           ]
         },
         {
           "name": "DoorOpenCheckSquareArea",
           "path": "src/ingame/map/door_ctl.c",
           "lines": [
-            73,
-            111
+            2712,
+            2797
           ]
         },
         {
@@ -539,8 +539,8 @@
           "name": "DoorLockChange",
           "path": "src/ingame/map/door_ctl.c",
           "lines": [
-            78,
-            111
+            2960,
+            2983
           ]
         }
       ],
@@ -656,8 +656,8 @@
       "id": "finder-entry-exit",
       "node": "finder-aim",
       "name": "Lens mode toggle with tap or hold",
-      "summary": "The camera-weapon view opens on a firm fresh button press, eases the view toward the nearest visible ghost, and closes on a second tap or on release after a longer hold.",
-      "behavior": "Pressing the lens button enters aim mode only if the pad reports at least a light-pressure threshold, so a feather touch is ignored, and the press must be a fresh one. Entry is refused while the player is paralyzed or confused, or while a locked animation runs. On entry the reticle jumps to screen center, the shutter is locked for a short window, and the nearest living, visible ghost inside a fixed radius becomes a heading target. The look pitch snaps to that ghost at once, while the body yaw is spread over a 25-update ease-in before the mode flips to full aim. To leave, the player either taps the button again (toggle) or releases it after having held it longer than a tap threshold (hold-to-aim); a lowering animation then plays before normal control returns.",
+      "summary": "The camera-weapon view opens on a firm fresh button press, turns the view toward the nearest visible ghost, and closes on a second tap or on release after a longer hold.",
+      "behavior": "Pressing the lens button enters aim mode only if the pad reports at least a light-pressure threshold, so a feather touch is ignored, and the press must be a fresh one. Entry is refused while the player is paralyzed or confused, or while a locked animation runs. On entry the reticle jumps to screen center, the shutter lock is armed, and the nearest living, visible ghost inside a fixed radius becomes a heading target. The look pitch snaps to that ghost at once, while the body yaw is covered by a constant step each update over a 25-update transition, after which the mode flips to full aim. The shutter lock only counts down once full aim has started, so it runs after that transition. To leave, the player either taps the button again (toggle) or releases it after having held it longer than a tap threshold (hold-to-aim); a lowering animation then plays before normal control returns.",
       "constants": [
         {
           "name": "Pad pressure needed to open the lens",
@@ -666,15 +666,15 @@
           "source": "src/ingame/plyr/plyr_ctl.c:329"
         },
         {
-          "name": "Entry ease-in length",
+          "name": "Entry transition length",
           "value": 25,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/camera/camera.c:379"
         },
         {
-          "name": "Shutter lock after entry",
+          "name": "Shutter lock once full aim starts",
           "value": 20,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:424"
         },
         {
@@ -751,31 +751,31 @@
         {
           "name": "Reticle speed with input",
           "value": 2,
-          "unit": "screen pixels per update",
+          "unit": "screen pixels per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1680"
         },
         {
           "name": "Reticle return speed",
           "value": 1.9,
-          "unit": "screen pixels per update",
+          "unit": "screen pixels per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1687"
         },
         {
           "name": "Fine look step",
           "value": 0.2,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1783"
         },
         {
           "name": "Coarse look step",
           "value": 0.9,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1779"
         },
         {
           "name": "Boosted look step",
           "value": 1.8,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1773"
         },
         {
@@ -793,7 +793,7 @@
         {
           "name": "Zoom lens step",
           "value": 0.01,
-          "unit": "radians of field of view per update",
+          "unit": "radians of field of view per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:1753"
         }
       ],
@@ -935,8 +935,8 @@
       "id": "lens-charge",
       "node": "lens-capture",
       "name": "Charge meter that rises while a ghost is framed",
-      "summary": "Holding a ghost in frame fills a charge counter, faster when it is close; losing it drains the meter one level at a time.",
-      "behavior": "While a valid ghost is captured, a degree counter grows each update by a rate that is a base factor plus a proximity bonus, times a fixed multiplier; the bonus scales from nothing at two thousand units to the full amount at point-blank. When the counter passes a threshold set by the speed upgrade, the level goes up by one and the counter resets, with one sound for a level-up and another for reaching the cap. The cap depends on the lens upgrade, and the weakest film type is capped at one level. At the cap the displayed rate is pinned to a fixed value. When nothing is captured the meter drains: a cooldown counter set by the speed upgrade counts down each update, and the level drops by one each time it runs out, until the film base level is reached; better film starts higher.",
+      "summary": "Holding a ghost in capture fills a charge counter, faster when it is close; emptying the frame drains the meter one level at a time.",
+      "behavior": "While a valid ghost is captured, a degree counter grows each update by a rate that is a base factor plus a proximity bonus, times a fixed multiplier; the bonus scales from nothing at two thousand units to the full amount at point-blank. When the counter passes a threshold set by the speed upgrade, the level goes up by one and the counter resets, with one sound for a level-up and another for reaching the cap. The cap depends on the lens upgrade, and the weakest film type is capped at one level. At the cap the displayed rate is pinned to a fixed value. The meter drains only when no ghost at all is inside the frame; a ghost that is framed but outside the focus circle or hidden behind something holds the meter where it is. While draining, the counter counts down from its current partial value (restarting from a cooldown set by the speed upgrade only if it is zero or above that cooldown), and the level drops by one whenever it hits zero, until the film base level is reached; better film starts higher.",
       "constants": [
         {
           "name": "Level-up threshold, base lens",
@@ -947,7 +947,7 @@
         {
           "name": "Rate multiplier",
           "value": 3,
-          "unit": "counter degrees per update before the distance factor",
+          "unit": "counter degrees per update at 60 Hz NTSC, before the distance factor",
           "source": "src/ingame/plyr/plyr_ctl.c:2153"
         },
         {
@@ -971,13 +971,13 @@
         {
           "name": "Cap display rate",
           "value": 4.5,
-          "unit": "counter degrees per update",
+          "unit": "counter degrees per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:2131"
         },
         {
           "name": "Drain cooldown, base lens",
           "value": 60,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:2066"
         }
       ],
@@ -1028,31 +1028,31 @@
         {
           "name": "Initial freeze timer",
           "value": 120,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1939"
         },
         {
           "name": "Recent-shot timer",
           "value": 600,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1940"
         },
         {
           "name": "Freeze after a killing shot",
           "value": 60,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/photo/pht_main.c:143"
         },
         {
           "name": "Freeze after a non-kill shot in a fight",
           "value": 5,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/photo/pht_main.c:147"
         },
         {
           "name": "Freeze after an ordinary shot",
           "value": 130,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/photo/pht_main.c:151"
         }
       ],
@@ -1181,7 +1181,7 @@
       "node": "lens-capture",
       "name": "Shot score from distance, centering and bonuses",
       "summary": "Score is a point total built from charge and proximity bonuses, times a ratio made of distance, centering, charge and kill factors.",
-      "behavior": "Points start at the charge level, add one for being inside the ghost reach range, one for near-perfect centering, two for a full meter and four for a chance-window hit, then multiply by twenty-five for the main ghost class or twelve for the lesser class. Overkill adds a fraction of the excess damage. A separate ratio multiplies a distance factor (high inside the reach range, falling to half over about two thousand units beyond it), a centering factor (highest within a tiny circle, falling to half at a hundred pixels), a charge factor for a full meter, a chance factor, and a kill factor that is higher for a killing shot and lower for a non-kill. A ghost that is faint gets half the ratio and a solid one gets a little extra. The final score is never below the shot damage, because points are forced up to the damage when the product would be lower.",
+      "behavior": "Points start at the charge level, add one for being inside the ghost reach range, one for near-perfect centering, two for a full meter and four for a chance-window hit, then multiply by twenty-five for the main ghost class or twelve for the lesser class. Overkill adds a fraction of the excess damage. A separate ratio multiplies a distance factor (high inside the reach range, falling to half over about two thousand units beyond it), a centering factor (highest within a tiny circle, falling to half at a hundred pixels), a charge factor for a full meter, a chance factor, and a kill factor: a non-kill is scaled down, a killing shot is scaled up, and a killing shot that also has both a full meter and a chance-window hit is scaled up further. A ghost that is faint gets half the ratio and a solid one gets a little extra. The final score is never below the shot damage, because points are forced up to the damage when the product would be lower.",
       "constants": [
         {
           "name": "Reach-range distance ratio",
@@ -1208,10 +1208,16 @@
           "source": "src/ingame/plyr/plyr_ctl.c:2747"
         },
         {
-          "name": "Kill multiplier without chance bonus",
+          "name": "Kill multiplier",
           "value": 1.3,
-          "unit": "unitless",
+          "unit": "unitless, used unless the shot has both a full meter and a chance-window hit",
           "source": "src/ingame/plyr/plyr_ctl.c:2699"
+        },
+        {
+          "name": "Kill multiplier with full meter and chance hit",
+          "value": 1.6,
+          "unit": "unitless",
+          "source": "src/ingame/plyr/plyr_ctl.c:2692"
         },
         {
           "name": "Non-kill multiplier",
@@ -1276,19 +1282,19 @@
         {
           "name": "Slow duration",
           "value": 600,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1594"
         },
         {
           "name": "Freeze duration",
           "value": 180,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1630"
         },
         {
           "name": "Reveal duration",
           "value": 600,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1668"
         },
         {
@@ -1495,7 +1501,7 @@
         {
           "name": "Heading turn rate",
           "value": 2,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/enemy/move_ctl.c:413"
         },
         {
@@ -1555,8 +1561,8 @@
       "id": "ghost-blink-ambush",
       "node": "ghost-script",
       "name": "Blink teleport near the player",
-      "summary": "A ghost vanishes and reappears at a script-chosen distance and bearing from the player, hidden for a short time first.",
-      "behavior": "The command picks a distance from two script bytes, in units of fifty world units, then picks a bearing: directly behind the player, a random ten-degree step around the full circle, or straight ahead. It converts that offset to a world position around the player, keeps the ghost height, refreshes its position data and plays a sound. If a hide time is given it sets the ghost visibility to zero, waits that many updates, then restores the saved visibility.",
+      "summary": "A ghost jumps to a script-chosen distance and bearing from the player and stays invisible there for a short time before appearing.",
+      "behavior": "The command picks a distance from two script bytes, in units of fifty world units, then picks a bearing: directly behind the player, a random ten-degree step around the full circle, or straight ahead. It converts that offset to a world position around the player, moves the ghost there at once, keeps its height, refreshes its position data and plays a sound. Only then, if a hide time is given, does it set the ghost visibility to zero at the new spot, wait that many updates, and restore the saved visibility, so the ghost fades in already standing at its ambush point.",
       "constants": [
         {
           "name": "Distance unit",
@@ -1649,7 +1655,7 @@
         {
           "name": "Forced injured walk after a grab",
           "value": 60,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/enemy/move_ctl.c:973"
         }
       ],
@@ -1704,7 +1710,7 @@
         {
           "name": "Flash sequence wait",
           "value": 120,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/enemy/ene_ctl.c:1855"
         },
         {
@@ -1761,19 +1767,19 @@
       "id": "player-hp-drain-revive",
       "node": "player-damage",
       "name": "Queued health drain and revival item",
-      "summary": "Damage is a pool that drains two health per update, and a spent revival item refills health instead of ending the run.",
-      "behavior": "A hit adds to a pending-damage amount; while that pool is nonzero the player loses two health each update until it is empty. A new hit during the drain is ignored unless it carries priority, and hits are ignored for the whole refill after a revival. When health reaches zero the game checks for a revival item: if one is held, it is spent, the drain stops and health refills five per update up to the maximum. Otherwise the game-over sequence starts, or a mission-failed screen in the battle mode. At or below a low-health threshold a heartbeat loop plays, and below a similar threshold the idle pose changes to a hurt stance.",
+      "summary": "Damage is a pending amount that drains two health per update, and a spent revival item refills health instead of ending the run.",
+      "behavior": "A hit sets the pending-damage amount (overwriting any remainder rather than adding to it); while that amount is nonzero the player loses two health each update until it is empty. A new hit during the drain is ignored unless it carries priority, and hits are ignored for the whole refill after a revival. When health reaches zero the game checks for a revival item: if one is held, it is spent, the drain stops and health refills five per update up to the maximum. Otherwise the game-over sequence starts, or a mission-failed screen in the battle mode. At or below a low-health threshold a heartbeat loop plays, and below a similar threshold the idle pose changes to a hurt stance.",
       "constants": [
         {
-          "name": "Drain per update",
+          "name": "Drain per update at 60 Hz NTSC",
           "value": 2,
-          "unit": "health per update",
+          "unit": "health per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:1226"
         },
         {
           "name": "Revival refill rate",
           "value": 5,
-          "unit": "health per update",
+          "unit": "health per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:1280"
         },
         {
@@ -1839,31 +1845,31 @@
         {
           "name": "Dodge window",
           "value": 18,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:260"
         },
         {
           "name": "Early-press cutoff",
           "value": 8,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:264"
         },
         {
           "name": "Struggle timer reduction per flick",
           "value": 3,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:864"
         },
         {
           "name": "Struggle threshold",
           "value": 22,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:862"
         },
         {
           "name": "Rumble after a direct hit",
           "value": 15,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:241"
         }
       ],
@@ -1926,13 +1932,13 @@
         {
           "name": "Pulse duration",
           "value": 18,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1129"
         },
         {
           "name": "Pulse gap, nearest band",
           "value": 25,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1075"
         },
         {
@@ -1950,7 +1956,7 @@
         {
           "name": "Hint pulse gap",
           "value": 150,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:1196"
         }
       ],
@@ -1995,30 +2001,30 @@
       "node": "player-locomotion",
       "name": "Locomotion speed and gradual turning",
       "summary": "Movement speed mostly comes from animation root motion, with fixed fallback speeds for blends; turning is gradual with a rapid pivot for large angle changes.",
-      "behavior": "Each update the player speed is set from the current animation: the root-motion distance of the frame, scaled by a fixed factor, and a fixed table of fallback speeds only while animations are blending. The table has one value each for running, walking, aiming strafe and injured walking, plus small values for stairs and ladders. The stick angle is rebased by the angle from the room camera to the player, so up on the stick always means away from the camera. The heading turns toward that angle in fixed steps while moving; when the difference is large it starts a rapid pivot at a higher rate for as many updates as needed. Walk or run is chosen by a run button, and a forced injured walk overrides both.",
+      "behavior": "Each update the player speed is set from the current animation: the root-motion distance of the frame, scaled by a fixed factor, and a fixed table of fallback speeds only while animations are blending. The table has one value each for running, walking, aiming strafe and injured walking, plus small values for stairs and ladders. The stick angle is rebased by the angle from the room camera to the player, so up on the stick always means away from the camera. The heading turns toward that angle in fixed steps while moving; when the difference is large it starts a rapid pivot at a higher rate for as many updates as needed. Walk or run is chosen by a run button, and a forced injured walk overrides both. The game runs one update per vsync, so the per-update values here hold at 60 Hz NTSC; the PAL build multiplies movement by 1.2 to compensate for 50 Hz.",
       "constants": [
         {
           "name": "Run fallback speed",
           "value": 11,
-          "unit": "world units per update",
+          "unit": "world units per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:4987"
         },
         {
           "name": "Walk fallback speed",
           "value": 5.5,
-          "unit": "world units per update",
+          "unit": "world units per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:4992"
         },
         {
           "name": "Aim strafe speed",
           "value": 2.75,
-          "unit": "world units per update",
+          "unit": "world units per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:4997"
         },
         {
           "name": "Injured walk speed",
           "value": 3.8499999,
-          "unit": "world units per update",
+          "unit": "world units per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:5002"
         },
         {
@@ -2036,7 +2042,7 @@
         {
           "name": "Normal turn step",
           "value": 5,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:3751"
         },
         {
@@ -2048,7 +2054,7 @@
         {
           "name": "Pivot rate",
           "value": 13,
-          "unit": "degrees per update",
+          "unit": "degrees per update at 60 Hz NTSC",
           "source": "src/ingame/plyr/plyr_ctl.c:3959"
         }
       ],
@@ -2080,6 +2086,18 @@
         {
           "path": "src/graphics/motion/motion.c",
           "line": 1379
+        },
+        {
+          "path": "src/main/main.c",
+          "line": 33
+        },
+        {
+          "path": "src/os/system.c",
+          "line": 281
+        },
+        {
+          "path": "src/ingame/ingame.c",
+          "line": 310
         }
       ],
       "capabilities": [
@@ -2102,7 +2120,7 @@
         {
           "name": "Hold after a camera change",
           "value": 10,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/plyr/plyr_ctl.c:3622"
         },
         {
@@ -2177,7 +2195,7 @@
         {
           "name": "Damage close-up speed",
           "value": 60,
-          "unit": "world units per update",
+          "unit": "world units per update at 60 Hz NTSC",
           "source": "src/ingame/camera/camera.c:2731"
         }
       ],
@@ -2225,19 +2243,19 @@
       "id": "door-open-sequence",
       "node": "door-system",
       "name": "Door interaction, lock state and the open sequence",
-      "summary": "A door opens when the player presses the action button inside its trigger area facing it; the animation hides the next-room load.",
-      "behavior": "The action button turns on a one-update check that tests whether the player stands in a door trigger polygon on the front or back side, whether the door is unlocked, and whether the player heading is inside the door allowed angle range. If so, the player is frozen, the next room starts loading, and the player glides to the door mark over a fixed number of updates while the opening animation starts after a short wait. When the load finishes, the door slot is registered as opening, and the end of the player animation moves the player to the far side. Locks are a separate flag from the state enum; locking or unlocking forces the state back to closed. There are twenty door slots in a room.",
+      "summary": "A door opens when the player presses the action button inside its trigger area facing it; the player is parked on the door mark while the next room loads.",
+      "behavior": "The action button turns on a one-update check that tests whether the player stands in a door trigger polygon on the front or back side, whether the door is unlocked, and whether the player heading is inside the door allowed angle range. If so, the player is frozen and the next room starts loading. The player is placed on the door mark and aligned with the door heading (the start and end poses are equal, so there is no glide), and the player animation is requested with a 40-update blend. The open-wait counter only starts once the room load finishes; after a short count the door slot is registered as opening and its sound plays, and the end of the player animation moves the player to the far side. Locks are a separate flag from the state enum; locking or unlocking forces the state back to closed. There are twenty door slots in a room.",
       "constants": [
         {
-          "name": "Glide to door mark",
+          "name": "Player animation blend and placement window",
           "value": 40,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/map/door_ctl.c:1136"
         },
         {
-          "name": "Wait before door animation",
+          "name": "Count before the door slot starts opening",
           "value": 5,
-          "unit": "updates (rate unverified, one per game update)",
+          "unit": "updates at 60 Hz NTSC (one game update per vsync; 50 Hz on PAL)",
           "source": "src/ingame/map/door_ctl.c:1137"
         },
         {
@@ -2279,6 +2297,10 @@
         {
           "path": "src/ingame/map/door_ctl.c",
           "line": 1136
+        },
+        {
+          "path": "src/ingame/map/door_ctl.c",
+          "line": 1221
         },
         {
           "path": "src/ingame/map/door_ctl.c",
