@@ -1,0 +1,2122 @@
+{
+  "version": 1,
+  "id": "star-wars-jedi-knight-dark-forces-ii",
+  "title": "Star Wars Jedi Knight: Dark Forces II",
+  "repo": "https://github.com/shinyquagsire23/OpenJKDF2",
+  "sha": "3e4bc4abb8f82a502a940be935ee3de64dc22ad7",
+  "nodes": [
+    {
+      "id": "player-movement",
+      "name": "Player control mapping and speed selection",
+      "purpose": "Turns key and axis input into acceleration and yaw for the local player, choosing the thrust multiplier for run, walk, crouch, backpedal and wading, and steering the same axes in head space once the player leaves the ground.",
+      "paths": [
+        "src/Devices/sithControl.c",
+        "src/Devices/sithControl.h"
+      ],
+      "functions": [
+        {
+          "name": "sithControl_PlayerMovement",
+          "path": "src/Devices/sithControl.c",
+          "lines": [
+            1661,
+            1775
+          ]
+        },
+        {
+          "name": "sithControl_FreeCam",
+          "path": "src/Devices/sithControl.c",
+          "lines": [
+            1778,
+            1939
+          ]
+        },
+        {
+          "name": "sithControl_PlayerLook",
+          "path": "src/Devices/sithControl.c",
+          "lines": [
+            1373,
+            1465
+          ]
+        },
+        {
+          "name": "sithControl_GetStrafeSpeedScale",
+          "path": "src/Devices/sithControl.c",
+          "lines": [
+            29,
+            36
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-integration",
+        "player-actions"
+      ]
+    },
+    {
+      "id": "player-actions",
+      "name": "Jump launch and use-key interaction",
+      "purpose": "Discrete player verbs: the jump impulse that scales with the actor jump speed, and the activate probe that sweeps a short ray from the eye to send use messages to surfaces and things.",
+      "paths": [
+        "src/Gameplay/sithPlayerActions.c",
+        "src/Gameplay/sithPlayerActions.h"
+      ],
+      "functions": [
+        {
+          "name": "sithPlayerActions_JumpWithVel",
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "lines": [
+            99,
+            171
+          ]
+        },
+        {
+          "name": "sithPlayerActions_Activate",
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "lines": [
+            24,
+            96
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep"
+      ]
+    },
+    {
+      "id": "physics-integration",
+      "name": "Fixed-step physics integration",
+      "purpose": "Accumulates frame time into fixed physics steps and integrates drag, thrust, gravity and buoyancy for every moving thing, with separate paths for submerged, surface-attached and generic bodies.",
+      "paths": [
+        "src/Engine/sithPhysics.c",
+        "src/Engine/sithPhysics.h",
+        "src/engine_config.h",
+        "src/Main/sithMain.c",
+        "src/World/jkPlayer.c"
+      ],
+      "functions": [
+        {
+          "name": "sithPhysics_UpdateThing",
+          "path": "src/Engine/sithPhysics.c",
+          "lines": [
+            157,
+            223
+          ]
+        },
+        {
+          "name": "sithPhysics_UpdateThingPhysics",
+          "path": "src/Engine/sithPhysics.c",
+          "lines": [
+            428,
+            564
+          ]
+        },
+        {
+          "name": "sithPhysics_UpdateUnderwaterThingPhysics",
+          "path": "src/Engine/sithPhysics.c",
+          "lines": [
+            701,
+            777
+          ]
+        },
+        {
+          "name": "sithPhysics_ApplyDrag",
+          "path": "src/Engine/sithPhysics.c",
+          "lines": [
+            289,
+            308
+          ]
+        },
+        {
+          "name": "sithPhysics_SetThingLook",
+          "path": "src/Engine/sithPhysics.c",
+          "lines": [
+            244,
+            287
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep"
+      ]
+    },
+    {
+      "id": "collision-sweep",
+      "name": "Sphere sweep collision and contact response",
+      "purpose": "Moves bodies through sector portals by sweeping a sphere, resolves surface and thing contacts, and converts landing speed into fall damage, impact sounds and floor re-attachment.",
+      "paths": [
+        "src/Engine/sithCollision.c",
+        "src/Engine/sithCollision.h"
+      ],
+      "functions": [
+        {
+          "name": "sithCollision_MoveThing",
+          "path": "src/Engine/sithCollision.c",
+          "lines": [
+            620,
+            953
+          ]
+        },
+        {
+          "name": "sithCollision_FallHurt",
+          "path": "src/Engine/sithCollision.c",
+          "lines": [
+            584,
+            594
+          ]
+        },
+        {
+          "name": "sithCollision_HandleThingHitSurface",
+          "path": "src/Engine/sithCollision.c",
+          "lines": [
+            956,
+            988
+          ]
+        },
+        {
+          "name": "sithCollision_SearchForCollisions",
+          "path": "src/Engine/sithCollision.c",
+          "lines": [
+            119,
+            208
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "First-person and external cameras",
+      "purpose": "Builds the view from the focus body by copying orientation, adding head angles and eye offset, rolling the horizon with sideways speed, pulling the camera out of geometry, and cycling between registered cameras.",
+      "paths": [
+        "src/Engine/sithCamera.c",
+        "src/Engine/sithCamera.h"
+      ],
+      "functions": [
+        {
+          "name": "sithCamera_Update",
+          "path": "src/Engine/sithCamera.c",
+          "lines": [
+            235,
+            584
+          ]
+        },
+        {
+          "name": "sithCamera_CycleCamera",
+          "path": "src/Engine/sithCamera.c",
+          "lines": [
+            707,
+            722
+          ]
+        },
+        {
+          "name": "sithCamera_SetZoom",
+          "path": "src/Engine/sithCamera.c",
+          "lines": [
+            725,
+            777
+          ]
+        },
+        {
+          "name": "sithCamera_SetPOVShake",
+          "path": "src/Engine/sithCamera.c",
+          "lines": [
+            673,
+            679
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "collision-sweep"
+      ]
+    },
+    {
+      "id": "saber",
+      "name": "Lightsaber blade and hit sweep",
+      "purpose": "Animates blade length, sweeps the blade through the world each frame from its hand joint, applies damage to a bounded set of targets, and turns a facing-cone defence roll into a block.",
+      "paths": [
+        "src/Gameplay/jkSaber.c",
+        "src/Gameplay/jkSaber.h"
+      ],
+      "functions": [
+        {
+          "name": "jkSaber_UpdateLength",
+          "path": "src/Gameplay/jkSaber.c",
+          "lines": [
+            124,
+            225
+          ]
+        },
+        {
+          "name": "jkSaber_UpdateCollision",
+          "path": "src/Gameplay/jkSaber.c",
+          "lines": [
+            365,
+            456
+          ]
+        },
+        {
+          "name": "jkSaber_UpdateCollision2",
+          "path": "src/Gameplay/jkSaber.c",
+          "lines": [
+            228,
+            362
+          ]
+        },
+        {
+          "name": "jkSaber_SpawnSparks",
+          "path": "src/Gameplay/jkSaber.c",
+          "lines": [
+            458,
+            488
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep"
+      ]
+    },
+    {
+      "id": "weapons",
+      "name": "Projectile weapons and aim assist",
+      "purpose": "Spawns and advances projectile bodies, optionally snaps the shot to a visible target inside an aim cone, keeps fire cadence across dropped frames, and handles surface impact, ricochet and detonation.",
+      "paths": [
+        "src/World/sithWeapon.c",
+        "src/World/sithWeapon.h",
+        "src/engine_config.h"
+      ],
+      "functions": [
+        {
+          "name": "sithWeapon_FireProjectile",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            1363,
+            1446
+          ]
+        },
+        {
+          "name": "sithWeapon_WeaponFireProjectile",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            509,
+            620
+          ]
+        },
+        {
+          "name": "sithWeapon_GetAimOrient",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            1284,
+            1360
+          ]
+        },
+        {
+          "name": "sithWeapon_SurfaceCollisionHandler",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            767,
+            847
+          ]
+        },
+        {
+          "name": "sithWeapon_Update",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            57,
+            85
+          ]
+        },
+        {
+          "name": "sithWeapon_InitDefaults",
+          "path": "src/World/sithWeapon.c",
+          "lines": [
+            34,
+            50
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep",
+        "ai-awareness"
+      ]
+    },
+    {
+      "id": "ai-awareness",
+      "name": "Actor sight, hearing and alarm spreading",
+      "purpose": "Per-class sensing plus a shared awareness board: actors test a distance, a facing cone and a line trace, while noise events flood through adjoining sectors so nearby actors wake and attack.",
+      "paths": [
+        "src/AI/sithAIAwareness.c",
+        "src/AI/sithAIAwareness.h",
+        "src/AI/sithAI.c",
+        "src/AI/sithAIClass.c",
+        "src/AI/sithAICmd.c"
+      ],
+      "functions": [
+        {
+          "name": "sithAIAwareness_Update",
+          "path": "src/AI/sithAIAwareness.c",
+          "lines": [
+            68,
+            116
+          ]
+        },
+        {
+          "name": "sithAIAwareness_ProcessEvent",
+          "path": "src/AI/sithAIAwareness.c",
+          "lines": [
+            118,
+            155
+          ]
+        },
+        {
+          "name": "sithAIAwareness_CreateTransmittingEvent",
+          "path": "src/AI/sithAIAwareness.c",
+          "lines": [
+            37,
+            54
+          ]
+        },
+        {
+          "name": "sithAI_CheckSightThing",
+          "path": "src/AI/sithAI.c",
+          "lines": [
+            1052,
+            1128
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "damage-model",
+      "name": "Actor health, damage routing and death",
+      "purpose": "Routes incoming damage for actors and players, scales friendly fire, drives hit reactions and screen feedback, accumulates submerged time, and resolves death including scripted fall-death sectors.",
+      "paths": [
+        "src/World/sithActor.c",
+        "src/World/sithThing.c",
+        "src/Gameplay/sithPlayer.c"
+      ],
+      "functions": [
+        {
+          "name": "sithActor_DamageActor",
+          "path": "src/World/sithActor.c",
+          "lines": [
+            79,
+            221
+          ]
+        },
+        {
+          "name": "sithActor_Update",
+          "path": "src/World/sithActor.c",
+          "lines": [
+            38,
+            76
+          ]
+        },
+        {
+          "name": "sithActor_KillActor",
+          "path": "src/World/sithActor.c",
+          "lines": [
+            264,
+            357
+          ]
+        },
+        {
+          "name": "sithThing_DamageThing",
+          "path": "src/World/sithThing.c",
+          "lines": [
+            458,
+            493
+          ]
+        },
+        {
+          "name": "sithPlayer_Update",
+          "path": "src/Gameplay/sithPlayer.c",
+          "lines": [
+            205,
+            272
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-awareness"
+      ]
+    },
+    {
+      "id": "items",
+      "name": "Pickup items and respawn timers",
+      "purpose": "Item bodies answer a player touch at most once per interval and schedule their own return from a per-item interval, shortened for extra players in multiplayer.",
+      "paths": [
+        "src/World/sithItem.c",
+        "src/World/sithItem.h"
+      ],
+      "functions": [
+        {
+          "name": "sithItem_PlayerCollisionHandler",
+          "path": "src/World/sithItem.c",
+          "lines": [
+            14,
+            29
+          ]
+        },
+        {
+          "name": "sithItem_SetItemTaken",
+          "path": "src/World/sithItem.c",
+          "lines": [
+            40,
+            94
+          ]
+        },
+        {
+          "name": "sithItem_DestroyItem",
+          "path": "src/World/sithItem.c",
+          "lines": [
+            96,
+            137
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep"
+      ]
+    },
+    {
+      "id": "explosions",
+      "name": "Explosion blast phase and radial damage",
+      "purpose": "Explosion bodies run a timed blast phase that damages and pushes everything inside an authored range with distance falloff and a line-of-sight check.",
+      "paths": [
+        "src/World/sithExplosion.c",
+        "src/World/sithExplosion.h"
+      ],
+      "functions": [
+        {
+          "name": "sithExplosion_Update",
+          "path": "src/World/sithExplosion.c",
+          "lines": [
+            41,
+            69
+          ]
+        },
+        {
+          "name": "sithExplosion_MakeBlast",
+          "path": "src/World/sithExplosion.c",
+          "lines": [
+            71,
+            134
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-sweep",
+        "ai-awareness"
+      ]
+    },
+    {
+      "id": "inventory",
+      "name": "Inventory bins and force powers",
+      "purpose": "Per-player numbered bins hold weapons, ammunition, energy, force mana and force powers, each backed by a script that answers activate, fire and deactivate messages on its own cadence.",
+      "paths": [
+        "src/Gameplay/sithInventory.c",
+        "src/Gameplay/sithInventory.h",
+        "src/Cog/jkCog.c",
+        "src/Cog/sithCogExec.c",
+        "src/Cog/sithCogFunctionPlayer.c",
+        "src/types_enums.h"
+      ],
+      "functions": [
+        {
+          "name": "sithInventory_ActivateBin",
+          "path": "src/Gameplay/sithInventory.c",
+          "lines": [
+            484,
+            502
+          ]
+        },
+        {
+          "name": "sithInventory_SetInventory",
+          "path": "src/Gameplay/sithInventory.c",
+          "lines": [
+            597,
+            628
+          ]
+        },
+        {
+          "name": "jkCog_SetForceSpeed",
+          "path": "src/Cog/jkCog.c",
+          "lines": [
+            328,
+            331
+          ]
+        },
+        {
+          "name": "sithCogExec_CheckForceJumpVelocity",
+          "path": "src/Cog/sithCogExec.c",
+          "lines": [
+            305,
+            317
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "movement-speed-multipliers",
+      "node": "player-movement",
+      "name": "Run, walk, crouch, backpedal and wading multipliers",
+      "summary": "Ground movement is an acceleration target. Run, walk, crouch, backpedal, wading and strafing each apply their own multiplier to it.",
+      "behavior": "Each control update turns the forward and sidestep axes into an acceleration built from the actor maximum thrust plus any scripted speed bonus. The same speed multiplier then scales both axes. Holding run doubles it, or an always-run option sets it. Holding walk halves it, so run and walk together give one. Crouching replaces the value with one half, so crouch-walking does not stack with walk. Standing on a water or deep-water surface halves the result again, so wading stacks on top of crouch. Moving backwards halves only the forward component before the multiplier. The sidestep axis takes a separate strafe scale. The classic scale is 0.7 of forward thrust. This reimplementation adds an option for equal strafe speed that is on by default in its builds, so the classic 0.7 applies only when that option is off. The result is an acceleration, not a velocity, so drag in the physics step decides how fast each multiplier is felt and how long the player slides after release.",
+      "constants": [
+        {
+          "name": "run thrust multiplier",
+          "value": 2,
+          "unit": "dimensionless multiplier on forward and sidestep acceleration, applied each control update",
+          "source": "src/Devices/sithControl.c:1682"
+        },
+        {
+          "name": "walk thrust multiplier",
+          "value": 0.5,
+          "unit": "dimensionless multiplier, stacks with run; applied each control update",
+          "source": "src/Devices/sithControl.c:1684"
+        },
+        {
+          "name": "crouch thrust multiplier",
+          "value": 0.5,
+          "unit": "dimensionless multiplier that replaces run and walk; applied each control update",
+          "source": "src/Devices/sithControl.c:1693"
+        },
+        {
+          "name": "wading thrust multiplier",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on top of the above while attached to water; applied each control update",
+          "source": "src/Devices/sithControl.c:1704"
+        },
+        {
+          "name": "backpedal multiplier",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on the forward axis only, applied each control update",
+          "source": "src/Devices/sithControl.c:1756"
+        },
+        {
+          "name": "classic strafe speed scale",
+          "value": 0.7,
+          "unit": "dimensionless multiplier on sidestep thrust; used only when the reimplementation equal-strafe option is off (the option is on by default)",
+          "source": "src/Devices/sithControl.c:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1682
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1693
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1754
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1766
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 34
+        },
+        {
+          "path": "src/World/jkPlayer.c",
+          "line": 71
+        }
+      ],
+      "capabilities": [
+        "scale ground thrust for run, walk, crouch, backpedal and wading",
+        "use a separate strafe scale",
+        "treat movement input as acceleration, not speed"
+      ],
+      "tags": [
+        "movement",
+        "input",
+        "fps"
+      ]
+    },
+    {
+      "id": "airborne-and-swim-steering",
+      "node": "player-movement",
+      "name": "Air and swim steering in head space",
+      "summary": "When the body has no floor contact, a separate control routine runs. In fly or swim mode it rotates movement into the view direction, and jump and crouch add vertical thrust.",
+      "behavior": "A body with no attachment uses this routine instead of the ground routine. It builds the acceleration from the forward and sidestep axes. Only when the body is flying or inside an underwater sector, is not resting on the water surface, and has a non-zero head angle, is that acceleration rotated by the head angles. Looking up and pressing forward then pushes the body upward. An ordinary jump in the air skips the rotation, so air control stays flat. In fly or swim mode the jump key adds half of the actor maximum thrust to vertical acceleration and the crouch key subtracts the same amount. The scripted speed bonus is not part of that vertical amount. Pressing jump while floating on the surface takes the normal jump launch, so water exits are an impulse, not a swim. Outside fly and swim mode, the crouch key only sets or clears the crouch flag.",
+      "constants": [
+        {
+          "name": "upward swim and fly thrust fraction",
+          "value": 0.5,
+          "unit": "fraction of actor maximum thrust added to vertical acceleration while jump is held; applied each control update",
+          "source": "src/Devices/sithControl.c:1923"
+        },
+        {
+          "name": "downward swim and fly thrust fraction",
+          "value": 0.5,
+          "unit": "fraction of actor maximum thrust subtracted from vertical acceleration while crouch is held; applied each control update",
+          "source": "src/Devices/sithControl.c:1929"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1813
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1819
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1910
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1919
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1923
+        }
+      ],
+      "capabilities": [
+        "rotate thrust into head direction for flying and swimming",
+        "add vertical thrust from jump and crouch keys",
+        "launch out of water with the normal jump"
+      ],
+      "tags": [
+        "movement",
+        "water",
+        "flying",
+        "fps"
+      ]
+    },
+    {
+      "id": "mouse-look-and-recentre",
+      "node": "player-movement",
+      "name": "Head pitch rate, pitch clamp and view recentring",
+      "summary": "Head pitch comes from the look axis and is clamped to per-actor pitch limits. Keyboard pitch has a fixed rate, and a separate rate recentres the view.",
+      "behavior": "Head pitch changes only when mouse look is enabled or its key is held, and only for actors whose template allows head rotation. A raw look axis supplies an angular amount that is added directly, so the mouse path does not use frame time. A keyboard look axis is scaled by 90 degrees per second times frame time, so key look turns at the same speed at any frame rate. After the change, pitch is clamped between the minimum and maximum head pitch stored in the actor template. Any pitch input clears the recentring state. A centre request, or an already active recentring flag, moves pitch toward zero at 180 degrees per second and sets a centred flag when pitch reaches zero. Walking forward can also start recentring when an auto-centre option is on. In builds with the quality-of-life option, the recentre step is also multiplied by the frame rate over 50, which makes its speed depend on frame rate.",
+      "constants": [
+        {
+          "name": "keyboard look pitch rate",
+          "value": 90,
+          "unit": "degrees per second, multiplied by frame time at full key deflection",
+          "source": "src/Devices/sithControl.c:1413"
+        },
+        {
+          "name": "view recentre rate",
+          "value": 180,
+          "unit": "degrees per second, multiplied by frame time (also by frame rate over 50 in quality-of-life builds)",
+          "source": "src/Devices/sithControl.c:1442"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1397
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1413
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1425
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1442
+        }
+      ],
+      "capabilities": [
+        "clamp head pitch to per-actor limits",
+        "recentre the view at a fixed rate",
+        "scale keyboard look by frame time"
+      ],
+      "tags": [
+        "camera",
+        "input",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "player-actions",
+      "name": "Jump impulse and the crouch reduction",
+      "summary": "A jump adds one upward velocity impulse from the actor jump speed. A crouched jump is weaker, and a jump needs floor contact or a water surface.",
+      "behavior": "The jump is an impulse, not a target height. The actor jump speed times the caller scale is added to vertical velocity once, and gravity then decides the arc. Crouching multiplies that impulse by 0.7. The impulse is refused when the body is attached to nothing and is not floating on a water surface, so holding the key cannot build height in mid-air. A launch from the floor plays a takeoff sound chosen from the surface material, then detaches the body from the surface. Floating on water takes the same impulse and clears the surface flag, which is how the player leaves a pool. A body in a movement-freeze state cannot jump.",
+      "constants": [
+        {
+          "name": "crouch jump impulse scale",
+          "value": 0.7,
+          "unit": "dimensionless multiplier on the jump impulse per jump",
+          "source": "src/Gameplay/sithPlayerActions.c:113"
+        },
+        {
+          "name": "jump input scale",
+          "value": 1,
+          "unit": "dimensionless multiplier on the jump impulse; the control routine passes this for each jump",
+          "source": "src/Devices/sithControl.c:1773"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 111
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 113
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 121
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 125
+        },
+        {
+          "path": "src/Devices/sithControl.c",
+          "line": 1773
+        }
+      ],
+      "capabilities": [
+        "apply an upward impulse from a per-actor jump speed",
+        "weaken the jump while crouched",
+        "allow a jump from water surface"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "fps"
+      ]
+    },
+    {
+      "id": "activate-probe",
+      "node": "player-actions",
+      "name": "Use-key probe and its multiplayer cooldown",
+      "summary": "The use key sweeps a short capsule from the eye along the view direction and sends an activate message to the first script-linked surface or usable thing.",
+      "behavior": "Activation starts at the actor position plus eye offset and travels along the look direction including head angles. The probe length is the actor move size plus 0.1 world units, and the capsule radius is 0.025 world units. A surface marked as script-linked receives an activate message and the probe stops. A thing that is not an item or weapon and has the captured flag receives the message as well, and the scan then ends. Switches, doors and friendly characters use this one path. In multiplayer, an attempt is allowed at most once every 250 milliseconds, so a held key cannot flood the script interpreter.",
+      "constants": [
+        {
+          "name": "activation probe length adjustment",
+          "value": -0.1,
+          "unit": "world units subtracted from the actor move size, so the probe is 0.1 longer than the move size",
+          "source": "src/Gameplay/sithPlayerActions.c:60"
+        },
+        {
+          "name": "activation probe capsule radius",
+          "value": 0.025,
+          "unit": "world units of capsule radius around the probe ray",
+          "source": "src/Gameplay/sithPlayerActions.c:61"
+        },
+        {
+          "name": "multiplayer activation cooldown",
+          "value": 250,
+          "unit": "milliseconds between attempts",
+          "source": "src/Gameplay/sithPlayerActions.c:44"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 44
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 52
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 60
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 70
+        },
+        {
+          "path": "src/Gameplay/sithPlayerActions.c",
+          "line": 86
+        }
+      ],
+      "capabilities": [
+        "probe the view direction for a usable surface or object",
+        "send an activate message to the first target",
+        "rate limit use in networked play"
+      ],
+      "tags": [
+        "interaction",
+        "collision",
+        "fps"
+      ]
+    },
+    {
+      "id": "fixed-physics-step",
+      "node": "physics-integration",
+      "name": "Fixed physics step and the canonical tick (reimplementation feature)",
+      "summary": "This reimplementation banks frame time and spends it in fixed physics steps, so movement does not change with frame rate. The original game stepped physics once per frame.",
+      "behavior": "Reimplementation note: this repository is a decompiled reimplementation, and features it adds are named as such below. Each frame adds its delta to a leftover accumulator and converts the sum into a rounded whole number of steps. The code then substitutes the fixed step time for the frame delta and runs the surface update and the thing update once per step. The default step rate is 150 steps per second in single player. In multiplayer it is 150 below a network tickrate of 100 and 50 at or above it. The handheld build uses 20. An option called janky physics, off by default, returns single player to one update per frame. A separate canonical tick of 1/25 second keeps slope behaviour that depended on frame rate in the original, where steep slopes pulled the player down harder at high frame rates. When a step is shorter than that tick, the slope pull is scaled by the step over the canonical tick.",
+      "constants": [
+        {
+          "name": "desktop physics step rate",
+          "value": 150,
+          "unit": "physics steps per second in single player, and in multiplayer below a tickrate of 100",
+          "source": "src/engine_config.h:15"
+        },
+        {
+          "name": "high network tickrate physics step rate",
+          "value": 50,
+          "unit": "physics steps per second in multiplayer at a network tickrate of 100 or more",
+          "source": "src/engine_config.h:15"
+        },
+        {
+          "name": "retro build physics step rate",
+          "value": 20,
+          "unit": "physics steps per second on the handheld build",
+          "source": "src/engine_config.h:12"
+        },
+        {
+          "name": "canonical slope-drag tick",
+          "value": 25,
+          "unit": "ticks per second, one tick every 0.04 seconds; used to scale slope pull when steps are shorter",
+          "source": "src/World/jkPlayer.c:76"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Main/sithMain.c",
+          "line": 286
+        },
+        {
+          "path": "src/Main/sithMain.c",
+          "line": 294
+        },
+        {
+          "path": "src/Main/sithMain.c",
+          "line": 297
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 1145
+        },
+        {
+          "path": "src/World/jkPlayer.c",
+          "line": 76
+        }
+      ],
+      "capabilities": [
+        "run physics at a fixed step with a leftover accumulator",
+        "keep slope behaviour stable at any step rate",
+        "offer a per-frame mode for original behaviour"
+      ],
+      "tags": [
+        "physics",
+        "timestep",
+        "fps"
+      ]
+    },
+    {
+      "id": "drag-thrust-gravity",
+      "node": "physics-integration",
+      "name": "Free-body step: drag, thrust and gravity",
+      "summary": "A body that is neither on a surface nor underwater loses speed to drag, then gains rotated thrust, then gravity. Non-flying bodies get only 30 percent of their thrust in the air.",
+      "behavior": "This step covers airborne actors, projectiles and other free bodies. Bodies on a surface and bodies in water use their own steps. Velocity first loses a fraction of itself to air drag, limited to the whole velocity, then receives the acceleration vector rotated into the body orientation and scaled by the step time. Thrust pushes along body axes, not world axes. A body that is not flagged as flying has its acceleration reduced to 30 percent before that, so air control is weak. Sector thrust is added the same way when the sector allows it. Gravity is subtracted from vertical velocity, and is halved when a partial-gravity flag is set. The step ends by clipping near-zero velocity components, so a body can rest instead of drifting.",
+      "constants": [
+        {
+          "name": "non-flying thrust scale",
+          "value": 0.3,
+          "unit": "dimensionless multiplier on acceleration each physics step",
+          "source": "src/Engine/sithPhysics.c:528"
+        },
+        {
+          "name": "partial gravity scale",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on gravity each physics step",
+          "source": "src/Engine/sithPhysics.c:547"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 521
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 528
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 545
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 547
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 558
+        }
+      ],
+      "capabilities": [
+        "apply drag then thrust then gravity in a fixed order",
+        "weaken air control for walking bodies",
+        "scale gravity with a flag"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "fps"
+      ]
+    },
+    {
+      "id": "underwater-buoyancy",
+      "node": "physics-integration",
+      "name": "Underwater drag, buoyancy and surface settle",
+      "summary": "A body in an underwater sector uses its own step. Drag is four times higher, thrust is doubled relative to the air scale, and gravity is scaled by buoyancy.",
+      "behavior": "A free body inside a sector flagged underwater runs its own integration. Air drag is multiplied by four. Thrust is scaled by 0.6 instead of the dry 0.3. Gravity is multiplied by the buoyancy value of the body, so low buoyancy barely sinks and full buoyancy drops at normal speed. A living body on the water surface has no sinking term, which holds a swimmer at the surface. A dead body keeps it, so corpses drop. For a body on the surface, an upward position correction is limited to 0.2 world units per second, so the swimmer eases up to the water line. Upward drift slower than that cap is zeroed, so the surface does not jitter.",
+      "constants": [
+        {
+          "name": "underwater drag multiplier",
+          "value": 4,
+          "unit": "dimensionless multiplier on air drag each physics step",
+          "source": "src/Engine/sithPhysics.c:739"
+        },
+        {
+          "name": "underwater thrust scale",
+          "value": 0.6,
+          "unit": "dimensionless multiplier on acceleration each physics step",
+          "source": "src/Engine/sithPhysics.c:743"
+        },
+        {
+          "name": "surface settle vertical cap",
+          "value": 0.2,
+          "unit": "world units per second of upward correction",
+          "source": "src/Engine/sithPhysics.c:772"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 739
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 743
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 752
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 754
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 769
+        },
+        {
+          "path": "src/Engine/sithPhysics.c",
+          "line": 772
+        }
+      ],
+      "capabilities": [
+        "scale gravity by buoyancy",
+        "hold a swimmer at the water line",
+        "increase drag underwater"
+      ],
+      "tags": [
+        "physics",
+        "water",
+        "fps"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "collision-sweep",
+      "name": "Quadratic fall damage above an impact threshold",
+      "summary": "A hard landing subtracts a speed threshold, squares the remainder and scales it into damage. Short drops are free and long drops escalate quickly.",
+      "behavior": "When a body attaches to a surface, or to the face of another body, while moving into it faster than 2.5 world units per second, the impact speed minus 2.5 is squared and multiplied by 45. The result is ignored if it is one point or less. A landing sound plays above the threshold, and a hurt sound plays when damage applies. The practical effect is a wide safe band covering steps and small ledges, then a steep penalty for real falls, with no fall-height bookkeeping. The same rule covers landing on level geometry and on a moving platform, because both paths measure the velocity component into the contacted face.",
+      "constants": [
+        {
+          "name": "fall impact speed threshold",
+          "value": 2.5,
+          "unit": "world units per second, velocity component into the surface",
+          "source": "src/Engine/sithCollision.c:588"
+        },
+        {
+          "name": "fall damage scale",
+          "value": 45,
+          "unit": "damage points per (world unit per second) squared",
+          "source": "src/Engine/sithCollision.c:588"
+        },
+        {
+          "name": "minimum fall damage applied",
+          "value": 1,
+          "unit": "damage points",
+          "source": "src/Engine/sithCollision.c:589"
+        },
+        {
+          "name": "landing damage gate",
+          "value": 2.5,
+          "unit": "world units per second, downward velocity into the contacted face",
+          "source": "src/World/sithThing.c:1227"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 588
+        },
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 589
+        },
+        {
+          "path": "src/World/sithThing.c",
+          "line": 1226
+        },
+        {
+          "path": "src/World/sithThing.c",
+          "line": 1324
+        }
+      ],
+      "capabilities": [
+        "compute quadratic fall damage above a speed threshold",
+        "ignore small impacts",
+        "apply the same rule on moving platforms"
+      ],
+      "tags": [
+        "damage",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "landing-and-contact-feedback",
+      "node": "collision-sweep",
+      "name": "Contact sounds, touch throttling and floor re-attachment",
+      "summary": "Surfaces answer contact with throttled script messages and speed-gated sounds, and a floor-sticking body re-finds the floor only in a narrow vertical speed band.",
+      "behavior": "Contact with a surface plays a hit sound only when the speed into the surface is above 0.15 world units per second. Louder impacts scale the volume up to a cap, and metal surfaces use a different sample. A script-linked surface receives a touched message at most once every 500 milliseconds per surface, which protects doors and traps from firing every frame. A body that is already attached to a surface always re-finds the floor. A floor-sticking body that is not attached re-finds the floor only while its vertical velocity is between -2 and +0.2 world units per second. A jump (fast upward speed) is not cancelled by the floor test, while a body that walks off a ledge and descends slowly is caught again.",
+      "constants": [
+        {
+          "name": "surface touched message throttle",
+          "value": 500,
+          "unit": "milliseconds per surface",
+          "source": "src/Engine/sithCollision.c:971"
+        },
+        {
+          "name": "impact sound speed cut-off",
+          "value": 0.15000001,
+          "unit": "world units per second normal to the surface (source literal 0.15000001)",
+          "source": "src/Engine/sithCollision.c:976"
+        },
+        {
+          "name": "floor re-attach lower speed",
+          "value": -2,
+          "unit": "world units per second, vertical velocity, for a body that is not attached",
+          "source": "src/Engine/sithCollision.c:944"
+        },
+        {
+          "name": "floor re-attach upper speed",
+          "value": 0.2,
+          "unit": "world units per second, vertical velocity, for a body that is not attached",
+          "source": "src/Engine/sithCollision.c:945"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 944
+        },
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 966
+        },
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 971
+        },
+        {
+          "path": "src/Engine/sithCollision.c",
+          "line": 980
+        }
+      ],
+      "capabilities": [
+        "throttle surface touch messages",
+        "gate impact sounds by speed",
+        "re-find the floor in a vertical speed band"
+      ],
+      "tags": [
+        "collision",
+        "audio",
+        "fps"
+      ]
+    },
+    {
+      "id": "camera-cycle-and-roll",
+      "node": "camera",
+      "name": "Camera cycling and strafe roll",
+      "summary": "Two camera slots are cycled by one key. The first-person camera rolls up to 8 degrees with sideways speed, so strafing is visible on screen.",
+      "behavior": "The first-person camera copies the focus body orientation, adds the head pitch and yaw angles, and then moves to the eye offset, so the view sits at eye height. For a physics body, the roll angle is replaced by five times the dot product of the body right vector and its velocity, clamped to plus or minus eight degrees. This tilts the horizon during strafes and turns without moving the aim. For the local player, a scripted shake offset is also added. After the view is built, the camera finds its containing sector using a small radius search from the focus position, so a camera pushed into a wall still reports the right room. Cycling steps through two registered camera slots, which is how one key reaches both the first-person view and the external view.",
+      "constants": [
+        {
+          "name": "camera roll gain",
+          "value": 5,
+          "unit": "degrees of roll per world unit per second of sideways speed",
+          "source": "src/Engine/sithCamera.c:285"
+        },
+        {
+          "name": "camera roll limit",
+          "value": 8,
+          "unit": "degrees, applied to both directions",
+          "source": "src/Engine/sithCamera.c:285"
+        },
+        {
+          "name": "cycled camera slots",
+          "value": 2,
+          "unit": "camera slots in the cycle ring",
+          "source": "src/Engine/sithCamera.c:714"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 267
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 285
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 296
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 308
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 714
+        }
+      ],
+      "capabilities": [
+        "roll the first-person camera from sideways speed",
+        "cycle between first-person and external views",
+        "keep the camera sector valid near walls"
+      ],
+      "tags": [
+        "camera",
+        "movement",
+        "fps"
+      ]
+    },
+    {
+      "id": "camera-zoom-and-shake",
+      "node": "camera",
+      "name": "Scope zoom and scripted camera shake (zoom added by the expansion, overhauled here)",
+      "summary": "Zoom divides the field of view by a scale that moves toward the requested value. Shake sets position and angle offsets that decay linearly.",
+      "behavior": "Scope zoom first appeared in the expansion and this reimplementation overhauled it, so its defaults are reimplementation values. A zoom request stores a target scale and a speed. Each update moves the current scale toward the target at that speed (the reimplementation divides the request speed by 5, an estimate by its author) and sets the field of view to the configured field of view divided by the current scale. A scale of two is a true two-times magnification. A request that returns the scale to one restores the normal view. A separate call installs a position offset, an angle offset and a decay rate for each. Each update moves every offset component toward zero by the rate times frame time, a linear decay. This one mechanism serves weapon feedback, explosions and scripted shake. The default field of view in this reimplementation is 90 degrees, treated as vertical.",
+      "constants": [
+        {
+          "name": "default configured field of view",
+          "value": 90,
+          "unit": "degrees; the reimplementation default, treated as a vertical field of view",
+          "source": "src/World/jkPlayer.c:55"
+        },
+        {
+          "name": "zoom speed divisor",
+          "value": 5,
+          "unit": "dimensionless divisor on the requested zoom speed; the source marks it as a guess",
+          "source": "src/Engine/sithCamera.c:745"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 248
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 673
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 745
+        },
+        {
+          "path": "src/Engine/sithCamera.c",
+          "line": 750
+        },
+        {
+          "path": "src/World/jkPlayer.c",
+          "line": 55
+        }
+      ],
+      "capabilities": [
+        "zoom by dividing field of view by a scale",
+        "decay shake offsets linearly",
+        "replace a shake with a later one"
+      ],
+      "tags": [
+        "camera",
+        "feedback",
+        "fps"
+      ]
+    },
+    {
+      "id": "saber-block",
+      "node": "saber",
+      "name": "Facing-cone block and deflection",
+      "summary": "A bleeding actor can block a blade hit when the contact is inside its facing cone and a random roll under its block chance succeeds. A block plays an animation and deals no damage.",
+      "behavior": "Each blade contact is resolved against the facing of the thing it hits. The direction from the victim to the contact point is compared with the victim forward axis, including head angles. The dot product must reach the cone value stored on the victim for a parry to be possible, so data can make a hit from behind unblockable. Inside the cone, an independent random roll must be below the victim block chance, so the same character can parry one swing and take the next. A successful block plays a deflect sound, one of two block animations at even odds, saber sparks and a blocked message to the victim script. The victim is added to the list of things already hit, so it cannot be hit again in the same swing. No damage is dealt. A failed roll, or an attacker flagged invisible, falls through to normal saber damage with a blood spark. Things that are not actors, and actors that do not bleed, are always damaged, so only characters with a cone and a block chance can defend.",
+      "constants": [
+        {
+          "name": "block animation selection odds",
+          "value": 0.5,
+          "unit": "probability per successful block, random per contact",
+          "source": "src/Gameplay/jkSaber.c:318"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 311
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 312
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 318
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 325
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 333
+        }
+      ],
+      "capabilities": [
+        "block blade hits inside a facing cone with a chance roll",
+        "play one of two block animations",
+        "send a blocked message to the victim script"
+      ],
+      "tags": [
+        "saber",
+        "combat",
+        "defence"
+      ]
+    },
+    {
+      "id": "saber-hit-budget",
+      "node": "saber",
+      "name": "Per-swing hit budget and interpolated sweep",
+      "summary": "One swing damages a small set of distinct things and surfaces. The sweep interpolates so a fast swing still connects at a low frame rate, but only in the expansion path and in this reimplementation.",
+      "behavior": "The blade sweep walks the collision results along the blade, whose length is set by the script that enables the saber. It stops once it has damaged six distinct things or six distinct surfaces and remembers what it hit, so a blade resting inside a body does not repeat damage in the same swing. The hit list is cleared when a swing animation marker opens a new damage window, and damage is switched on and off by animation markers. When the frame delta exceeds a minimum sweep interval, the routine sweeps several positions between the previous and current blade pose. This stops a fast arc from passing through a target at low frame rates. The classic original path swept once per frame. Interpolation came with the expansion at a 0.05 second interval, and this reimplementation tightens it to 0.032 seconds. Sparks have a 200 millisecond cooldown, so dragging a blade along a wall gives a few sparks, not one per frame.",
+      "constants": [
+        {
+          "name": "maximum distinct things damaged per swing",
+          "value": 6,
+          "unit": "things per swing",
+          "source": "src/Gameplay/jkSaber.c:273"
+        },
+        {
+          "name": "maximum distinct surfaces damaged per swing",
+          "value": 6,
+          "unit": "surfaces per swing",
+          "source": "src/Gameplay/jkSaber.c:344"
+        },
+        {
+          "name": "minimum sweep interval, reimplementation build",
+          "value": 0.032,
+          "unit": "seconds of frame delta above which sweep interpolation starts",
+          "source": "src/Gameplay/jkSaber.c:417"
+        },
+        {
+          "name": "minimum sweep interval, expansion build",
+          "value": 0.05,
+          "unit": "seconds of frame delta above which sweep interpolation starts",
+          "source": "src/Gameplay/jkSaber.c:419"
+        },
+        {
+          "name": "spark spawn cooldown",
+          "value": 200,
+          "unit": "milliseconds between sparks",
+          "source": "src/Gameplay/jkSaber.c:463"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 273
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 344
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 397
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 423
+        },
+        {
+          "path": "src/Gameplay/jkSaber.c",
+          "line": 463
+        }
+      ],
+      "capabilities": [
+        "limit hits per swing and dedupe them",
+        "interpolate blade sweeps at low frame rates",
+        "throttle impact sparks"
+      ],
+      "tags": [
+        "saber",
+        "combat",
+        "collision"
+      ]
+    },
+    {
+      "id": "weapon-aim-assist",
+      "node": "weapons",
+      "name": "Difficulty and view scaled aim assist",
+      "summary": "Aim assist searches a small candidate list inside a cone, keeps only targets with a clear line, and picks the one best aligned with the aim. The cone depends on difficulty and camera.",
+      "behavior": "When the weapon template requests aim assist, the global aim assist option is on, and the game is single player or the shot opted in, the fire routine builds a cone from two angles on the weapon. The cone is widened on the easiest difficulty and narrowed on the hardest. It is doubled when the external camera is active. The routine collects up to 16 things in view, drops the shooter and things flagged as no-target, and drops anything without a clear line of sight. Among the rest it picks the thing whose direction has the largest absolute dot product with the aim direction. The only distance gate is that the target must be farther than zero, so it excludes a target at the muzzle position only. The fire direction is then turned to look at that target. Aim error authored on the shot applies after the assist, so the weapon spread perturbs the assisted direction. A weapon with both cone angles at zero skips the search.",
+      "constants": [
+        {
+          "name": "easiest difficulty aim cone scale",
+          "value": 1.5,
+          "unit": "dimensionless multiplier on the aim cone angles, per shot",
+          "source": "src/World/sithWeapon.c:47"
+        },
+        {
+          "name": "hardest difficulty aim cone scale",
+          "value": 0.5,
+          "unit": "dimensionless multiplier on the aim cone angles, per shot",
+          "source": "src/World/sithWeapon.c:48"
+        },
+        {
+          "name": "external camera aim cone scale",
+          "value": 2,
+          "unit": "dimensionless multiplier on the aim cone angles, per shot",
+          "source": "src/World/sithWeapon.c:49"
+        },
+        {
+          "name": "aim candidate capacity",
+          "value": 16,
+          "unit": "candidates per shot",
+          "source": "src/World/sithWeapon.c:1319"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1299
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1301
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1312
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1319
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1356
+        }
+      ],
+      "capabilities": [
+        "assist aim inside a cone by difficulty and camera",
+        "require a clear line to the assisted target",
+        "apply weapon spread after assist"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "aim"
+      ]
+    },
+    {
+      "id": "weapon-fire-cadence",
+      "node": "weapons",
+      "name": "Fire cadence catch-up and projectile substeps",
+      "summary": "Fire rate survives a dropped frame: missed firing periods spawn extra projectiles with backdated time offsets, and new projectiles are advanced on the spawn frame. Damage can decay over time.",
+      "behavior": "For weapons that use continuous fire, each shot records the game time and compares it with the previous shot. The elapsed time over the weapon fire period, minus one, gives a catch-up count. When the count is above one, the routine spawns extra projectiles, each with a time offset equal to the remaining count times the fire period, and subtracts one per extra shot until the count is at most one. A burst weapon therefore keeps its rhythm across a long frame instead of dropping shots. The source does not mark this routine as an addition. A projectile spawned with a time offset above 0.02 seconds is advanced by that time on the spawn frame, so it does not start at the muzzle. Projectiles whose template sets damage decay lose damage at the template rate times frame time, down to a minimum damage, so range falloff is a rate and not a fixed drop per frame.",
+      "constants": [
+        {
+          "name": "projectile spawn substep threshold",
+          "value": 0.02,
+          "unit": "seconds of time offset above which a new projectile is advanced on its spawn frame",
+          "source": "src/World/sithWeapon.c:579"
+        },
+        {
+          "name": "catch-up factor offset",
+          "value": 1,
+          "unit": "dimensionless offset subtracted from the missed-period ratio, per shot request",
+          "source": "src/World/sithWeapon.c:1405"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 579
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1403
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1405
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1414
+        }
+      ],
+      "capabilities": [
+        "spawn catch-up shots after a long frame",
+        "advance fast projectiles on the spawn frame",
+        "decay projectile damage over time"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "timestep"
+      ]
+    },
+    {
+      "id": "projectile-ricochet",
+      "node": "weapons",
+      "name": "Bounded projectile ricochet and sky deletion",
+      "summary": "Flagged projectiles bounce off surfaces a bounded number of times, and ceiling or horizon sky surfaces always delete them.",
+      "behavior": "A projectile flagged as ricocheting reflects off a surface, rebuilds its orientation from the reflected velocity and keeps flying. The same path reflects impact-sound weapons off magnetically sealed surfaces. A ricochet-flagged projectile bounces at most twice, a limit written into the code and not set per template. The deflection path for magnetic surfaces and for reflective things is bounded by a global cap of six. Past the limit, the projectile is handled as an ordinary impact. Ceiling and horizon sky surfaces skip the reaction entirely and destroy the projectile, so shots do not bounce off the skybox. Each deflection plays a deflection sound and clears the no-shooter-damage flag, so a ricochet can come back and hurt the player who fired it.",
+      "constants": [
+        {
+          "name": "global deflection bounce cap",
+          "value": 6,
+          "unit": "bounces per projectile for deflections",
+          "source": "src/engine_config.h:121"
+        },
+        {
+          "name": "ricochet-flag bounce limit",
+          "value": 2,
+          "unit": "bounces for a ricochet-flagged projectile on a surface, fixed in code",
+          "source": "src/World/sithWeapon.c:797"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 671
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 792
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 797
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 798
+        },
+        {
+          "path": "src/engine_config.h",
+          "line": 121
+        }
+      ],
+      "capabilities": [
+        "reflect projectiles off surfaces with a bounce limit",
+        "destroy projectiles on sky surfaces",
+        "let a ricochet hurt its shooter"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "physics"
+      ]
+    },
+    {
+      "id": "ai-sight-cone",
+      "node": "ai-awareness",
+      "name": "Sight distance, facing cone and water break",
+      "summary": "Actors notice a target inside their class sight distance, in front of a facing test, and reachable by a line trace. Per-class values come from the class file.",
+      "behavior": "Each actor class reads its sight distance, hearing distance, maximum step height, field of view and accuracy from its class file, which is chosen by difficulty. The loader seeds defaults first, so one enemy type can be short-sighted and another can see across a room. The authored field of view is stored as the cosine of half the angle. The sight test rejects a target that is behind the actor. It also rejects a target when the sideways part of the direction (the absolute dot with the right vector) is larger than one minus that stored cosine. This is a sideways-offset limit and not a true angle, so the visible cone is narrower than the authored angle, and a larger authored angle still gives a wider cone. A stored value of zero (the default) allows the whole forward half space. A stored value of minus one (a 360 degree angle) skips the test. Submerged targets are invisible to a dry viewer unless they float on the surface. Dry targets are invisible to a submerged viewer. A final trace to the target must not hit level geometry, or another actor, before the target.",
+      "constants": [
+        {
+          "name": "default sight distance",
+          "value": 20,
+          "unit": "world units",
+          "source": "src/AI/sithAIClass.c:175"
+        },
+        {
+          "name": "default hearing distance",
+          "value": 10,
+          "unit": "world units",
+          "source": "src/AI/sithAIClass.c:176"
+        },
+        {
+          "name": "default maximum step height",
+          "value": 0.5,
+          "unit": "world units",
+          "source": "src/AI/sithAIClass.c:174"
+        },
+        {
+          "name": "default accuracy",
+          "value": 0.5,
+          "unit": "dimensionless chance value",
+          "source": "src/AI/sithAIClass.c:178"
+        },
+        {
+          "name": "authored field of view halving",
+          "value": 0.5,
+          "unit": "dimensionless, applied to the authored angle before taking the cosine",
+          "source": "src/AI/sithAIClass.c:210"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/AI/sithAIClass.c",
+          "line": 174
+        },
+        {
+          "path": "src/AI/sithAIClass.c",
+          "line": 175
+        },
+        {
+          "path": "src/AI/sithAIClass.c",
+          "line": 210
+        },
+        {
+          "path": "src/AI/sithAI.c",
+          "line": 1070
+        },
+        {
+          "path": "src/AI/sithAI.c",
+          "line": 1094
+        }
+      ],
+      "capabilities": [
+        "limit AI sight by distance and facing",
+        "read sight values from per-class data",
+        "treat water as a visual break"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "perception"
+      ]
+    },
+    {
+      "id": "awareness-spreading",
+      "node": "ai-awareness",
+      "name": "Alarm flooding through adjoining sectors",
+      "summary": "Noise events are queued, then flood through sector portals once per second and put every living actor in a reached sector into attack mode.",
+      "behavior": "Events go into a fixed queue of 32 and are processed by a task that runs once per second, so a burst of gunfire costs one pass. In multiplayer only the server runs it. Each event has a kind and a transmitting level. The level is written into a per-sector table for that kind when it beats the value already there. The flood continues into each adjoining sector while the level is positive, and an adjoin with a mirror subtracts its own distance from the level, so a distant shot fades out after a few rooms. After the flood, every living actor standing in any sector the flood reached this pass receives an attack-mode event, whatever the kind or the actor hearing distance. Actors in other sectors receive nothing. The alarm is therefore sector-granular and lets one noise wake a whole room.",
+      "constants": [
+        {
+          "name": "awareness pass period",
+          "value": 1000,
+          "unit": "milliseconds between awareness passes",
+          "source": "src/AI/sithAIAwareness.c:19"
+        },
+        {
+          "name": "pending awareness queue size",
+          "value": 32,
+          "unit": "queued events per pass; later events in the same pass are dropped",
+          "source": "src/AI/sithAIAwareness.c:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/AI/sithAIAwareness.c",
+          "line": 19
+        },
+        {
+          "path": "src/AI/sithAIAwareness.c",
+          "line": 42
+        },
+        {
+          "path": "src/AI/sithAIAwareness.c",
+          "line": 108
+        },
+        {
+          "path": "src/AI/sithAIAwareness.c",
+          "line": 134
+        },
+        {
+          "path": "src/AI/sithAIAwareness.c",
+          "line": 146
+        }
+      ],
+      "capabilities": [
+        "batch noise events into one periodic flood",
+        "attenuate noise through portals",
+        "wake every actor in a reached sector"
+      ],
+      "tags": [
+        "ai",
+        "alarm",
+        "stealth"
+      ]
+    },
+    {
+      "id": "noise-alerts",
+      "node": "ai-awareness",
+      "name": "Alert strength of gunfire, deaths and blasts",
+      "summary": "Different actions advertise different alarm levels, from a weak decaying-projectile hum to a death scream that reaches the next room.",
+      "behavior": "Firing a weapon with a fire sound queues an event at the shooter position at level 4. A projectile that emits a decaying sound queues a level 2 event, but only once every eight ticks, so a guided round keeps advertising itself cheaply. An explosion with range and damage or force queues a level 3 event before it applies damage, so the alarm can spread even when a wall blocks the blast. A dying actor queues a level 5 event, the strongest of any weapon, so a scream is the loudest thing in a fight. The expansion path can suppress it for a quiet death. An actor that flees in fear queues further events at level 3 or 4. The levels are the reach in world units: each portal crossed subtracts its distance. Events carry one of three kinds (death, gunfire and blast, decaying projectile), and each kind has its own per-sector table, so the loudest event of each kind wins in a sector.",
+      "constants": [
+        {
+          "name": "gunfire alert level",
+          "value": 4,
+          "unit": "awareness level in world units of reach, decremented per adjoin crossed",
+          "source": "src/World/sithWeapon.c:1426"
+        },
+        {
+          "name": "explosion alert level",
+          "value": 3,
+          "unit": "awareness level in world units of reach, decremented per adjoin crossed",
+          "source": "src/World/sithExplosion.c:85"
+        },
+        {
+          "name": "death alert level",
+          "value": 5,
+          "unit": "awareness level in world units of reach, decremented per adjoin crossed",
+          "source": "src/World/sithActor.c:304"
+        },
+        {
+          "name": "decaying projectile alert level",
+          "value": 2,
+          "unit": "awareness level in world units of reach, decremented per adjoin crossed",
+          "source": "src/World/sithWeapon.c:83"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 1426
+        },
+        {
+          "path": "src/World/sithWeapon.c",
+          "line": 83
+        },
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 85
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 304
+        }
+      ],
+      "capabilities": [
+        "assign alarm levels to gunfire, blasts and deaths",
+        "emit a cheap periodic event from guided rounds",
+        "let fear keep spreading panic"
+      ],
+      "tags": [
+        "ai",
+        "alarm",
+        "combat"
+      ]
+    },
+    {
+      "id": "drowning",
+      "node": "damage-model",
+      "name": "Breath meter and repeating drowning damage",
+      "summary": "A body that cannot breathe water banks submerged milliseconds, plays a surfacing gasp, then takes flat damage about every two seconds after 20 seconds under.",
+      "behavior": "While the body is submerged and lacks a water-breathing flag, a millisecond counter adds the elapsed time each update. When the body surfaces, the leftover value decides the recovery sound. A value above 18000 gives a gasp, and a value from above 10000 up to 18000 gives heavy breathing. The counter then resets. Once the counter passes 20000, the body takes 10 damage and 2000 is removed from the counter, so one long dive gives damage about every two seconds, not one hit or a per-frame trickle. The counter runs only while the body is fully underwater, so floating on the surface or standing in shallow water pauses it. A body flagged to drown on contact is destroyed on entering water and never uses this counter.",
+      "constants": [
+        {
+          "name": "gasps after surfacing beyond",
+          "value": 18000,
+          "unit": "milliseconds of submerged time",
+          "source": "src/World/sithActor.c:53"
+        },
+        {
+          "name": "heavy breathing after surfacing beyond",
+          "value": 10000,
+          "unit": "milliseconds of submerged time",
+          "source": "src/World/sithActor.c:55"
+        },
+        {
+          "name": "drowning damage threshold",
+          "value": 20000,
+          "unit": "milliseconds of submerged time",
+          "source": "src/World/sithActor.c:69"
+        },
+        {
+          "name": "drowning damage per tick",
+          "value": 10,
+          "unit": "damage points per drowning tick",
+          "source": "src/World/sithActor.c:71"
+        },
+        {
+          "name": "submerged time retained after a damage tick",
+          "value": 2000,
+          "unit": "milliseconds",
+          "source": "src/World/sithActor.c:72"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithActor.c",
+          "line": 48
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 53
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 69
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 71
+        },
+        {
+          "path": "src/World/sithThing.c",
+          "line": 825
+        }
+      ],
+      "capabilities": [
+        "track submerged time per actor",
+        "play gasp and breathing sounds on surfacing",
+        "apply repeating drowning damage after a breath limit"
+      ],
+      "tags": [
+        "damage",
+        "water",
+        "survival"
+      ]
+    },
+    {
+      "id": "friendly-fire-and-flinch",
+      "node": "damage-model",
+      "name": "Friendly-fire scaling, flinch chance and screen feedback",
+      "summary": "Damage from one actor to another is cut to a tenth. Surviving hits can trigger a flinch in proportion to damage, and the player screen tint and flash decay at fixed rates.",
+      "behavior": "When an actor (not the player) is hurt by a projectile or blast owned by another actor, the damage is multiplied by 0.1, unless the attacker carries a full-damage flag or the damage type is one of two exempt types. In the expansion path, two AI actors with opposite alignment use 0.5 instead. Non-player fights therefore resolve slowly. A hit that leaves at least one point of health has a chance to play a hit animation, equal to 0.05 times the damage, unless the attacker is the victim. A victim below one point of health dies, so the last point is a threshold and not a buffer. For the local player, damage drives a red screen tint of 0.04 per damage point. The tint decays by 0.4 per second and the additive flash decays by 256 eight-bit units per second.",
+      "constants": [
+        {
+          "name": "actor versus actor damage scale",
+          "value": 0.1,
+          "unit": "dimensionless multiplier per hit",
+          "source": "src/World/sithActor.c:168"
+        },
+        {
+          "name": "flinch chance per damage point",
+          "value": 0.05,
+          "unit": "probability per damage point, rolled for each surviving hit",
+          "source": "src/World/sithActor.c:211"
+        },
+        {
+          "name": "screen tint per damage point",
+          "value": 0.04,
+          "unit": "tint fraction per damage point of the local player",
+          "source": "src/World/sithActor.c:205"
+        },
+        {
+          "name": "screen tint decay",
+          "value": 0.4,
+          "unit": "tint fraction per second",
+          "source": "src/Gameplay/sithPlayer.c:214"
+        },
+        {
+          "name": "additive flash decay",
+          "value": 256,
+          "unit": "eight-bit additive units per second",
+          "source": "src/Gameplay/sithPlayer.c:215"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithActor.c",
+          "line": 160
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 168
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 205
+        },
+        {
+          "path": "src/World/sithActor.c",
+          "line": 211
+        },
+        {
+          "path": "src/Gameplay/sithPlayer.c",
+          "line": 214
+        }
+      ],
+      "capabilities": [
+        "cut actor versus actor damage",
+        "roll flinch chance from damage",
+        "tint the screen from damage with fixed decay"
+      ],
+      "tags": [
+        "damage",
+        "combat",
+        "feedback"
+      ]
+    },
+    {
+      "id": "fall-death-zone",
+      "node": "damage-model",
+      "name": "Fall-death sectors and the death fade",
+      "summary": "A sector can be flagged deadly to a falling player. Falling through it faster than a set speed kills the player, shown as a fade.",
+      "behavior": "If the local player has no floor contact and is falling faster than three world units per second inside a sector with the fall-death flag, the player is marked dead at once and the camera switches to the death camera. The kill is shown as a fade. A fade value drops each update, and only when it reaches zero does the normal player death routine run. The check is skipped when the player is attached to a surface, so walking through the flagged sector on a bridge does not kill, and debug noclip suppresses it. The marked player cannot be marked twice.",
+      "constants": [
+        {
+          "name": "fall death vertical speed",
+          "value": -3,
+          "unit": "world units per second, vertical",
+          "source": "src/Gameplay/sithPlayer.c:251"
+        },
+        {
+          "name": "fall death fade rate",
+          "value": 0.7,
+          "unit": "fade fraction per second",
+          "source": "src/Gameplay/sithPlayer.c:267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/sithPlayer.c",
+          "line": 251
+        },
+        {
+          "path": "src/Gameplay/sithPlayer.c",
+          "line": 255
+        },
+        {
+          "path": "src/Gameplay/sithPlayer.c",
+          "line": 259
+        },
+        {
+          "path": "src/Gameplay/sithPlayer.c",
+          "line": 267
+        }
+      ],
+      "capabilities": [
+        "kill a falling player inside a flagged sector",
+        "fade out before the death routine",
+        "skip the check when attached to a surface"
+      ],
+      "tags": [
+        "damage",
+        "death",
+        "level-design"
+      ]
+    },
+    {
+      "id": "item-pickup-and-respawn",
+      "node": "items",
+      "name": "Pickup touch cooldown and respawn timing",
+      "summary": "An item answers a player touch at most twice per second, and only with a clear line. It respawns on a per-item interval, and the expansion path jitters it for other players.",
+      "behavior": "A player touching an item needs a clear line of sight to it. The item script then gets a touched message, and further touches are refused for 500 milliseconds, so one pass through a pickup does not fire its script several times. In multiplayer the touch is ignored for an invulnerable player. When the item is flagged to respawn for the current mode, it hides itself and schedules its return from a per-item interval in seconds, converted to milliseconds at pickup time. Otherwise it is destroyed. In the expansion path, the interval is also multiplied by 0.9 for every other active player in multiplayer, and it is randomised between 0.75 and 1.75 times the interval, so shared pickups do not all return at once. A respawn returns the item to its stored position and sector and sends the item script a respawn message.",
+      "constants": [
+        {
+          "name": "touch cooldown per item",
+          "value": 500,
+          "unit": "milliseconds between touch messages",
+          "source": "src/World/sithItem.c:24"
+        },
+        {
+          "name": "respawn interval unit conversion",
+          "value": 1000,
+          "unit": "milliseconds per second of authored respawn interval",
+          "source": "src/World/sithItem.c:87"
+        },
+        {
+          "name": "multiplayer respawn factor",
+          "value": 0.9,
+          "unit": "dimensionless multiplier per other active player, Mysteries of the Sith path only",
+          "source": "src/World/sithItem.c:34"
+        },
+        {
+          "name": "respawn jitter floor",
+          "value": 0.75,
+          "unit": "dimensionless multiplier on the respawn interval, random per pickup, Mysteries of the Sith path only",
+          "source": "src/World/sithItem.c:82"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithItem.c",
+          "line": 21
+        },
+        {
+          "path": "src/World/sithItem.c",
+          "line": 24
+        },
+        {
+          "path": "src/World/sithItem.c",
+          "line": 63
+        },
+        {
+          "path": "src/World/sithItem.c",
+          "line": 82
+        },
+        {
+          "path": "src/World/sithItem.c",
+          "line": 87
+        }
+      ],
+      "capabilities": [
+        "throttle item touch messages",
+        "respawn items on a per-item interval",
+        "jitter respawn times in multiplayer"
+      ],
+      "tags": [
+        "items",
+        "pickup",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "blast-falloff",
+      "node": "explosions",
+      "name": "Explosion falloff, force push and line of sight",
+      "summary": "Blast damage and push fall off with the square of distance and never drop below a quarter of full strength. Things need a clear line to be affected.",
+      "behavior": "A blast sweeps a sphere of its authored range when it starts, only if it has range and some damage or force. For every thing and surface found, it computes a normalised distance and a strength of one minus the square of that distance, clamped from 0.25 to 1. Damage and push share that strength, so the edge of a blast still stings. Only bodies flagged to accept blast force are pushed, so scenery and heavy props stay in place. For things, a line-of-sight check gates both damage and push, so a wall between the charge and the target keeps the target untouched even inside the range. An option excludes the shooter from damage. Surfaces take damage without that check. The blast also queues an awareness event before it resolves.",
+      "constants": [
+        {
+          "name": "minimum blast strength",
+          "value": 0.25,
+          "unit": "fraction of full damage and force",
+          "source": "src/World/sithExplosion.c:90"
+        },
+        {
+          "name": "maximum blast strength",
+          "value": 1,
+          "unit": "fraction of full damage and force",
+          "source": "src/World/sithExplosion.c:90"
+        },
+        {
+          "name": "blast alert level",
+          "value": 3,
+          "unit": "awareness level in world units of reach, decremented per adjoin crossed",
+          "source": "src/World/sithExplosion.c:85"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 85
+        },
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 86
+        },
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 90
+        },
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 104
+        },
+        {
+          "path": "src/World/sithExplosion.c",
+          "line": 106
+        }
+      ],
+      "capabilities": [
+        "scale blast damage and push by squared distance",
+        "keep a minimum strength at the edge",
+        "gate blast effects by line of sight"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "explosion"
+      ]
+    },
+    {
+      "id": "force-powers",
+      "node": "inventory",
+      "name": "Script-driven ability bins (force powers)",
+      "summary": "Abilities live in numbered inventory bins that scripts drive. Force speed writes a thrust bonus, and force jump is a script-set velocity.",
+      "behavior": "Activating a bin stores a delay and a start time. A fire message goes to the bin script only when the delay is positive, and the script then gets one message per delay period while the key is held. With a delay of zero or below, only the start time is stored. Deactivating returns how many seconds the bin was active, so a script can spend force mana in proportion to hold time. Unavailable or unregistered bins are refused before any message is sent. Force speed is not a multiplier in the movement code. The script writes a speed bonus into the actor, and the ground and swim control routines add that bonus to the actor maximum thrust, so the character accelerates harder and reaches a higher speed. Force jump is a script-set velocity. This reimplementation adds a check that a force jump counts as successful only when its upward velocity beats the current upward speed, and the success also resets a pending crouch toggle. The bin numbers (force jump 21, force speed 22, force mana 14) are fixed by the game data.",
+      "constants": [
+        {
+          "name": "force jump bin index",
+          "value": 21,
+          "unit": "inventory bin index, fixed by game data",
+          "source": "src/Cog/sithCogFunctionPlayer.c:521"
+        },
+        {
+          "name": "force mana bin index",
+          "value": 14,
+          "unit": "inventory bin index, fixed by game data",
+          "source": "src/types_enums.h:973"
+        },
+        {
+          "name": "force speed bin index",
+          "value": 22,
+          "unit": "inventory bin index, fixed by game data",
+          "source": "src/types_enums.h:981"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Gameplay/sithInventory.c",
+          "line": 492
+        },
+        {
+          "path": "src/Gameplay/sithInventory.c",
+          "line": 499
+        },
+        {
+          "path": "src/Cog/jkCog.c",
+          "line": 330
+        },
+        {
+          "path": "src/Cog/sithCogExec.c",
+          "line": 309
+        },
+        {
+          "path": "src/Cog/sithCogFunctionPlayer.c",
+          "line": 521
+        }
+      ],
+      "capabilities": [
+        "drive timed abilities from inventory bins",
+        "report hold time for resource spending",
+        "boost speed through a thrust bonus"
+      ],
+      "tags": [
+        "force",
+        "inventory",
+        "movement"
+      ]
+    }
+  ]
+}

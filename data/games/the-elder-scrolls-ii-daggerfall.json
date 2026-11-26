@@ -1,0 +1,2284 @@
+{
+  "version": 1,
+  "id": "the-elder-scrolls-ii-daggerfall",
+  "title": "The Elder Scrolls II: Daggerfall",
+  "repo": "https://github.com/Interkarma/daggerfall-unity",
+  "sha": "3d85a283672a4955e32992097ea7719e896dbadb",
+  "nodes": [
+    {
+      "id": "player-motor",
+      "name": "Player motor and ground state",
+      "purpose": "Fixed-step character controller loop that classifies ground contact, defers to climbing and levitation, and pushes the final displacement through the collider once per physics step.",
+      "paths": [
+        "Assets/Scripts/Game/PlayerMotor.cs",
+        "Assets/Scripts/Game/Player/PlayerGroundMotor.cs"
+      ],
+      "functions": [
+        {
+          "name": "FixedUpdate",
+          "path": "Assets/Scripts/Game/PlayerMotor.cs",
+          "lines": [
+            275,
+            362
+          ]
+        },
+        {
+          "name": "Update",
+          "path": "Assets/Scripts/Game/PlayerMotor.cs",
+          "lines": [
+            364,
+            381
+          ]
+        },
+        {
+          "name": "UpdateSpeed",
+          "path": "Assets/Scripts/Game/PlayerMotor.cs",
+          "lines": [
+            383,
+            389
+          ]
+        },
+        {
+          "name": "MoveWithMovingPlatform",
+          "path": "Assets/Scripts/Game/Player/PlayerGroundMotor.cs",
+          "lines": [
+            53,
+            100
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "world-units",
+      "name": "Classic unit scale and physics step",
+      "purpose": "Classic-unit to world-metre scale and the 0.02 second fixed step that every per-tick value in this map is quoted against.",
+      "paths": [
+        "Assets/Scripts/MeshReader.cs",
+        "ProjectSettings/TimeManager.asset"
+      ],
+      "functions": [],
+      "dependsOn": []
+    },
+    {
+      "id": "player-speed",
+      "name": "Walking, running and riding speed model",
+      "purpose": "Derives ground speed from the Live Speed stat and applies run, sneak, crouch, ride, swim and climb multipliers before the motor consumes it.",
+      "paths": [
+        "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs"
+      ],
+      "functions": [
+        {
+          "name": "ApplyInputSpeedAdjustment",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            115,
+            145
+          ]
+        },
+        {
+          "name": "GetBaseSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            157,
+            176
+          ]
+        },
+        {
+          "name": "GetWalkSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            375,
+            380
+          ]
+        },
+        {
+          "name": "GetRunSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            386,
+            397
+          ]
+        },
+        {
+          "name": "GetRideSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            403,
+            414
+          ]
+        },
+        {
+          "name": "GetSwimSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            421,
+            425
+          ]
+        },
+        {
+          "name": "GetClimbingSpeed",
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "lines": [
+            427,
+            433
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor",
+        "world-units"
+      ]
+    },
+    {
+      "id": "player-acrobatics",
+      "name": "Jump, gravity, air control and fall damage",
+      "purpose": "Owns the vertical component of player motion: launch impulse, gravity accumulation, ceiling reversal, air steering and the fall-height bookkeeping behind landing damage.",
+      "paths": [
+        "Assets/Scripts/Game/Player/AcrobatMotor.cs"
+      ],
+      "functions": [
+        {
+          "name": "HandleJumpInput",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            62,
+            124
+          ]
+        },
+        {
+          "name": "CheckAirControl",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            130,
+            151
+          ]
+        },
+        {
+          "name": "HitHead",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            153,
+            161
+          ]
+        },
+        {
+          "name": "CheckInitFall",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            167,
+            177
+          ]
+        },
+        {
+          "name": "ApplyGravity",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            179,
+            202
+          ]
+        },
+        {
+          "name": "CheckFallingDamage",
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "lines": [
+            207,
+            225
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor",
+        "player-speed"
+      ]
+    },
+    {
+      "id": "player-ground-contact",
+      "name": "Ground contact and slope sliding",
+      "purpose": "Steers the capsule down surfaces steeper than the slope limit, resolves step lips and carries the player along moving platforms.",
+      "paths": [
+        "Assets/Scripts/Game/Player/FrictionMotor.cs",
+        "Assets/Scripts/Game/Player/PlayerGroundMotor.cs"
+      ],
+      "functions": [
+        {
+          "name": "GroundedMovement",
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "lines": [
+            57,
+            95
+          ]
+        },
+        {
+          "name": "SetSliding",
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "lines": [
+            97,
+            115
+          ]
+        },
+        {
+          "name": "HeadDipHandling",
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "lines": [
+            119,
+            156
+          ]
+        },
+        {
+          "name": "MoveWithMovingPlatform",
+          "path": "Assets/Scripts/Game/Player/PlayerGroundMotor.cs",
+          "lines": [
+            53,
+            100
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor"
+      ]
+    },
+    {
+      "id": "player-capsule-height",
+      "name": "Capsule height states",
+      "purpose": "Blends controller and eye height between standing, crouching, mounted and swimming states without letting the camera enter geometry.",
+      "paths": [
+        "Assets/Scripts/Game/Player/PlayerHeightChanger.cs"
+      ],
+      "functions": [
+        {
+          "name": "DecideHeightAction",
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "lines": [
+            125,
+            209
+          ]
+        },
+        {
+          "name": "DoCrouch",
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "lines": [
+            246,
+            263
+          ]
+        },
+        {
+          "name": "DoStand",
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "lines": [
+            265,
+            285
+          ]
+        },
+        {
+          "name": "DoMount",
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "lines": [
+            287,
+            317
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor"
+      ]
+    },
+    {
+      "id": "player-climbing",
+      "name": "Wall climbing and slipping",
+      "purpose": "Attaches the player to vertical surfaces, runs periodic skill checks, wraps strafing around corners and drops the player when a check fails.",
+      "paths": [
+        "Assets/Scripts/Game/Player/ClimbingMotor.cs"
+      ],
+      "functions": [
+        {
+          "name": "ClimbingCheck",
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "lines": [
+            307,
+            488
+          ]
+        },
+        {
+          "name": "ClimbMovement",
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "lines": [
+            660,
+            768
+          ]
+        },
+        {
+          "name": "ClimbingSkillCheck",
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "lines": [
+            826,
+            846
+          ]
+        },
+        {
+          "name": "CalcFrequencyAndToleranceOfWallChecks",
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "lines": [
+            497,
+            527
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor",
+        "player-speed",
+        "player-acrobatics"
+      ]
+    },
+    {
+      "id": "levitation-swimming",
+      "name": "Levitation and swimming movement",
+      "purpose": "Replacement motor for levitation and swimming: six-direction movement at a fixed levitate speed, or swim speed with a buoyancy ceiling at the water plane.",
+      "paths": [
+        "Assets/Scripts/Game/LevitateMotor.cs"
+      ],
+      "functions": [
+        {
+          "name": "Update",
+          "path": "Assets/Scripts/Game/LevitateMotor.cs",
+          "lines": [
+            62,
+            108
+          ]
+        },
+        {
+          "name": "AddMovement",
+          "path": "Assets/Scripts/Game/LevitateMotor.cs",
+          "lines": [
+            110,
+            140
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor",
+        "player-speed"
+      ]
+    },
+    {
+      "id": "camera-look",
+      "name": "First-person look, head bob and damage sway",
+      "purpose": "Mouse look with pitch clamping and smoothing, velocity-driven head bob amplitudes, and a sine sway triggered by health loss.",
+      "paths": [
+        "Assets/Scripts/Game/PlayerMouseLook.cs",
+        "Assets/Scripts/Game/Player/HeadBobber.cs",
+        "Assets/Scripts/Game/Player/CameraRecoiler.cs"
+      ],
+      "functions": [
+        {
+          "name": "ApplyLook",
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "lines": [
+            108,
+            150
+          ]
+        },
+        {
+          "name": "ApplySmoothing",
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "lines": [
+            154,
+            167
+          ]
+        },
+        {
+          "name": "SetParamsForBobbingStyle",
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "lines": [
+            113,
+            157
+          ]
+        },
+        {
+          "name": "getNewPos",
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "lines": [
+            159,
+            210
+          ]
+        },
+        {
+          "name": "CalculateRotationScalar",
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "lines": [
+            151,
+            160
+          ]
+        },
+        {
+          "name": "GetRotationVector",
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "lines": [
+            162,
+            171
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor"
+      ]
+    },
+    {
+      "id": "melee-combat",
+      "name": "Melee swing input and hit detection",
+      "purpose": "Turns tracked mouse travel into one of eight swing directions, plays the first-person weapon animation, and resolves reach and line of sight before asking for damage.",
+      "paths": [
+        "Assets/Scripts/Game/WeaponManager.cs",
+        "Assets/Scripts/Game/FPSWeapon.cs"
+      ],
+      "functions": [
+        {
+          "name": "TrackMouseAttack",
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "lines": [
+            788,
+            871
+          ]
+        },
+        {
+          "name": "MeleeDamage",
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "lines": [
+            899,
+            1072
+          ]
+        },
+        {
+          "name": "WeaponDamage",
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "lines": [
+            491,
+            642
+          ]
+        },
+        {
+          "name": "OnAttackDirection",
+          "path": "Assets/Scripts/Game/FPSWeapon.cs",
+          "lines": [
+            220,
+            254
+          ]
+        },
+        {
+          "name": "GetHitFrame",
+          "path": "Assets/Scripts/Game/FPSWeapon.cs",
+          "lines": [
+            272,
+            278
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera-look",
+        "combat-formulas"
+      ]
+    },
+    {
+      "id": "combat-formulas",
+      "name": "Attack resolution formulas",
+      "purpose": "Chance to hit, swing modifiers, struck body part selection, weapon and hand-to-hand damage, and backstab multiplication.",
+      "paths": [
+        "Assets/Scripts/Game/Formulas/FormulaHelper.cs"
+      ],
+      "functions": [
+        {
+          "name": "CalculateAttackDamage",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            538,
+            723
+          ]
+        },
+        {
+          "name": "CalculateSuccessfulHit",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            796,
+            828
+          ]
+        },
+        {
+          "name": "CalculateWeaponAttackDamage",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            730,
+            769
+          ]
+        },
+        {
+          "name": "CalculateSwingModifiers",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            873,
+            906
+          ]
+        },
+        {
+          "name": "CalculateStruckBodyPart",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            863,
+            871
+          ]
+        },
+        {
+          "name": "CalculateBackstabDamage",
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "lines": [
+            978,
+            991
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-units"
+      ]
+    },
+    {
+      "id": "spell-missiles",
+      "name": "Spell and arrow projectiles",
+      "purpose": "Fixed-step projectile travel with sphere-cast lookahead, impact payload, by-touch targeting and area explosions.",
+      "paths": [
+        "Assets/Scripts/Game/DaggerfallMissile.cs"
+      ],
+      "functions": [
+        {
+          "name": "FixedUpdate",
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "lines": [
+            327,
+            352
+          ]
+        },
+        {
+          "name": "DoCollision",
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "lines": [
+            358,
+            403
+          ]
+        },
+        {
+          "name": "DoAreaOfEffect",
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "lines": [
+            477,
+            510
+          ]
+        }
+      ],
+      "dependsOn": [
+        "combat-formulas"
+      ]
+    },
+    {
+      "id": "enemy-ai",
+      "name": "Enemy senses, pursuit and attacks",
+      "purpose": "Sight cone and hearing checks, pursuit that keeps distance from the target, and melee or ranged attack cadence.",
+      "paths": [
+        "Assets/Scripts/Game/EnemySenses.cs",
+        "Assets/Scripts/Game/EnemyMotor.cs",
+        "Assets/Scripts/Game/EnemyAttack.cs"
+      ],
+      "functions": [
+        {
+          "name": "FixedUpdate",
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "lines": [
+            244,
+            536
+          ]
+        },
+        {
+          "name": "CanSeeTarget",
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "lines": [
+            876,
+            924
+          ]
+        },
+        {
+          "name": "CanHearTarget",
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "lines": [
+            929,
+            961
+          ]
+        },
+        {
+          "name": "TakeAction",
+          "path": "Assets/Scripts/Game/EnemyMotor.cs",
+          "lines": [
+            430,
+            525
+          ]
+        },
+        {
+          "name": "AttemptMove",
+          "path": "Assets/Scripts/Game/EnemyMotor.cs",
+          "lines": [
+            882,
+            997
+          ]
+        },
+        {
+          "name": "MeleeDamage",
+          "path": "Assets/Scripts/Game/EnemyAttack.cs",
+          "lines": [
+            181,
+            228
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor",
+        "combat-formulas"
+      ]
+    },
+    {
+      "id": "world-streaming",
+      "name": "Floating origin rebasing",
+      "purpose": "Keeps world coordinates near the origin by shifting the player, streamed terrain and loaded enemies whenever the player drifts past a vertical threshold or crosses a map pixel.",
+      "paths": [
+        "Assets/Scripts/Utility/FloatingOrigin.cs"
+      ],
+      "functions": [
+        {
+          "name": "FixedUpdate",
+          "path": "Assets/Scripts/Utility/FloatingOrigin.cs",
+          "lines": [
+            92,
+            136
+          ]
+        },
+        {
+          "name": "OffsetPlayerController",
+          "path": "Assets/Scripts/Utility/FloatingOrigin.cs",
+          "lines": [
+            176,
+            182
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motor"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "walk-run-speed",
+      "node": "player-speed",
+      "name": "Ground speed from Live Speed with walk, run, crouch and ride tiers",
+      "summary": "Ground speed in world units per second is the Live Speed stat plus a stance base, divided by 39.5. Running replaces the walk drag with a skill multiplier.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The motor recomputes speed every 50 Hz fixed step. Walking is (Speed + 150 - drag) / 39.5, where drag is half the gap between 100 and the Speed stat, with the stat floored at 30 inside the drag term only. A Speed stat of 50 therefore walks at about 4.4 units per second. Running drops the drag term and multiplies by 1.35 plus Running skill over 200, so 100 Running gives 1.85. Crouching uses a base of 50 instead of 150 and has no drag. Riding a horse uses a base of 150 + 225 and a cart uses 150 + 100. Riders cannot run. Effect modifiers multiply the result in sequence when the override flag is on, and the product is cached until the base speed changes.",
+      "constants": [
+        {
+          "name": "classic to world speed ratio",
+          "value": 39.5,
+          "unit": "classic speed units per world unit per second; divisor, not a rate",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:30"
+        },
+        {
+          "name": "walk base",
+          "value": 150,
+          "unit": "classic speed units added to the Speed stat before the divide; speed recomputed each 50 Hz fixed step",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:31"
+        },
+        {
+          "name": "crouch base",
+          "value": 50,
+          "unit": "classic speed units added to the Speed stat before the divide; replaces the walk base",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:32"
+        },
+        {
+          "name": "ride base bonus",
+          "value": 225,
+          "unit": "classic speed units added to the walk base while on a horse",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:33"
+        },
+        {
+          "name": "cart base bonus",
+          "value": 100,
+          "unit": "classic speed units added to the walk base while in a cart",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:34"
+        },
+        {
+          "name": "walk drag coefficient",
+          "value": 0.5,
+          "unit": "classic speed units removed per point of Speed below 100",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:378"
+        },
+        {
+          "name": "drag Speed floor",
+          "value": 30,
+          "unit": "Speed stat points; lower values count as this value in the drag term only",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:378"
+        },
+        {
+          "name": "run multiplier base",
+          "value": 1.35,
+          "unit": "dimensionless multiplier on the drag-free speed",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:396"
+        },
+        {
+          "name": "running skill divisor",
+          "value": 200,
+          "unit": "skill points per 1.0 of extra run multiplier",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:396"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 30
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 34
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 378
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 396
+        }
+      ],
+      "capabilities": [
+        "stat-driven ground speed",
+        "walk and run tiers",
+        "skill-scaled sprinting",
+        "mounted speed tier"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "rpg"
+      ]
+    },
+    {
+      "id": "sneak-speed",
+      "node": "player-speed",
+      "name": "Sneaking halves speed then shaves one classic unit",
+      "summary": "Sneaking halves the speed built for the current stance and then subtracts one classic speed unit, converted to world units.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The run and sneak state updates only while the player is grounded, and sneak is off whenever run is on. Starting a run clears sneak mode. Sneak takes the speed already built for the stance, divides it by two and subtracts 1 / 39.5, about 0.025 world units per second. Because the second term is fixed, slow characters lose a slightly larger share. While airborne the run state stays as it was, except that it is forced off when the character cannot run, which is the case on a horse or cart. A mounted player takes the ride speed after this step, so sneak has no effect on a mount.",
+      "constants": [
+        {
+          "name": "sneak speed divisor",
+          "value": 2,
+          "unit": "divisor on the current ground speed in world units per second",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:135"
+        },
+        {
+          "name": "sneak flat penalty",
+          "value": 1,
+          "unit": "classic speed units (1 / 39.5 world units per second) subtracted after halving",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:136"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 115
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 135
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 136
+        }
+      ],
+      "capabilities": [
+        "stealth movement",
+        "quiet walking speed penalty"
+      ],
+      "tags": [
+        "movement",
+        "stealth"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "player-acrobatics",
+      "name": "Jump impulse scaled by skill, athletics and crouch",
+      "summary": "A jump sets the vertical velocity to 4.5 units per second times a skill, perk and spell multiplier. A 0.1 second grounded gate stops bunny hops.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Jump input is read only on a fixed step where the player is grounded. It is ignored when the player is paralyzed, swimming in exterior water, slow falling or in a cart. It is also ignored until the player has been grounded for 0.1 seconds, unless the player just left a climb. The vertical velocity becomes 4.5 times a multiplier. The multiplier starts at 1, adds Jumping skill times 0.5 over 100, adds 0.1 for Athleticism, 0.1 more for Improved Athleticism and 0.6 under a jump spell. A horse uses a flat 1.75. With gravity 20 the apex is about 0.5 units at skill 0 and about 1.1 units at skill 100. A moving jump adds 0.05 times the base 4.5 along the facing, and a crouched jump scales the vertical velocity by 0.8. The player prefab keeps the 4.5 default.",
+      "constants": [
+        {
+          "name": "base jump speed",
+          "value": 4.5,
+          "unit": "world units per second of vertical launch velocity, applied once per jump; player prefab keeps this value",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:623"
+        },
+        {
+          "name": "jump skill coefficient",
+          "value": 0.5,
+          "unit": "percent of launch speed per point of Jumping skill, applied once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:13"
+        },
+        {
+          "name": "athleticism bonus",
+          "value": 0.1,
+          "unit": "fraction of launch speed added, applied once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:14"
+        },
+        {
+          "name": "improved athleticism bonus",
+          "value": 0.1,
+          "unit": "fraction of launch speed added on top of Athleticism, once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:15"
+        },
+        {
+          "name": "jump spell bonus",
+          "value": 0.6,
+          "unit": "fraction of launch speed added, once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:16"
+        },
+        {
+          "name": "crouch jump scale",
+          "value": 0.8,
+          "unit": "multiplier on the vertical launch velocity, once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:19"
+        },
+        {
+          "name": "grounded time gate",
+          "value": 0.1,
+          "unit": "seconds of continuous ground contact required before a jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:76"
+        },
+        {
+          "name": "mounted jump multiplier",
+          "value": 1.75,
+          "unit": "multiplier on launch speed while riding a horse, once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:85"
+        },
+        {
+          "name": "moving jump forward boost",
+          "value": 0.05,
+          "unit": "fraction of the base jump speed added along facing, once per jump",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:114"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 10
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 13
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 76
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 114
+        },
+        {
+          "path": "Assets/Prefabs/Player/PlayerAdvanced.prefab",
+          "line": 623
+        }
+      ],
+      "capabilities": [
+        "skill-scaled jump height",
+        "crouch jump",
+        "mounted jump",
+        "grounded jump gate"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "physics"
+      ]
+    },
+    {
+      "id": "gravity-and-slowfall",
+      "node": "player-acrobatics",
+      "name": "Gravity accumulation, step anti-bump and slow fall",
+      "summary": "Vertical velocity loses 20 units per second squared each 50 Hz step. A steady downward push keeps the capsule on stairs, and slow fall is only about 2.1 units per second.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Each fixed step the vertical velocity drops by gravity 20 times the step of 0.02 seconds, and the controller moves by velocity times the step. A step probe casts a 0.1 radius sphere downward from 0.1 units ahead of the capsule centre. When its hit distance lies between half the capsule height minus 0.15 and that plus 1.10, the velocity also drops by 20.75 for that step. While grounded the movement vector is rebuilt each step, so this acts as a steady push of about 21 units per second that keeps the capsule on stairs and ramps. It is skipped while jumping or climbing. Slow fall sets the vertical velocity to minus 105 times the step, which is only about 2.1 units per second at 50 Hz, and it resets the fall origin every step.",
+      "constants": [
+        {
+          "name": "gravity",
+          "value": 20,
+          "unit": "world units per second squared, integrated each 50 Hz fixed step; player prefab keeps this value",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:624"
+        },
+        {
+          "name": "fixed step",
+          "value": 0.02,
+          "unit": "seconds per physics step",
+          "source": "ProjectSettings/TimeManager.asset:6"
+        },
+        {
+          "name": "slow fall factor",
+          "value": 105,
+          "unit": "multiplied by the 0.02 second step to give about 2.1 world units per second downward",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:9"
+        },
+        {
+          "name": "anti-bump push",
+          "value": 20.75,
+          "unit": "world units per second removed from the vertical velocity once per fixed step while the probe band holds",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:191"
+        },
+        {
+          "name": "step probe inner margin",
+          "value": 0.15,
+          "unit": "world units subtracted from half the capsule height to start the probe band",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:192"
+        },
+        {
+          "name": "step probe band width",
+          "value": 1.1,
+          "unit": "world units added to the inner probe range",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:193"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 9
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 11
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 179
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 191
+        },
+        {
+          "path": "ProjectSettings/TimeManager.asset",
+          "line": 6
+        }
+      ],
+      "capabilities": [
+        "constant gravity integration",
+        "step lip anti-bump",
+        "constant speed slow fall"
+      ],
+      "tags": [
+        "physics",
+        "jump",
+        "movement"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "player-acrobatics",
+      "name": "Fall damage threshold and hard landing",
+      "summary": "A fall of more than 5 units costs 5 health per unit beyond 5. A fall of more than 2.5 units only plays a hard landing sound.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Any step that begins without ground contact records the current height as the fall origin, including the start of a jump. The origin is shifted when the floating origin moves, and it is reset every step during slow fall. On landing the drop is measured from that origin. The check is skipped when the landing tile is exterior water. It is also skipped while climbing, unless the climber is slipping. A drop above 5 units sends a damage message, and the health component removes 5 times the distance beyond 5, rounded down. A drop above 2.5 units sends only a hard landing sound message and no damage. A 7 unit drop therefore costs 10 health.",
+      "constants": [
+        {
+          "name": "fall damage threshold",
+          "value": 5,
+          "unit": "world units of drop before damage",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:20"
+        },
+        {
+          "name": "hard fall divisor",
+          "value": 2,
+          "unit": "divisor on the threshold for the sound-only hard landing",
+          "source": "Assets/Scripts/Game/Player/AcrobatMotor.cs:221"
+        },
+        {
+          "name": "health per unit fallen",
+          "value": 5,
+          "unit": "health points per world unit beyond the threshold, applied once per landing",
+          "source": "Assets/Scripts/Game/PlayerHealth.cs:52"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 20
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 219
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 221
+        },
+        {
+          "path": "Assets/Scripts/Game/PlayerHealth.cs",
+          "line": 56
+        }
+      ],
+      "capabilities": [
+        "fall damage",
+        "safe landing threshold",
+        "climb-safe descent"
+      ],
+      "tags": [
+        "physics",
+        "damage",
+        "movement"
+      ]
+    },
+    {
+      "id": "air-control",
+      "node": "player-acrobatics",
+      "name": "Air control steering and ceiling reversal",
+      "summary": "Air steering is off in the shipped player prefab. It turns on only for a jump spell or rappelling. Diagonal input is scaled by 0.7071, and a ceiling hit flips upward velocity.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. While airborne the horizontal velocity is rebuilt from the two movement axes times the current ground speed and rotated into world space. The vertical component is left alone. This runs only when the air control flag, rappelling or a jump spell is active and the player is still in control. The player prefab sets the flag to off, so a normal jump keeps the momentum from takeoff. When both axes are pressed and the diagonal limit is on, which is the default, each axis is scaled by 0.7071. A paralyzed player loses all input. If the capsule reports a hit above while moving up, the vertical velocity is negated at once.",
+      "constants": [
+        {
+          "name": "air control default",
+          "value": 0,
+          "unit": "flag; 0 means off in the player prefab",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:627"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 130
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 143
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/AcrobatMotor.cs",
+          "line": 153
+        },
+        {
+          "path": "Assets/Prefabs/Player/PlayerAdvanced.prefab",
+          "line": 627
+        }
+      ],
+      "capabilities": [
+        "air steering",
+        "diagonal speed normalisation",
+        "ceiling head bump"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "physics"
+      ]
+    },
+    {
+      "id": "slope-slide",
+      "node": "player-ground-contact",
+      "name": "Slope limit, step offset and optional slope slide",
+      "summary": "The player capsule climbs steps up to 0.5 units and slopes up to 70 degrees. An optional slope slide exists but is off in the shipped prefab.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The capsule is a Unity character controller with radius 0.35, a slope limit of 70 degrees, a step offset of 0.5 and a skin width of 0.06. Those values decide which steps and ramps the player walks over. The slide code is a separate option. When enabled it casts down from the capsule centre, falls back to the last contact point, and slides if the surface angle exceeds the slope limit minus 0.1 degrees. The movement vector then points down the slope at 12 units per second and player control is off for that step. The player prefab sets the slide flag and the tagged-surface flag to off, so this slide is inactive by default. Otherwise the input axes are rotated into world space and scaled by ground speed. The move call multiplies the vector by the step, after carrying the player with any moving platform.",
+      "constants": [
+        {
+          "name": "capsule radius",
+          "value": 0.35,
+          "unit": "world units, half extent",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:82"
+        },
+        {
+          "name": "slope limit",
+          "value": 70,
+          "unit": "degrees; steeper surfaces block walking",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:83"
+        },
+        {
+          "name": "step offset",
+          "value": 0.5,
+          "unit": "world units of step height the controller climbs",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:84"
+        },
+        {
+          "name": "slide enabled flag",
+          "value": 0,
+          "unit": "flag; 0 means the slope slide is off in the player prefab",
+          "source": "Assets/Prefabs/Player/PlayerAdvanced.prefab:608"
+        },
+        {
+          "name": "slide speed",
+          "value": 12,
+          "unit": "world units per second down the slope, only when the slide is enabled; applied each 50 Hz fixed step",
+          "source": "Assets/Scripts/Game/Player/FrictionMotor.cs:20"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "line": 20
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "line": 53
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/FrictionMotor.cs",
+          "line": 57
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerGroundMotor.cs",
+          "line": 90
+        },
+        {
+          "path": "Assets/Prefabs/Player/PlayerAdvanced.prefab",
+          "line": 83
+        }
+      ],
+      "capabilities": [
+        "slope sliding",
+        "steep surface rejection",
+        "moving platform carry"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "collision"
+      ]
+    },
+    {
+      "id": "capsule-height-states",
+      "node": "player-capsule-height",
+      "name": "Capsule and eye height per stance",
+      "summary": "Standing, crouching, mounted and swimming each have a fixed capsule height, and camera height is half of it minus a small eye offset, blended over a per-stance timer.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The capsule is 1.8 units tall standing, 0.9 crouching, 2.6 mounted and 0.3 swimming. A mounted swimmer is 0.6. Camera height is half the capsule height minus 0.09, so 0.81 standing and 0.36 crouching above the capsule centre. Blend time depends on the action. Crouch, stand and dismount take 0.1 seconds. Mount, forced stand while climbing and the swim crouch take 0.25 seconds. Entering or leaving exterior water takes 0.4 seconds. Crouching lerps the camera down first and shrinks the capsule when the timer ends. Standing grows the capsule at once and lerps the camera up. Standing is blocked while an upward sphere cast of 0.45 units, half the height difference, hits a ceiling.",
+      "constants": [
+        {
+          "name": "standing capsule height",
+          "value": 1.8,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:54"
+        },
+        {
+          "name": "crouch capsule height",
+          "value": 0.9,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:55"
+        },
+        {
+          "name": "mounted capsule height",
+          "value": 2.6,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:56"
+        },
+        {
+          "name": "swimming capsule height",
+          "value": 0.3,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:57"
+        },
+        {
+          "name": "eye offset",
+          "value": 0.09,
+          "unit": "world units below the top of the capsule",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:59"
+        },
+        {
+          "name": "fast blend timer",
+          "value": 0.1,
+          "unit": "seconds; crouch, stand and dismount",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:70"
+        },
+        {
+          "name": "medium blend timer",
+          "value": 0.25,
+          "unit": "seconds; mount, climb stand and swim crouch",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:71"
+        },
+        {
+          "name": "slow blend timer",
+          "value": 0.4,
+          "unit": "seconds; entering or leaving exterior water",
+          "source": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs:72"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "line": 54
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "line": 59
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "line": 110
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerHeightChanger.cs",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "stance-dependent capsule height",
+        "eye height blending",
+        "crouch and mount transitions"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "movement"
+      ]
+    },
+    {
+      "id": "wall-climb",
+      "node": "player-climbing",
+      "name": "Wall climbing with periodic skill checks",
+      "summary": "Holding forward against a wall starts a climb after a 14 tick delay. Hold checks every 15 ticks can make the climber slip and fall. The chance comes from the Climbing skill and Luck.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Climbing is allowed only on foot. The player must hold forward, touch a wall and move less than 0.12 units horizontally for a start delay of 14 classic ticks, about 0.77 seconds. A tick is 0.0549 seconds. A grounded start rolls at a 70 percent base, and a roll that fails is retried on later steps, so a grounded start nearly always succeeds. A falling grab rolls at a 40 percent base and resets the delay on a failed roll. The looser 0.9 and 2.0 tolerances and the 5 or 0 tick delays exist only when the Advanced Climbing option is on, which is off by default. Once attached, a hold check runs every 15 ticks, about 0.82 seconds, at a 50 percent base, but only while a move key is down. A failed check makes the climber slip, which counts as falling. A slipping climber is rechecked every 5 ticks at a 20 percent base and takes fall damage when the ground is reached. The chance is the base blended towards 100 by skill, plus up to 10 from Luck. Skill gets 30 more for Khajiit, doubles under a climbing effect, and clamps to 5 through 95 before the blend. Climb speed is ground speed over 3, doubled by the effect.",
+      "constants": [
+        {
+          "name": "start climb minimum chance",
+          "value": 70,
+          "unit": "percent per start roll on the ground",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:78"
+        },
+        {
+          "name": "airborne grasp minimum chance",
+          "value": 40,
+          "unit": "percent per start roll while falling, once per start delay",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:82"
+        },
+        {
+          "name": "continue climb minimum chance",
+          "value": 50,
+          "unit": "percent per hold check",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:80"
+        },
+        {
+          "name": "regain hold minimum chance",
+          "value": 20,
+          "unit": "percent per slip recovery check",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:76"
+        },
+        {
+          "name": "start delay",
+          "value": 14,
+          "unit": "classic ticks of 0.0549 seconds before the first start roll, with Advanced Climbing off",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:525"
+        },
+        {
+          "name": "start horizontal tolerance",
+          "value": 0.12,
+          "unit": "world units of drift allowed during the start delay, with Advanced Climbing off",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:524"
+        },
+        {
+          "name": "continue check frequency",
+          "value": 15,
+          "unit": "classic ticks of 0.0549 seconds per hold check",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:72"
+        },
+        {
+          "name": "regain check frequency",
+          "value": 5,
+          "unit": "classic ticks of 0.0549 seconds per slip recovery check",
+          "source": "Assets/Scripts/Game/Player/ClimbingMotor.cs:74"
+        },
+        {
+          "name": "climb speed divisor",
+          "value": 3,
+          "unit": "divisor on ground speed to get climb speed in world units per second",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:432"
+        },
+        {
+          "name": "climb effect multiplier",
+          "value": 2,
+          "unit": "multiplier on climb speed and on effective skill while a climbing effect is active",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:431"
+        },
+        {
+          "name": "climbing skill floor",
+          "value": 5,
+          "unit": "skill points; lower values count as this",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:309"
+        },
+        {
+          "name": "climbing skill ceiling",
+          "value": 95,
+          "unit": "skill points; higher values count as this",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:309"
+        },
+        {
+          "name": "luck bonus maximum",
+          "value": 10,
+          "unit": "percentage points added to the chance at Luck 100",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:310"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "line": 307
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "line": 78
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "line": 72
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/ClimbingMotor.cs",
+          "line": 524
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 293
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 309
+        },
+        {
+          "path": "Assets/Scripts/Game/PlayerMotor.cs",
+          "line": 32
+        }
+      ],
+      "capabilities": [
+        "surface climbing",
+        "periodic grip checks",
+        "slipping and recovery",
+        "corner traversal"
+      ],
+      "tags": [
+        "movement",
+        "traversal",
+        "skill"
+      ]
+    },
+    {
+      "id": "levitate-and-swim",
+      "node": "levitation-swimming",
+      "name": "Levitation and swimming movement",
+      "summary": "While levitating or swimming a replacement motor takes over, moving the player in six directions at a fixed 4 unit levitate speed or at a swim speed derived from the Swimming skill.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. While levitating or swimming the main motor clears its move vector and a separate component moves the player each rendered frame. Horizontal input is rotated by the camera. Vertical input comes from the jump and float up keys for up and the crouch and float down keys for down. Swimming zeroes the vertical part of horizontal input and blocks upward input that would lift the capsule above the water surface, which avoids a pull-back jitter. Levitation uses a flat 4 units per second in every direction. Swimming speed is the base ground speed times Swimming skill over 200, plus a quarter of the base speed. That is 0.25 times walk speed at skill 0 and 0.75 times at skill 100. With water walking active the player moves at normal ground speed. A swimmer sinks when carried weight times 4 exceeds 250, unless levitating, climbing or water walking.",
+      "constants": [
+        {
+          "name": "levitate move speed",
+          "value": 4,
+          "unit": "world units per second in any direction, integrated each rendered frame",
+          "source": "Assets/Scripts/Game/LevitateMotor.cs:22"
+        },
+        {
+          "name": "encumbrance multiplier",
+          "value": 4,
+          "unit": "multiplier on carried weight before the sink test",
+          "source": "Assets/Scripts/Game/LevitateMotor.cs:83"
+        },
+        {
+          "name": "encumbrance threshold",
+          "value": 250,
+          "unit": "weighted units; above this a swimmer sinks",
+          "source": "Assets/Scripts/Game/LevitateMotor.cs:83"
+        },
+        {
+          "name": "swim skill divisor",
+          "value": 200,
+          "unit": "skill points per 1.0 of swim speed fraction",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:424"
+        },
+        {
+          "name": "swim flat fraction divisor",
+          "value": 4,
+          "unit": "divisor on base speed for the flat swim part",
+          "source": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs:424"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/LevitateMotor.cs",
+          "line": 22
+        },
+        {
+          "path": "Assets/Scripts/Game/LevitateMotor.cs",
+          "line": 76
+        },
+        {
+          "path": "Assets/Scripts/Game/LevitateMotor.cs",
+          "line": 83
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/PlayerSpeedChanger.cs",
+          "line": 424
+        }
+      ],
+      "capabilities": [
+        "six-direction levitation",
+        "swimming speed model",
+        "encumbrance sinking",
+        "water plane ceiling"
+      ],
+      "tags": [
+        "movement",
+        "swimming",
+        "magic"
+      ]
+    },
+    {
+      "id": "mouse-look",
+      "node": "camera-look",
+      "name": "Mouse look with pitch clamp and smoothing",
+      "summary": "Look angles accumulate scaled mouse deltas, wrap yaw at 360 degrees, clamp pitch to straight up and down, and chase the target through a frame-rate corrected smoothing weight.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Each rendered frame the raw look delta is multiplied by the sensitivity, which defaults to 2. Controller input is also scaled by 60 times the unscaled frame time, so stick speed does not depend on frame rate. Mouse deltas are not time scaled. Target yaw wraps into 0 to 360. Target pitch clamps to plus or minus 90 degrees by default. The visible angle then moves towards the target as a weighted average. The retained weight is the smoothing setting, 0.5 by default and capped at 0.9, with a 0.5 minimum for a controller. The progress fraction of 1 minus that weight is rescaled from a 60 Hz baseline, so the feel matches at any frame rate.",
+      "constants": [
+        {
+          "name": "pitch maximum",
+          "value": 90,
+          "unit": "degrees above the horizon",
+          "source": "Assets/Scripts/Game/PlayerMouseLook.cs:23"
+        },
+        {
+          "name": "pitch minimum",
+          "value": -90,
+          "unit": "degrees below the horizon",
+          "source": "Assets/Scripts/Game/PlayerMouseLook.cs:24"
+        },
+        {
+          "name": "maximum smoothing",
+          "value": 0.9,
+          "unit": "upper cap on the retained fraction of the look gap per 60 Hz frame",
+          "source": "Assets/Scripts/Game/PlayerMouseLook.cs:45"
+        },
+        {
+          "name": "default smoothing",
+          "value": 0.5,
+          "unit": "retained fraction of the look gap per 60 Hz frame, from the default settings file",
+          "source": "Assets/Resources/defaults.ini.txt:132"
+        },
+        {
+          "name": "default sensitivity",
+          "value": 2,
+          "unit": "degrees per unit of look delta, mouse and stick scaled differently",
+          "source": "Assets/Resources/defaults.ini.txt:133"
+        },
+        {
+          "name": "yaw wrap range",
+          "value": 360,
+          "unit": "degrees before accumulated yaw is reduced back into range",
+          "source": "Assets/Scripts/Game/PlayerMouseLook.cs:134"
+        },
+        {
+          "name": "frame rate baseline",
+          "value": 60,
+          "unit": "frames per second used to rescale smoothing and stick speed",
+          "source": "Assets/Scripts/Game/PlayerMouseLook.cs:102"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "line": 23
+        },
+        {
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "line": 45
+        },
+        {
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "line": 108
+        },
+        {
+          "path": "Assets/Scripts/Game/PlayerMouseLook.cs",
+          "line": 154
+        }
+      ],
+      "capabilities": [
+        "mouse look",
+        "pitch clamping",
+        "smoothed aim",
+        "frame-rate independent input"
+      ],
+      "tags": [
+        "camera",
+        "input"
+      ]
+    },
+    {
+      "id": "head-bob",
+      "node": "camera-look",
+      "name": "Velocity-driven head bob",
+      "summary": "Camera bob follows horizontal speed. Lateral sway is a cosine and vertical bounce is an absolute sine, with different sizes for walking, running, crouching and riding.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Bob is skipped when the option is off, the player is dead, the cursor is active, the game is paused, the player is climbing or the player is not grounded. Swimming uses zero amplitude. The style is chosen in this order: swimming, running, crouching, riding, walking. Lateral offset is cosine of the phase times the lateral size. Vertical offset is the absolute sine of the phase times the vertical size, so there are two hops per cycle. Walking uses 0.045 lateral and 0.062 vertical, running 0.09 and 0.11, crouching 0.08 and 0.07, riding 0.03 and 0.115. The camera also nods by a small rotation. The phase advances by horizontal speed times 1.25 times the frame time, where 1.25 is half the walk step interval of 2.5, even when running. The start is eased over the first half cycle and the stop is eased over 0.5 seconds. Landing adds a dip of 0.17 units over 0.1 seconds.",
+      "constants": [
+        {
+          "name": "walking lateral bob",
+          "value": 0.045,
+          "unit": "world units of camera offset at full amplitude, each rendered frame",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:127"
+        },
+        {
+          "name": "walking vertical bob",
+          "value": 0.062,
+          "unit": "world units of camera offset at full amplitude, each rendered frame",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:128"
+        },
+        {
+          "name": "running lateral bob",
+          "value": 0.09,
+          "unit": "world units of camera offset at full amplitude, each rendered frame",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:134"
+        },
+        {
+          "name": "running vertical bob",
+          "value": 0.11,
+          "unit": "world units of camera offset at full amplitude, each rendered frame",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:135"
+        },
+        {
+          "name": "walk step interval",
+          "value": 2.5,
+          "unit": "phase units per world unit travelled before halving; same value in the player prefab",
+          "source": "Assets/Scripts/Game/PlayerFootsteps.cs:27"
+        },
+        {
+          "name": "bob rate divisor",
+          "value": 2,
+          "unit": "divisor on the walk step interval to get the bob rate",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:75"
+        },
+        {
+          "name": "stop ease time",
+          "value": 0.5,
+          "unit": "seconds to return to the rest position after the player stops",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:62"
+        },
+        {
+          "name": "landing dip",
+          "value": 0.17,
+          "unit": "world units of vertical camera dip over 0.1 seconds after landing",
+          "source": "Assets/Scripts/Game/Player/HeadBobber.cs:238"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "line": 113
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "line": 127
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "line": 159
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/HeadBobber.cs",
+          "line": 75
+        }
+      ],
+      "capabilities": [
+        "locomotion head bob",
+        "stance-specific bob amplitude",
+        "step-synced phase"
+      ],
+      "tags": [
+        "camera",
+        "movement",
+        "feedback"
+      ]
+    },
+    {
+      "id": "damage-recoil",
+      "node": "camera-look",
+      "name": "Damage camera sway",
+      "summary": "A health loss above 2 percent of maximum rotates the camera along a random axis. The swing lasts 2.5 to 5 seconds and shrinks as it ends.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The component watches health and ignores a loss of 2 percent of maximum or less. A larger loss starts a sway along a random unit axis made of the pitch and yaw rotation. The phase budget is pi times 5, plus pi for every 20 percent of health lost, rounded down. The phase runs down at 2 pi per second, so a small loss lasts 2.5 seconds and a near fatal loss lasts 5. Each rendered frame the camera is rotated by an extra amount equal to sine of the remaining phase times an amplitude. The amplitude is 50 degrees times the strength setting, times the remaining fraction of the phase, times 0.015 per health point lost clamped to 1. The strength setting scales by 0, 0.25, 0.5, 0.75 or 1, and the default is 3, which is 0.75. The rotation is added per frame and is not corrected for frame rate.",
+      "constants": [
+        {
+          "name": "maximum recoil severity",
+          "value": 50,
+          "unit": "degrees of rotation factor before the strength setting",
+          "source": "Assets/Scripts/Game/Player/CameraRecoiler.cs:45"
+        },
+        {
+          "name": "default strength setting",
+          "value": 3,
+          "unit": "setting index; maps to 0.75 of the severity",
+          "source": "Assets/Resources/defaults.ini.txt:146"
+        },
+        {
+          "name": "minimum health loss fraction",
+          "value": 0.02,
+          "unit": "fraction of maximum health; a loss at or below this is ignored",
+          "source": "Assets/Scripts/Game/Player/CameraRecoiler.cs:77"
+        },
+        {
+          "name": "recoil timer speed",
+          "value": 2,
+          "unit": "multiples of pi per second of sway phase",
+          "source": "Assets/Scripts/Game/Player/CameraRecoiler.cs:99"
+        },
+        {
+          "name": "recoil phase base",
+          "value": 5,
+          "unit": "multiples of pi in the smallest sway phase budget",
+          "source": "Assets/Scripts/Game/Player/CameraRecoiler.cs:133"
+        },
+        {
+          "name": "health loss factor",
+          "value": 0.015,
+          "unit": "fraction of full amplitude per health point lost, clamped to 1",
+          "source": "Assets/Scripts/Game/Player/CameraRecoiler.cs:156"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "line": 45
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "line": 77
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "line": 99
+        },
+        {
+          "path": "Assets/Scripts/Game/Player/CameraRecoiler.cs",
+          "line": 156
+        }
+      ],
+      "capabilities": [
+        "hit feedback camera sway",
+        "amplitude scaled by damage",
+        "user-scaled recoil strength"
+      ],
+      "tags": [
+        "camera",
+        "damage",
+        "feedback"
+      ]
+    },
+    {
+      "id": "melee-swing-gesture",
+      "node": "melee-combat",
+      "name": "Gesture-driven melee swings",
+      "summary": "Mouse travel over the last second becomes one of six swing directions once it passes 5 percent of the screen. The hit test at animation frame 2 uses a 2.5 unit reach.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Mouse deltas are summed in a buffer that drops samples older than 1 second. When the path length divided by the longest screen side passes 0.05, the summed vector gives an angle that is bucketed in 15 degree sectors. Right covers 345 to 15 degrees, up covers 15 to 165, left 165 to 195, down-left 195 to 255, down 255 to 285 and down-right 285 to 345. There is no up-left or up-right swing, so up is the widest sector. A stick swings once and re-arms after it returns inside a 0.4 radius. The direction sets the weapon animation, and damage is tested at animation frame 2 for melee or 5 for a bow. The reach is 2.25 plus a 0.25 probe radius. A target needs its centre inside the camera view and a ray of that length from the camera must hit it first. Four extra probes at the head, feet and flanks are used only when the melee detection setting is above 0, and the default is 0.",
+      "constants": [
+        {
+          "name": "attack travel threshold",
+          "value": 0.05,
+          "unit": "fraction of the longest screen side of mouse travel",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:54"
+        },
+        {
+          "name": "gesture sample window",
+          "value": 1,
+          "unit": "seconds a mouse sample stays in the gesture buffer",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:41"
+        },
+        {
+          "name": "swing sector width",
+          "value": 15,
+          "unit": "degrees per gesture sector",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:824"
+        },
+        {
+          "name": "stick re-arm radius",
+          "value": 0.4,
+          "unit": "stick axis units inside which a stick swing re-arms",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:47"
+        },
+        {
+          "name": "weapon reach",
+          "value": 2.25,
+          "unit": "world units of melee reach before the probe radius; set on the screen weapon, overriding the 2.5 field default",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:35"
+        },
+        {
+          "name": "melee probe radius",
+          "value": 0.25,
+          "unit": "world units added to the reach",
+          "source": "Assets/Scripts/Game/WeaponManager.cs:51"
+        },
+        {
+          "name": "melee hit frame",
+          "value": 2,
+          "unit": "animation frame index at which melee damage resolves",
+          "source": "Assets/Scripts/Game/FPSWeapon.cs:277"
+        },
+        {
+          "name": "bow hit frame",
+          "value": 5,
+          "unit": "animation frame index at which a bow shot resolves",
+          "source": "Assets/Scripts/Game/FPSWeapon.cs:275"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "line": 54
+        },
+        {
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "line": 788
+        },
+        {
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "line": 824
+        },
+        {
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "line": 899
+        },
+        {
+          "path": "Assets/Scripts/Game/FPSWeapon.cs",
+          "line": 277
+        }
+      ],
+      "capabilities": [
+        "directional melee input",
+        "weapon animation timing",
+        "reach and viewport gating"
+      ],
+      "tags": [
+        "combat",
+        "input",
+        "melee"
+      ]
+    },
+    {
+      "id": "hit-chance",
+      "node": "combat-formulas",
+      "name": "Chance to hit with swing trade-offs",
+      "summary": "Hit chance is the weapon skill plus modifiers for armour, stats, dodge and swing direction, clamped to a 3 to 97 percent band and rolled against a hundred-sided die.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. An attack starts from the attacker live skill for the weapon type, or hand to hand when unarmed. For a player attack the swing direction then changes accuracy and damage. An upward swing adds 10 to hit and takes 4 off damage. A down-right swing adds 5 and takes 2. A down-left swing takes 5 off hit and adds 2 damage. A straight down swing takes 10 off hit and adds 4 damage. Proficiency, racial and backstab modifiers also apply to player attacks only. Armor on the struck body part, adrenaline, enchantments, stat and skill differences and career adjustments are added before the total is clamped to 3 through 97 percent. A d100 roll passes when it is below the chance. The body part comes from a 20 entry table: head 2, each arm 3, chest 4, hands 4, legs 3 and feet 1.",
+      "constants": [
+        {
+          "name": "minimum hit chance",
+          "value": 3,
+          "unit": "percent, floor after every modifier",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:825"
+        },
+        {
+          "name": "maximum hit chance",
+          "value": 97,
+          "unit": "percent, ceiling after every modifier",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:825"
+        },
+        {
+          "name": "upward swing damage",
+          "value": -4,
+          "unit": "damage points",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:886"
+        },
+        {
+          "name": "upward swing accuracy",
+          "value": 10,
+          "unit": "percentage points of hit chance",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:887"
+        },
+        {
+          "name": "down-right swing damage",
+          "value": -2,
+          "unit": "damage points",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:891"
+        },
+        {
+          "name": "down-right swing accuracy",
+          "value": 5,
+          "unit": "percentage points of hit chance",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:892"
+        },
+        {
+          "name": "down-left swing damage",
+          "value": 2,
+          "unit": "damage points",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:896"
+        },
+        {
+          "name": "down-left swing accuracy",
+          "value": -5,
+          "unit": "percentage points of hit chance",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:897"
+        },
+        {
+          "name": "downward swing damage",
+          "value": 4,
+          "unit": "damage points",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:901"
+        },
+        {
+          "name": "downward swing accuracy",
+          "value": -10,
+          "unit": "percentage points of hit chance",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:902"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 796
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 825
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 873
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 863
+        }
+      ],
+      "capabilities": [
+        "percentile hit resolution",
+        "swing direction trade-offs",
+        "weighted body part selection"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "rpg"
+      ]
+    },
+    {
+      "id": "weapon-damage",
+      "node": "combat-formulas",
+      "name": "Weapon and hand-to-hand damage",
+      "summary": "Damage rolls inside the weapon's own range, then adds swing, proficiency, racial, strength and material modifiers, with a separate curve for unarmed strikes.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. A weapon is checked first against the target minimum metal, and a weaker material does zero damage. A hit rolls uniformly between the weapon base minimum and maximum and adds the swing, proficiency and racial modifiers. A skeletal warrior then halves that sum for a weapon without the edged flag and doubles it for silver. Strength adds a table modifier and the weapon material adds a second modifier, which is half of what the inventory screen suggests. A total below 1 becomes 0, and then the career bonus or penalty for the enemy type is added. Unarmed strikes roll between one tenth of the hand to hand skill plus 1 and one fifth of the skill plus 1. They add the same modifiers and add the strength bonus for the player only. A career bonus or phobia adds or subtracts the attacker level against humans, undead, daedra or animals.",
+      "constants": [
+        {
+          "name": "hand to hand minimum divisor",
+          "value": 10,
+          "unit": "skill points per point of minimum unarmed damage",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:440"
+        },
+        {
+          "name": "hand to hand minimum offset",
+          "value": 1,
+          "unit": "damage points added to the minimum unarmed roll",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:440"
+        },
+        {
+          "name": "hand to hand maximum divisor",
+          "value": 5,
+          "unit": "skill points per point of maximum unarmed damage",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:452"
+        },
+        {
+          "name": "skeletal non-edged divisor",
+          "value": 2,
+          "unit": "divisor on damage from weapons without the edged flag",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:744"
+        },
+        {
+          "name": "skeletal silver multiplier",
+          "value": 2,
+          "unit": "multiplier on damage from silver weapons",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:749"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 538
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 730
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 440
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 452
+        }
+      ],
+      "capabilities": [
+        "weapon damage roll",
+        "strength and material modifiers",
+        "unarmed damage curve",
+        "creature type bonuses"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "rpg"
+      ]
+    },
+    {
+      "id": "backstab-bonus",
+      "node": "combat-formulas",
+      "name": "Backstab bonus from behind",
+      "summary": "A player attack on a back-facing enemy adds the Backstabbing skill to hit chance and triples damage on a percentile roll.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The player melee path marks a swing as a backstab when the enemy sprite is back-facing and is not mid way through a transformation. For player attacks, the live Backstabbing skill is then added to the hit chance, and the skill gains one use. After a hit, damage is tripled when the skill is above 1 and a d100 roll falls below the skill. The skill is therefore both the accuracy bonus and the triple damage chance in percent. At skill 50 that is a 50 percent chance of triple damage. Enemy attacks never backstab.",
+      "constants": [
+        {
+          "name": "backstab damage multiplier",
+          "value": 3,
+          "unit": "multiplier on damage after a successful roll",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:986"
+        },
+        {
+          "name": "backstab minimum skill",
+          "value": 1,
+          "unit": "skill points; the triple roll runs only above this value",
+          "source": "Assets/Scripts/Game/Formulas/FormulaHelper.cs:984"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 964
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 978
+        },
+        {
+          "path": "Assets/Scripts/Game/Formulas/FormulaHelper.cs",
+          "line": 986
+        },
+        {
+          "path": "Assets/Scripts/Game/WeaponManager.cs",
+          "line": 544
+        }
+      ],
+      "capabilities": [
+        "positional damage bonus",
+        "backstabbing skill roll",
+        "stealth combat reward"
+      ],
+      "tags": [
+        "combat",
+        "stealth",
+        "damage"
+      ]
+    },
+    {
+      "id": "missile-flight",
+      "node": "spell-missiles",
+      "name": "Projectile travel and area impact",
+      "summary": "Missiles move at 25 units per second. Hits are tested with a 0.45 unit sphere cast each 50 Hz step. Area spells burst in a 4 unit radius.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. The visible missile moves along its aim direction each rendered frame at 25 units per second. Hit testing runs on each 50 Hz fixed step as a cast of 0.5 units, the step distance, plus the 0.45 radius. The first step uses a ray, because the caster may touch a wall. Later steps use a sphere cast, so fast missiles do not tunnel through thin geometry. A hit on an entity applies the payload to it. Only an area-at-range spell then gathers every entity inside 4 units of the impact point. An area-around-caster spell does the same around the caster and skips the caster. The player aims along the camera forward. An enemy aims at the predicted target position when enhanced combat AI is on, which is the default, otherwise at the last known position. A missile expires 8 seconds after release if nothing is hit. The light turns off 0.6 seconds after impact, and the object is removed once its impact sound ends. A touch spell sphere casts 3 units with a 0.25 radius. The 0.9 unit arm length is used only by the enemy check for a clear shot.",
+      "constants": [
+        {
+          "name": "missile speed",
+          "value": 25,
+          "unit": "world units per second; position moves each rendered frame, hits tested each 50 Hz step",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:35"
+        },
+        {
+          "name": "fixed step",
+          "value": 0.02,
+          "unit": "seconds per hit test step",
+          "source": "ProjectSettings/TimeManager.asset:6"
+        },
+        {
+          "name": "missile collider radius",
+          "value": 0.45,
+          "unit": "world units of sphere cast radius",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:36"
+        },
+        {
+          "name": "enemy clear shot arm length",
+          "value": 0.9,
+          "unit": "world units ahead of an enemy used when checking a clear shot",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:37"
+        },
+        {
+          "name": "explosion radius",
+          "value": 4,
+          "unit": "world units radius of the area effect",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:38"
+        },
+        {
+          "name": "missile lifespan",
+          "value": 8,
+          "unit": "seconds before an unimpacted missile expires, counted in fixed steps",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:46"
+        },
+        {
+          "name": "post impact lifespan",
+          "value": 0.6,
+          "unit": "seconds before the impact light turns off",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:47"
+        },
+        {
+          "name": "touch range",
+          "value": 3,
+          "unit": "world units for by-touch targeting, with a 0.25 radius cast",
+          "source": "Assets/Scripts/Game/DaggerfallMissile.cs:62"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "line": 35
+        },
+        {
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "line": 327
+        },
+        {
+          "path": "Assets/Scripts/Game/DaggerfallMissile.cs",
+          "line": 477
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemyMotor.cs",
+          "line": 788
+        },
+        {
+          "path": "ProjectSettings/TimeManager.asset",
+          "line": 6
+        }
+      ],
+      "capabilities": [
+        "sphere cast projectile travel",
+        "area of effect damage",
+        "by-touch targeting",
+        "fixed-step tunneling avoidance"
+      ],
+      "tags": [
+        "combat",
+        "magic",
+        "physics"
+      ]
+    },
+    {
+      "id": "enemy-senses",
+      "node": "enemy-ai",
+      "name": "Enemy sight cone, hearing and target prediction",
+      "summary": "Enemies see about 102 units inside a 190 degree cone and need a clear line. They hear 25 units unless static geometry is in the way.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Sight range is 4096 classic units times 0.025, which is 102.4 units, plus a per-enemy sight modifier. The target must be inside half the field of view of the enemy facing. That field is 180 degrees in the classic setting and 190 when enhanced combat AI is on, which is the default. A ray from eye height to the target eye height must also hit the target first. Hearing is a radius of 25 units plus a per-enemy modifier, and it fails when a static geometry hit lies between them. Doors and other moving objects do not block hearing. With enhanced AI, target prediction runs when 0.0625 seconds have passed, which is every fourth 50 Hz step or 0.08 seconds. It solves a quadratic for the earliest intercept point, using the target velocity and an intercept speed of the enemy walk speed or the missile speed.",
+      "constants": [
+        {
+          "name": "sight range",
+          "value": 4096,
+          "unit": "classic units before the 0.025 scale, which gives 102.4 world units",
+          "source": "Assets/Scripts/Game/EnemySenses.cs:30"
+        },
+        {
+          "name": "classic unit scale",
+          "value": 0.025,
+          "unit": "world units per classic unit",
+          "source": "Assets/Scripts/MeshReader.cs:58"
+        },
+        {
+          "name": "hearing radius",
+          "value": 25,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/EnemySenses.cs:31"
+        },
+        {
+          "name": "field of view",
+          "value": 180,
+          "unit": "degrees of total cone in classic mode",
+          "source": "Assets/Scripts/Game/EnemySenses.cs:32"
+        },
+        {
+          "name": "enhanced field of view",
+          "value": 190,
+          "unit": "degrees of total cone with enhanced combat AI, on by default",
+          "source": "Assets/Scripts/Game/EnemySenses.cs:241"
+        },
+        {
+          "name": "target prediction interval",
+          "value": 0.0625,
+          "unit": "seconds of accumulated fixed step time between predictions",
+          "source": "Assets/Scripts/Game/EnemySenses.cs:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "line": 30
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "line": 31
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "line": 32
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemySenses.cs",
+          "line": 34
+        },
+        {
+          "path": "Assets/Scripts/MeshReader.cs",
+          "line": 58
+        }
+      ],
+      "capabilities": [
+        "sight cone detection",
+        "hearing radius",
+        "target leading",
+        "line of sight checks"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "combat"
+      ]
+    },
+    {
+      "id": "enemy-attack-cadence",
+      "node": "enemy-ai",
+      "name": "Enemy melee and ranged attack cadence",
+      "summary": "Enemies swing after a cooldown of about 1.5 to 3.1 seconds, shortened by player level and lengthened by slower reflexes. They need 22.5 degrees of facing and 2.25 units of reach.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. A melee attempt starts on a classic update tick when the cooldown is zero and a random check on the enemy speed passes. A faster enemy passes more often. The target must be in sight within 22.5 degrees of facing, and within 2.25 units plus the rate at which the target is closing. The 1.5 unit distance against other AI applies only when enhanced combat AI is off, and it is on by default. The damage frame has its own test: distance at most 0.25, or at most 2.25 and within 35.156 degrees of facing. Each attack rolls a cooldown of 1500 to 3000 classic frames. It subtracts 50 for each player level above 10, adds 450 for each reflexes step below Average, then divides by 980 to get seconds. At level 10 and Average reflexes that is 1.5 to 3.1 seconds. Ranged attacks start between 6 and 51.2 units. With enhanced AI the enemy halves its move speed while an attack animation plays.",
+      "constants": [
+        {
+          "name": "melee distance",
+          "value": 2.25,
+          "unit": "world units",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:30"
+        },
+        {
+          "name": "classic melee distance against AI",
+          "value": 1.5,
+          "unit": "world units; used only with enhanced combat AI off",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:31"
+        },
+        {
+          "name": "melee cooldown minimum",
+          "value": 1500,
+          "unit": "classic frames",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:116"
+        },
+        {
+          "name": "melee cooldown maximum",
+          "value": 3000,
+          "unit": "classic frames",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:116"
+        },
+        {
+          "name": "melee yaw tolerance",
+          "value": 22.5,
+          "unit": "degrees off facing allowed to start a swing",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:155"
+        },
+        {
+          "name": "cooldown level step",
+          "value": 50,
+          "unit": "classic frames removed per player level above 10",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:117"
+        },
+        {
+          "name": "cooldown reflex step",
+          "value": 450,
+          "unit": "classic frames added per reflexes step below Average",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:126"
+        },
+        {
+          "name": "classic frame divisor",
+          "value": 980,
+          "unit": "classic frames per second used to convert the cooldown",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:131"
+        },
+        {
+          "name": "ranged minimum distance",
+          "value": 240,
+          "unit": "classic units, 6 world units after the 0.025 scale",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:28"
+        },
+        {
+          "name": "ranged maximum distance",
+          "value": 2048,
+          "unit": "classic units, 51.2 world units after the 0.025 scale",
+          "source": "Assets/Scripts/Game/EnemyAttack.cs:29"
+        },
+        {
+          "name": "attack move slowdown",
+          "value": 2,
+          "unit": "divisor on enemy move speed while an attack animation plays, with enhanced combat AI on",
+          "source": "Assets/Scripts/Game/EnemyMotor.cs:35"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Game/EnemyAttack.cs",
+          "line": 30
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemyAttack.cs",
+          "line": 114
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemyAttack.cs",
+          "line": 155
+        },
+        {
+          "path": "Assets/Scripts/Game/EnemyMotor.cs",
+          "line": 35
+        }
+      ],
+      "capabilities": [
+        "melee attack range gate",
+        "reflex-scaled attack rate",
+        "ranged engagement band",
+        "attack animation slowdown"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "melee"
+      ]
+    },
+    {
+      "id": "floating-origin",
+      "node": "world-streaming",
+      "name": "Floating origin rebasing for a continent-scale world",
+      "summary": "The player and the streamed world are shifted when the height passes 500 units either way or the map pixel changes, which keeps float coordinates small.",
+      "behavior": "Reimplementation note: this repository is a Unity reimplementation of the classic game, and values below are from that reimplementation. Each 50 Hz fixed step the origin keeper compares the player height against a limit of 500 units above or below zero. It also compares the current map pixel with the last one. A height breach shifts everything by the negated height. A pixel change shifts by the pixel delta times the terrain tile size scaled to world units. When anything changed, the player controller, the streamed terrain children and the active enemies take the same offset in one step. The player fall origin is adjusted in the same pass, so the shift is not read as a fall. This is an engine precision technique, and it is useful only for a very large outdoor map.",
+      "constants": [
+        {
+          "name": "vertical rebase threshold",
+          "value": 500,
+          "unit": "world units of height drift, above or below zero, before the origin is shifted",
+          "source": "Assets/Scripts/Utility/FloatingOrigin.cs:32"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Assets/Scripts/Utility/FloatingOrigin.cs",
+          "line": 32
+        },
+        {
+          "path": "Assets/Scripts/Utility/FloatingOrigin.cs",
+          "line": 92
+        },
+        {
+          "path": "Assets/Scripts/Utility/FloatingOrigin.cs",
+          "line": 176
+        }
+      ],
+      "capabilities": [
+        "floating origin rebasing",
+        "streaming world offset",
+        "large world precision"
+      ],
+      "tags": [
+        "world",
+        "physics",
+        "streaming"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1518 @@
+{
+  "version": 1,
+  "id": "freespace-2",
+  "title": "FreeSpace 2",
+  "repo": "https://github.com/scp-fs2open/fs2open.github.com",
+  "sha": "a7cd0a6de4a6c6dd1ee603a59cb2dc70d790ac5f",
+  "nodes": [
+    {
+      "id": "physics-core",
+      "name": "Flight physics integrator",
+      "purpose": "Frame-time proportional integration of linear and angular motion shared by ships and weapons: exponential velocity ramps, throttle-to-goal mapping, point and pressure impulses, rotational clamps and the ballistic lead solve",
+      "paths": [
+        "code/physics/physics.cpp",
+        "code/physics/physics.h",
+        "code/object/object.cpp"
+      ],
+      "functions": [
+        {
+          "name": "physics_sim_rot",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            151,
+            229
+          ]
+        },
+        {
+          "name": "physics_sim_vel",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            274,
+            397
+          ]
+        },
+        {
+          "name": "physics_read_flying_controls",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            447,
+            778
+          ]
+        },
+        {
+          "name": "physics_maybe_reset_speed_after_whack",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            781,
+            800
+          ]
+        },
+        {
+          "name": "physics_calculate_and_apply_whack",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            827,
+            848
+          ]
+        },
+        {
+          "name": "physics_apply_whack",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            852,
+            880
+          ]
+        },
+        {
+          "name": "velocity_ramp",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            884,
+            912
+          ]
+        },
+        {
+          "name": "glide_ramp",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            917,
+            943
+          ]
+        },
+        {
+          "name": "physics_apply_shock",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            967,
+            1071
+          ]
+        },
+        {
+          "name": "physics_collide_whack",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            1087,
+            1126
+          ]
+        },
+        {
+          "name": "check_rotvel_limit",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            1129,
+            1171
+          ]
+        },
+        {
+          "name": "physics_lead_ballistic_trajectory",
+          "path": "code/physics/physics.cpp",
+          "lines": [
+            1223,
+            1258
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ship-tuning",
+      "name": "Ship class flight tuning",
+      "purpose": "Table parsing and the per-object hand-off that turn authored rotation periods, damping constants, accel and decel time constants, banking strength and collision defaults into live motion parameters",
+      "paths": [
+        "code/ship/ship.cpp",
+        "code/ship/ship.h"
+      ],
+      "functions": [
+        {
+          "name": "ship_info::ship_info",
+          "path": "code/ship/ship.cpp",
+          "lines": [
+            1123,
+            1502
+          ]
+        },
+        {
+          "name": "parse_ship_values",
+          "path": "code/ship/ship.cpp",
+          "lines": [
+            2353,
+            5397
+          ]
+        },
+        {
+          "name": "physics_ship_init",
+          "path": "code/ship/ship.cpp",
+          "lines": [
+            6356,
+            6466
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "ship-afterburner",
+      "name": "Afterburner fuel and boost",
+      "purpose": "Engage gating on residual fuel and cooldown, per-frame fuel burn and recovery, and the raised speed ceilings the flight solver reads while the burner is lit",
+      "paths": [
+        "code/ship/afterburner.cpp",
+        "code/ship/afterburner.h"
+      ],
+      "functions": [
+        {
+          "name": "afterburners_start",
+          "path": "code/ship/afterburner.cpp",
+          "lines": [
+            66,
+            169
+          ]
+        },
+        {
+          "name": "afterburners_update",
+          "path": "code/ship/afterburner.cpp",
+          "lines": [
+            180,
+            289
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core",
+        "ship-tuning"
+      ]
+    },
+    {
+      "id": "ship-combat",
+      "name": "Primary weapon discharge",
+      "purpose": "Bank fire cadence, per-shot energy draw, burst timing and the recoil and impact impulses pushed back into the firing or struck hull",
+      "paths": [
+        "code/ship/ship.cpp",
+        "code/ship/shiphit.cpp",
+        "code/weapon/weapons.cpp",
+        "code/object/collideshipweapon.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ship_fire_primary",
+          "path": "code/ship/ship.cpp",
+          "lines": [
+            12620,
+            13606
+          ]
+        },
+        {
+          "name": "ship_apply_whack",
+          "path": "code/ship/shiphit.cpp",
+          "lines": [
+            2210,
+            2239
+          ]
+        },
+        {
+          "name": "ship_weapon_do_hit_stuff",
+          "path": "code/object/collideshipweapon.cpp",
+          "lines": [
+            82,
+            186
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core",
+        "ship-tuning"
+      ]
+    },
+    {
+      "id": "object-collision",
+      "name": "Hull collision response",
+      "purpose": "Two-body contact solve with restitution, optional friction, contact rotation, mass-weighted positional separation and the landing test for hull-on-hull contact",
+      "paths": [
+        "code/object/collideshipship.cpp",
+        "code/object/objcollide.h",
+        "code/object/objcollide.cpp"
+      ],
+      "functions": [
+        {
+          "name": "calculate_ship_ship_collision_physics",
+          "path": "code/object/collideshipship.cpp",
+          "lines": [
+            525,
+            857
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core",
+        "ship-tuning"
+      ]
+    },
+    {
+      "id": "shield-energy",
+      "name": "Shields and power budget",
+      "purpose": "Per-quadrant shield absorption and smoothing, plus the power distribution that refills weapon reserves, shield strength and afterburner fuel every frame",
+      "paths": [
+        "code/object/objectshield.cpp",
+        "code/hud/hudets.cpp",
+        "code/hud/hudets.h"
+      ],
+      "functions": [
+        {
+          "name": "shield_apply_damage",
+          "path": "code/object/objectshield.cpp",
+          "lines": [
+            189,
+            217
+          ]
+        },
+        {
+          "name": "shield_balance",
+          "path": "code/object/objectshield.cpp",
+          "lines": [
+            219,
+            269
+          ]
+        },
+        {
+          "name": "update_ets",
+          "path": "code/hud/hudets.cpp",
+          "lines": [
+            114,
+            218
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-tuning"
+      ]
+    },
+    {
+      "id": "player-camera",
+      "name": "Player view rig",
+      "purpose": "Cockpit, chase and external camera placement, chase zoom limits and the bounding-box clearance that keeps the camera outside the hull",
+      "paths": [
+        "code/playerman/playercontrol.cpp",
+        "code/camera/camera.cpp",
+        "code/camera/camera.h"
+      ],
+      "functions": [
+        {
+          "name": "do_view_chase",
+          "path": "code/playerman/playercontrol.cpp",
+          "lines": [
+            539,
+            575
+          ]
+        },
+        {
+          "name": "player_get_cam",
+          "path": "code/playerman/playercontrol.cpp",
+          "lines": [
+            2277,
+            2437
+          ]
+        },
+        {
+          "name": "cam_get_bbox_dist",
+          "path": "code/camera/camera.cpp",
+          "lines": [
+            1313,
+            1344
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "ai-steering",
+      "name": "AI steering and turret gunnery",
+      "purpose": "The turn-rate and angular-acceleration ceilings handed to AI pilots, plus the field-of-view and dwell tests a turret checks before it fires",
+      "paths": [
+        "code/ai/aicode.cpp",
+        "code/ai/aiturret.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ai_turn_towards_vector",
+          "path": "code/ai/aicode.cpp",
+          "lines": [
+            1352,
+            1501
+          ]
+        },
+        {
+          "name": "ai_get_acc_limit",
+          "path": "code/ai/aicode.cpp",
+          "lines": [
+            1504,
+            1546
+          ]
+        },
+        {
+          "name": "turret_should_fire_aspect",
+          "path": "code/ai/aiturret.cpp",
+          "lines": [
+            1694,
+            1701
+          ]
+        },
+        {
+          "name": "turret_update_enemy_in_range",
+          "path": "code/ai/aiturret.cpp",
+          "lines": [
+            1706,
+            1717
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "rotation-period-to-turn-rate",
+      "node": "ship-tuning",
+      "name": "Authored rotation period becomes the turn cap",
+      "summary": "A ship class declares, per axis, how many seconds one full revolution takes. The loader divides one circle by each period to get the angular speed cap.",
+      "behavior": "The class table gives a three-component rotation time in seconds. Each component becomes a maximum angular speed of one full turn divided by that time, so a shorter time gives a faster pitch, yaw or bank cap. A single combined turn time is the mean of the first two components (pitch and yaw). The AI uses this single time as its uniform turn rate when it does not use per-axis rates, and as a scaling reference for scripted turn commands. A zero component only prints a warning, and the division then produces an infinite cap, so authored data must never use zero. These caps scale the control input into a target angular velocity. They are not a hard clamp on every later impulse.",
+      "constants": [
+        {
+          "name": "Turn-rate circle numerator",
+          "value": 2,
+          "unit": "multiples of pi radians in one revolution, divided by the authored period in seconds per axis; resolved once at class load",
+          "source": "code/ship/ship.cpp:3061"
+        },
+        {
+          "name": "Combined turn time divisor",
+          "value": 2,
+          "unit": "axes (pitch and yaw) averaged into the single turn time in seconds; computed once at class load",
+          "source": "code/ship/ship.cpp:3059"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 3051
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 3059
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 3061
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 3063
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 6415
+        }
+      ],
+      "capabilities": [
+        "derive per-axis angular caps from an authored revolution period in seconds",
+        "expose one averaged turn time for steering code",
+        "warn about a zero rotation period during data load"
+      ],
+      "tags": [
+        "movement",
+        "turning",
+        "data-driven"
+      ]
+    },
+    {
+      "id": "rotational-damping",
+      "node": "physics-core",
+      "name": "Damped angular chase toward the requested rotation",
+      "summary": "Turn input sets a target angular velocity and an exponential curve eases the hull toward it. The lag comes from a per-class damping value.",
+      "behavior": "Control input is multiplied by the class angular speed cap to give a target angular velocity on each axis. Each update, the solver closes a fraction of the gap between the current and target angular velocity. The fraction is one minus an exponential in elapsed time over the damping constant, so the response does not depend on frame rate. A damping value below 0.0001 seconds removes the lag and the hull takes the target rate at once. The angular velocity times elapsed time gives pitch, heading and bank deltas. These form a rotation that is composed onto the orientation, and the matrix is re-orthonormalised each update. The engine defaults (0.1 s rotational damping, 0.05 s sideways damping, caps of 2, 1 and 2 rad/s) apply only to a blank physics record. A ship class overwrites them with its own table values, and those table values default to zero when the class omits them. When framerate-independent turning is on (the default), an AI entity that requested an orientation bypasses this chase and receives its requested orientation and angular velocity directly. A blast raises the damping up to five times and decays back over two seconds.",
+      "constants": [
+        {
+          "name": "Default rotational damping (blank physics record only; ship class overrides)",
+          "value": 0.1,
+          "unit": "seconds, exponential time constant evaluated each update with elapsed frame time",
+          "source": "code/physics/physics.cpp:56"
+        },
+        {
+          "name": "Default sideways damping (blank physics record only; ship class overrides)",
+          "value": 0.05,
+          "unit": "seconds, exponential time constant on the sideways axes each update",
+          "source": "code/physics/physics.cpp:55"
+        },
+        {
+          "name": "Default angular speed cap (blank physics record only; pitch 2, yaw 1, bank 2)",
+          "value": 2,
+          "unit": "radians per second on pitch and bank; yaw default is 1",
+          "source": "code/physics/physics.cpp:63"
+        },
+        {
+          "name": "Blast rotational damping multiplier",
+          "value": 5,
+          "unit": "multiple of the class rotational damping at the start of a blast, decaying linearly to one over the blast window",
+          "source": "code/physics/physics.h:120"
+        },
+        {
+          "name": "Blast window",
+          "value": 2000,
+          "unit": "milliseconds over which the blast damping multiplier decays",
+          "source": "code/physics/physics.h:121"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 151
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 108
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 209
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 225
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 6412
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 170
+        }
+      ],
+      "capabilities": [
+        "chase a target angular velocity with a frame-rate independent exponential",
+        "snap to target rate when damping is near zero",
+        "re-orthonormalise orientation after incremental rotation",
+        "raise rotational lag temporarily after a blast"
+      ],
+      "tags": [
+        "movement",
+        "turning",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "throttle-velocity-ramp",
+      "node": "physics-core",
+      "name": "Throttle ramp with separate accel and decel",
+      "summary": "Each local axis chases its goal speed through an exponential ramp with separate acceleration and deceleration constants, and the last stretch of the gap closes faster.",
+      "behavior": "Goals are built in the hull frame from forward throttle, strafe and vertical input multiplied by the matching speed ceiling. Strafe and vertical ramps run only when the hull class allows sliding. Without slide, those two ramped speeds are forced to zero. The forward axis always ramps. Each axis uses an exponential approach whose time constant depends on direction. Speeding up toward a larger goal uses the class acceleration constant. Slowing down, stopping or reversing uses the class deceleration constant. A lit afterburner swaps in its own forward acceleration constant. These constants come from the class table. After an impact, all three constants are stretched by up to ten times and relax back over the reduced-damping window. When the remaining speed error is smaller than a third of the time constant, the constant is replaced by a third of that error. This removes the long asymptotic tail. Below a time constant of 0.0001 seconds the goal is assigned directly. Ramped local speeds are rotated into world space and become the desired velocity that the integrator chases.",
+      "constants": [
+        {
+          "name": "Close-in ramp shortening divisor",
+          "value": 3,
+          "unit": "dimensionless divisor: when the speed error is below one third of the time constant, the time constant becomes the error divided by this; applied each update",
+          "source": "code/physics/physics.cpp:898"
+        },
+        {
+          "name": "Ramp time constant floor",
+          "value": 0.0001,
+          "unit": "seconds; below this the solver assigns the goal speed directly",
+          "source": "code/physics/physics.cpp:902"
+        },
+        {
+          "name": "Post-impact ramp stretch",
+          "value": 10,
+          "unit": "multiple of each ramp time constant right after an impact, relaxing to one over the reduced-damping window",
+          "source": "code/physics/physics.cpp:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 884
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 894
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 898
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 909
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 664
+        }
+      ],
+      "capabilities": [
+        "ramp local speed toward a goal with separate accel and decel constants",
+        "stretch response time after an impact",
+        "shorten the final approach to a goal speed",
+        "allow or forbid strafe and vertical motion per class"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "damping-modes-drift",
+      "node": "physics-core",
+      "name": "Four damping regimes for drift and impact",
+      "summary": "The solver builds a per-axis damping vector from the situation. The same hull can fly arcade-stable, damp every axis, ignore damping, or wallow after a hit.",
+      "behavior": "The solver builds a damping time constant per local axis before integrating velocity toward the desired velocity. In the normal case only the two sideways axes carry the class time constant and the forward axis has zero, so forward speed follows the desired velocity at once while sideways velocity lags and the hull drifts through turns. A newtonian class or mission flag gives all three axes the class constant, so forward speed also lags. A no-damp state sets all three to zero. A dead state applies the class constant on every axis. After an impact the sideways constants are multiplied by a factor that starts at ten and falls to one over the window. The forward constant starts at ten times the class constant and falls to zero over the same window. The window length is two seconds for a large impulse and shorter for a small one, because it scales with impulse over thirty times hull mass. A later hit adds its time to the time remaining only when the sum stays under two seconds. Otherwise the timer is left unchanged. A hull whose engines are all destroyed or disrupted has its class constant multiplied by four and is put in the dead and reduced-damping states, so it coasts to a stop slowly.",
+      "constants": [
+        {
+          "name": "Reduced-damping peak multiplier",
+          "value": 10,
+          "unit": "multiple of the class damping constant at the moment of impact, falling to one (sideways) or zero (forward) over the window",
+          "source": "code/physics/physics.cpp:38"
+        },
+        {
+          "name": "Impulse for a full-length window",
+          "value": 30,
+          "unit": "velocity change times mass units: impulse divided by (this times hull mass) scales the window, capped at the maximum",
+          "source": "code/physics/physics.cpp:39"
+        },
+        {
+          "name": "Reduced-damping maximum window",
+          "value": 2000,
+          "unit": "milliseconds after an impulse",
+          "source": "code/physics/physics.cpp:40"
+        },
+        {
+          "name": "Destroyed-engine damping multiplier",
+          "value": 4,
+          "unit": "multiple of the class damping constant applied while all engines are gone or disrupted",
+          "source": "code/object/object.cpp:1018"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 299
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 305
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 315
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 320
+        },
+        {
+          "path": "code/object/object.cpp",
+          "line": 1018
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1182
+        }
+      ],
+      "capabilities": [
+        "select per-axis damping vector by flight situation",
+        "extend response time after impacts with decay",
+        "coast to a halt after losing all engines"
+      ],
+      "tags": [
+        "movement",
+        "drift",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "glide-momentum",
+      "node": "physics-core",
+      "name": "Glide holds the velocity vector while the nose turns",
+      "summary": "Glide holds the current world velocity as the target while the nose turns. Thrust still adds speed through a glide ramp, and coasting near the cap bleeds speed.",
+      "behavior": "With glide on, the target velocity starts from the present world velocity, so turning the nose does not redirect travel. Thrust input is converted to local axis speeds through a glide ramp. The ramp scales the requested speed by a class acceleration multiplier (a negative multiplier switches to a fixed-acceleration form), so glide thrust can be weaker or stronger than normal flight. When the target velocity is within five percent of the glide cap, the ship is thrusting on at least one axis, and the multiplier is non-zero, every axis without thrust input loses a fixed fraction of its local speed. This stops the ship from pinning at the cap while coasting. The resulting velocity vector is limited to the cap. A class cap of zero selects a dynamic cap that ramps toward the highest normal axis speed, or the afterburner speed while it burns. A negative cap disables the limit. The cap limit applies at all times by default. An AI profile option can restrict it to moments with thrust input.",
+      "constants": [
+        {
+          "name": "Glide cap decay threshold",
+          "value": 0.95,
+          "unit": "fraction of the glide speed cap at which the coasting bleed may start, evaluated each update",
+          "source": "code/physics/physics.cpp:718"
+        },
+        {
+          "name": "Glide coasting bleed",
+          "value": 0.2,
+          "unit": "fraction of local axis speed removed each update on axes without thrust while the bleed applies; the update rate follows the frame rate, so this is not frame-rate independent",
+          "source": "code/physics/physics.cpp:719"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 700
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 718
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 722
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 758
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 917
+        }
+      ],
+      "capabilities": [
+        "keep velocity while the nose turns",
+        "limit glide speed to a fixed or dynamic cap",
+        "scale glide thrust by a class multiplier",
+        "bleed speed on idle axes near the cap"
+      ],
+      "tags": [
+        "movement",
+        "combat",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "afterburner-burn",
+      "node": "ship-afterburner",
+      "name": "Afterburner fuel gate, burn and recovery",
+      "summary": "A burner raises the forward speed ceiling while fuel lasts. It refuses to light below a starting reserve or during a cooldown, and it recovers fuel slowly in proportion to engine power.",
+      "behavior": "Engaging needs a class that has a burner, no booster active, no lock on the burner, fuel at or above the class starting minimum, and an elapsed class cooldown since the last disengage. The player also cannot re-engage within 1300 ms of the previous engage, and a failure sound plays. While lit, fuel drops by the class burn rate times elapsed seconds, and the flight solver uses the afterburner speed ceiling and acceleration constant. Some classes also declare a separate reverse ceiling. The burner stops when fuel reaches zero or when the input is released. When a class sets a minimum burn amount, the burner keeps running after release until that much fuel has been used. While the burner is off, fuel recovers each update by the class recovery rate times elapsed seconds times the engine share of the power budget times two times an AI skill scale, up to the class capacity. A class with a burner but no capacity gets a capacity of one at load.",
+      "constants": [
+        {
+          "name": "Recovery power multiplier",
+          "value": 2,
+          "unit": "multiplier on the class recovery rate, applied each update with frame time in seconds",
+          "source": "code/ship/afterburner.cpp:236"
+        },
+        {
+          "name": "Player re-engage lockout",
+          "value": 1300,
+          "unit": "milliseconds after an engage during which the player cannot engage again",
+          "source": "code/ship/afterburner.cpp:102"
+        },
+        {
+          "name": "Fuel capacity floor",
+          "value": 1,
+          "unit": "fuel units forced on a class that declares a burner but no capacity",
+          "source": "code/ship/ship.cpp:3954"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/ship/afterburner.cpp",
+          "line": 66
+        },
+        {
+          "path": "code/ship/afterburner.cpp",
+          "line": 91
+        },
+        {
+          "path": "code/ship/afterburner.cpp",
+          "line": 237
+        },
+        {
+          "path": "code/ship/afterburner.cpp",
+          "line": 262
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 563
+        }
+      ],
+      "capabilities": [
+        "gate a speed boost behind a fuel reserve and a cooldown",
+        "set a forward and a reverse boost ceiling",
+        "recover boost fuel in proportion to an engine power share",
+        "force a minimum burn once started"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "resource"
+      ]
+    },
+    {
+      "id": "weapon-impact-impulse",
+      "node": "ship-combat",
+      "name": "Point impulse from weapon hits",
+      "summary": "A hit pushes the hull with a force built from weapon mass and weapon velocity. The force becomes a linear and a reduced angular velocity change at the contact point.",
+      "behavior": "On contact the force vector is the weapon velocity vector scaled by the weapon mass times an optional hit-curve multiplier. The world hit point is reduced to a lever arm from the centre of mass. The cross product of lever and force gives an angular impulse, which is rotated into body axes and scaled by the inverse inertia. Linear velocity gains the force divided by hull mass. The angular change is multiplied by 0.12 before it is added, so impacts spin a hull much less than a strict physical solve would. The hit also arms the reduced-damping state and a half-second view shake. If one impulse changes the velocity by more than 500, the change is kept in the same direction but shortened to a magnitude of 440, so one hit cannot fling a ship across the map. An AI profile option can switch that limit off. The player hull also triggers a joystick force effect.",
+      "constants": [
+        {
+          "name": "Angular impulse scale",
+          "value": 0.12,
+          "unit": "dimensionless scale on the rotational velocity change from one point impulse, applied once per hit",
+          "source": "code/physics/physics.cpp:803"
+        },
+        {
+          "name": "Velocity change limit",
+          "value": 500,
+          "unit": "metres per second of velocity change accepted from one impulse before the limit applies",
+          "source": "code/physics/physics.cpp:35"
+        },
+        {
+          "name": "Velocity change after limit",
+          "value": 440,
+          "unit": "metres per second: magnitude the velocity change is shortened to when the limit is exceeded, in the original direction of the change",
+          "source": "code/physics/physics.cpp:36"
+        },
+        {
+          "name": "Weapon shake timer",
+          "value": 500,
+          "unit": "milliseconds of view shake queued by a hit",
+          "source": "code/physics/physics.cpp:41"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/object/collideshipweapon.cpp",
+          "line": 136
+        },
+        {
+          "path": "code/ship/shiphit.cpp",
+          "line": 2210
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 827
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 857
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 781
+        }
+      ],
+      "capabilities": [
+        "convert a projectile hit into linear and angular velocity change",
+        "scale spin separately from push",
+        "cap the speed change from a single hit"
+      ],
+      "tags": [
+        "combat",
+        "physics-feel",
+        "impact"
+      ]
+    },
+    {
+      "id": "rotvel-caps",
+      "node": "physics-core",
+      "name": "Debris tumble speed and collision spin limit",
+      "summary": "Debris spawns with a spin inversely related to its size and is clamped to a high cap. A ship class can also cap its total spin after a collision.",
+      "behavior": "When a piece of debris spawns, it receives a random spin axis with a speed of six to nine radians per second divided by its radius, with a minimum radius of one. Small pieces therefore tumble fast and large pieces slowly. The piece is marked dead-damped, and a per-axis clamp then replaces any axis above 16.3 radians per second by the same sign at 16.2. The class-cap branch of the same function (the live-ship branch) has no caller, so the angular speed of a living ship is limited only by its control input. After a collision impulse, a class can set a maximum total spin magnitude in degrees per second, converted to radians when loaded. When the spin vector exceeds that magnitude, the whole vector is scaled down. A value of zero or below disables the limit, and the default is off.",
+      "constants": [
+        {
+          "name": "Clamp margin",
+          "value": 0.1,
+          "unit": "radians per second subtracted from the cap when the clamp fires; applied once at debris spawn",
+          "source": "code/physics/physics.cpp:31"
+        },
+        {
+          "name": "Debris angular cap",
+          "value": 16.3,
+          "unit": "radians per second per axis; applied once at debris spawn",
+          "source": "code/physics/physics.cpp:33"
+        },
+        {
+          "name": "Debris spin numerator",
+          "value": 6,
+          "unit": "radians per second times metres of radius; one to three is added at random before dividing by radius",
+          "source": "code/debris/debris.cpp:822"
+        },
+        {
+          "name": "Default collision spin limit",
+          "value": -1,
+          "unit": "radians per second; non-positive disables the extra post-collision limit",
+          "source": "code/ship/ship.cpp:1180"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1129
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1157
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1102
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 1180
+        },
+        {
+          "path": "code/debris/debris.cpp",
+          "line": 822
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 2810
+        }
+      ],
+      "capabilities": [
+        "set debris spin from its size",
+        "clamp angular speed per axis",
+        "limit total spin after a collision per hull class"
+      ],
+      "tags": [
+        "movement",
+        "turning",
+        "limits"
+      ]
+    },
+    {
+      "id": "shockwave-pressure",
+      "node": "physics-core",
+      "name": "Pressure-wave blast response",
+      "summary": "An explosion pushes a hull with a pressure-scaled shove and spin. The response weakens for larger hulls and vanishes for very large ones.",
+      "behavior": "The caller passes the blast direction, the blast force as pressure, and the hull model radius, not the distance to the blast. Hulls with a model radius above 50 get no response. A hull of radius up to 10 gets the full response. Between 10 and 50 the response falls linearly. This scale applies to the shake amplitude, the spin and the push. The blast direction is projected onto the hull axes, and face areas come from the bounding box. A torque is summed over the three exposed faces using a sine term. The torque only picks the spin axis: the spin it adds is a unit axis scaled by 0.4 radians per second times the pressure over a standard pressure of 1000 times the scale, so it grows with pressure and is not capped. The linear push is 8 metres per second times the scale along the blast direction, independent of pressure. A shake with amplitude 0.1 times the same pressure ratio times the scale is applied to pitch and heading for up to two seconds, and rotational damping rises during that time. The hull also enters the reduced-damping state.",
+      "constants": [
+        {
+          "name": "Standard blast pressure",
+          "value": 1000,
+          "unit": "pressure units at which spin and shake use their base values",
+          "source": "code/physics/physics.cpp:961"
+        },
+        {
+          "name": "Full-effect hull radius",
+          "value": 10,
+          "unit": "metres of hull model radius up to which the response is unscaled",
+          "source": "code/physics/physics.cpp:962"
+        },
+        {
+          "name": "Cutoff hull radius",
+          "value": 50,
+          "unit": "metres of hull model radius above which the response is zero",
+          "source": "code/physics/physics.cpp:963"
+        },
+        {
+          "name": "Spin at standard pressure",
+          "value": 0.4,
+          "unit": "radians per second of angular velocity added once per blast at full scale",
+          "source": "code/physics/physics.cpp:964"
+        },
+        {
+          "name": "Shake amplitude at standard pressure",
+          "value": 0.1,
+          "unit": "radians, peak random pitch and heading offset scale each update during the blast window",
+          "source": "code/physics/physics.cpp:965"
+        },
+        {
+          "name": "Push speed",
+          "value": 8,
+          "unit": "metres per second of linear velocity added once per blast at full scale",
+          "source": "code/physics/physics.cpp:966"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 967
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 975
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1037
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1058
+        },
+        {
+          "path": "code/weapon/weapons.cpp",
+          "line": 8133
+        }
+      ],
+      "capabilities": [
+        "scale blast response by target hull size",
+        "pick spin axis from surface exposure",
+        "add temporary shake and rotational lag after a blast"
+      ],
+      "tags": [
+        "combat",
+        "explosion",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "ship-ship-collision",
+      "node": "object-collision",
+      "name": "Two-body hull contact solve",
+      "summary": "Hull contact is resolved as a point impulse with low bounce, optional surface friction and a reduced rotational share. The pair is then nudged apart in proportion to mass.",
+      "behavior": "The solver computes the relative velocity at the contact point, including the rotation-induced velocity of each hull and any moving submodel (turret submodels are excluded), and projects it onto the contact normal. A fixed low restitution sets how much of that closing speed bounces back. A friction impulse parallel to the contact plane opposes sliding. The friction value comes from the lighter hull class, and its default is zero. The impulse magnitude divides by the sum of the inverse masses plus each hull rotational term. The rotational response is scaled by a class rotation factor (default 0.2). It is multiplied further for the player by an AI profile value, and it is set to zero for a ship that lands on an allowed landing surface. Each hull then receives the impulse through the collision whack. Finally, each position is moved a small distance along the relative travel direction and the contact normal, weighted by the mass ratio, so the bodies do not stay overlapped. The lighter body moves more.",
+      "constants": [
+        {
+          "name": "Contact restitution",
+          "value": 0.1,
+          "unit": "dimensionless coefficient of restitution, fixed for every contact event",
+          "source": "code/object/collideshipship.cpp:564"
+        },
+        {
+          "name": "Default hull friction",
+          "value": 0,
+          "unit": "dimensionless lateral impulse fraction, applied once per contact when a class sets no friction",
+          "source": "code/object/objcollide.h:45"
+        },
+        {
+          "name": "Default rotation factor",
+          "value": 0.2,
+          "unit": "dimensionless scale on the rotational impulse from one collision event",
+          "source": "code/object/objcollide.h:46"
+        },
+        {
+          "name": "Separation distance",
+          "value": 0.2,
+          "unit": "metres of position offset along the relative travel direction per contact event, weighted by mass ratio; a separate 0.1 metre offset acts along the contact normal",
+          "source": "code/object/collideshipship.cpp:827"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/object/collideshipship.cpp",
+          "line": 525
+        },
+        {
+          "path": "code/object/collideshipship.cpp",
+          "line": 564
+        },
+        {
+          "path": "code/object/collideshipship.cpp",
+          "line": 827
+        },
+        {
+          "path": "code/object/collideshipship.cpp",
+          "line": 845
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1087
+        }
+      ],
+      "capabilities": [
+        "solve a two-body point impulse with low restitution",
+        "apply friction along the contact plane",
+        "reduce spin on collision with a class factor",
+        "separate overlapped bodies by mass ratio"
+      ],
+      "tags": [
+        "collision",
+        "physics-feel",
+        "combat"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "node": "player-camera",
+      "name": "Velocity-following chase camera",
+      "summary": "The chase view sits behind the direction of travel at three hull radii plus a zoom offset, lifted slightly. Zoom grows in proportion to the current distance.",
+      "behavior": "The camera trails along the hull velocity direction rather than its facing, so a drifting ship is seen from behind its motion. When speed is below 0.1 it falls back to the forward axis. The eye is the hull centre minus the travel direction times (three radii plus the zoom offset), then raised along the hull up axis by three quarters of a radius. Radius is the hull bounding radius from the centre. The camera looks back at the ship, and a tiny share of the right vector is added to the up vector to avoid a degenerate basis when the two directions coincide. Held zoom keys change the offset by the quantity (two radii plus the current offset) divided by 35 for each second the key is held, times a debug scale that defaults to one. This makes the same input feel similar on a fighter and a capital ship. The offset is clamped from zero up to 30000. The free external view keeps the preferred distance only when it is outside a size-based box limit. Otherwise it pushes the camera out using the bounding box of the model plus padding.",
+      "constants": [
+        {
+          "name": "Chase trail offset",
+          "value": -3,
+          "unit": "multiples of the hull bounding radius along the travel direction, negative meaning behind the ship; recomputed each frame",
+          "source": "code/playerman/playercontrol.cpp:2398"
+        },
+        {
+          "name": "Chase lift",
+          "value": 0.75,
+          "unit": "multiples of hull radius along the hull up axis; recomputed each frame",
+          "source": "code/playerman/playercontrol.cpp:2399"
+        },
+        {
+          "name": "Zoom response divisor",
+          "value": 35,
+          "unit": "zoom offset changes by (two radii plus offset) divided by this for each second the zoom key is held",
+          "source": "code/playerman/playercontrol.cpp:566"
+        },
+        {
+          "name": "Maximum zoom offset",
+          "value": 30000,
+          "unit": "metres of extra distance behind the 3-radius trail, for chase and external views",
+          "source": "code/playerman/playercontrol.cpp:178"
+        },
+        {
+          "name": "External view bounding-box padding",
+          "value": 5,
+          "unit": "metres added to the box limit when the model bounding box would hide the ship",
+          "source": "code/camera/camera.h:20"
+        },
+        {
+          "name": "External view radius multiplier",
+          "value": 1.5,
+          "unit": "multiple of hull radius in the box limit",
+          "source": "code/camera/camera.h:21"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/playerman/playercontrol.cpp",
+          "line": 539
+        },
+        {
+          "path": "code/playerman/playercontrol.cpp",
+          "line": 2391
+        },
+        {
+          "path": "code/playerman/playercontrol.cpp",
+          "line": 2398
+        },
+        {
+          "path": "code/playerman/playercontrol.cpp",
+          "line": 2399
+        },
+        {
+          "path": "code/playerman/playercontrol.cpp",
+          "line": 566
+        },
+        {
+          "path": "code/camera/camera.cpp",
+          "line": 1313
+        }
+      ],
+      "capabilities": [
+        "place a chase camera behind the velocity vector",
+        "zoom proportionally to distance",
+        "fall back to facing when nearly stationary",
+        "keep an external camera outside the hull box"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "view"
+      ]
+    },
+    {
+      "id": "shield-quadrant-damage",
+      "node": "shield-energy",
+      "name": "Quadrant shield absorption and smoothing",
+      "summary": "Damage hits one shield quadrant and spills into the hull only after that quadrant is empty. Quadrants can be equalised on demand, and regeneration waits after a hit.",
+      "behavior": "A hit resolves to one quadrant from the contact direction. If the damage exceeds that quadrant strength, the quadrant is emptied and the difference passes to the hull. Otherwise the quadrant is reduced and nothing passes. A balance routine returns early for hulls with no shields, with shields down, with full shields or with equal quadrants. Otherwise it moves each quadrant a fraction of the way toward the average, where the target average is lowered by an optional penalty. It sets a quadrant exactly when it is within 0.01 of the target. The player triggers an equalise with fraction one (a full snap). A second equalise within one second charges no new penalty, and a first one costs 2 percent of the shield. The AI balances with fraction 0.2 per call. Regeneration each update adds the class regeneration rate (default 2 percent of the maximum per second) times the power share, but it adds nothing within a class-defined delay after the last hit (default zero). Total strength is the sum of the quadrants. A class recharge ceiling below one lowers the allowed total but does not slow the recharge rate.",
+      "constants": [
+        {
+          "name": "Balance snap tolerance",
+          "value": 0.01,
+          "unit": "shield points; a quadrant within this of the target is set exactly",
+          "source": "code/object/objectshield.cpp:260"
+        },
+        {
+          "name": "Player equalise penalty",
+          "value": 0.02,
+          "unit": "fraction of total shield strength lost in one equalise action; not charged again within the following second",
+          "source": "code/hud/hudshield.cpp:236"
+        },
+        {
+          "name": "AI balance fraction",
+          "value": 0.2,
+          "unit": "fraction of the remaining gap closed per balance call; call rate unverified",
+          "source": "code/ai/aicode.cpp:13540"
+        },
+        {
+          "name": "Default shield regeneration rate",
+          "value": 0.02,
+          "unit": "fraction of maximum shield strength per second at full power share, when a class omits it",
+          "source": "code/ship/ship.cpp:3614"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/object/objectshield.cpp",
+          "line": 189
+        },
+        {
+          "path": "code/object/objectshield.cpp",
+          "line": 209
+        },
+        {
+          "path": "code/object/objectshield.cpp",
+          "line": 219
+        },
+        {
+          "path": "code/object/objectshield.cpp",
+          "line": 266
+        },
+        {
+          "path": "code/hud/hudets.cpp",
+          "line": 157
+        },
+        {
+          "path": "code/hud/hudshield.cpp",
+          "line": 245
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 3617
+        }
+      ],
+      "capabilities": [
+        "absorb damage in directional shield segments with spill-over",
+        "equalise segments with a small penalty",
+        "delay shield regeneration after a hit"
+      ],
+      "tags": [
+        "combat",
+        "defence",
+        "resource"
+      ]
+    },
+    {
+      "id": "ets-energy-budget",
+      "node": "shield-energy",
+      "name": "Power split between weapons, shields and engines",
+      "summary": "Three systems share a fixed budget of twelve power steps. Each system recharge speed is proportional to its share of the budget.",
+      "behavior": "Weapons, shields and engines each hold an index from zero to twelve into a table of equal fractions from zero to one. A ship with all three systems starts with four steps each, so each gets a third. Raising one system takes steps from the others so the sum stays at twelve. A ship that lacks a system starts with the budget split between the others. Weapon reserve each update gains elapsed seconds times the class regeneration rate (default 0.04 of the reserve per second) times the reserve size times the selected fraction. The player also receives a skill-dependent scale. Shield strength uses the same shape with its own rate. Afterburner fuel recovery doubles the factor and reads the engine index, so engine power shortens the cooldown. Every accumulator is clamped to its class maximum. A ship with no declared power output, or a dying ship, skips the whole update.",
+      "constants": [
+        {
+          "name": "Power budget steps",
+          "value": 12,
+          "unit": "equal divisions of full power; the three system indexes together hold this many steps",
+          "source": "code/hud/hudets.cpp:28"
+        },
+        {
+          "name": "Default steps per system",
+          "value": 4,
+          "unit": "steps for each of weapons, shields and engines on a ship that has all three",
+          "source": "code/hud/hudets.h:19"
+        },
+        {
+          "name": "Default weapon regeneration rate",
+          "value": 0.04,
+          "unit": "fraction of the weapon reserve per second at full power share, when a class omits it",
+          "source": "code/ship/ship.cpp:3636"
+        },
+        {
+          "name": "Afterburner recovery multiplier",
+          "value": 2,
+          "unit": "multiplier on the engine-share recovery of afterburner fuel, per update with frame time in seconds",
+          "source": "code/ship/afterburner.cpp:236"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/hud/hudets.cpp",
+          "line": 28
+        },
+        {
+          "path": "code/hud/hudets.cpp",
+          "line": 138
+        },
+        {
+          "path": "code/hud/hudets.cpp",
+          "line": 150
+        },
+        {
+          "path": "code/hud/hudets.cpp",
+          "line": 145
+        },
+        {
+          "path": "code/ship/afterburner.cpp",
+          "line": 236
+        },
+        {
+          "path": "code/hud/hudets.h",
+          "line": 19
+        }
+      ],
+      "capabilities": [
+        "divide a fixed power budget between three systems",
+        "scale weapon, shield and boost recharge by share",
+        "skip recharge on ships with no power output"
+      ],
+      "tags": [
+        "resource",
+        "systems",
+        "pacing"
+      ]
+    },
+    {
+      "id": "primary-fire-cadence",
+      "node": "ship-combat",
+      "name": "Bank fire wait and energy gate",
+      "summary": "A primary bank fires only when the shot energy is available and its per-bank timer has elapsed. Burst weapons insert a shorter intra-burst delay, and linked banks fire slower.",
+      "behavior": "Before firing, the number of firepoints times the shots per trigger times the per-shot energy cost is compared with the weapon reserve. If the reserve is short, the bank refuses the shot, plays a failure cue for the player, and sets its next-fire time one delay ahead. On success the cost is subtracted for every firepoint and shot, and the reserve refills later through regeneration. The next-fire delay is the weapon fire wait in seconds times 1000, or a random value between a class minimum and maximum when both are set. A burst weapon keeps a counter per bank. While the counter is below the burst count, the shorter burst delay is used instead. A resettable burst zeroes the counter once a full fire wait has passed since the last shot. Non-player ships multiply the delay by a skill-based AI scale, which is different for friendly and hostile ships. When more than one primary bank fires together, the delay grows by half of itself for each additional linked bank, unless the weapon opts out. The table fire wait defaults to one second when a weapon omits it.",
+      "constants": [
+        {
+          "name": "Default weapon fire wait",
+          "value": 1,
+          "unit": "seconds between shots for a weapon that does not set it in its table",
+          "source": "code/weapon/weapons.cpp:9833"
+        },
+        {
+          "name": "Linked-bank delay penalty",
+          "value": 0.5,
+          "unit": "fraction of the delay added per extra linked primary bank, applied each shot",
+          "source": "code/ship/ship.cpp:12882"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 12620
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 12821
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 12844
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 13167
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 13231
+        },
+        {
+          "path": "code/ship/ship.cpp",
+          "line": 12882
+        }
+      ],
+      "capabilities": [
+        "gate fire on an energy reserve",
+        "run burst fire with a short inner delay",
+        "slow linked banks",
+        "scale AI fire rate by skill"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "pacing"
+      ]
+    },
+    {
+      "id": "ai-turn-limits",
+      "node": "ai-steering",
+      "name": "AI turn-rate and angular-acceleration ceiling",
+      "summary": "AI pilots steer with a turn-rate ceiling and an angular-acceleration ceiling built from the class turn data and its rotational damping.",
+      "behavior": "A steering request converts the class turn information into a per-axis angular velocity ceiling. It uses the per-axis caps when the axial-difference option is on, or the combined turn time applied equally to all axes. For ships hostile to the player, the ceiling is divided by a skill-based time scale, so AI turns slower on lower skill. The acceleration ceiling starts equal to the velocity ceiling, and guided weapons get eight times more. In the default framerate-independent mode, a compatibility step then replaces both with values that match the damped player response. For ships it sets the velocity ceiling to the smaller of twice the table rate and twice the acceleration times the rotational damping, and it raises the acceleration when needed. A ship with all engines destroyed cannot turn. Two class flags bypass the limits: one substitutes 200 radians per second for velocity, and the other substitutes 12000 radians per second squared for acceleration. Formation flying lowers the bank acceleration to a fifth, so wingmen do not snap into a new bank.",
+      "constants": [
+        {
+          "name": "Guided weapon angular acceleration multiplier",
+          "value": 8,
+          "unit": "multiple of the turn-rate ceiling used as the angular acceleration ceiling for guided weapons",
+          "source": "code/ai/aicode.cpp:1509"
+        },
+        {
+          "name": "Unclamped turn ceiling",
+          "value": 200,
+          "unit": "radians per second substituted for classes that opt out of turn clamping",
+          "source": "code/ai/aicode.cpp:1435"
+        },
+        {
+          "name": "Instantaneous angular acceleration",
+          "value": 12000,
+          "unit": "radians per second squared for classes flagged for instant angular acceleration",
+          "source": "code/ai/aicode.cpp:1437"
+        },
+        {
+          "name": "Formation bank scale",
+          "value": 0.2,
+          "unit": "fraction of normal bank acceleration applied while flying formation",
+          "source": "code/ai/aicode.cpp:1428"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/ai/aicode.cpp",
+          "line": 1352
+        },
+        {
+          "path": "code/ai/aicode.cpp",
+          "line": 1424
+        },
+        {
+          "path": "code/ai/aicode.cpp",
+          "line": 1504
+        },
+        {
+          "path": "code/ai/aicode.cpp",
+          "line": 1532
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 191
+        }
+      ],
+      "capabilities": [
+        "limit AI turn speed from class data and skill",
+        "limit AI angular acceleration from rotational damping",
+        "let a class opt out of turn limits",
+        "soften bank changes in formation"
+      ],
+      "tags": [
+        "ai",
+        "movement",
+        "turning"
+      ]
+    },
+    {
+      "id": "turret-fov-engage",
+      "node": "ai-steering",
+      "name": "Turret field-of-view dwell before firing",
+      "summary": "A turret fires only when the target is inside its arc and well enough aligned. Seeker weapons also wait for the target to stay in sight for a lock time.",
+      "behavior": "The arc test uses the direction to the target centre plus a size term of radius over (distance plus radius), so a large hull counts as in arc sooner than a fighter at the same distance. Some mounts also test the eight corners of the target bounding box, which keeps a target from slipping out of arc while its centre still passes. At fire time, a gun or dumbfire missile needs the aim direction to have a cosine above 0.8 with the mount direction, and a heat seeker needs above 0.7. These checks are waived inside 75 metres for dumbfire and 50 metres for seekers, and an option can skip them. A per-mount timer rises by twice the weapon fire wait each time the target is in sight and falls by four times the fire wait each time it is not. It is clamped between zero and five seconds. An aspect or javelin seeker may launch once that timer reaches the smaller of its lock time and five seconds. Fire rate, rate multipliers and burst behaviour are handled separately from the arc test.",
+      "constants": [
+        {
+          "name": "Dumbfire alignment cosine",
+          "value": 0.8,
+          "unit": "cosine of the angle between mount axis and aim direction needed for a gun or dumbfire shot",
+          "source": "code/ai/aiturret.cpp:38"
+        },
+        {
+          "name": "Heat seeker alignment cosine",
+          "value": 0.7,
+          "unit": "cosine of the required angle for a heat-seeking launch",
+          "source": "code/ai/aiturret.cpp:39"
+        },
+        {
+          "name": "Dwell ceiling",
+          "value": 5,
+          "unit": "seconds of credit the in-sight timer can hold for one mount",
+          "source": "code/ai/aiturret.cpp:40"
+        },
+        {
+          "name": "Dumbfire alignment waiver range",
+          "value": 75,
+          "unit": "metres inside which a dumbfire shot ignores the alignment test",
+          "source": "code/ai/aiturret.cpp:2705"
+        },
+        {
+          "name": "Seeker alignment waiver range",
+          "value": 50,
+          "unit": "metres inside which a seeker launch ignores the alignment test",
+          "source": "code/ai/aiturret.cpp:2714"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 125
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 156
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 1696
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 1706
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 38
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 2692
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 2822
+        }
+      ],
+      "capabilities": [
+        "test target in turret arc using size and bounding box",
+        "require alignment before a turret shot",
+        "require lock dwell for seekers",
+        "forget lock dwell quickly when the target leaves sight"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "gunnery"
+      ]
+    },
+    {
+      "id": "lead-ballistic-trajectory",
+      "node": "physics-core",
+      "name": "Gravity-aware ballistic lead solve",
+      "summary": "When a mission has gravity and a weapon is affected by it, the aim solver iterates a projectile triangle and refines the flight time until two successive guesses agree.",
+      "behavior": "The solver runs only when the mission gravity is not zero and the weapon has a non-zero gravity scale. Otherwise the callers use a plain straight-line lead, and the weapon default gravity scale is zero. It projects the target onto a plane perpendicular to the gravity direction and treats the problem as a flat projectile triangle. Each pass moves the predicted target by its velocity times the flight time found so far and computes the discriminant that decides whether the shot can reach the target. A negative discriminant ends the solve with failure and the caller keeps its old aim. Otherwise the pass derives the launch angle and the direction vector, then sets a new flight time from the horizontal range over the weapon speed times the cosine of that angle. The loop ends early once the new flight time differs from the previous guess by less than 0.01 seconds, or after six passes. The result is a unit aim direction that callers scale into a far point.",
+      "constants": [
+        {
+          "name": "Lead solve passes",
+          "value": 6,
+          "unit": "maximum iterations per call, each re-projecting the target along its velocity",
+          "source": "code/physics/physics.cpp:1227"
+        },
+        {
+          "name": "Convergence tolerance",
+          "value": 0.01,
+          "unit": "seconds of flight-time change between passes that ends the loop",
+          "source": "code/physics/physics.cpp:1252"
+        },
+        {
+          "name": "Default weapon gravity scale",
+          "value": 0,
+          "unit": "dimensionless multiplier on mission gravity for a weapon that does not set it; the solver is skipped at zero",
+          "source": "code/weapon/weapons.cpp:9831"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1223
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1227
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1241
+        },
+        {
+          "path": "code/physics/physics.cpp",
+          "line": 1252
+        },
+        {
+          "path": "code/weapon/weapons.cpp",
+          "line": 9831
+        },
+        {
+          "path": "code/ai/aiturret.cpp",
+          "line": 1323
+        }
+      ],
+      "capabilities": [
+        "aim a gravity-affected projectile at a moving target",
+        "iterate flight time to convergence",
+        "fall back to straight lead without gravity"
+      ],
+      "tags": [
+        "combat",
+        "aiming",
+        "math"
+      ]
+    }
+  ]
+}
