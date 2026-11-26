@@ -428,25 +428,25 @@
       "id": "camera-orbit-offset",
       "node": "tactical-camera",
       "name": "Camera boom from pitch, yaw and zoom",
-      "summary": "The camera hangs off its focus point on a boom whose three legs come from a pitch, a yaw and a height, all scaled by zoom, so turning or zooming moves the eye without moving the target.",
-      "behavior": "A view keeps a pitch, a yaw, a zoom and a focus position. The boom is built trigonometrically: the vertical leg is the configured camera height, the leg pointing backwards along the view axis is that height divided by the tangent of the pitch, and the sideways leg is the backwards leg multiplied by the tangent of the yaw. Each update the eye is rebuilt from those legs scaled by the current zoom, then rotated about the horizontal axis by the pitch and about the up axis by the yaw, and finally translated to the focus point. Because zoom only scales the same three legs, zooming out keeps the look angle identical and simply recedes along the cone. A ground level offset is added to both eye and target so the whole construction can sit above a raised battlefield.",
+      "summary": "The camera hangs off its focus point on a boom whose three legs come from a base height, a base pitch and a base yaw, all scaled by zoom, so turning or zooming moves the eye without moving the target.",
+      "behavior": "A view keeps a live pitch, a live yaw, a zoom and a focus position. Three game-data settings define a base boom: a camera height and a base pitch and base yaw in degrees. Their compiled defaults are zero, so game data must set them. The vertical leg is the camera height. The backward leg is that height divided by the tangent of the base pitch. The sideways leg is the backward leg times the tangent of the base yaw. Each time the camera transform is rebuilt, the three legs are multiplied by the current zoom. The result is rotated about the horizontal axis by the live view pitch and about the up axis by the live view yaw. The eye is then scaled by a factor that removes the ground level from its height, and eye and target are both moved to the focus point plus the ground level. The target is always the focus point at ground level. Zoom only scales the same legs, so zooming out keeps the look angle and moves the eye along a straight line away from the target. Zoom set through the normal setter is clamped between 0.2 (closest) and 1.3 (farthest), and a new view starts at 1.3.",
       "constants": [
         {
           "name": "Default vertical field of view",
           "value": 50,
-          "unit": "degrees of vertical field of view; static camera setting, no timestep",
+          "unit": "degrees of vertical field of view; compiled default for the view, replaced by a zoom-driven value only in the real-zoom mode; no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameClient/View.cpp:77"
         },
         {
           "name": "Maximum zoom multiplier",
           "value": 1.3,
-          "unit": "multiple of the base boom length; static limit, no timestep",
+          "unit": "multiple of the base boom length; clamp applied by the zoom setter, no timestep. The terrain-follow easing writes zoom directly and is not clamped by it",
           "source": "GeneralsMD/Code/GameEngine/Source/GameClient/View.cpp:102"
         },
         {
           "name": "Minimum zoom multiplier",
           "value": 0.2,
-          "unit": "multiple of the base boom length; static limit, no timestep",
+          "unit": "multiple of the base boom length; clamp applied by the zoom setter, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameClient/View.cpp:103"
         }
       ],
@@ -484,7 +484,7 @@
       "node": "tactical-camera",
       "name": "Pitch clamp and field-of-view zoom",
       "summary": "Pitch is held inside a shallow band, and the alternate real-zoom mode narrows the field of view with the square of the zoom while dropping the eye toward the ground.",
-      "behavior": "Every pitch request is clamped to one fifth of pi either side of level, so the camera can never look straight down or straight up, which keeps the skyline and the horizon stable while the player rotates. In the default mode the field of view is fixed and zoom only slides the eye along its boom. In the alternate real-zoom mode the boom stays at its neutral length, the zoom is clamped to the band between a half and one, the vertical field of view is multiplied by the square of that clamped value, the eye height is reduced toward the ground, and a pitch factor built as a quarter plus three quarters of the clamped zoom is applied along the view axis. The squared field-of-view term is what makes the last part of a zoom-in feel like a lens rather than a dolly.",
+      "behavior": "Every pitch request is clamped to one fifth of pi on either side of level (36 degrees), so the camera can never look straight down or straight up. This clamp lives in the shared view base class and holds for every camera move. In the default mode the field of view stays at its base value and zoom only slides the eye along its boom. A script can switch on an alternate real-zoom mode, which is off at start. In that mode the boom stays at its neutral length and the zoom is clamped to the band 0.5 to 1. The vertical field of view becomes the base value times the square of the clamped zoom. The eye height is multiplied by one half plus half the clamped zoom. A pitch factor of one quarter plus three quarters of the clamped zoom divides the eye horizontal offset from the target, so zooming in pushes the eye back horizontally while it drops. Under letterbox display the height and pitch adjustments are skipped and the factor stays at one. The squared field-of-view term makes the last part of a zoom-in act like a lens change rather than a dolly.",
       "constants": [
         {
           "name": "Pitch clamp divisor of pi",
@@ -501,13 +501,13 @@
         {
           "name": "Eye height share at minimum zoom",
           "value": 0.5,
-          "unit": "fraction of the eye height retained when the zoom is fully in; per rendered frame, rate unverified",
+          "unit": "fraction of the eye height kept when the clamped zoom is at its 0.5 floor, real-zoom mode only; evaluated on each camera transform rebuild",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/W3DView.cpp:379"
         },
         {
           "name": "Fixed share of the pitch factor",
           "value": 0.25,
-          "unit": "fraction of the pitch factor fixed at one quarter, with the rest following the clamped zoom; per rendered frame, rate unverified",
+          "unit": "fraction of the pitch factor that does not depend on zoom (the other three quarters follow the clamped zoom); real-zoom mode only; evaluated on each camera transform rebuild",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/W3DView.cpp:382"
         }
       ],
@@ -541,30 +541,30 @@
       "node": "tactical-camera",
       "name": "Camera height follows the ground",
       "summary": "The camera rides a chosen height above the highest of five nearby ground samples and eases back to that height once the player stops scrolling.",
-      "behavior": "Before each update the camera samples terrain height at its focus point and at four points offset by a fixed distance, keeping the largest of the five so that a hill just beside the view cannot swallow the eye. The requested height above ground is converted into a zoom by dividing by the vertical leg of the boom. While the player scrolls, the zoom only moves when the scroll magnitude is small or when the eye has fallen below the minimum or climbed above the maximum height above ground; at rest it eases toward the requested height by a fixed fraction each update. Scripted camera moves reset the target height to whatever the script produced, so a cinematic is not dragged back to the player height.",
+      "behavior": "On each view update the camera samples terrain height at its focus point and at four diagonal points, each offset by the same distance on both axes, and keeps the largest of the five, so a hill beside the view cannot swallow the eye. The requested height above ground is turned into a zoom by dividing the ground height plus that request by the vertical leg of the boom. This runs only when height adjusting is enabled and the game is not paused. While the player scrolls, the zoom moves toward the requested value by a fixed fraction of the error only when the scroll magnitude is below a cutoff, when the eye is below the minimum height above ground, or, if the max-height rule is enabled (it is by default), when the eye is above the maximum height above ground. When the player is not scrolling, the zoom eases toward the requested height by the same fraction on each update, unless a scripted camera move ran that update. A scripted camera move sets the requested height to whatever height it produced, so a cinematic is not pulled back to the player height. Easing runs once per view update, which follows the render loop, so its speed is not independent of frame rate.",
       "constants": [
         {
           "name": "Terrain probe offset",
           "value": 40,
-          "unit": "world units from the camera focus for each of the four extra ground samples; per camera update, rate unverified",
+          "unit": "world units from the camera focus on each axis for each of the four diagonal ground samples; sampled on each view update",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/W3DView.cpp:140"
         },
         {
           "name": "Camera height easing fraction",
           "value": 0.1,
-          "unit": "fraction of the remaining height error removed per update at 30 Hz",
+          "unit": "fraction of the remaining zoom error removed per view update; compiled default of the camera-adjust-speed setting, which game data can override; per rendered update, not a fixed 30 Hz step",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:981"
         },
         {
           "name": "Minimum camera height above ground",
           "value": 100,
-          "unit": "world units; compiled default, static limit, no timestep",
+          "unit": "world units; compiled default of a game-data setting that game data can override; static limit, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:826"
         },
         {
           "name": "Maximum camera height above ground",
           "value": 300,
-          "unit": "world units; compiled default, static limit, no timestep",
+          "unit": "world units; compiled default of a game-data setting that game data can override; only enforced while the enforce-max-height setting is on; static limit, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:827"
         }
       ],
@@ -598,49 +598,55 @@
       "node": "tactical-camera",
       "name": "Distance-weighted camera shake",
       "summary": "An explosion near the eye adds intensity that decays geometrically while flipping direction, and a second shaker layer adds damped sinusoidal rotations.",
-      "behavior": "A shake request names an epicentre and a severity. The horizontal distance from epicentre to eye is compared with a maximum range; beyond it nothing happens, inside it the severity intensity is scaled by one minus the normalised distance, added to the running intensity and capped. Each update the look-at point is displaced from its focus by the intensity along a random direction, the intensity is multiplied by a damping coefficient below one, and the direction sign flips so the whole view oscillates about the focus until the intensity falls under a small threshold. A separate shaker system keeps a list of shakers with a radius, a duration and a power: each one adds per-axis sinusoidal rotations whose start frequency is randomised between twelve and a half and fifteen turns per second and decays toward one turn per second, weighted unevenly so the camera pitches far more than it yaws, faded by distance and by remaining time, and finally clamped so the camera cannot roll over.",
+      "behavior": "There are two shake layers. The first is a quick spring-like shake. A shake request names an epicentre and one of six severities, each with its own intensity from game data. The horizontal distance from the epicentre to the view focus is compared with a maximum range. Beyond the range nothing happens. Inside it, the severity intensity is multiplied by one minus the normalised distance and added to the running intensity. If the running intensity then exceeds a game-data limit (compiled default 10), it is reset to a fixed value of 3, so a very large pile-up drops to 3 instead of capping at the limit. On each view update the eye focus is displaced by the intensity along a random direction, the intensity is multiplied by 0.75, and the direction sign flips, so the view alternates about the focus until the intensity falls under 0.01. This decay runs per rendered update, so it is not framerate independent. The second layer is a list of shakers, each with a radius, a duration and a power in degrees. Each shaker adds per-axis sinusoidal camera rotation. The start frequency is random between 12.5 and 15 revolutions per second and ramps linearly toward one revolution per second as elapsed seconds grow. The three rotation axes have different amplitudes of 7.5, 15 and 5 degrees per unit of power. The amount is faded by distance and by remaining time, and a small random jitter is added. The code tries to clamp the summed angles, but it discards the clamp result, so the sum is not actually limited.",
       "constants": [
         {
           "name": "Subtle shake intensity",
           "value": 0.5,
-          "unit": "world units of eye offset; compiled default, applied per update at 30 Hz until damped",
+          "unit": "world units of eye offset; compiled default, game data can override; added once per request, then damped on each view update",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:875"
         },
         {
           "name": "Strong shake intensity",
           "value": 2.5,
-          "unit": "world units of eye offset; compiled default, applied per update at 30 Hz until damped",
+          "unit": "world units of eye offset; compiled default, game data can override; added once per request, then damped on each view update",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:877"
         },
         {
           "name": "Shake range cutoff",
           "value": 150,
-          "unit": "world units from the epicentre; compiled default, static falloff radius, no timestep",
+          "unit": "world units from the epicentre; compiled default, game data can override; static falloff radius, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:882"
         },
         {
           "name": "Oscillation damping per update",
           "value": 0.75,
-          "unit": "fraction of the offset intensity retained per update at 30 Hz",
+          "unit": "fraction of the offset intensity retained per view update (render-driven, not a fixed rate)",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/W3DView.cpp:1303"
         },
         {
-          "name": "Shake intensity cap",
+          "name": "Shake intensity reset value",
           "value": 3,
-          "unit": "world units of eye offset; static cap, no timestep",
+          "unit": "world units of eye offset; value the running intensity is reset to when it passes the game-data limit, no timestep",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/W3DView.cpp:3302"
         },
         {
           "name": "Slowest shaker frequency",
           "value": 12.5,
-          "unit": "revolutions per second before conversion to radians; per shaker step of one thirtieth of a second",
+          "unit": "revolutions per second at the start of a shaker; the shaker is stepped by a fixed 1/30 second on each camera transform rebuild",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/camerashakesystem.cpp:96"
         },
         {
           "name": "Fastest shaker frequency",
           "value": 15,
-          "unit": "revolutions per second before conversion to radians; per shaker step of one thirtieth of a second",
+          "unit": "revolutions per second at the start of a shaker; the shaker is stepped by a fixed 1/30 second on each camera transform rebuild",
           "source": "GeneralsMD/Code/GameEngineDevice/Source/W3DDevice/GameClient/camerashakesystem.cpp:97"
+        },
+        {
+          "name": "Shake intensity limit",
+          "value": 10,
+          "unit": "world units of eye offset; compiled default of the game-data limit that triggers the reset; static, no timestep",
+          "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:881"
         }
       ],
       "sources": [
@@ -682,36 +688,36 @@
       "node": "unit-locomotion",
       "name": "Tracked steering and turn braking",
       "summary": "A tank turns first and throttles by the angle left, creeps when it is nearly on target, and brakes harder as its stopping distance approaches.",
-      "behavior": "A tracked unit first turns toward its goal at its turn rate and keeps the remaining angle. That angle is divided by a quarter turn and clamped to one, and the goal speed becomes the desired speed scaled by one minus the coefficient, so a tank pointing away from its target barely moves while it pivots. When it is within two grid cells and still off by a small fraction of a quarter turn, the goal speed is further reduced to a share of its current speed, which stops tanks from orbiting the last waypoint. As the remaining distance along its path shrinks under the computed slow-down distance, the unit enters a braking state, seeds a braking factor just above one, and then scales the brake force by the square of the ratio between stopping distance and remaining distance, capped at a ceiling. Whatever the mode, the difference between goal and actual speed is turned into a motive force along the unit facing and clipped so it never exceeds the force needed to reach the goal speed.",
+      "behavior": "A tracked unit first turns toward its goal at its turn rate and keeps the remaining angle. That angle is divided by one eighth of a turn (45 degrees) and clamped to one. The goal speed is the desired speed times one minus that value, so a tank pointing away from its target barely moves while it pivots. When it is within two grid cells of the goal and the angle value is still above 0.05, the goal speed becomes 0.6 times the current speed, which stops tanks from orbiting the last waypoint. The brake test uses its own distance: current speed divided by 1.5, times the time to stop at the locomotor braking rate (both braking and speed come from locomotor data). When the remaining path distance drops under that distance, the unit sets a braking flag and starts with a braking factor of 1.1. The flag clears again when the remaining distance is more than one cell and more than twice the braking distance. While braking, the factor becomes the square of braking distance over remaining distance, capped at 5. The goal speed then drops by one braking step when the braking distance exceeds the remaining distance. It drops by half a step when the braking distance is over three quarters of it, and otherwise holds the current speed. Whatever the mode, the speed difference becomes a motive force along the facing. It uses the maximum acceleration when speeding up and the braking rate times the factor when slowing down. It is clipped so it never exceeds the force needed to reach the goal speed.",
       "constants": [
         {
           "name": "Turn angle divisor of pi",
           "value": 4,
-          "unit": "pi radians divided by this value, giving a 45 degree full-throttle cone; per update at 30 Hz",
+          "unit": "pi radians divided by this value, giving a 45 degree full-slowdown cone; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1194"
         },
         {
           "name": "Precision creep angle threshold",
           "value": 0.05,
-          "unit": "fraction of a quarter turn of heading error above which the creep speed applies; per update at 30 Hz",
+          "unit": "fraction of the 45 degree cone above which the creep speed applies inside two cells; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1214"
         },
         {
           "name": "Precision creep share",
           "value": 0.6,
-          "unit": "fraction of current speed used inside a two-cell approach; per update at 30 Hz",
+          "unit": "fraction of current speed used as goal speed inside a two-cell approach; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1215"
         },
         {
           "name": "Braking factor on entering the brake",
           "value": 1.1,
-          "unit": "multiplier on braking force; per update at 30 Hz",
+          "unit": "multiplier on the braking force on the update the brake starts; dimensionless; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1221"
         },
         {
           "name": "Braking factor ceiling",
           "value": 5,
-          "unit": "upper bound on the squared braking multiplier; dimensionless per update at 30 Hz",
+          "unit": "upper bound on the squared braking multiplier; dimensionless; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:59"
         }
       ],
@@ -750,24 +756,24 @@
       "node": "unit-locomotion",
       "name": "Stopping distance from speed over braking",
       "summary": "The shared stopping helper squares the speed difference, divides by braking acceleration, halves it and adds a small fudge so units settle instead of creeping.",
-      "behavior": "The stopping helper subtracts the desired speed from the current speed and returns zero when the unit is already slow enough. Otherwise it divides the square of that difference by the magnitude of the maximum braking acceleration, halves the result, and multiplies by a fudge slightly above one. That is the constant-deceleration stopping distance with a margin, and it is the reason a unit begins to brake exactly early enough to arrive at its destination rather than overshoot. Tracked movement builds its own trigger distance by dividing the current speed by a closing factor and multiplying by the time to stop, and uses that distance to decide when to set the brake flag. Walking units instead substitute their template minimum speed once they cross the stopping distance, so infantry keep stepping instead of freezing on approach.",
+      "behavior": "The shared stopping helper subtracts the desired speed from the current speed and returns zero when the unit is already slow enough. Otherwise it divides the square of that difference by the magnitude of the braking rate, halves the result, and multiplies it by 1.05. That is the constant-deceleration stopping distance with a small margin so units can stop on a dime. Walking, wheeled, thrust-driven and several other locomotors call it with the locomotor minimum speed as the desired speed, not zero. Once the remaining path distance drops under the result, they set their goal speed to that minimum speed, so a walker keeps stepping instead of freezing on approach. Tracked movement does not use this helper. It builds its own trigger distance by dividing the current speed by 1.5 and multiplying by the time to stop, and it uses that distance to set the brake flag. Braking and minimum speed come from locomotor data, so stopping distance differs per unit type.",
       "constants": [
         {
           "name": "Stopping distance halving factor",
           "value": 0.5,
-          "unit": "share of squared speed over braking acceleration; world units; per update at 30 Hz",
+          "unit": "share of the squared speed difference over braking rate; world units; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:92"
         },
         {
           "name": "Stopping distance fudge",
           "value": 1.05,
-          "unit": "multiplier on the computed stopping distance; dimensionless; per update at 30 Hz",
+          "unit": "multiplier on the computed stopping distance; dimensionless; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:95"
         },
         {
           "name": "Tracked closing factor",
           "value": 1.5,
-          "unit": "divisor on current speed when building the braking trigger distance; per update at 30 Hz",
+          "unit": "divisor on current speed when building the tracked braking trigger distance; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1212"
         }
       ],
@@ -801,18 +807,18 @@
       "node": "unit-locomotion",
       "name": "Infantry weave and turn slowdown",
       "summary": "Walking units drift left and right inside a bounded cone while following a path, and lose speed in proportion to the heading error they still have to correct.",
-      "behavior": "Walking movement computes the heading straight at the next path point and, if the locomotor has a wander factor, adds an offset that grows and shrinks with distance travelled. The offset is bounded by one eighth of a turn times that factor and reverses direction at each bound, so the unit weaves around its line rather than tracking it exactly. The resulting heading error is normalised, divided by a quarter turn and clamped to one, and the goal speed is the desired speed scaled by one minus that value, which is why a walking unit slows in a turn. Inside the stopping distance the goal speed becomes the locomotor minimum speed instead of zero, which keeps the walk cycle running as the unit arrives. The acceleration force is then clipped so it never exceeds what is needed for the speed change.",
+      "behavior": "Walking movement computes the heading straight at the next path point. If the locomotor data sets a wander width factor above zero, it adds a heading offset that moves by a per-locomotor increment times current speed each update, so it grows with distance travelled. The increment is a fortieth of pi times a random value from 0.8 to 1.2, divided by a wander length factor, chosen when the locomotor is created. The offset reverses direction at a bound of one sixteenth of a turn (22.5 degrees) times the width factor, so the unit weaves around its line instead of tracking it exactly. The resulting heading error is normalised, divided by one eighth of a turn (45 degrees) and clamped to one, and the goal speed is the desired speed times one minus that value. That is why a walking unit slows in a turn. Inside the stopping distance the goal speed becomes the locomotor minimum speed instead of zero, which keeps the walk cycle running as the unit arrives. The acceleration force is clipped so it never exceeds what the speed change needs.",
       "constants": [
         {
           "name": "Wander cone divisor of pi",
           "value": 8,
-          "unit": "pi radians divided by this value times the wander factor, giving a 22.5 degree half cone at factor one; per update at 30 Hz",
+          "unit": "pi radians divided by this value times the wander width factor from locomotor data, giving a 22.5 degree half cone at factor one; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1643"
         },
         {
           "name": "Turn angle divisor of pi",
           "value": 4,
-          "unit": "pi radians divided by this value, normalising the heading error; per update at 30 Hz",
+          "unit": "pi radians divided by this value, giving a 45 degree full-slowdown cone; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:1665"
         }
       ],
@@ -850,24 +856,24 @@
       "node": "unit-locomotion",
       "name": "Altitude keeping by lift",
       "summary": "Flying units hold a chosen height by solving the acceleration that closes the height error in one update, then clamping it to the lift the unit can produce.",
-      "behavior": "Vertical behaviour is chosen per locomotor: ignore height entirely, sit at sea level, hold a fixed absolute height, hold a height above the surface, hold a height above the highest bridge layer, or track the goal height exactly. In the relative modes the surface height is sampled under the unit, the preferred height is damped toward, and the error is converted into acceleration by assuming the correction completes in one update, which gives twice the height error minus the current vertical speed. That acceleration becomes lift after subtracting gravity, is clamped to the gross lift the unit can produce, and in the accurate mode is allowed three times that lift either way so a jet can finish a short landing. Descent braking is limited by net lift and climbing braking by gravity, and a separate vertical speed limit caps how quickly the unit may change altitude.",
+      "behavior": "Vertical behaviour is chosen per locomotor. Some modes ignore height, sit at sea level or water surface height, or hold a fixed absolute or surface-relative height by writing the position directly. A ground-and-buildings mode also writes the position directly, at a preferred height above the ground or the structure under the unit. The lift modes (surface-relative, absolute, and smooth relative to the highest bridge layer) apply an upward force instead. In those modes the preferred height is the surface height under the unit plus the locomotor preferred height. The height error is first multiplied by a damping value from locomotor data. If the stopping distance at the current vertical speed exceeds the remaining height, the unit uses its full braking acceleration. If the vertical speed already exceeds the locomotor vertical speed limit, it counters the excess. Otherwise it assumes the correction completes in one update, so the acceleration is twice the quantity (height error minus current vertical speed). Lift is that acceleration minus gravity. In normal mode it is clamped between zero and the gross lift the unit can produce. In ultra-accurate mode it may go up to three times the gross lift upward and down to minus one times the gross lift, so a jet can finish a short landing. Descent braking is limited by net lift and climbing braking by gravity, or by twice the net lift when ultra-accurate. Gravity comes from game data, with a compiled default of -1.",
       "constants": [
         {
           "name": "Height correction gain",
           "value": 2,
-          "unit": "doubling factor turning height error minus vertical speed into acceleration; world units per frame squared at 30 Hz",
+          "unit": "multiplier applied to (height error minus vertical speed) to get acceleration; dimensionless; world units per logic frame squared (30 Hz) for the result",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:2103"
         },
         {
           "name": "Accurate-mode lift ceiling",
           "value": 3,
-          "unit": "multiple of gross lift allowed when the accurate flag is set; dimensionless; per update at 30 Hz",
+          "unit": "multiple of gross lift allowed upward when the ultra-accurate flag is set (downward limit is one times gross lift); dimensionless; evaluated on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Locomotor.cpp:2114"
         },
         {
           "name": "Gravity",
           "value": -1,
-          "unit": "world units per frame squared at 30 Hz, negative downward; compiled default",
+          "unit": "world units per logic frame squared (30 Hz), negative downward; compiled default, game data can override",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:834"
         }
       ],
@@ -901,37 +907,31 @@
       "id": "physics-integration-friction",
       "node": "rigid-body-physics",
       "name": "Euler integration with ground friction",
-      "summary": "Each logic frame accumulates gravity and friction into acceleration, folds acceleration into velocity and velocity into position, and zeroes velocities that are nearly still.",
-      "behavior": "The physics update is an explicit Euler step. Each update begins by clearing the accumulated acceleration, then adds gravity to the vertical component and applies friction. A grounded object gets a lateral drag along the axis perpendicular to its facing and, unless it is self-propelled that frame, a forward drag along its facing, both proportional to mass and to the matching velocity component. An airborne object gets drag proportional to velocity in all three axes instead. The accumulated acceleration is added to velocity, any component smaller than a small threshold is snapped to zero so units come to a clean rest, and the velocity is added to the transform translation. A braking unit may still change height but not its ground position. Rotation is integrated the same way from stored yaw, pitch and roll rates with a damping factor.",
+      "summary": "Each logic frame adds gravity and friction to the acceleration, folds acceleration into velocity and velocity into position, and zeroes velocities that are nearly still.",
+      "behavior": "The physics update is an explicit Euler step with no time scaling: every term is a per-logic-frame amount. A held object skips the whole step. Otherwise the update adds gravity to the vertical acceleration and then adds friction. A grounded object (not significantly above terrain) gets a lateral drag along the axis perpendicular to its facing. Unless it is self-propelled that frame, it also gets a forward drag along its facing. Each drag is the velocity component times the object mass times a friction coefficient. Rotation rates are multiplied by 0.85 on the ground. An airborne object gets drag proportional to velocity on all three axes from an aerodynamic coefficient, which defaults to zero, so most airborne objects have no air drag. Friction coefficients come from per-object data, which gives per-second values that are converted to per-frame. Non-air coefficients are clamped between 0.01 and 0.99. The accumulated acceleration is added to velocity. Any velocity component smaller than 0.001 is snapped to zero so units come to a clean rest. The velocity is then added to the position. A unit whose locomotor is braking keeps its horizontal position and may still change height, except projectiles, which are exempt. Pitch, roll and yaw rates are scaled by a per-object factor and applied as rotations each frame. At the end the acceleration is cleared. The object sleeps when velocity, acceleration, rotation and overlaps are all zero and it is on the ground.",
       "constants": [
         {
           "name": "Default forward friction",
           "value": 0.15,
-          "unit": "drag coefficient per update at 30 Hz, applied to forward velocity when not self-propelled",
+          "unit": "drag coefficient per second in data terms, converted to per logic frame; default used when object data sets none; applied to forward velocity only when not self-propelled",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:55"
         },
         {
           "name": "Default lateral friction",
           "value": 0.15,
-          "unit": "drag coefficient per update at 30 Hz, applied to sideways velocity",
+          "unit": "drag coefficient per second in data terms, converted to per logic frame; default used when object data sets none; applied to sideways velocity",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:56"
-        },
-        {
-          "name": "Default vertical friction",
-          "value": 0.8,
-          "unit": "drag coefficient per update at 30 Hz, applied to vertical motion",
-          "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:57"
         },
         {
           "name": "Maximum friction coefficient",
           "value": 0.99,
-          "unit": "upper clamp on a friction coefficient; dimensionless; static limit, no timestep",
+          "unit": "upper clamp on any friction coefficient; dimensionless; static limit, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:64"
         },
         {
           "name": "Velocity zeroing threshold",
           "value": 0.001,
-          "unit": "world units per frame at 30 Hz; smaller velocity components are snapped to zero",
+          "unit": "world units per logic frame (30 Hz); smaller velocity components are snapped to zero",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:663"
         }
       ],
@@ -970,12 +970,12 @@
       "node": "rigid-body-physics",
       "name": "Ground contact, bounce and fall damage",
       "summary": "The terrain surface is a hard floor with optional bounce, and a landing that is both hard and steep enough converts excess speed into damage.",
-      "behavior": "After integration the layer height under the object is sampled. If the new height is at or below it, the excess is removed from vertical velocity and the object is snapped onto the surface, which also clears its falling flag. A bouncy object instead receives an upward impulse proportional to its downward speed times a stiffness clamped between a hundredth and almost one, its rotation rates are damped, and its roll is levelled so it does not keep tumbling. When an object that was airborne one frame earlier touches down, the landing is judged: if the downward speed exceeds the template minimum fall speed, the object takes damage proportional to that excess, its mass and a damage factor, but only when the descent is steeper than roughly seventy-one degrees, tested by comparing vertical with horizontal speed. That angular test is what stops a unit from damaging itself while running down a gentle slope.",
+      "behavior": "After integration the layer height under the object is sampled. If the new height is at or below it, the excess is removed from vertical velocity and the object is snapped onto the surface. This also clears its falling flag. If the object allows bouncing, the same contact also computes an upward force equal to its mass times its downward speed times a stiffness, clamped between 0.01 and 0.99. That force is applied on the next update, so the rebound happens one frame after the snap. The stiffness comes from a game-data setting with a compiled default of 0.5. Contact also multiplies rotation rates by 0.7 and levels pitch and roll so the object does not keep tumbling. When an object that was airborne in the previous frame touches down, the landing is judged. If the downward speed exceeds the template minimum fall speed (set from a fall height), the object takes damage equal to that excess times its mass times a per-object damage factor. This only applies when the descent is steep. Both the vertical-to-horizontal speed ratios on x and y must be at least 3, about 71 degrees, unless the horizontal speed is almost zero. That angular test stops a unit from hurting itself running down a gentle slope. Objects flagged immune to falling damage, and projectiles, skip the damage step.",
       "constants": [
         {
           "name": "Ground stiffness default",
           "value": 0.5,
-          "unit": "share of downward speed returned as bounce acceleration; compiled default; per update at 30 Hz",
+          "unit": "share of downward speed returned as bounce acceleration; compiled default, game data can override; applied once per ground contact on a bouncing object",
           "source": "GeneralsMD/Code/GameEngine/Source/Common/GlobalData.cpp:832"
         },
         {
@@ -993,7 +993,7 @@
         {
           "name": "Bounce rotation damping",
           "value": 0.7,
-          "unit": "fraction of rotation rates kept on impact; per update at 30 Hz",
+          "unit": "fraction of rotation rates kept on impact; applied once per bounce contact",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:526"
         },
         {
@@ -1038,24 +1038,24 @@
       "node": "object-collision",
       "name": "Sphere and circle collision separation",
       "summary": "Airborne objects are compared as spheres, grounded objects as circles, and overlapping hulls push each other apart with a capped force along the line of centres.",
-      "behavior": "On a collision the physics handler first lets projectile modules claim the hit, then ignores containers, objects that are both parachuting, objects ignored by the AI obstacle test, and pairs that are deliberately allowed to overlap. Otherwise it measures centre to centre: an object above terrain uses full three-dimensional centres and bounding-sphere radii, while a grounded object uses only the horizontal plane and its bounding circle, so height differences are irrelevant on the ground. If the distance is larger than the sum of the radii nothing more happens. Otherwise the overlap is the sum minus the distance, capped at five world units for movable targets, and applied as a restoring force along the line of centres, with the separation distance floored at one unit so coincident objects cannot produce an unbounded force. Against immobile geometry the force instead comes from the mover speed, its mass and a stiffness, and its velocity is zeroed so it does not ricochet.",
+      "behavior": "On a collision the physics handler first lets a projectile module claim the hit. It then ignores containers and their cargo, objects that are both parachuting, pairs where one ignores the other as an obstacle, and pairs flagged to ignore each other. An object with no physics is ignored unless it is immobile. A crush test can let a mover overlap a crushable target instead of being pushed. Objects with their own movement AI are pushed only if their AI collision handler asks for it. Then it measures centre to centre. An object above terrain uses full three-dimensional centres and bounding-sphere radii. A grounded object uses only the horizontal plane and bounding-circle radii, so height differences are irrelevant on the ground. If the distance is larger than the sum of the radii, nothing more happens. Against a movable target, the overlap (sum of radii minus distance) is capped at 5 world units and applied as a restoring force along the line of centres. The distance used to normalise that direction is floored at 1 unit, so coincident objects do not produce an unbounded force. Against immobile geometry, the force comes from the mover speed times its mass times a structure stiffness (game data, clamped between 0.01 and 0.99), with the speed floored at about 0.0067 units per frame. The mover velocity is zeroed so it does not ricochet. An object falling into a structure is destroyed, and a vehicle also fires a crash weapon.",
       "constants": [
         {
           "name": "Minimum separation for the force divisor",
           "value": 1,
-          "unit": "world units of centre distance; per collision, no timestep",
+          "unit": "world units of centre distance; floor on the divisor of the push direction; per collision, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:1333"
         },
         {
           "name": "Maximum overlap correction",
           "value": 5,
-          "unit": "world units of push-apart overlap per collision at 30 Hz",
+          "unit": "world units of overlap used as push-apart force per collision; applied on each collision update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:1412"
         },
         {
-          "name": "Minimum bounce speed divisor",
+          "name": "Minimum bounce speed frame multiplier",
           "value": 5,
-          "unit": "logic frames per second divided by this value, giving about 0.0067 world units per frame at 30 Hz",
+          "unit": "the floor speed is 1 divided by (logic frames per second times this value), about 0.0067 world units per frame at 30 Hz",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Update/PhysicsUpdate.cpp:1372"
         }
       ],
@@ -1094,7 +1094,7 @@
       "node": "pathfinding",
       "name": "Octile grid search with a frame budget",
       "summary": "Ground pathing is grid A* on ten-unit cells with straight and diagonal step costs, turn penalties, and a fixed number of cells searched each frame.",
-      "behavior": "The map is divided into cells ten world units on a side, each carrying terrain type, obstacle flags and a zone number, with bridges as separate layers. A search starts at the cell containing the unit, expands its eight neighbours, and keeps an open list sorted by estimated total cost. A straight step costs ten and a diagonal fourteen, an integer approximation of root two, and the remaining distance estimate charges one full step along the dominant axis plus half a step along the other, which keeps the estimate close to the octile path length without floating point. Additional penalties are charged for pinched cells and for direction changes, scaled by turn size: a forty-five degree turn costs four units, a right angle eight and a reversal sixteen. Searches are not finished in a single frame: the queue drains until the number of expanded cells reaches a fixed per-frame budget, which keeps a large battle responsive when many units repath at once.",
+      "behavior": "The map is divided into cells ten world units on a side, each carrying terrain type, obstacle flags and a zone number, with bridges as separate layers. A search starts at the cell containing the unit, expands its eight neighbours, and keeps an open list sorted by estimated total cost. A straight step costs ten and a diagonal fourteen, an integer approximation of root two. The remaining distance estimate charges one full step along the dominant axis plus half a step along the other, which stays close to the octile path length with integer maths. Pinched cells cost one extra diagonal step. A direction change adds a penalty: 4 for a 45 degree turn, 8 for a right angle and 16 for a sharper turn than that. Each queued request runs its whole search in one call; a single search is not split across frames. A frame budget limits how many requests run. Pending requests sit in a ring of 512 entries. Each frame the queue is drained in order until the number of cells examined by the searches reaches 5000, and the remaining requests wait for the next frame. A frame can overshoot the budget by the size of the last search. This keeps a large battle responsive when many units repath at once.",
       "constants": [
         {
           "name": "Path grid cell size",
@@ -1117,7 +1117,7 @@
         {
           "name": "Cells searched per frame",
           "value": 5000,
-          "unit": "grid cells expanded per logic frame at 30 Hz",
+          "unit": "grid cells examined across all searches before the queue stops draining for the frame, per logic frame at 30 Hz; checked between requests, so one search can exceed it",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/AI/AIPathfind.cpp:1103"
         },
         {
@@ -1162,18 +1162,18 @@
       "node": "pathfinding",
       "name": "Path straightening by line of sight",
       "summary": "Grid paths are collapsed into straight runs by looking ahead for the farthest node the unit can reach in a straight line, keeping a few steps around layer changes.",
-      "behavior": "After a search returns a chain of cell centres the optimiser simplifies it. Starting from an anchor node it looks ahead for the farthest later node that the unit can walk to directly, given its permitted surfaces, its layer and the obstacle grid, and reconnects the anchor straight to it so the intermediate cells disappear. Around changes of layer, such as a unit stepping onto or off a bridge, it keeps up to three steps on each side and inserts a waypoint at the transition instead of cutting the corner, which is what prevents units from walking off a bridge deck. The scan also stops early at nodes that are marked non-optimisable, so sharp obstacle corners survive. Finally, single-cell orthogonal or diagonal steps between adjacent nodes are accepted as passable without a line test, so short staircase segments are not preserved as needless waypoints.",
+      "behavior": "After a search returns a chain of cell centres, the optimiser simplifies it. Starting from an anchor node it first scans forward to find the farthest later node it will consider. The scan stops at a node marked non-optimisable. It also stops at a change of layer, such as a bridge, once more than three steps from the anchor were scanned. A layer change within three steps is allowed. Then it walks back from that far node toward the anchor and tests each one for a straight line the unit can walk, given its permitted surfaces, its layer and the obstacle grid. A cliff cell that is not pinched also counts as passable. The first node that passes becomes the anchor, and the intermediate cells disappear from the optimised path. Adjacent nodes that differ by exactly one cell diagonally pass without the line test. A straight, horizontal, vertical or diagonal run where every intermediate step has the same direction also passes without it, so tidy staircase segments collapse. If no later node can be reached, the next node becomes the anchor.",
       "constants": [
         {
           "name": "Bridge transition steps kept",
           "value": 3,
-          "unit": "grid steps preserved on each side of a layer change; static limit, no timestep",
+          "unit": "grid steps the forward scan may pass after a layer change before it stops; static limit, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/AI/AIPathfind.cpp:497"
         },
         {
           "name": "Single step span",
           "value": 10,
-          "unit": "world units, one grid cell, the step length accepted without a line test; per path node, no timestep",
+          "unit": "world units, one grid cell, the diagonal step length accepted without a line test; per path node, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Include/GameLogic/AIPathfind.h:440"
         }
       ],
@@ -1207,18 +1207,18 @@
       "node": "weapons-turrets",
       "name": "Turret slew and snap",
       "summary": "A turret advances toward its target at a fixed angular step and snaps exactly onto it once the remaining error is smaller than one step, yaw and pitch separately.",
-      "behavior": "A turret stores a yaw angle and, when the model supports it, a pitch angle. Each update it normalises the difference between the wanted and the current yaw. If that difference is smaller than this update turn rate it snaps exactly to the target and clears the rotating model state; otherwise it advances by exactly the turn rate toward the target and sets the rotating state, which drives the sound and animation. The pitch pass repeats the same procedure with its own rate and is skipped entirely for turrets that cannot pitch. Both rates are multiplied by per-call modifiers, which is how a slow heavy turret or a damaged one loses tracking, and a relative threshold flags when the barrel counts as aligned enough to fire. Both rates default to one hundredth of a radian per update, so a turret at the default rate needs a little over five seconds to sweep a quarter turn.",
+      "behavior": "A turret stores a yaw angle and, when the model supports it, a pitch angle. On each update it normalises the difference between the wanted and the current yaw. If that difference is smaller than this update turn rate, it snaps exactly to the target and clears the rotating model state. Otherwise it advances by exactly the turn rate toward the target and sets the rotating state, which drives the sound and animation. The call also returns whether the yaw is within a caller-given threshold of the target. The pitch pass repeats the snap-or-step procedure with its own rate and flags its own sound, and it is skipped for turrets that cannot pitch. Both rates are multiplied by per-call modifiers, so a caller can slow a turret down. Both rates default to 0.01 radians per update when the turret data sets nothing, and the turret data can override the turn rate, which is read as an angular velocity. At the default rate a turret needs a little over five seconds to sweep a quarter turn.",
       "constants": [
         {
           "name": "Default turret turn rate",
           "value": 0.01,
-          "unit": "radians per update at 30 Hz, about 0.3 radians per second",
+          "unit": "radians per logic update at 30 Hz, about 0.3 radians per second; default used when turret data sets none",
           "source": "GeneralsMD/Code/GameEngine/Include/GameLogic/TurretAI.h:37"
         },
         {
           "name": "Default turret pitch rate",
           "value": 0.01,
-          "unit": "radians per update at 30 Hz",
+          "unit": "radians per logic update at 30 Hz; default used when turret data sets none",
           "source": "GeneralsMD/Code/GameEngine/Include/GameLogic/TurretAI.h:38"
         }
       ],
@@ -1257,7 +1257,7 @@
       "node": "weapons-turrets",
       "name": "Per-shot scatter in a ground disc",
       "summary": "Inaccurate weapons stop aiming at the target point and shoot at a random point inside a disc instead, with a wider disc against infantry, and the scattered point is snapped down onto the ground layer.",
-      "behavior": "When a weapon carries a nonzero scatter radius, or carries an infantry inaccuracy value and the victim is infantry, firing stops aiming at the object and aims at a point instead. The effective radius is the weapon scatter plus, for infantry victims, the inaccuracy value. A radius is then drawn uniformly between zero and that sum, so some shots are nearly perfect, and an angle is drawn uniformly over a full turn; the two produce an offset in the horizontal plane only, keeping the shot position inside a disc around the target. For structures the horizontal aim point is taken from the centre of the bounding volume rather than the object origin, so a tall building is still covered by the disc. After the offset is applied the height is overwritten with the layer height at the scattered point, which forces a scattering shot to land on the ground or on the bridge deck the target stands on instead of flying at the centre height of the target.",
+      "behavior": "When a weapon has a nonzero scatter radius, or has an infantry inaccuracy value and the victim is infantry, the shot does not aim at the object. It aims at a point. The scatter radius and the infantry inaccuracy come from the weapon data. The effective radius is the weapon scatter plus, for infantry victims, the inaccuracy value. A radius is then drawn uniformly between zero and that sum, so some shots are nearly perfect. An angle is drawn uniformly over a full turn. Together they give an offset in the horizontal plane only, so the aim point falls inside a disc around the target. Because the radius is drawn uniformly rather than by area, hits cluster toward the centre. For structures the horizontal aim point starts at the centre of the geometry rather than the object origin. After the offset is applied, the height is overwritten with the layer height at the scattered point, on the layer the victim stands on, so a scattering shot lands on the ground or on the bridge deck instead of flying at the centre height of the target.",
       "constants": [
         {
           "name": "Scatter angle span in pi",
@@ -1303,12 +1303,12 @@
       "node": "weapons-turrets",
       "name": "Elevation arc gate before firing",
       "summary": "A weapon with a limited elevation refuses a shot whose target sits outside its vertical arc, unless the height difference is negligible.",
-      "behavior": "Before a shot is allowed the weapon checks the vertical geometry. Contact weapons and weapons without a pitch limit always pass. Otherwise the height difference between shooter and victim is compared with a small tolerance; inside that tolerance the shot is always allowed, because a tiny vertical offset cannot matter at range. Beyond it the shooter geometry is used to compute the range of pitches from the shooter to the target bounding volume, and the shot is allowed only when that pitch interval overlaps the weapon minimum and maximum target pitch. The consequence is visible on the battlefield: a flat-trajectory gun cannot hit a unit standing directly on the cliff above it, but can still hit the cliff face below and the ground in front. Keeping the interval test, rather than a single centre pitch, is what lets large targets be hit across the edges of the arc.",
+      "behavior": "Before a shot is allowed the weapon checks the vertical geometry. Contact weapons and weapons without a pitch limit always pass. Otherwise the height difference between the shooter and victim positions is compared with a tolerance of 10 world units. Inside that tolerance the shot is always allowed. Beyond it, the shooter geometry computes the range of pitches from the shooter to the target bounding volume. The shot is allowed only when that pitch interval overlaps the weapon minimum and maximum target pitch, which come from the weapon data. Using an interval test rather than a single centre pitch lets large targets be hit when only part of their volume is inside the arc.",
       "constants": [
         {
           "name": "Height tolerance for the arc test",
           "value": 10,
-          "unit": "world units of vertical difference; static test, no timestep",
+          "unit": "world units of vertical difference between shooter and victim positions; static test, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Weapon.cpp:2787"
         }
       ],
@@ -1346,7 +1346,7 @@
       "node": "projectile-flight",
       "name": "Bezier shell arc over terrain",
       "summary": "Shells and rockets fly a precomputed cubic Bezier whose two interior control points are lifted above the highest terrain between shooter and target.",
-      "behavior": "When a dumb projectile launches, its start is the barrel position and its end is the centre of the target. The flight path is a cubic Bezier with four control points. The two interior points lie on the straight line between the ends, at fractions of that distance taken from the projectile data, and their heights are the highest terrain found along the line plus the projectile own first and second heights, never below the start or end height. That is what makes an artillery shell clear a ridge the shooter cannot see over. The curve is then sampled into as many points as the curve length divided by the projectile flight speed, so the projectile advances roughly one speed-unit per update along its arc. While in flight it may creep its end point toward a moving target by a capped amount per update and rebuild the curve, and its model is oriented along the difference between consecutive path points.",
+      "behavior": "When a dumb projectile launches, its start is the barrel position and its end is the centre of the target geometry (or the target point). The flight path is a cubic Bezier with four control points. The two interior points lie on the straight line between the ends, at two fractions of that distance taken from the projectile data. Their heights are the highest terrain found along the line, floored at the start and end heights, plus a first and a second height from the projectile data. That is what makes an artillery shell clear a ridge the shooter cannot see over. The curve is sampled into as many points as the curve length divided by the flight speed, rounded up, so the projectile advances about one speed-unit per logic update along its arc. Flight speed is the weapon speed. Some weapons scale it between a minimum and the weapon speed by range. While in flight, the end point can creep toward a moving target by a per-update cap from the projectile data. The path is rebuilt when the target has moved more than a small distance. The projectile position is forced to each path point, so physics and gravity do not move it. Its model is oriented along the difference between consecutive path points. If the points run out or the lifespan ends, it detonates.",
       "constants": [
         {
           "name": "Bezier control points",
@@ -1357,7 +1357,7 @@
         {
           "name": "Target chase threshold",
           "value": 0.1,
-          "unit": "squared world units of target movement below which the flight path is not rebuilt; per update at 30 Hz",
+          "unit": "squared world units of target movement below which the flight path is not rebuilt; checked on each logic update (30 Hz)",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Object/Behavior/DumbProjectileBehavior.cpp:613"
         }
       ],
@@ -1396,7 +1396,7 @@
       "node": "terrain-surface",
       "name": "Two-triangle height map sampling",
       "summary": "Ground height is interpolated inside the triangle that contains the query point, giving a continuous standing surface across a grid of ten-unit squares.",
-      "behavior": "The world height map stores one byte per grid point, spaced ten world units apart, and each stored level is scaled to a fraction of a world unit. A query converts the world position into grid space, keeps the integer cell and the fractional position inside it, and then decides which of the two triangles that split the square contains the point by comparing the two fractions. Inside each triangle the height is reconstructed linearly from the three corner samples, so the surface rises and falls across the square instead of stepping at the grid points. The same call can also return a surface normal derived from a ring of neighbouring samples, which is what lets models and decals lie flat on a slope. Queries outside the playable area return a clipped edge height rather than failing, so objects falling off the map still find ground.",
+      "behavior": "The world height map stores one byte per grid point, spaced ten world units apart. Each stored level is 0.625 world units (ten divided by sixteen). A query converts the world position into grid space and keeps the integer cell and the fractional position inside it. It then decides which of the two triangles that split the square contains the point by comparing the two fractions, and rebuilds the height linearly from the three corner samples of that triangle. The surface therefore rises and falls across the square instead of stepping at the grid points. The same call can also return a surface normal, derived from twelve surrounding samples with interpolated slopes, so models and decals lie flat on a slope. Queries outside the sampled grid return a clipped edge height and a straight-up normal rather than failing, so objects falling off the map still find ground.",
       "constants": [
         {
           "name": "Height map cell size",
@@ -1445,13 +1445,13 @@
       "id": "structure-flattens-ground",
       "node": "terrain-surface",
       "name": "Structures level the ground they stand on",
-      "summary": "A new structure samples the ground under its footprint, averages the samples, presses the footprint down to that height and then snaps itself onto the levelled ground.",
-      "behavior": "When a structure object is created, before it is registered as an obstacle, the terrain under its footprint is levelled. For a box footprint the four corners are rotated by the structure orientation and their axis-aligned bounds converted into grid ranges; for a round footprint the grid points inside the radius are used. Each grid point inside the shape is tested against the footprint triangles or the circle, and every matching point contributes its current ground height to an average, with the sample count guarding against an empty result. The average is quantised back into stored height levels with a rounding offset, and then clamped so it can never exceed the height at the structure origin, because the height map write used here can lower ground but not raise it. Every matching point writes that height to itself and to its eight neighbours, which smooths the pad into a 3x3 block and removes stair-stepping at the edge of the footprint. The structure is then moved down or up to the new ground height at its origin.",
+      "summary": "A new structure samples the ground under its footprint, averages the samples, presses the footprint to that height and then snaps itself onto the levelled ground.",
+      "behavior": "When a builder unit starts a new structure, the terrain under its footprint is levelled before the structure is registered as an obstacle. Small footprints are skipped. For a box footprint the four corners are rotated by the structure orientation and their axis-aligned bounds converted into grid ranges. For a round footprint the grid points inside the radius are used. Each grid point inside the shape is tested against the footprint triangles or the circle. Every matching point contributes its current ground height to an average, and an empty set stops the process. The average is converted into stored height levels with a rounding offset of one half. In the box case only, the result is then clamped so it never exceeds the height at the structure origin, because the height map write used here can lower ground but not raise it. Every matching point writes that height to itself and to its eight neighbours, which smooths the pad into a 3x3 block around each point and removes stair-stepping at the edge. The structure is then moved to the ground height at its origin after the change.",
       "constants": [
         {
           "name": "Height quantisation rounding offset",
           "value": 0.5,
-          "unit": "stored height levels added before truncation when averaging world height into the height map; per footprint sample, no timestep",
+          "unit": "stored height levels added before truncation when averaging world height into the height map; per footprint, no timestep",
           "source": "GeneralsMD/Code/GameEngine/Source/GameLogic/Map/TerrainLogic.cpp:2715"
         },
         {
@@ -1496,7 +1496,7 @@
       "node": "terrain-surface",
       "name": "Scripted blast crater deformation",
       "summary": "A blast-crater object placed by a script lowers the stored terrain heights around it, deepest at the centre and fading to nothing at the radius, and becomes a permanent pathfinding obstacle.",
-      "behavior": "Some maps and mission scripts place a blast-crater object rather than relying on an explosion. When such an object is created it is given its position and orientation, the terrain beneath it is edited, and only then is it added to the pathfinding map so that later searches treat the crater footprint as blocked. The edit uses the object radius to derive a grid range, then walks every grid point inside the circle, measuring its distance to the centre. A matched point has its stored height reduced by the radius times one minus the normalised distance, so the middle of the crater is deepest and the rim is barely changed, and a floor of one stored level prevents the edit from cutting below the minimum the map allows. Small geometry is skipped entirely, so only objects big enough to matter reshape the ground. Because the terrain is the same map that movement, camera and path queries read, the crater is permanent for the rest of the match.",
+      "behavior": "Some maps and mission scripts create a blast-crater object instead of relying on an explosion. When a script creates an object of this kind, it is given its position and orientation, the terrain beneath it is edited, and only then is it added to the pathfinding map, so later searches treat the crater footprint as blocked. The edit uses the object radius to derive a grid range, then walks every grid point whose distance to the centre is less than the radius. A matched point has its stored height reduced by the radius times one minus the normalised distance. The radius is in world units but the subtraction is in stored height levels of 0.625 world units, so the centre drops by about 0.625 times the radius in world units. The middle of the crater is deepest and the rim is barely changed. A floor of one stored level stops the edit from going below the lowest value. Small geometry is skipped, so only objects large enough to matter reshape the ground. The height map is shared by movement, camera and path queries, so the crater stays for the rest of the match.",
       "constants": [
         {
           "name": "Crater falloff share",
@@ -1546,7 +1546,7 @@
       "node": "build-placement",
       "name": "Build site flatness check",
       "summary": "A structure site is rejected on a bridge and rejected whenever the height spread sampled across its footprint is too large, checked first coarse and then fine.",
-      "behavior": "Placement applies geometry checks first and then terrain checks. If the requested point is not on the ground layer but on a bridge, the site is refused outright because bridges cannot carry arbitrary structures. Otherwise the game samples the structure footprint at three times the height map cell size for a fast pass, then again at full cell resolution. At each sample it reads the terrain height and tracks the highest and lowest values seen; after each pass it rejects the site when that spread exceeds the configured allowed height variation, so a building cannot straddle a ridge or a crater lip. The same sampling marks the footprint restricted if any sample lands on terrain that cannot be built on. Only when both resolutions pass is the location considered legal.",
+      "behavior": "Placement runs geometry and object-overlap checks first, then terrain checks when the terrain-restrictions option is on. If the requested point is on a bridge layer instead of the ground layer, the site is refused outright. Otherwise the game samples the structure footprint at three times the height map cell size for a fast pass, then again at full cell resolution. At each sample it reads the terrain height and tracks the highest and lowest values seen. The record is not reset between passes, so the spread covers both. The sample also marks the site restricted if the terrain tile forbids building, if the matching ground pathfinding cell is missing, or if that cell is water, cliff or impassable. After each pass the site is rejected for restricted terrain, and then rejected when the height spread exceeds the allowed height variation, a game-data value whose compiled default is zero. A building therefore cannot straddle a ridge or a crater lip. Only when both resolutions pass is the location legal.",
       "constants": [
         {
           "name": "Coarse footprint sampling step",
@@ -1590,7 +1590,7 @@
       "node": "group-movement",
       "name": "Group pace and formation leash",
       "summary": "A group moves at its slowest undamaged member pace and each member is sent to its formation offset, clamped to a multiple of its own radius so stragglers rejoin.",
-      "behavior": "When a group is recomputed it averages member positions to find a centre and then scans its members for the lowest current locomotor speed, skipping immobile and carried units and only counting members whose damage state is still better than the movement-penalty threshold, so one wrecked tank does not slow the whole selection. Alongside that scan it tracks which member sits closest to the centre. On a move order each member destination is its stored formation offset from the centre, or its present offset when no formation is active, and that offset vector is clamped to six times the member own bounding circle radius. The clamp is the leash: a unit that has drifted far from the formation is pulled back toward the destination instead of being sent around a long detour, and a unit already near its post is placed almost exactly on it. The per-unit destination is then pathed normally.",
+      "behavior": "When a group is recomputed it scans its members for the lowest current locomotor speed. It skips immobile members and held riders. It only counts members whose damage state is still better than the movement-penalty threshold, so one wrecked tank does not slow the whole selection. Members that are in a formation take that group speed as their desired speed when a move order starts; others keep their own. On a move order the unit nearest the goal goes first, and its position becomes the group centre when no formation is active. Each member destination is its stored formation offset from the goal, or its present offset from that centre when no formation is active. That offset vector is clamped to six times the member own bounding circle radius. The clamp is the leash: a unit that has drifted far from the group ends up near the goal instead of far behind it, and no unit is sent to a post far from the goal. The destination is then adjusted to a valid ground spot and pathed normally.",
       "constants": [
         {
           "name": "Formation leash multiple",

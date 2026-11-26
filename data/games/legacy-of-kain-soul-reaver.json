@@ -110,7 +110,7 @@
       "id": "steering",
       "parent": "player-state",
       "name": "Camera-relative steering",
-      "purpose": "Collapses the pad into a compass direction, offsets it by the camera yaw to produce a bearing, and drives the body toward that bearing with a rate-limited angle move",
+      "purpose": "Turns the stick angle plus the camera lagged yaw into a bearing, and drives the body toward that bearing with a rate-limited angle move",
       "paths": [
         "src/Game/RAZIEL/STEERING.c"
       ],
@@ -565,7 +565,7 @@
     {
       "id": "camera-follow",
       "name": "Follow camera",
-      "purpose": "The critically damped follow rig: focus point, distance presets, the two damping regimes chosen by line of sight, and the maximum-speed governor",
+      "purpose": "The follow rig: focus point, distance presets, the capped damper regimes chosen by wall collision, and the maximum-speed governor",
       "paths": [
         "src/Game/CAMERA.c",
         "include/Game/CAMERA.h"
@@ -958,19 +958,19 @@
       "id": "gait-ladder",
       "node": "locomotion",
       "name": "Analog gait ladder",
-      "summary": "Stick travel selects one of three cycle animations, and each cycle then scales its own playback rate across a band, so ground speed is continuous instead of stepping between walk and run.",
-      "behavior": "Walking is not a two-way switch. Each update the locomotion selector picks one of three cycle animations from where the analog stick currently sits, and each of the three owns a playback-rate band rather than a single speed. Below a band's floor the rate is pinned to the band minimum; as the stick magnitude climbs toward the band ceiling the rate interpolates linearly toward the band maximum; once the magnitude passes the ceiling the next gait takes over and the rate restarts from that gait's own floor. The bands are laid out so they meet exactly: the slow cycle ramps its rate from 4096 to 7168 over stick magnitude 2300 to 2783, the middle cycle ramps 3276 to 6144 over 2783 to 3768, and the fast cycle sits at a flat 3547 to 4096 over 3768 to the stick's full 4096. Because 4096 is the neutral rate, the slow cycle already runs at normal speed at the bottom of its band and accelerates up to about one and three quarter times normal before handing over. Each cycle also carries a fixed signed root translation that is written into the skeleton root every animation frame, scaled by the current playback rate and by the frame-time percentage, so a cycle played faster covers proportionally more ground: the slow cycle contributes 16 engine units of root travel per frame, the middle 35, and the fast 60.",
+      "summary": "Stick magnitude selects one of three cycle animations, and each cycle scales its own playback rate across a band, so ground speed is continuous instead of stepping between walk and run.",
+      "behavior": "Walking is not a two-way switch. Three cycle animations cover the stick range, and each owns a playback-rate band. Each update the selector reads the stick magnitude: above 3768 it picks the fast cycle, from 2784 to 3768 the middle cycle, and below 2784 the slow cycle. A change of cycle waits until a foot-plant marker of the current cycle has passed, and the new cycle starts at a matching frame, so the stride stays in phase. Inside a cycle the rate is the band minimum at or below the band floor, the band maximum at or above the band ceiling, and a linear interpolation between. The bands are: slow cycle 4096 to 7168 over magnitude 2300 to 2783, middle cycle 3276 to 6144 over 2783 to 3768, and fast cycle 3547 to 4096 over 3768 to 4096. The value 4096 is playback rate 1.0, so the slow cycle runs from 1.0x to 1.75x, the middle from 0.8x to 1.5x and the fast from about 0.87x to 1.0x. While no control flag pauses root translation, each cycle also writes a fixed translation into the root bone: -16, -35 or -60 units on the local forward axis for the slow, middle and fast cycle. The value is multiplied by the rate and by the frame time percentage (100 is one nominal frame), so a faster cycle covers proportionally more ground.",
       "constants": [
         {
           "name": "slowCycleRateMin",
           "value": 4096,
-          "unit": "animation playback scalar where 4096 is 1.0x, applied per update at the 33 ms nominal frame",
+          "unit": "animation playback scalar where 4096 is 1.0x",
           "source": "src/Game/RAZIEL/RAZLIB.c:1008"
         },
         {
           "name": "slowCycleRateMax",
           "value": 7168,
-          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "unit": "animation playback scalar where 4096 is 1.0x",
           "source": "src/Game/RAZIEL/RAZLIB.c:1009"
         },
         {
@@ -988,13 +988,13 @@
         {
           "name": "middleCycleRateMin",
           "value": 3276,
-          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "unit": "animation playback scalar where 4096 is 1.0x",
           "source": "src/Game/RAZIEL/RAZLIB.c:1027"
         },
         {
           "name": "fastCycleRateMin",
           "value": 3547,
-          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "unit": "animation playback scalar where 4096 is 1.0x",
           "source": "src/Game/RAZIEL/RAZLIB.c:1046"
         },
         {
@@ -1006,13 +1006,13 @@
         {
           "name": "slowCycleRootTravel",
           "value": -16,
-          "unit": "engine units of root travel per animation frame at playback rate 1.0",
+          "unit": "engine units of root translation per update at the 33 ms nominal frame and playback rate 1.0",
           "source": "src/Game/RAZIEL/RAZLIB.c:1067"
         },
         {
           "name": "fastCycleRootTravel",
           "value": -60,
-          "unit": "engine units of root travel per animation frame at playback rate 1.0",
+          "unit": "engine units of root translation per update at the 33 ms nominal frame and playback rate 1.0",
           "source": "src/Game/RAZIEL/RAZLIB.c:1070"
         }
       ],
@@ -1050,38 +1050,20 @@
       "id": "camera-relative-bearing",
       "node": "steering",
       "name": "Camera-relative bearing",
-      "summary": "The pad direction is added to the camera's live yaw to form a bearing, so forward on the stick always means away from the camera even while the camera is still swinging.",
-      "behavior": "Movement intent is never stored in world space. Each update the pad is collapsed into one of eight compass values or zero, and that value is added to the camera's current yaw to produce the bearing the body should end up facing. Because the camera yaw is sampled every update rather than latched when the stick is first pressed, a camera that is still swinging behind the player continuously rotates the meaning of forward on the stick, and the body follows that rotation without an extra input. The eight compass values are one eighth of a turn apart in the engine's 4096-unit turn: the four cardinal presses are 2048, 4096, 3584 and 1024, and the four diagonals sit between them at 2560, 512, 1536 and 3072. The analog axes are handled separately from the D-pad: the two axes are dead-zoned as a radial disk rather than per axis, so a small circular wobble produces no input at all, and the surviving vector is squared into a magnitude that is capped at full deflection and floored at a quarter of full. The floor is what stops a barely deflected stick from producing a useless crawl, since the gait selector downstream would otherwise pick the slowest cycle at a very low playback rate.",
+      "summary": "The stick angle is added to the camera's lagged yaw to form the target bearing, so forward on the stick means away from the camera even while the camera is still swinging.",
+      "behavior": "Movement intent is stored as a bearing in the 4096-unit turn, not in world space. Each update the two stick axes become an angle with an arc tangent, and the camera's lagged yaw is added. The lagged yaw is a copy of the camera yaw that the camera code keeps current, and it is read every update, not latched when the stick is first pressed. A camera that is still swinging therefore keeps rotating the meaning of forward, and the body follows. The sum is stored as the target bearing only while a digital direction code is non-zero. With no direction input the old bearing stays, so the body keeps its last facing. The direction code is built from the pad direction bits. Its eight angle values are written to a local variable that the bearing code never reads, so they do not feed the bearing. This file does not show whether stick motion also sets those bits. The two axes pass through a radial dead zone: when the squared length of the axis pair is below 1024 (a radius of 32 on the plus or minus 128 axis scale), both axes become zero. The magnitude is the vector length times 32, so a full axis value gives 4096, and an axis at plus or minus 128 sets 4096 at once. A non-zero magnitude below 1024 is raised to 1024, a quarter of full. This floor stops a barely touched stick from selecting a useless crawl, because the gait selector reads this magnitude.",
       "constants": [
-        {
-          "name": "padCardinalAngleA",
-          "value": 2048,
-          "unit": "engine angle units in the 4096-unit turn",
-          "source": "src/Game/RAZIEL/STEERING.c:72"
-        },
-        {
-          "name": "padDiagonalAngleA",
-          "value": 2560,
-          "unit": "engine angle units in the 4096-unit turn",
-          "source": "src/Game/RAZIEL/STEERING.c:40"
-        },
-        {
-          "name": "padCardinalAngleB",
-          "value": 3584,
-          "unit": "engine angle units in the 4096-unit turn",
-          "source": "src/Game/RAZIEL/STEERING.c:56"
-        },
-        {
-          "name": "padDiagonalAngleB",
-          "value": 512,
-          "unit": "engine angle units in the 4096-unit turn",
-          "source": "src/Game/RAZIEL/STEERING.c:64"
-        },
         {
           "name": "stickDeadzoneRadius",
           "value": 1024,
-          "unit": "squared stick units; the dead zone is a radial disk of radius 32 per axis",
+          "unit": "squared stick units; the dead zone is a radial disk of radius 32 on the plus or minus 128 axis scale",
           "source": "src/Game/RAZIEL/STEERING.c:173"
+        },
+        {
+          "name": "stickFullAxisValue",
+          "value": 128,
+          "unit": "raw axis units; an axis at this value forces full magnitude",
+          "source": "src/Game/RAZIEL/STEERING.c:175"
         },
         {
           "name": "stickMagnitudeCap",
@@ -1099,7 +1081,7 @@
       "sources": [
         {
           "path": "src/Game/RAZIEL/STEERING.c",
-          "line": 199
+          "line": 197
         },
         {
           "path": "src/Game/RAZIEL/STEERING.c",
@@ -1108,6 +1090,10 @@
         {
           "path": "src/Game/RAZIEL/STEERING.c",
           "line": 177
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 181
         }
       ],
       "capabilities": [
@@ -1127,8 +1113,8 @@
       "id": "turn-rate",
       "node": "steering",
       "name": "Rate-limited turning",
-      "summary": "The body yaw is moved toward the bearing by a step that depends on the steering mode, and while walking that step shrinks with the angle still to cover.",
-      "behavior": "Turning never snaps to the requested direction. Each update the body yaw is moved toward the bearing by a step that is a per-mode turn rate multiplied by the elapsed time fraction, and the move stops exactly on the target instead of overshooting. Three fixed rates cover the cases where steering is not proportional: 256 units per update while pivoting in place, 96 while gliding, and 64 in the grab state. Walking uses a different rule in which the rate follows the size of the angle still to cover. The absolute angular error is measured first: anything above 768 becomes a quarter of itself plus 112, while anything at or below that threshold collapses to a flat floor of 112. A small correction therefore turns slowly and precisely, and a half-turn reversal turns at roughly a quarter of the error without ever overshooting the target. The angle is wrapped to the shortest arc before any of this, and when the error is exactly half a turn the code nudges the stored target by one unit per update so the body does not oscillate between two equally short arcs.",
+      "summary": "The body yaw moves toward the bearing by a capped step per update. The step comes from the steering mode, and while walking it shrinks with the angle still to cover.",
+      "behavior": "Turning never snaps to the requested direction. Each update the body yaw moves toward the bearing by a step, and the move stops exactly on the target instead of overshooting. The step is a per-mode turn rate times the frame time multiplier divided by 4096, so it scales with the frame time. Three modes use a fixed rate: 256 units per update in the turn-in-place state, 96 in the glide state and 64 in the state that grabs and throws. In these three modes, when the angle error is exactly half a turn, the stored target moves by one unit so the body does not oscillate between two equally short arcs. Walking uses a different rule in which the rate follows the size of the angle still to cover. The absolute angular error is measured first. An error above 768 becomes a quarter of itself plus 112. An error at or below 768 gives a flat 112. A small correction turns slowly and precisely, and a half-turn reversal turns at about 624 units per update. The walking rule has no half-turn nudge. The angle error is always wrapped to the shortest arc.",
       "constants": [
         {
           "name": "pivotTurnRate",
@@ -1198,31 +1184,37 @@
       "id": "jump-impulse",
       "node": "airborne",
       "name": "Jump as a velocity write",
-      "summary": "A jump overwrites the vertical and forward speeds outright and switches on gravity, so the arc is fixed by three numbers rather than by the speed the body happened to be carrying.",
-      "behavior": "Jumping does not add an impulse to whatever motion the body already had. It writes the velocity out completely and enters a state whose only job is to wait for the arc to finish. The ordinary jump writes 154 units per update upward and 40 units per update forward, and sets gravity to -16 units per update squared. A second jump variant, used when the body is already crouched or compressed, writes 195 upward but only 21 forward, which is the tall, flat leap: much more height at the cost of most of the forward carry. Because both variants write a fixed upward speed, the apex height of each is independent of the approach speed, and the jump is a function of the vertical write and the gravity alone until the state ends. The jump state hands over to the falling state when the animation has run its assigned frames or when the jump button has been released past a short grace window, whichever comes first, which is what allows a player to cut a jump short. Landing is a separate state: it restores normal gravity first, then chooses between the ordinary compression animation and a heavier variant using the downward speed at the moment of contact, with anything below -256 units per update taking the heavy one.",
+      "summary": "A jump overwrites the vertical and forward speeds outright and sets gravity, so the arc depends on three numbers and not on the speed the body carried.",
+      "behavior": "A jump does not add an impulse to existing motion. A short crouch state runs first with the physics integrator off. When it ends, the launch writes the velocity out completely and enters a state that waits for the arc to finish. Three launch variants are chosen by the movement mode. The default writes 40 units per update forward and 154 up. One mode writes 83 forward and 154 up, a longer jump. Another mode writes 21 forward and 195 up, a tall and almost vertical leap. All three set gravity to -16 units per update squared. In the default variant, when the movement mode is 16 and the jump button is released during the crouch, the vertical speed is then cut to two thirds, about 102, which gives a short hop. Each variant writes a fixed upward speed, so the apex height does not depend on the approach speed. The jump state hands over to the fall state in two ways. One is the end of the jump animation. The other is a button release, which hands over once the animation frame is more than 4 frames past the frame of the first release, and so cuts a jump short. In movement modes 16 and 32 the release is deferred, and the jump runs to the end of its animation. Landing is a separate state. The ground contact restores normal gravity first. Then it picks a heavy landing animation when the movement mode is the tall-leap mode, when one of three specific animations plays, or when the downward speed is below -256 units per update.",
       "constants": [
         {
           "name": "jumpVerticalSpeed",
           "value": 154,
-          "unit": "engine units of upward speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:1989"
         },
         {
           "name": "jumpForwardSpeed",
           "value": 40,
-          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:1989"
+        },
+        {
+          "name": "runJumpForwardSpeed",
+          "value": 83,
+          "unit": "engine units per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:1963"
         },
         {
           "name": "leapVerticalSpeed",
           "value": 195,
-          "unit": "engine units of upward speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:1975"
         },
         {
           "name": "leapForwardSpeed",
           "value": 21,
-          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:1975"
         },
         {
@@ -1230,6 +1222,12 @@
           "value": -16,
           "unit": "engine units of vertical acceleration per update squared at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:225"
+        },
+        {
+          "name": "jumpReleaseGraceFrames",
+          "value": 4,
+          "unit": "animation frames after the first button release before the jump hands over to the fall",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2094"
         },
         {
           "name": "heavyLandingSpeed",
@@ -1246,6 +1244,10 @@
         {
           "path": "src/Game/RAZIEL/RAZIEL.c",
           "line": 2458
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 1995
         },
         {
           "path": "src/Game/RAZIEL/CONTROL.c",
@@ -1269,32 +1271,38 @@
       "id": "fall-and-glide",
       "node": "airborne",
       "name": "Fall, glide and drop",
-      "summary": "Holding jump again in the air replaces gravity with a constant forward speed and a slow fixed sink, and the transition in and out is damped over four updates.",
-      "behavior": "The glide is a velocity override rather than a reduced gravity. While gliding, gravity is set to zero, forward speed to 52 units per update and vertical speed to -24 units per update, so the descent becomes a straight shallow line instead of an accelerating fall and the horizontal distance covered is a function of time aloft only. It is entered from the falling state when the jump button is pressed again after it was released at the hand-off from the jump, provided the character is not carrying the class of object that forbids it. It exits back to the plain fall when the button is released and the glide animation has passed frame 12. A separate forced-glide state takes over instead when the body falls inside a level unit flagged as a glide zone. Entering and leaving both go through a four-update transition force that ramps the current velocity toward the target instead of writing it in one step, which is what keeps the pose change from reading as a teleport. The plain fall is the opposite treatment. Drop physics writes a downward acceleration of -16 units per update squared and leaves the vertical speed to the state, and the default falling velocity for the player is -32 units per update, so an ordinary fall keeps accelerating until the global vertical speed clamp catches it.",
+      "summary": "Pressing jump again in the air replaces gravity with a constant forward speed and a slow fixed sink. The velocity ramps over four updates when the pose changes.",
+      "behavior": "The glide is a velocity override, not a reduced gravity. On entry, when the body is already moving down, the code writes gravity 0, forward speed 52 and vertical speed -24 units per update. The descent is a straight shallow line, and the distance covered depends only on the time aloft. Entry happens when the jump button is pressed again, either in the jump state once its animation reaches frame 2, or in the fall state. A held object of one specific class blocks it. A separate forced-glide state takes over when the body falls inside a level unit flagged as a glide zone. While gliding, a pose change ramps the velocity toward the target (52 forward, or 24 forward in an alternate pose, and -24 down) with a transition force that spreads the change over 4 updates. The glide ends when the button is released and either the glide animation is past frame 12 or another animation plays. Then the code writes gravity back to -16, zero speed, and enters the fall state. The plain fall uses drop physics: acceleration -16 per update squared plus a small forward push of 4. Leaving the ground starts the fall state only when the vertical speed is below a threshold. The threshold is -32 per update by default and -96 during attack states, so a swing can run off a small drop without a fall. The fall continues to accelerate until the per-axis speed clamp of 256 stops it.",
       "constants": [
         {
           "name": "glideForwardSpeed",
           "value": 52,
-          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:2599"
         },
         {
           "name": "glideSinkSpeed",
           "value": -24,
-          "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:2599"
         },
         {
-          "name": "glideSinkHoldFrames",
+          "name": "glideReleaseMinFrame",
           "value": 12,
-          "unit": "animation frames of the glide cycle before release is allowed",
+          "unit": "animation frames of the glide cycle before a button release ends the glide",
           "source": "src/Game/RAZIEL/RAZIEL.c:2637"
         },
         {
-          "name": "fallSinkVelocity",
+          "name": "fallEntrySpeedThreshold",
           "value": -32,
-          "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
+          "unit": "engine units of vertical speed per update at the 33 ms nominal frame; leaving the ground below this speed starts the fall state",
           "source": "src/Game/RAZIEL/RAZIEL.c:204"
+        },
+        {
+          "name": "attackFallEntrySpeedThreshold",
+          "value": -96,
+          "unit": "engine units of vertical speed per update at the 33 ms nominal frame; the threshold while an attack state runs",
+          "source": "src/Game/RAZIEL/ATTACK.c:381"
         },
         {
           "name": "dropAcceleration",
@@ -1303,9 +1311,15 @@
           "source": "src/Game/RAZIEL/CONTROL.c:79"
         },
         {
+          "name": "dropForwardPush",
+          "value": 4,
+          "unit": "engine units of forward acceleration per update squared at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/CONTROL.c:79"
+        },
+        {
           "name": "glideTransitionUpdates",
           "value": 4,
-          "unit": "updates over which the velocity is ramped into or out of the glide",
+          "unit": "updates over which the velocity is ramped into the glide pose",
           "source": "src/Game/RAZIEL/RAZIEL.c:2660"
         }
       ],
@@ -1321,6 +1335,10 @@
         {
           "path": "src/Game/RAZIEL/RAZIEL.c",
           "line": 2192
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 4344
         }
       ],
       "capabilities": [
@@ -1340,19 +1358,19 @@
       "id": "velocity-integration",
       "node": "physics-core",
       "name": "Trapezoidal body integrator",
-      "summary": "Every body advances through one routine that adds a half-acceleration term to position and a full-acceleration term to velocity, then clamps each axis.",
-      "behavior": "All motion goes through one integrator, and it uses the constant-acceleration form rather than a plain Euler step: the position gains the velocity term plus half of the acceleration term for the step, and only after that does the velocity gain the full acceleration term. That ordering is what makes a projectile arc integrate the same way at a high and a low frame rate. Both terms are scaled by an elapsed time expressed in 4096ths of a nominal frame, so 4096 means one normal update of about 33 milliseconds and 2048 means half of one; anything that multiplies a rate by this time value gets frame-rate independence for free. Immediately after integration each of the three velocity components is clamped to the body's own per-axis maximum, and the player's maximum is 256 units per update on all three axes. That single clamp is what produces terminal velocity: under the -16 units per update squared gravity of a fall, the vertical speed reaches the clamp after 16 updates and stays there, while the 154-unit jump write starts below the clamp and is never clipped on the way up. The vertical component of the resulting step can also be suppressed for a move mode, which keeps a body that is following a surface from being pushed off it by its own gravity.",
+      "summary": "Every body advances through one routine that adds a half-acceleration term to position and a full term to velocity, then clamps each axis. The player step time follows the animation speed.",
+      "behavior": "All motion goes through one integrator that uses the constant-acceleration form, not a plain Euler step. The position gains the velocity term plus half of the acceleration term for the step, and only then the velocity gains the full acceleration term. This form is exact for a constant acceleration over the step. Both terms are scaled by an elapsed time in 4096ths of a nominal frame, so 4096 is one update of about 33 ms. For the player, that time is the frame time multiplied by the animation speed adjustment of the first body section, so a faster gait cycle also steps the physics faster. Right after the step, each velocity component is clamped to the body's own per-axis maximum. The player maximum is 256 units per update on all three axes. This clamp is the terminal velocity: under the -16 gravity of a fall, the vertical speed reaches the clamp after 16 updates. The 154-unit jump write starts below the clamp and is never clipped. The integrator runs in physics modes 0 and 4 (forces applied) and in the swim modes. Physics mode 3, used for crouching, wall climbing and landing, has no integrator step, and the animation root translation moves the body. The step is computed in the body's local axes and rotated into the world by a skeleton segment matrix. A flag can drop the vertical part of the step. When the gravity probe snaps the player up to a surface, it moves the body by at most 128 units per response.",
       "constants": [
         {
           "name": "playerMaxHorizontalSpeed",
           "value": 256,
-          "unit": "engine units of speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:217"
         },
         {
           "name": "playerMaxVerticalSpeed",
           "value": 256,
-          "unit": "engine units of speed per update at the 33 ms nominal frame",
+          "unit": "engine units per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/RAZIEL.c:219"
         },
         {
@@ -1368,16 +1386,10 @@
           "source": "src/Game/PHYSICS.c:1789"
         },
         {
-          "name": "playerGravityStepLimit",
+          "name": "playerGroundSnapLimit",
           "value": 128,
-          "unit": "engine units of vertical displacement per update at the 33 ms nominal frame",
+          "unit": "engine units of upward displacement per gravity response",
           "source": "src/Game/PHYSICS.c:537"
-        },
-        {
-          "name": "slideSpeedFloor",
-          "value": 48,
-          "unit": "engine units of speed per update at the 33 ms nominal frame",
-          "source": "src/Game/PHYSICS.c:356"
         }
       ],
       "sources": [
@@ -1415,8 +1427,8 @@
       "id": "world-line-query",
       "node": "collision-world",
       "name": "Streamed world line query",
-      "summary": "One probe call resolves a start and end pair against the current level first, then against every other streamed unit, and returns a typed hit carrying the face and its normal.",
-      "behavior": "Every contact probe in the engine funnels into one query, and that query is written for a streaming world rather than a single map. The caller supplies a start point and an end point in world space plus a mask of what may be hit; one mask bit gates terrain and the rest select which instance groups the same call should sweep, so a single routine answers both questions and a caller can ask for geometry only, bodies only, or both. The terrain pass runs first against the level the body currently stands in. That test returns the terrain face that was crossed, the BSP tree node the face lives in, and the face normal, and the query reports the hit as a terrain hit with all three attached. If the current level yields nothing, the routine walks all 16 streamed unit slots and repeats the same test against each loaded neighbour, skipping the level it has already tried and honouring a flag that suppresses neighbouring levels while the body is inside a warp room. The practical effect is that a probe near a level boundary still finds the floor on the other side without any special case at the call site. After the terrain pass, independently of whether it hit, the mask's instance bits drive a sweep of the global instance lists — every group for the broadest bit, otherwise the static and the dynamic groups the mask selects — with a cheap bounds rejection placed in front of each full test so most candidates cost almost nothing. The normal itself is taken straight from the terrain's shared normal list unless the world is mid-morph, in which case a normal is recomputed from the face's three vertices so the shading stays continuous through the transition.",
+      "summary": "One probe call resolves a start and end pair against the current level, then against other streamed levels, and then against instance groups, and returns a typed hit with the face and its normal.",
+      "behavior": "Every contact probe in the engine goes through one query that is written for a streaming world. The caller gives a start point, an end point and a mask of what may be hit. The default mask for general probes is 63, with every bit set. Bit 1 enables terrain. Bit 8 sweeps instance groups 16 to 31. Bit 16 together with bit 2 or bit 4 sweeps two tables of 8 groups each, and bit 4 alone sweeps a third table. The terrain pass runs first against the level the body stands in. It returns the face that was crossed, the tree node that holds it and the face normal, and the query reports a terrain hit with all three. If the current level gives nothing, the routine scans 16 streamed unit slots. It skips the slots that are not fully loaded and the level it already tested. When the current level is a warp room and the test missed, it also skips other warp-room levels. A probe near a level boundary therefore finds the floor on the other side. After the terrain pass, whether or not it hit, the mask bits drive the sweep of the instance lists. Each instance first passes a cheap test: the point of the segment nearest to the instance must lie inside a quarter of its bounding radius squared. Only then does the full model test run. Instances with a no-collide flag are skipped. The caller marks the probing body and its children so they do not hit themselves. The normal comes from the shared terrain normal list, unless the world is mid-morph. In that case a normal is rebuilt from the face vertices.",
       "constants": [
         {
           "name": "defaultCollideMask",
@@ -1435,6 +1447,12 @@
           "value": 3,
           "unit": "collision result code identifying a terrain face hit",
           "source": "src/Game/COLLIDE.c:1323"
+        },
+        {
+          "name": "wideSweepFirstGroup",
+          "value": 16,
+          "unit": "first instance group index swept by the wide mask bit",
+          "source": "src/Game/COLLIDE.c:1406"
         }
       ],
       "sources": [
@@ -1452,7 +1470,7 @@
         },
         {
           "path": "src/Game/COLLIDE.c",
-          "line": 240
+          "line": 1288
         }
       ],
       "capabilities": [
@@ -1472,32 +1490,44 @@
       "id": "ledge-grab",
       "node": "physics-contact",
       "name": "Ledge detection and grab",
-      "summary": "Two line probes look for a steep wall in front and a near-flat lip above it, and the surface normals decide whether the character commits to the grab.",
-      "behavior": "Edge detection is a small probe sequence, not a single ray. The first probe runs forward at head height, from directly above the body origin to 256 units in front, to find any solid inside the grab envelope. If that probe finds nothing, a second short vertical check runs to make sure the space above the head is not already blocked, which prevents a grab attempt in a ceiling pocket. A hit only counts as a grabbable wall when its surface normal has a vertical component below 2048 in the engine's 4096-unit normal scale, meaning the face is steeper than about 60 degrees from horizontal; shallower faces are treated as ground and ignored by the grab. The lip test then drops a probe just past the wall face and requires the top surface's vertical normal to be at least 3548, so the ledge itself has to be close to flat, and the grab is only committed when that top normal also clears 2896. The probe lengths are fixed and asymmetric: 400 units up, 256 units forward and 144 units above the head, all taken from a point 498 units above the body origin, so tall characters and short characters use the same reach.",
+      "summary": "A chain of line probes looks for a wall below head height and a near-flat lip just above it, and the surface normals decide whether the body commits to the grab.",
+      "behavior": "Edge detection is a probe sequence, not one ray. It runs only while the grab control flag is set and no heavy held object blocks it. First, a horizontal probe at 544 units above the body origin (the 400 rise plus 144) reaches 256 units forward. If it hits nothing, a vertical probe checks the headroom from 144 up to 128 units above that point. If either one hits, the wall is taller than a grabbable ledge and the attempt stops, unless the high probe found a wall that the body can climb. Next, a second horizontal probe at 400 units above the origin reaches 256 units forward. It counts only if the face normal has a vertical component below 2048 in the 4096-unit scale, a face steeper than about 60 degrees. A lip probe then starts 144 units above that wall hit, a little past the wall face, and runs down. It needs a top surface with a vertical normal of at least 3548, which is nearly flat. The commit test also asks for more than 2896, but any normal that passes 3548 already passes it, so the second test never rejects. The ledge top is therefore between 400 and 544 units above the body origin. On a commit, the velocity is set to zero. A response routine rotates the body to face the wall normal and moves it so that a hang point 196 units forward and 498 units above the body origin lands on the ledge edge. The probe sizes are fixed, so tall and short bodies use the same reach.",
       "constants": [
         {
-          "name": "grabProbeRise",
+          "name": "ledgeWallProbeHeight",
           "value": 400,
-          "unit": "engine units above the probe origin",
-          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
-        },
-        {
-          "name": "grabProbeReach",
-          "value": -256,
-          "unit": "engine units in the probe frame, the negative sign pointing forward",
-          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
-        },
-        {
-          "name": "grabProbeLift",
-          "value": 144,
-          "unit": "engine units above the body head",
-          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
-        },
-        {
-          "name": "grabProbeOriginHeight",
-          "value": 498,
           "unit": "engine units above the body origin",
           "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "ledgeProbeReach",
+          "value": -256,
+          "unit": "engine units in the body frame; the negative sign points forward",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "ledgeLipProbeDrop",
+          "value": 144,
+          "unit": "engine units above the wall hit where the downward lip probe starts",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "ledgeHangForward",
+          "value": -196,
+          "unit": "engine units in the body frame; the hang point offset, negative is forward",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "ledgeHangHeight",
+          "value": 498,
+          "unit": "engine units above the body origin for the hang point",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "ledgeHeadroomExtra",
+          "value": 128,
+          "unit": "engine units of extra vertical headroom probe above the high probe",
+          "source": "src/Game/PHYSICS.c:610"
         },
         {
           "name": "grabWallNormalLimit",
@@ -1514,7 +1544,7 @@
         {
           "name": "grabCommitNormalMin",
           "value": 2896,
-          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "unit": "normal units in 4096-unit scale; always met when the 3548 test passes",
           "source": "src/Game/PHYSICS.c:713"
         }
       ],
@@ -1522,6 +1552,10 @@
         {
           "path": "src/Game/RAZIEL/RAZIEL.c",
           "line": 6287
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 591
         },
         {
           "path": "src/Game/PHYSICS.c",
@@ -1553,8 +1587,8 @@
       "id": "slope-slide",
       "node": "physics-contact",
       "name": "Slope slip and slide",
-      "summary": "One normal threshold separates floor from ramp, and on ramp surfaces the motion is projected along the plane instead of being snapped to it.",
-      "behavior": "The boundary between ground and ramp is one number, and it is expressed as a surface normal rather than an angle: a face counts as ground only while its vertical normal component stays at or above 2896 out of 4096, which is a slope of about 45 degrees. Below that the gravity probe stops writing the body onto the surface and starts accumulating a slide amount, and the existing position update is allowed to carry the body along the face instead. The slide itself is a projection, not a special case: the body's motion vector is dotted with the face normal, the result is divided by 4096, and that share of the normal is subtracted from the motion, which is exactly the part of the movement that points into the wall. What remains is the component along the plane, so steep faces behave like ramps with no separate ramp code, and the same projection is what makes a body skid along a wall it is pressed against rather than stopping dead. The gravity response also keeps the correction under control: the magnitude it pushes along the surface normal is the body's downward speed, but never less than 48 units, which stops the slide correction from vanishing when the body is barely moving downward.",
+      "summary": "One normal threshold separates floor from slope. On a slope the gravity probe samples a point further downhill, and the forward move is projected onto the plane underfoot.",
+      "behavior": "The boundary between ground and slope is a surface normal, not an angle. A face counts as ground only while its vertical normal component is at or above 2896 of 4096, about 45 degrees. A face with a normal between 0 and 2896 is too steep. In that case the gravity probe finds the downhill direction from the face normal and probes a second point displaced down the slope. The displacement is the downhill vector times the larger of the current downward speed and 48, divided by 4096. If the second face is also too steep, a slide flag is set. The response then moves the body along x and y by the probe offset, and a slide event is posted. If the second face is acceptable, the body x and y snap to the new point, so a short steep patch nudges the body downhill and does not slide it. Separately, a movement check projects the intended forward vector onto the plane of the face underfoot. It takes the dot product with the normal, divides by 4096 and subtracts that share of the normal. What remains is the part along the plane, so a body walking onto a slope follows the surface and does not stop dead or lift off. The same slip threshold also feeds the drop-off probe. A separate floor query in the drop-height probe accepts a hit only when the normal is above 3200.",
       "constants": [
         {
           "name": "slipSlopeNormal",
@@ -1571,13 +1605,13 @@
         {
           "name": "landingNormalMin",
           "value": 3200,
-          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "unit": "normal units in 4096-unit scale; the drop-height probe accepts floors above this",
           "source": "src/Game/PHYSICS.c:1459"
         },
         {
-          "name": "gravityCorrectionFloor",
+          "name": "slideProbeSpeedFloor",
           "value": 48,
-          "unit": "engine units of vertical correction per update at the 33 ms nominal frame",
+          "unit": "engine units of downhill probe displacement scale per update at the 33 ms nominal frame",
           "source": "src/Game/PHYSICS.c:356"
         }
       ],
@@ -1616,25 +1650,25 @@
       "id": "wall-crawl",
       "node": "wall-crawl",
       "name": "Wall crawling",
-      "summary": "The climb states replace gravity with a two-probe wall follow that re-pins the body to the face every update, and steering switches to a frame measured on the wall itself.",
-      "behavior": "Climbing is a physics mode of its own. Gravity is switched off and a wall-follow probe runs in its place: it casts 448 units down the body's root segment and 160 units forward along the face, with an 186-unit offset along the surface normal, and the whole test is repeated every update. Repeating it is what lets the body follow convex and concave curvature instead of assuming one planar wall, and the shift applied each update is skipped while it is smaller than 100 squared units, which removes the jitter that would otherwise come from sub-unit noise on a nearly flat surface. When both probes fail the climb ends and the body is returned to the idle state with its rotation cleared, so there is no state where the character is clinging to nothing. Steering on the wall is not the ordinary steering: the requested bearing is computed as the difference between the wall frame and the stick direction with a half-turn offset built in, because the climb pose is rotated onto the face and the skeleton's forward axis no longer points along the body's planar heading. The body's world rotation is then driven from the surface normal itself, so the pose lies flat against a floor, a wall or a ceiling with the same animation.",
+      "summary": "The wall-climb state turns the integrator off and re-pins the body to the face every update with two probes, and steering switches to a frame measured on the wall.",
+      "behavior": "Climbing is a physics mode of its own. The state sets the physics mode to 3, which has no integrator step, so gravity does not act. A wall-follow routine runs every update in its place. It runs two probes along the root bone local axes. The first starts 64 units off the root and reaches 448 units along the local axis that points at the surface. It records the surface normal, builds the body rotation that aligns with that normal, and computes the position correction that holds the body 186 units off the surface along the normal. A second probe, offset 160 units along the surface from the first and slightly longer, records a second normal. The angle between the two normals gives an extra pitch when both probes hit, so the body follows convex and concave bends. Repeating the test each update lets the body follow a curved surface, not one plane. The position shift applies only when its squared length is above 100. This removes the jitter from small errors on a flat face. The world rotation controller is driven from the first normal, so one pose lies flat on a wall, floor or ceiling. When neither probe hits, the climb ends: the body rotation is cleared and the state returns to idle. Steering on the wall differs. The bearing is the difference between the wall frame yaw minus a half turn and the stick direction, because the climb pose is rotated onto the face.",
       "constants": [
         {
-          "name": "wallProbeDrop",
+          "name": "wallProbeLength",
           "value": -448,
-          "unit": "engine units along the body root's local forward axis",
+          "unit": "engine units along the root segment local axis that points at the surface",
           "source": "src/Game/RAZIEL/RAZIEL.c:6378"
         },
         {
-          "name": "wallProbeReach",
+          "name": "wallProbeSurfaceOffset",
           "value": 160,
-          "unit": "engine units along the body root's local forward axis",
+          "unit": "engine units along the root segment local forward axis for the second probe",
           "source": "src/Game/RAZIEL/RAZIEL.c:6378"
         },
         {
-          "name": "wallProbeNormalOffset",
+          "name": "wallHoldDistance",
           "value": -186,
-          "unit": "engine units along the surface normal",
+          "unit": "engine units from the surface along its normal, kept by the position correction",
           "source": "src/Game/RAZIEL/RAZIEL.c:6378"
         },
         {
@@ -1685,8 +1719,8 @@
       "id": "swim-envelope",
       "node": "swim",
       "name": "Water depth bands and swim steering",
-      "summary": "Three depth bands around the water plane separate wading, treading and full swimming, and swimming steers with independent yaw and pitch rates instead of a bearing.",
-      "behavior": "Water is not a boolean state. The water probe measures the body against the water plane and reports separate conditions for wading, treading and being deeper than the swim depth, along with edge signals for crossing the surface in either direction and for passing under the plane while descending. The three bands are 416 units for the wade depth, 112 for the tread depth and 256 for the swim depth, so a body can be well over a stride below the water line and still be wading with an ordinary walking cycle rather than switching to a swim. Once the swim state takes over, the stick stops producing a bearing. The horizontal component rotates the body yaw at 32 units per update and the vertical component rotates a separate pitch offset at 48 units per update, so vertical aiming is faster than horizontal turning. That pitch offset is clamped between zero and a half turn, which lets the character aim straight up or straight down but never roll past vertical. Passing below the swim depth is reported as its own condition, separate from treading, and it is what the drowning rules key on. The drain that actually hurts is applied every update while the body reports a water face and lacks the swim ability, so it is continuous rather than a one-off damage event and getting the head back above the surface stops it.",
+      "summary": "Depth thresholds around the water plane mark wading, treading and swimming, and swimming steers with independent yaw and pitch rates instead of a bearing.",
+      "behavior": "Water is not a boolean state. The water probe reports separate condition bits and edge signals. The depth of the body reference point below the water plane is compared with two thresholds. A tread bit is set when that point is under the surface by less than 112 units. A deep-swim bit is set when it is under by more than 256 units. While swimming, a further probe reaches down 4 times 416 units to measure the water column. A wade bit is set while the measured water depth is under 416 units, and it stays clear when the water is deeper. Edge bits report crossing the surface in either direction and passing the swim depth while moving down. The probe is run with a fixed set of three numbers, so the same thresholds apply to every body that uses it. A body can be well over a stride under the surface and still be classed as wading. Once the swim state takes over, the stick does not produce a bearing. The horizontal stick part turns the yaw at 32 units per update times the sine of the stick angle. The vertical part changes a separate pitch offset at 48 units per update times the cosine, so vertical aiming is faster than turning. The pitch offset is clamped between 0 and 2048, a half turn. The step is scaled by the frame time multiplier. In the plane whose index is 1, a drain is applied every update while the body has a water face and lacks the swim ability. Its weight is 40960 in 4096ths, which is 10, and the plane rate table scales it. Getting out of the water stops it.",
       "constants": [
         {
           "name": "swimDepth",
@@ -1697,7 +1731,7 @@
         {
           "name": "wadeDepth",
           "value": 416,
-          "unit": "engine units below the water plane",
+          "unit": "engine units; the water column depth threshold, and the down probe reaches four times this",
           "source": "src/Game/RAZIEL/RAZIEL.c:6331"
         },
         {
@@ -1723,6 +1757,12 @@
           "value": 2048,
           "unit": "engine angle units in the 4096-unit turn",
           "source": "src/Game/RAZIEL/STEERING.c:600"
+        },
+        {
+          "name": "waterDrainWeight",
+          "value": 40960,
+          "unit": "drain weight in 4096ths, applied every update while in water without swim ability in plane 1",
+          "source": "src/Game/RAZIEL/HEALTH.c:158"
         }
       ],
       "sources": [
@@ -1741,6 +1781,10 @@
         {
           "path": "src/Game/RAZIEL/SWIM.c",
           "line": 20
+        },
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 156
         }
       ],
       "capabilities": [
@@ -1759,9 +1803,9 @@
     {
       "id": "camera-follow",
       "node": "camera-follow",
-      "name": "Critically damped follow camera",
-      "summary": "The camera chases a focus point through a second-order damper whose stiffness and speed cap are swapped the moment the line of sight is blocked.",
-      "behavior": "The follow camera never sits at a fixed offset from the character. Each update it runs a second-order damper: an acceleration is formed from a fraction of the remaining error minus the current velocity, that acceleration is added to the velocity, and the velocity is then added to the value. The result is a critically damped approach with no overshoot and no stall, and because it is expressed as velocity and acceleration rather than a lerp fraction it behaves the same whatever the frame time. Two parameter sets are used, and the switch is driven by the line of sight. While the view is clear the distance damper runs with a smoothing cap of 128 and targets the normal follow distance; the moment the collision probe reports a hit the cap jumps to 512 and the target becomes the collision-limited distance, so the camera pulls in roughly four times faster than it eases back out. The same damped approach drives the focus point itself, using the camera's maximum speed as its cap. Distances come from a table indexed by camera-mode group and then by a preset offset, with three slots per group. The group the ordinary follow mode uses runs 1500, 2250 and 3200 units across its close, default and far slots, while the tightest group runs 1200, 1600 and 2000, and the starting preset is the middle one at 2250. The focus point itself sits 352 units above the player's origin, so the camera aims at the chest rather than the feet.",
+      "name": "Capped-damper follow camera",
+      "summary": "The follow camera eases its distance and focus point toward targets with a capped damper, and the distance ease is fast when a wall pushes in and slow when it relaxes.",
+      "behavior": "The follow camera never sits at a fixed offset from the character. A damper moves each tracked value. Every update it replaces the velocity with a fixed fraction of the remaining error and adds that velocity to the value. The fraction is one quarter in the default mode, one half in the fast mode and one eighth in the slow mode. A cap limits the step. Only when the step hits the cap is it scaled by the frame time multiplier. The result is an exponential ease per update, not a true second-order spring, and it is not frame-rate independent below the cap. The distance damper picks its mode from the collision result. When a wall shortens the target below the preferred distance, the fast mode runs with cap 512. When the target is shorter than the current distance but not shortened by a wall, the default mode runs with cap 128. When the target is farther than the current distance, the slow mode runs with cap 64. The camera therefore pulls in fast and eases back out slowly. The focus point speed cap is recomputed every update from the gap between the focus point and its target plus a floor of 20 units, or a hundredth of the distance if larger. A forced camera move multiplies the floor by five. The start value of 200 only applies at initialization. The vertical focus uses a separate damper, described in the collision card. Distances come from a table with three groups of three slots, picked by camera mode group and a preset index. The first group holds 1500, 2250 and 3200 units. The second holds 1500, 2000 and 2600. The tightest group holds 1200, 1600 and 2000. The start state uses the middle slot of the first group, 2250. The focus point is 352 units above the player origin and 512 above any other instance, so the camera aims at the chest.",
       "constants": [
         {
           "name": "playerFocusHeight",
@@ -1772,72 +1816,72 @@
         {
           "name": "defaultFollowDistance",
           "value": 2250,
-          "unit": "engine units",
+          "unit": "engine units; the start distance, middle slot of the first group",
           "source": "src/Game/CAMERA.c:739"
         },
         {
-          "name": "closeFollowDistance",
+          "name": "firstGroupFarDistance",
+          "value": 3200,
+          "unit": "engine units; far slot of the first group",
+          "source": "src/Game/CAMERA.c:740"
+        },
+        {
+          "name": "tightGroupCloseDistance",
           "value": 1200,
-          "unit": "engine units",
+          "unit": "engine units; close slot of the tightest group",
           "source": "src/Game/CAMERA.c:744"
         },
         {
-          "name": "farFollowDistance",
+          "name": "tightGroupFarDistance",
           "value": 2000,
-          "unit": "engine units",
+          "unit": "engine units; far slot of the tightest group",
           "source": "src/Game/CAMERA.c:746"
         },
         {
-          "name": "baseSmooth",
-          "value": 16,
-          "unit": "damping smooth parameter used by the default focus blend",
-          "source": "src/Game/CAMERA.c:773"
-        },
-        {
-          "name": "baseMaxSpeed",
-          "value": 200,
-          "unit": "engine units of camera travel per update at the 33 ms nominal frame",
-          "source": "src/Game/CAMERA.c:777"
-        },
-        {
-          "name": "blockedSightSmooth",
+          "name": "wallPullInSmoothCap",
           "value": 512,
-          "unit": "damping smooth parameter while the line of sight is blocked",
-          "source": "src/Game/CAMERA.c:2191"
+          "unit": "step cap of the fast distance damper, in engine units per update",
+          "source": "src/Game/CAMERA.c:4214"
         },
         {
-          "name": "clearSightSmooth",
+          "name": "clearSightSmoothCap",
           "value": 128,
-          "unit": "damping smooth parameter while the line of sight is clear",
-          "source": "src/Game/CAMERA.c:2206"
+          "unit": "step cap of the default distance damper, in engine units per update",
+          "source": "src/Game/CAMERA.c:4220"
         },
         {
-          "name": "minCloseDistance",
-          "value": 550,
-          "unit": "engine units",
-          "source": "src/Game/CAMERA.c:2211"
+          "name": "easeOutSmoothCap",
+          "value": 64,
+          "unit": "step cap of the slow distance damper, in engine units per update",
+          "source": "src/Game/CAMERA.c:4227"
+        },
+        {
+          "name": "initialFocusMaxSpeed",
+          "value": 200,
+          "unit": "engine units of focus point travel per update at the 33 ms nominal frame; recomputed every update after init",
+          "source": "src/Game/CAMERA.c:777"
         }
       ],
       "sources": [
         {
           "path": "src/Game/CAMERA.c",
-          "line": 1470
+          "line": 4214
         },
         {
           "path": "src/Game/CAMERA.c",
-          "line": 2191
+          "line": 4220
         },
         {
           "path": "src/Game/CAMERA.c",
-          "line": 2206
+          "line": 4227
         },
         {
           "path": "src/Game/CAMERA.c",
-          "line": 2211
+          "line": 1102
         }
       ],
       "capabilities": [
-        "critically damped follow",
+        "capped damper follow",
         "line-of-sight damping switch",
         "distance presets",
         "focus height"
@@ -1853,8 +1897,8 @@
       "id": "camera-collision",
       "node": "camera-collision",
       "name": "Pull-in on obstruction",
-      "summary": "A sphere swept from the focus point reports how far the camera can back off, and the result is shortened by a margin and floored so the view never enters the character.",
-      "behavior": "Camera collision treats the camera as a sphere rather than a point. The sweep runs from the focus point outward along the desired camera direction, using a radius of 280 units, and returns the length at which the sphere first touches geometry. On a hit the target distance is shortened to that length minus a 150-unit margin, which keeps the near plane clear of the wall instead of exactly touching it, and the result is then floored at 400 units so a player pressed into a corner still gets a usable view rather than the inside of the character's head. The vertical axis is handled by a separate damper with asymmetric limits. While the camera is descending, its maximum vertical step is one sixth of the remaining height error; while it is being pushed upward the cap is twice the error, so going up is deliberately looser than coming down, and the horizontal and vertical behaviour never fight each other. The projection is 320 units with a near plane of 50 and a far plane of 12000, and any change to the projection distance rebuilds the view-volume planes and re-derives the fog and light falloff for every streamed level, which is why the camera distance can be adjusted without the world's lighting drifting.",
+      "summary": "Up to four sweep lines from the focus point decide the camera response: a blocked side line swings the yaw, another blocked line shortens the distance, and a full block snaps the distance. A vertical damper keeps the focus from bobbing.",
+      "behavior": "Camera collision treats the camera as a sphere of radius 280 units, swept from the focus point toward the wanted camera position along up to four test lines. The set of lines alternates between updates. The follow camera reads the result by which lines are blocked. When all four are blocked, the target distance is the measured sweep length. When only one of the two side lines (the first two line slots) is blocked, the camera does not pull in. The target yaw swings away from the obstacle, and a step of 64 units is used when the line angle is large. When one of the other two lines is blocked, the target distance is set to the measured length through a debounce routine. A separate underwater camera uses a simpler rule. It takes the measured length minus a 150-unit margin and floors the result at 400 units, so a swimmer pressed against a wall still gets a usable view. The vertical focus has its own damper with unequal step caps. When the focus is above its target, which means the body moved down, the step cap is one sixth of the remaining error while the camera mode flags for airborne states are set and the real focus is above the recorded fall height. Otherwise the cap is twice the error, which is almost no cap. When the focus is below its target, the cap is one sixth of the error, raised to at least 50 in one mode. Errors under 5 units are ignored. So the camera does not dive after a falling body. The start projection is 320 units with a near plane of 50 and a far plane of 12000. Changing the projection distance rebuilds the view volume and re-derives the fog range of every streamed level.",
       "constants": [
         {
           "name": "cameraSphereRadius",
@@ -1863,39 +1907,45 @@
           "source": "src/Game/CAMERA.c:762"
         },
         {
-          "name": "pullInMargin",
+          "name": "underwaterPullInMargin",
           "value": 150,
-          "unit": "engine units subtracted from the hit distance",
+          "unit": "engine units subtracted from the hit distance by the underwater camera",
           "source": "src/Game/CAMERA.c:2760"
         },
         {
-          "name": "minPullInDistance",
+          "name": "underwaterMinDistance",
           "value": 400,
-          "unit": "engine units",
+          "unit": "engine units; the floor of the underwater camera distance",
           "source": "src/Game/CAMERA.c:2762"
+        },
+        {
+          "name": "yawPushStep",
+          "value": 64,
+          "unit": "engine angle units of target yaw change per update when a side line is blocked",
+          "source": "src/Game/CAMERA.c:2655"
         },
         {
           "name": "nearPlane",
           "value": 50,
-          "unit": "engine units",
+          "unit": "engine units; start value",
           "source": "src/Game/CAMERA.c:767"
         },
         {
           "name": "farPlane",
           "value": 12000,
-          "unit": "engine units",
+          "unit": "engine units; start value",
           "source": "src/Game/CAMERA.c:768"
         },
         {
-          "name": "descentStepDivisor",
+          "name": "slowStepDivisor",
           "value": 6,
-          "unit": "divisor applied to the remaining height error to get the per-update maximum step",
+          "unit": "divisor applied to the remaining height error to get the step cap in the slow cases",
           "source": "src/Game/CAMERA.c:2802"
         },
         {
-          "name": "riseStepMultiplier",
+          "name": "fastStepMultiplier",
           "value": 2,
-          "unit": "multiplier applied to the remaining height error to get the per-update maximum step",
+          "unit": "multiplier applied to the remaining height error to get the step cap in the fast case",
           "source": "src/Game/CAMERA.c:2806"
         }
       ],
@@ -1915,6 +1965,10 @@
         {
           "path": "src/Game/CAMERA.c",
           "line": 183
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2655
         }
       ],
       "capabilities": [
@@ -1933,8 +1987,8 @@
       "id": "combat-camera",
       "node": "camera-combat",
       "name": "Combat framing",
-      "summary": "While a target is engaged the focus point slides between the two bodies in fixed steps and the camera backs off only as far as the player's screen-space offset demands.",
-      "behavior": "Combat framing reuses the follow rig and bends two of its inputs. The focus point becomes a weighted average of the player's position and the engaged target's position, and the weight moves in fixed steps inside a two-to-one window rather than continuously: it climbs by 48 per update up to a ceiling of 4096 while the player's own projection is drawn low in the frame, and falls by the same step down to a floor of 2048 while that projection is drawn high. The blend therefore tracks the player's vertical position on screen rather than a fixed offset, so the framing follows the fight as it moves up and down the camera. Distance is derived from the player's own horizontal screen offset from the centre column: that offset in pixels is multiplied by the projected depth and divided by 128, capped at 3000 units, and never allowed below the ordinary follow distance, so the camera only backs off when the player's projection drifts away from the middle of the frame, which is what a crowded close fight produces. Vertical aim is taken from the on-screen angle between the two bodies, folded into a half turn, divided by 8 and biased by -170 units, so a target off to one side tilts the camera a little rather than spinning it. When nothing is engaged the whole effect collapses: the distance becomes the ordinary follow distance and the blend weight is forced to full.",
+      "summary": "While a target is engaged, the focus point slides between the two bodies in fixed steps, and the camera backs off only as far as the player's screen offset demands.",
+      "behavior": "Combat framing reuses the follow rig and bends two of its inputs. The focus point becomes a weighted average of the engaged target position and the player position. The weight is the share given to the player, and 4096 means the player alone. The weight moves in fixed steps inside a window from 2048 to 4096. It rises by 48 per update while the player's projected row is below 240 on the 240-row screen and falls by 48 per update while that row is above 210. So the blend follows where the player is drawn on screen. Distance comes from the player's horizontal screen offset from the center column 256. That offset in pixels is multiplied by the projected depth and divided by 128, capped at 3000 units, and never below the ordinary follow distance. The camera backs off only when the player's projection drifts from the center of the frame. Tilt comes from the on-screen angle between the two bodies. The absolute angle is folded into a range of 0 to 1024, divided by 8, and the result is subtracted from a bias of -170. A target to one side tilts the camera a little. When nothing is engaged, the distance becomes the ordinary follow distance and the weight is set to 4096. When the combat mode flag is off, the weight is reset to 2048.",
       "constants": [
         {
           "name": "maxCombatDistance",
@@ -1961,21 +2015,21 @@
           "source": "src/Game/CAMERA.c:2878"
         },
         {
-          "name": "screenHighRow",
+          "name": "screenLowRow",
           "value": 240,
-          "unit": "screen pixels",
+          "unit": "screen pixels; the weight rises while the player row is below this",
           "source": "src/Game/CAMERA.c:2897"
         },
         {
-          "name": "screenLowRow",
+          "name": "screenHighRow",
           "value": 210,
-          "unit": "screen pixels",
+          "unit": "screen pixels; the weight falls while the player row is above this",
           "source": "src/Game/CAMERA.c:2906"
         },
         {
-          "name": "tiltHalfTurn",
+          "name": "tiltFoldLimit",
           "value": 1024,
-          "unit": "engine angle units in the 4096-unit turn",
+          "unit": "engine angle units in the 4096-unit turn; angles above this are folded back",
           "source": "src/Game/CAMERA.c:2935"
         },
         {
@@ -2019,13 +2073,13 @@
       "id": "engagement-cone",
       "node": "senses",
       "name": "Engagement cone and distance windows",
-      "summary": "What the action button affects is chosen by a wide cone test on the relative position plus a per-category distance window, and the nearest candidate wins.",
-      "behavior": "The game decides what the player is addressing with a cone rather than a lock-on. Each candidate body is tested against a half angle of 967 units of a 4096-unit turn on the horizontal axis and the same again on elevation, which is a wide, forgiving cone of roughly 85 degrees off centre, so a target does not have to be centred to be addressable. Distance is then checked per ability rather than globally. A climbable wall or grabbable body has to be within 512 units horizontally and between -256 and 640 units vertically, a generous vertical window because climbing surfaces are tall. A generic scene object has to be within 640 units horizontally and only 16 units vertically, a very flat window that only catches things at the character's own height and not the floor beneath them. A collectible gets 525 units horizontally and 256 units vertically. Because the cone test runs first, an object behind the player is rejected even when it is closer in a straight line, and among the survivors the nearest per category is kept. The charged-blade target query uses the same cone but a much larger radius of 3200 units.",
+      "summary": "What the action button can address is chosen per object ability with its own distance window, and some abilities add a wide cone test. The nearest candidate per category wins.",
+      "behavior": "The game decides what the player addresses with per-ability tests, not a lock-on. A candidate with the first ability bit (climb or grab type) needs a horizontal distance under 512 units and a vertical offset between -256 and 640. It has no cone test. When the player is in the swim mode, both distances are halved first. A candidate with ability bit 2, 4 or 8 that is not hidden must first pass a cone test, then a line check. The cone uses a half angle of 967 in the 4096-unit turn, about 85 degrees, on the horizontal axis and on the elevation, so a target does not need to be centered, but an object behind the player is rejected. The line check sends a 320-unit probe ahead of the player and fails when it hits terrain. After both tests, abilities 2 and 4 use a horizontal distance under 640 and a vertical offset between -16 and 16, a flat window at the character's own height. Ability 8, a collectible, uses 525 horizontally and -256 to 256 vertically. Switch-type objects carry their own distance and cone data in a property table. Each category keeps one slot, and a new candidate replaces the stored one only when it is closer. The charged-blade target query uses the same cone but a distance under 3200 units.",
       "constants": [
         {
           "name": "engagementHalfAngle",
           "value": 967,
-          "unit": "engine angle units in the 4096-unit turn, about 85 degrees off centre",
+          "unit": "engine angle units in the 4096-unit turn, about 85 degrees off center",
           "source": "src/Game/RAZIEL/SENSES.c:83"
         },
         {
@@ -2047,10 +2101,28 @@
           "source": "src/Game/RAZIEL/SENSES.c:71"
         },
         {
+          "name": "flatEngageRadius",
+          "value": 640,
+          "unit": "engine units of horizontal distance for abilities 2 and 4",
+          "source": "src/Game/RAZIEL/SENSES.c:90"
+        },
+        {
+          "name": "flatEngageHeight",
+          "value": 16,
+          "unit": "engine units of vertical offset either side of the player for abilities 2 and 4",
+          "source": "src/Game/RAZIEL/SENSES.c:90"
+        },
+        {
           "name": "pickupEngageRadius",
           "value": 525,
           "unit": "engine units of horizontal distance",
           "source": "src/Game/RAZIEL/SENSES.c:103"
+        },
+        {
+          "name": "forwardClearanceProbe",
+          "value": -320,
+          "unit": "engine units; the forward line check in the body frame, negative is forward",
+          "source": "src/Game/RAZIEL/SENSES.c:86"
         },
         {
           "name": "bladeTargetRange",
@@ -2094,8 +2166,8 @@
       "id": "attack-chain",
       "node": "combat",
       "name": "Table-driven melee chain",
-      "summary": "Each swing is a table entry with its own animation, ignore delay and power scale, and the chain advances by table index rather than by state.",
-      "behavior": "Melee is table driven from the first frame. An attack index selects a row, and the row is selected again by what the character is holding, so the same button produces a different swing with empty hands, with a light object, with a heavy object or with the charged blade. Each row supplies the animation, the number of frames to blend it in over, an effect ribbon, an ignore delay in animation frames, a power scale, a knockback distance and a knockback frame count. Damage is not read from the animation. It arrives as a contact message raised by the weapon or hand collision, and the raw power carried by that contact is multiplied by the row's power scale in 4096ths before being sent to the target, with the body hit by the previous swing passed along in the same message. Chaining is positional: once the current row's animation passes its ignore delay and the table still holds a non-empty row at the next index, the state increments the index and switches to that row's animation, so a three-hit string costs three table rows instead of three separate states. Two timers are attached to specific rows: the high attack indices hold an auto-facing window open for 4 frames, and row 5 sets a single-frame timer. Swing states also temporarily raise the ledge drop-off height to 256 units and set a fall velocity of -96 units per update, so a swing performed at a ledge does not immediately slide the body off it.",
+      "summary": "Each swing is a table row with its own animation, ignore delay and power scale. A button press after the ignore delay chains to the next row at the end of the animation.",
+      "behavior": "Melee is table driven from the first frame. An attack index selects a row list, and the held object adds an offset of 1 to 4 to the index, so the same button gives a different swing with empty hands, a light object, a heavy object or the charged blade. A row supplies the animation, the blend-in frames, an effect ribbon, an ignore delay in animation frames, a power scale, a knockback distance and a knockback frame count. The row values live in a data table that the code reads, so they are not in the source. Damage is not read from the animation. A weapon or hand collision raises a contact message, and the power it carries is multiplied by the row power scale in 4096ths before it goes to the target, with the body hit by the previous swing in the same message. Chaining needs a new button press. A press that arrives once the animation frame is at or past the ignore delay sets a buffered flag. At the end of the animation, if the flag is set and the next row is not empty, the state moves to the next row and its animation. A press before the ignore delay is dropped. With no buffered press, the state returns to idle, to auto-face or to movement. Two timers attach to specific cases. Attack indices of 10 and above, with an engaged target, hold an auto-facing mode for 4 frames, and attack index 5 sets a one-frame timer. When a swing ends, the code sets the fall-entry speed threshold to -96, three times the default, so a swing at a small drop does not drop into the fall state.",
       "constants": [
         {
           "name": "powerScaleDivisor",
@@ -2104,13 +2176,7 @@
           "source": "src/Game/RAZIEL/ATTACK.c:668"
         },
         {
-          "name": "swingDropOffHeight",
-          "value": 256,
-          "unit": "engine units of height tolerance while the swing is running",
-          "source": "src/Game/RAZIEL/ATTACK.c:379"
-        },
-        {
-          "name": "swingFallVelocity",
+          "name": "swingFallEntryThreshold",
           "value": -96,
           "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/ATTACK.c:381"
@@ -2122,7 +2188,7 @@
           "source": "src/Game/RAZIEL/ATTACK.c:305"
         },
         {
-          "name": "chargeReleaseFrames",
+          "name": "attackFiveTimerFrames",
           "value": 1,
           "unit": "updates at the 33 ms nominal frame",
           "source": "src/Game/RAZIEL/ATTACK.c:317"
@@ -2164,7 +2230,7 @@
       "node": "reaver",
       "name": "Blade charge cycle",
       "summary": "While the blade is charged a countdown and a rumble ramp run together, and the cycle re-arms itself on a fixed period instead of ending.",
-      "behavior": "The charged blade runs its own timer, counted down by the same per-update time multiplier as everything else, and while that timer is non-zero the controller rumble is re-armed every single update rather than being started once. The rumble strength is derived from a separate accumulator that climbs toward a cap of 245759 in time-multiplier units: below the cap the strength is the accumulator divided by 4096 plus a base of 50, and above it the strength is pinned at 110, so the motor ramps from 50 to 110 over roughly two seconds and then holds at maximum. Each update the pad is re-armed with a 20480-unit duration, which is why a long feed does not drop back to silence partway through. When the countdown reaches zero the effect is not stopped: a full 61440 time-multiplier units are added back to the timer and a blast ring is fired, so the visual pulse and the rumble ramp repeat on a fixed period for as long as the blade stays charged. Cancelling zeroes the timer and the accumulator and stops the motor in one call, which is what makes the effect end cleanly when the blade is put away.",
+      "behavior": "The charged blade runs its own timer, counted down by the frame time multiplier, and while the timer is non-zero the controller rumble is re-armed every update, not started once. The rumble strength comes from a separate accumulator that climbs by the frame time multiplier up to a cap of 245759. Below the cap the strength is the accumulator divided by 4096 plus a base of 50. Above it the strength is pinned at 110. So the motor ramps from 50 to 110 over 60 nominal updates, about two seconds, then holds. Each update the pad is re-armed with a 20480 duration, so a long charge does not fall silent partway. When the countdown reaches zero the effect does not stop. A full 61440 is added back to the timer and a blast ring is fired, so the visual pulse repeats every 15 nominal updates for as long as the blade stays charged. Cancelling zeroes the timer and the accumulator, stops the motor and ends the instance effects in one call.",
       "constants": [
         {
           "name": "shockRampCap",
@@ -2238,11 +2304,11 @@
       "id": "health-planes",
       "node": "health",
       "name": "Health counter and plane transfer",
-      "summary": "One health integer serves both planes, but its ceiling, its recovery rule and its floor differ, and crossing 100000 is what moves the body between them.",
-      "behavior": "Both planes share one health integer, but the rules attached to it are deliberately asymmetric. One branch regenerates the counter toward a ceiling that scales with the number of health upgrades collected, drains it at a fixed weight while the body is under water without the swim ability, and hands the body to the other plane the instant the counter drops below 100000. Above 100000 that same branch keeps climbing into a warning band that ends at 150000: inside the band a separate accumulator drains, its period is derived from how far the counter is above 100000, and it is floored at 18750 so the warning never slows to a stop near the bottom of the band. The other branch is bounded hard at 100000, converges to that value from either side, and stops dead at 525: at 525 it plays a fixed reaction animation, sets a state lock, and refuses to let the counter pass further until it is restored. Incoming damage is only applied while the counter is above that 525 floor, so a single large hit cannot step over it, and every damage value is expressed in 4096ths before being scaled into the counter, which makes a full-power hit worth 20000 health units on a 4096-unit scale.",
+      "summary": "One health integer serves both planes, but its ceiling, its drain or regeneration and its floor differ. Dropping below 100000 in plane 1 forces the move to the other plane.",
+      "behavior": "Both planes share one health integer, and the rules differ by plane. In plane 1 the maximum is the number of health upgrades plus one, times 100000. Each update the integer changes by a rate from a tuning table, scaled by the frame time. That table is data, so its sign is not visible in the source. The water drain also adds to it, with a weight of 10 in 4096ths. When the integer drops below 100000, the body shifts to the other plane and an invincibility timer starts. Above 100000 and below 150000 is a warning band. A countdown falls by 1000 per nominal update, and when it passes zero it reloads with the excess over 100000, floored at 18750. It then fires a power ring and a rumble. A smaller excess therefore pulses faster. In plane 2 the integer is bounded at 100000. A tuning rate moves it toward that value from below, and it is set to 100000 from above. Below 525 the state switches to an idle reaction animation, the integer is set to 525 and a control flag is set. Below zero, which the flag normally prevents, the integer resets to 50000 and a plane change is requested. A hit lowers health only while the integer is above 525, no invulnerability flag is set, and the invincibility timer is zero. The change is the damage value times 20000 divided by 4096, so a hit of 4096 is worth 20000 units. The same scale applies to a health gain, which is capped at the plane 1 maximum. After a hit, the invincibility timer is set from a tuning value times 122880.",
       "constants": [
         {
-          "name": "cappedBranchCeiling",
+          "name": "planeTwoCeiling",
           "value": 100000,
           "unit": "health units",
           "source": "src/Game/RAZIEL/HEALTH.c:115"
@@ -2250,7 +2316,7 @@
         {
           "name": "healthPerUpgrade",
           "value": 100000,
-          "unit": "health units added to the scaled ceiling per upgrade collected",
+          "unit": "health units added to the plane 1 ceiling per upgrade level",
           "source": "src/Game/RAZIEL/HEALTH.c:119"
         },
         {
@@ -2264,6 +2330,12 @@
           "value": 150000,
           "unit": "health units",
           "source": "src/Game/RAZIEL/HEALTH.c:177"
+        },
+        {
+          "name": "warningCountdownRate",
+          "value": 1000,
+          "unit": "countdown units removed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/HEALTH.c:179"
         },
         {
           "name": "warningDrainFloor",
@@ -2282,6 +2354,18 @@
           "value": 4096,
           "unit": "power units for a 1.0x hit",
           "source": "src/Game/RAZIEL/HEALTH.c:41"
+        },
+        {
+          "name": "resetHealth",
+          "value": 50000,
+          "unit": "health units after the forced plane change below zero",
+          "source": "src/Game/RAZIEL/HEALTH.c:238"
+        },
+        {
+          "name": "invincibilityTimeScale",
+          "value": 122880,
+          "unit": "time-multiplier units per tuning unit of invincibility",
+          "source": "src/Game/RAZIEL/HEALTH.c:59"
         }
       ],
       "sources": [
@@ -2300,6 +2384,10 @@
         {
           "path": "src/Game/RAZIEL/HEALTH.c",
           "line": 53
+        },
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 222
         }
       ],
       "capabilities": [
@@ -2319,8 +2407,8 @@
       "id": "look-around",
       "node": "player-state",
       "name": "Free-look head offset",
-      "summary": "Standing still, the right stick drives an upper-body aim offset with asymmetric limits rather than moving the camera directly.",
-      "behavior": "In the handful of states that allow it, the right stick does not orbit the camera. It accumulates a head and torso offset that is layered on top of whatever the animation is playing. The stick's vertical axis is divided by 4 and its horizontal axis by 3 before it is accumulated, so sideways head turn is a third faster than the vertical nod for the same stick travel. The accumulated value is wrapped into the signed half-turn range and then clamped, which gives the offset two different characters: the pitch axis is limited to -768 below zero and 512 above it, while the yaw axis is allowed a full quarter turn in either direction at -1024 and 1024. The clamped offset is then distributed across three additive skeleton controllers at decreasing fractions, half on the torso, three tenths on the chest and a fifth on the head, so the whole upper body turns rather than just the neck. Releasing the look interpolates those three controllers away over a 300-unit ramp, so the body returns to the animation's own pose instead of snapping back. The look is only permitted while the character is standing idle, mid-throw or in the water, so it can never be used to aim during a run or a fall.",
+      "summary": "The look input drives an upper-body aim offset with asymmetric limits and does not move the camera directly.",
+      "behavior": "In the few states that allow it, the look input does not orbit the camera. It accumulates a head and torso offset that is layered on the playing animation. Pad axis 4 is divided by 4 and axis 3 by 3 before they are added to the pitch and yaw offsets. Yaw is therefore a third faster than pitch for the same travel. The code does not say which physical stick these axes are. While a throw is charged, the divisors are 8 and 6, so the aim is slower. The offset is wrapped into the signed half-turn range and clamped. The pitch is limited to -768 and 512, and the yaw to plus or minus 1024, a quarter turn. The clamped offset goes to three additive skeleton controllers (ids 14, 16 and 17) at 50, 30 and 20 percent, so the whole upper body turns. Releasing the look interpolates the three controllers away with a ramp value of 300, so the pose returns smoothly. The look is allowed only while the body is idle on the ground, mid-throw, or swimming.",
       "constants": [
         {
           "name": "pitchDownLimit",

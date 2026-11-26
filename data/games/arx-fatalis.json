@@ -502,13 +502,13 @@
       "id": "animation-driven-ground-speed",
       "node": "player-movement",
       "name": "Ground speed taken from the walk cycle",
-      "summary": "Horizontal speed is not a fixed number: each frame the current leg animation's root translation is measured and turned into a speed, so animation edits change movement.",
-      "behavior": "While the player is on foot the game reads the total root translation of the active leg animation and divides it by that animation's own duration, then multiplies by a tuning constant. The result is applied to a force accumulator that is converted to velocity and damped every frame, so a heavier character animation really does walk more slowly and a fast one really does cover ground faster. Airborne branches use hard-coded scales instead of reading the animation: a forward jump uses 7.9, sideways jumps 2.6, a backward jump 0.8 and a jump from standing 0.2, all divided by 1000, while levitating without grip uses 0.875. Horizontal velocity is damped by a per-millisecond factor taken from frame time, and speeds below one thousandth of a unit per millisecond are snapped to zero so the player settles instead of creeping. A speed multiplier from buffs and gear scales the integrated frame time rather than the target speed, and the whole movement step is subdivided so a slow frame runs several sub-steps while a jump is in flight.",
+      "summary": "On foot, speed is the root travel of the active leg animation divided by its duration, so animation edits change movement; air jumps and levitation use fixed scales.",
+      "behavior": "While the player is on foot, the game reads the total root translation of the active leg animation and divides its length by the animation duration in milliseconds. It multiplies the result by 0.0125 and uses it as the size of an impulse along the wanted movement direction. The impulse goes into a force accumulator. The step turns the accumulator into velocity, then damps it. A longer stride therefore moves the player faster. A flat scale of 1.25 per thousand applies only when no animation is active. While a jump is in the air, the code ignores the animation and uses fixed scales per thousand: 7.9 for forward, 2.6 for either strafe, 0.8 for backward and 0.2 for a standing jump. Levitation without a wall grip uses 0.875 per thousand. Each step multiplies the horizontal velocity by one minus 0.009 times the step time in milliseconds, which removes about 30 percent on a 33.3 ms step. Horizontal velocity components below 0.001 units per millisecond become zero. A speed factor from the base speed and the speed modifiers of the player scales the elapsed frame time, not the target speed, and it cannot go below zero. Each real frame is clamped to 200 ms. While a jump is in flight, the step function runs again as long as more than 25 ms of stored time remains, and every call receives the whole remaining time. The source marks this as a known simplification. Outside a jump the step runs once per frame.",
       "constants": [
         {
           "name": "default impulse scale",
           "value": 1.25,
-          "unit": "impulse magnitude numerator, divided by 1000 to give world units per millisecond of frame time",
+          "unit": "impulse magnitude numerator, divided by 1000 to give world units per millisecond of frame time; used only when no leg animation is active",
           "source": "src/game/Player.cpp:1963"
         },
         {
@@ -532,19 +532,19 @@
         {
           "name": "target movement step",
           "value": 30,
-          "unit": "sub-steps per second of reference frame time (reference step is 1000 divided by 30 milliseconds)",
+          "unit": "Hz of the reference update; gravity and push forces are divided by this reference step of 33.3 ms",
           "source": "src/game/Player.cpp:142"
         },
         {
           "name": "fixed movement sub-step",
           "value": 25,
-          "unit": "milliseconds per movement sub-step while jumping",
+          "unit": "milliseconds of stored frame time that must remain before the jump loop calls the movement step again",
           "source": "src/game/Player.cpp:2248"
         },
         {
           "name": "maximum frame time",
           "value": 200,
-          "unit": "milliseconds of frame time accepted before it is clamped",
+          "unit": "milliseconds of real frame time accepted per frame before it is clamped",
           "source": "src/game/Player.cpp:2249"
         },
         {
@@ -592,7 +592,7 @@
       "node": "player-movement",
       "name": "Scripted jump arc with input buffer",
       "summary": "The rise of a jump is a timed vertical ramp of a fixed height, and a jump press is remembered briefly so it fires as soon as the player is eligible.",
-      "behavior": "A jump press is stamped with the current time and only honoured if the movement code reaches it within 350 milliseconds, which is the input buffer. Before the jump is accepted the game briefly restores the full standing capsule and probes the space above the head; if that probe is blocked the press is dropped and the crouch state is kept, so the player cannot jump out from under a low ceiling. The ascent is not physics at all: over 200 milliseconds the vertical target is moved upward by a cumulative 130 world units, with vertical velocity forced to zero during the rise so no impulse carries over. Once the ramp reaches its end the jump switches to a descending phase, gravity is allowed to act again and the fall timer starts. A hop chained straight after a landing only gets half of the forward impulse, recovering linearly to full over the following 300 to 600 milliseconds, which stops bunny-hopping from being the fastest way across a room.",
+      "behavior": "A jump press stores the current time. The movement step honours the press only when it reads it within 350 ms of that stamp. Before that, if the player is crouched or the capsule is shorter than standing, the game sets the full standing capsule and tests it. If the test fails, the player stays crouched and the press is dropped. A second check measures how far a slightly narrower capsule overlaps level geometry. A small overlap of 20 units or less allows the jump. A larger overlap makes the game probe 18 positions on a ring 20 units out, 20 degrees apart. If no probe finds more than 10 units of overlap, the jump is allowed. If one does, the jump starts a climb when the blocking surface is climbable, and otherwise it is allowed only when the first overlap is 50 units or less. The ascent is not physics. Over 200 ms the vertical target moves up by a total of 130 world units, and vertical velocity is forced to zero during the rise. When the ramp ends, the state changes to descending, gravity acts again and the fall timer starts at the apex height. A forward impulse multiplier is 0.5 for 300 ms after a jump ends. The code intends to restore it to 1 over the next 300 ms, but the expression as written adds a term that goes from 0 down to minus 1. From 300 ms to 600 ms the multiplier therefore falls from 0.5 to minus 0.5, passing zero at 450 ms. A copy should implement the intended recovery.",
       "constants": [
         {
           "name": "jump input buffer",
@@ -615,19 +615,19 @@
         {
           "name": "chained jump impulse penalty",
           "value": 0.5,
-          "unit": "fraction of normal jump impulse for the first 300 ms after a jump ends",
+          "unit": "multiplier of the forward impulse for the first 300 ms after a jump ends",
           "source": "src/game/Player.cpp:1950"
         },
         {
           "name": "jump penalty recovery window",
           "value": 600,
-          "unit": "milliseconds after a jump ends before the impulse multiplier is fully restored",
+          "unit": "milliseconds after a jump ends during which the impulse multiplier differs from 1; the 300 to 600 ms part has the wrong sign in the source",
           "source": "src/game/Player.cpp:1949"
         },
         {
-          "name": "head clearance sample offset",
+          "name": "jump fit probe ring radius",
           "value": 20,
-          "unit": "world units of forward offset per probe ring when testing whether a jump fits",
+          "unit": "world units from the base position of the ring of 18 probes, 20 degrees apart, used when the narrow capsule overlaps geometry",
           "source": "src/game/Player.cpp:1752"
         }
       ],
@@ -669,8 +669,8 @@
       "id": "fall-damage",
       "node": "player-movement",
       "name": "Fall damage above a drop threshold",
-      "summary": "A fall only hurts once it passes 400 world units, and damage grows linearly beyond that at one point per 15 units of extra drop.",
-      "behavior": "When the player leaves firm ground the game records the height at the start of the fall and starts a falling flag once downward speed passes a threshold, so walking down a slope is not treated as a fall. On the frame the player lands, the drop height is the current position minus the recorded start height. Anything at or below 400 world units costs nothing; the portion above 400 is divided by 15 and applied to the player and separately to carried equipment. The same threshold and divisor appear again in the branch that ends a fall early because the capsule could not move, and that path re-averages the recorded height so a series of small blocked drops does not compound into one large hit. An unsupported move terminates the fall immediately and zeroes horizontal velocity, so sliding off a ledge stops the player rather than launching them.",
+      "summary": "A fall only hurts once the drop passes 400 world units; damage then grows linearly at one point per 15 units of extra drop.",
+      "behavior": "The game arms a fall when the downward velocity passes a threshold, no platform or firm ground supports the player, the player is not jumping or levitating, and the ground probe value exceeds 80. A jump that reaches its apex also starts a fall. Starting a fall stores the current height as the start height. On the frame the player regains firm ground, the game clears the jump state. If a fall was active, it also zeroes horizontal velocity and force. The drop is the current height minus the start height. A drop of 400 world units or less costs nothing. For a larger drop, the part above 400 divided by 15 is applied to the player health and also to the durability of worn equipment. A second branch handles a move that fails while the player stood on no firm ground in the last two frames. It zeroes horizontal velocity and applies the same damage formula. It then moves the stored start height one third of the way to the current height, so one long blocked fall can hurt again later. This branch does not end the fall.",
       "constants": [
         {
           "name": "free fall drop",
@@ -687,7 +687,7 @@
         {
           "name": "falling trigger speed",
           "value": 15,
-          "unit": "world units per millisecond of downward velocity, divided by the 33.3 ms reference step, before a fall is armed",
+          "unit": "downward velocity threshold of 15 world units per 33.3 ms reference step, which is 0.45 units per millisecond",
           "source": "src/game/Player.cpp:1900"
         }
       ],
@@ -702,11 +702,11 @@
         },
         {
           "path": "src/game/Player.cpp",
-          "line": 2143
+          "line": 1139
         },
         {
           "path": "src/game/Player.cpp",
-          "line": 1139
+          "line": 2143
         }
       ],
       "capabilities": [
@@ -725,7 +725,7 @@
       "node": "player-movement",
       "name": "Crouch and levitate capsule heights",
       "summary": "One capsule with three height offsets: standing, crouching and levitating, each switched only after the space has been re-probed.",
-      "behavior": "The player is a single vertical cylinder with a radius of 52 world units whose height offset is measured downward from the eye position. Standing uses 170 units, crouching 120 and levitation 220, so crouching shortens the body and levitation stretches it. Entering a crouch does not shorten the capsule immediately: the crouch-start animation plays first and only when it reports its end does the capsule shrink, which prevents the player from snapping under a ledge in one frame. Standing back up plays the reverse animation and blocks movement input until it finishes. Levitation works the other way: the taller capsule is tested before it is applied, and if the taller body would intersect geometry the spell is cancelled instead of leaving the player embedded. A forced stand, such as a levitation ending while crouched, is suppressed while crouched and the crouch state is preserved.",
+      "behavior": "The player is a single vertical cylinder with a radius of 52 world units. Its height offset is measured downward from the eye position. Standing uses 170 units, crouching 120 and levitation 220. Entering a crouch does not shorten the capsule at once. The crouch-start animation plays first, and the capsule shrinks only when that animation reports its end. Standing back up plays the reverse animation. While that animation runs, the visual update returns early and does not read new movement animations. If the crouch input is released while the capsule is still shorter than 150 units, the game tests the full standing capsule. When that test fails, the game sets the crouch state again, so the player stays crouched under a low ceiling. Levitation works the other way. The taller capsule is tested before it is applied, and if it would intersect geometry, the levitation spell ends instead of leaving the player embedded. While levitation is active, the crouch state is cleared and climbing stops.",
       "constants": [
         {
           "name": "player capsule radius",
@@ -754,7 +754,7 @@
         {
           "name": "crouch auto-stand ceiling check",
           "value": -150,
-          "unit": "world units of capsule height below which the game looks for room to stand up",
+          "unit": "capsule height offset in world units; a capsule shorter than this triggers the standing test when crouch is not held",
           "source": "src/game/Player.cpp:1263"
         }
       ],
@@ -795,8 +795,8 @@
       "id": "stepped-sweep-and-slide",
       "node": "player-collision",
       "name": "Stepped capsule sweep with angular slide",
-      "summary": "Movement is advanced in 40-unit steps; when a step is blocked, the mover sweeps the intended direction left and right in fixed angular increments until it finds a direction that clears.",
-      "behavior": "A move from the current position to the desired position is split into segments no longer than 40 world units, with a hard cap of 100 segments so a single huge displacement cannot hang the frame. Each segment is applied to a copy of the capsule and validated; the copy is kept when it is free. If validation fails and the move has a vertical component the raw vertical slide is tried first, which is what lets a climbing player inch up a wall while pressing into it. Otherwise the code searches for a slide: at each increment it rotates the intended horizontal direction by that much to the right and by the same amount to the left, tests both, and stops at the first increment where either side validates, preferring the smaller deflection when both do. It steps 10 degrees at a time out to 70 degrees for the player's easy-sliding path (finer, smoother wall sliding) and 30 degrees at a time out to 90 degrees for other movers. A global flag records whether the direct path succeeded, so callers can tell a clean move from a deflected one.",
+      "summary": "Movement is advanced in 40-unit segments; when a segment is blocked, the mover tries rotated directions on both sides in fixed angle steps until one is free.",
+      "behavior": "A move from the current position to the target position is split into segments of at most 40 world units, with a hard cap of 100 segments per call. Each segment is applied to a copy of the capsule and validated. The copy is kept when it is free. A blocked segment with no horizontal component ends the call with success and no movement. If the move has the climbing flag, the game tries the vertical part alone first, which lets a climbing player gain height while pressing into a wall. Otherwise the code searches for a slide. At each increment it rotates the horizontal direction to the right by that angle and to the left by the same angle, and tests both. It stops at the first increment where either side validates. When both validate in the same increment, the right side wins. The player uses the easy-sliding flag, which gives steps of 10 degrees out to 70 degrees. Other movers use steps of 30 degrees out to 90 degrees. A successful slide also subtracts the segment length from the remaining distance a second time, so a slid segment consumes twice its length of the budget. If no direction validates, the mover zeroes its velocity and the call returns failure. A global flag records whether every segment succeeded on the direct path.",
       "constants": [
         {
           "name": "player sweep step",
@@ -857,35 +857,47 @@
       ]
     },
     {
-      "id": "climbing-budget",
+      "id": "step-up-limit",
       "node": "player-collision",
-      "name": "Climbing budget and ledge rejection",
-      "summary": "Ledges are climbable only within a per-second climbing budget and only up to a fixed penetration depth; deeper steps stop the climb outright.",
-      "behavior": "When a blocked capsule would have to rise over geometry, the game measures the vertical penetration it would have to swallow and converts it into a climbing cost scaled by the horizontal distance travelled, so shallow slopes are cheap and vertical faces are expensive. That cost is charged against a climbing budget capped at 12 units per second and decaying in real time. If the requested penetration is deeper than 55 world units the budget is immediately set to its maximum and the move is refused, which turns a wall into a hard stop while a low step is still free. Both slide directions are walked at each angular increment and every failed attempt restores the budget it spent, so only the direction that is finally accepted is charged. The budget therefore lets a player angle into a low ledge and ratchet over it while starving a straight-on push against a tall face.",
+      "name": "Step-up limit and ledge rejection",
+      "summary": "A walking player may step up onto ground less than 55 world units above the feet; a higher rise blocks the move, and any rise blocks it during a jump.",
+      "behavior": "When a player move would place the capsule inside rising geometry, the move check measures how far the ground ahead is above the feet. During a jump phase, any such rise refuses the move. Outside a jump, a rise deeper than 55 world units refuses the move. A smaller rise is accepted unless a pair of extra probes fails. The first probe uses a capsule at 65 percent of the radius. If it overlaps geometry by more than 50 units, the game tests a capsule at 145 percent of the radius, moved 30 units. When that wider test finds geometry, the move is refused. This rejects steps that would squeeze the player under a low ceiling. Each accepted rise also adds a cost to a climb counter. The cost is half the rise divided by the horizontal step length, with a minimum length of 1. The counter is capped at 12. The player update drains it by 1.2 per millisecond of frame time, so it empties each frame. No code path refuses a move because of the counter, so a copy can leave it out. The slide search restores the counter after every failed attempt.",
       "constants": [
         {
           "name": "climbing budget ceiling",
           "value": 12,
-          "unit": "climbing cost units per second",
+          "unit": "cap of the climb counter, in cost units; the player update drains the counter faster than it can fill, and no move check reads it",
           "source": "src/physics/Collisions.h:58"
-        },
-        {
-          "name": "easy slide sweep limit",
-          "value": 70,
-          "unit": "degrees either side of the intended direction searched when sliding the player",
-          "source": "src/physics/Collisions.cpp:1201"
         },
         {
           "name": "ledge rejection depth",
           "value": -55,
-          "unit": "world units of vertical penetration that aborts a climb",
+          "unit": "world units of rise above the feet (negative on the downward-positive vertical axis) that refuses a walking move",
           "source": "src/physics/Collisions.cpp:1086"
         },
         {
           "name": "climb cost scale",
           "value": 0.5,
-          "unit": "multiplier converting vertical penetration divided by horizontal distance into climbing cost",
+          "unit": "multiplier applied to the rise divided by the horizontal step length when the climb counter is increased",
           "source": "src/physics/Collisions.cpp:1079"
+        },
+        {
+          "name": "narrow probe radius scale",
+          "value": 0.65,
+          "unit": "fraction of the capsule radius used for the first overlap probe",
+          "source": "src/physics/Collisions.cpp:1092"
+        },
+        {
+          "name": "wide probe radius scale",
+          "value": 1.45,
+          "unit": "multiple of the capsule radius used for the confirming probe, moved 30 world units",
+          "source": "src/physics/Collisions.cpp:1094"
+        },
+        {
+          "name": "probe overlap threshold",
+          "value": 50,
+          "unit": "world units of overlap of the narrow probe that triggers the wide probe",
+          "source": "src/physics/Collisions.cpp:1093"
         }
       ],
       "sources": [
@@ -925,8 +937,8 @@
       "id": "first-person-camera",
       "node": "camera",
       "name": "First-person camera and head attachment",
-      "summary": "A 75-degree vertical field of view, 2100 units of clip depth and a one-unit near plane, with the eye bolted to a head vertex that is clamped close to the body axis.",
-      "behavior": "The camera stores a focal length rather than an angle; the vertical field of view is derived from a fixed 480-unit image plane, so the default 75-degree view and a one-unit near plane give an extremely deep frustum that is clipped at 2100 world units. Users cannot drive the field of view below 10 degrees. In first person the camera position is copied from the head attachment vertex of the animated player mesh, and the horizontal offset from the body centre is clamped to 46 units so a head-bob animation cannot swing the view through a wall. Turning off view bobbing collapses the camera onto a stable cached head position instead. Looking out from a scripted camera blends position and orientation back toward the player at a fixed fraction per frame, and the external third-person fallback pulls the eye back up to 250 world units behind the player in 10-unit increments, adding a fixed 30 degrees to its pitch and stopping at the last increment that is still inside level geometry.",
+      "summary": "The eye sits on a head vertex of the animated body, clamped to 46 units from the body axis; the vertical field of view comes from a focal length over a 480-unit image plane.",
+      "behavior": "The camera stores a focal length, not an angle. The vertical field of view comes from a fixed 480-unit image plane, so a focal length equals 240 divided by the tangent of half the angle. The configured default is 75 degrees, and a loaded setting cannot go below 10 degrees. The game sets the field of view again every frame from the configuration, then adds the effects of spells and the bow to the focal length. The near plane is 1 world unit. The far clip depth starts at 2100 units, but every frame the fog code replaces it with the smaller of a level value and a value from the fog distance setting and the current focal length. Treat 2100 as a start value only. In first person the camera position is the head attachment vertex of the animated player mesh. Its horizontal offset from the player position is clamped to 46 units, so animation sway has a hard limit. With view bobbing off, the camera uses a stable head position computed from the skeleton with looping animation layers frozen at their first frame. In external view, the camera tries points behind the player from 0 to 250 units in steps of 10, 50 units above the position, and keeps the last point that still lies over level floor. It adds 30 degrees to the pitch. Each frame the position moves halfway to that target and the angle closes 0.1 of the gap. The flying-eye spell uses the same blend toward the eye position.",
       "constants": [
         {
           "name": "default vertical field of view",
@@ -939,12 +951,6 @@
           "value": 10,
           "unit": "degrees, vertical, enforced when a config value is loaded",
           "source": "src/core/Config.cpp:609"
-        },
-        {
-          "name": "far clip depth",
-          "value": 2100,
-          "unit": "world units",
-          "source": "src/core/ArxGame.cpp:784"
         },
         {
           "name": "near plane distance",
@@ -961,7 +967,7 @@
         {
           "name": "eye offset clamp",
           "value": 46,
-          "unit": "world units of horizontal distance between the body axis and the head vertex",
+          "unit": "world units of horizontal distance between the player position and the head vertex",
           "source": "src/core/ArxGame.cpp:1294"
         },
         {
@@ -979,8 +985,14 @@
         {
           "name": "camera blend fraction",
           "value": 0.1,
-          "unit": "fraction of the remaining angle closed per frame while blending back from a scripted camera",
+          "unit": "fraction of the remaining angle closed per frame in external view or flying-eye view; position moves 0.5 of the gap per frame",
           "source": "src/core/ArxGame.cpp:1308"
+        },
+        {
+          "name": "initial far clip depth",
+          "value": 2100,
+          "unit": "world units; only the starting value, replaced every frame by the fog code",
+          "source": "src/core/ArxGame.cpp:784"
         }
       ],
       "sources": [
@@ -1003,6 +1015,10 @@
         {
           "path": "src/core/ArxGame.cpp",
           "line": 1261
+        },
+        {
+          "path": "src/graphics/GlobalFog.cpp",
+          "line": 118
         }
       ],
       "capabilities": [
@@ -1021,8 +1037,8 @@
       "id": "bow-zoom",
       "node": "camera",
       "name": "Bow draw zoom",
-      "summary": "Drawing a bow narrows the camera continuously over about 0.7 seconds by adding focal length, and the same ratio later scales arrow launch speed.",
-      "behavior": "While the bow's strike-cycle animation is playing the aim ratio grows with frame time divided by 710, clamped to one, which makes a full draw take about seven tenths of a second. The camera's focal length is increased by 177.5 times that ratio, so the picture tightens steadily rather than snapping to a zoom level, and the zoom decays the same way when the cycle ends. The ratio is also read at release: arrow speed is the larger of the ratio plus 0.3 and 0.9, and the downward gravity term is 0.0002 scaled by one minus the ratio, so a half-drawn arrow leaves slower and drops noticeably while a full draw flies nearly flat.",
+      "summary": "Drawing a bow raises an aim ratio over about 0.71 seconds; the ratio widens the focal length and sets arrow speed and drop at release.",
+      "behavior": "While the strike-cycle animation of the bow plays, the aim ratio grows each frame by the frame time in milliseconds divided by 710, and it is clamped at 1. A full draw takes about 0.71 seconds. When the bow animation is outside its strike phases, the ratio falls at the same rate to zero. The camera focal length is reset from the configured field of view every frame and then increased by 177.5 times the ratio. The picture therefore tightens smoothly instead of snapping. At release the ratio sets the launch. Arrow speed is the larger of the ratio plus 0.3 and 0.9 world units per millisecond. Any ratio below 0.6 therefore gives the floor speed of 0.9, and a full draw gives 1.3. The downward acceleration of the arrow is 0.0002 times one minus the ratio, per millisecond squared. A full draw flies without drop, and a short draw sinks. The ratio does not change the arrow damage, which comes from the weapon and the skills of the player.",
       "constants": [
         {
           "name": "full draw time",
@@ -1039,19 +1055,19 @@
         {
           "name": "maximum aim ratio",
           "value": 1,
-          "unit": "clamp applied to the accumulated aim ratio per update",
+          "unit": "dimensionless cap of the aim ratio",
           "source": "src/core/Core.cpp:745"
         },
         {
           "name": "minimum arrow speed",
           "value": 0.9,
-          "unit": "world units per millisecond of frame time at release",
+          "unit": "world units per millisecond; speed is the larger of aim ratio plus 0.3 and this value",
           "source": "src/core/Core.cpp:902"
         },
         {
           "name": "partial draw gravity",
           "value": 0.0002,
-          "unit": "world units per millisecond squared, scaled by one minus the aim ratio",
+          "unit": "world units per millisecond squared at zero aim ratio, scaled by one minus the aim ratio",
           "source": "src/core/Core.cpp:907"
         }
       ],
@@ -1093,18 +1109,18 @@
       "node": "melee-combat",
       "name": "Melee charge and release",
       "summary": "Holding attack winds the swing up; the fraction of the weapon's aim time that has elapsed becomes both the damage multiplier and the gate on the audible strike grunt.",
-      "behavior": "Attack is a two-stage gesture. Pressing attack starts the wind-up animation and sets the aim timer running; holding keeps the swing in its loop animation and the timer keeps accumulating frame time. Releasing the button fires the strike and stops the timer. The elapsed aim time is divided by the weapon's full aim time and clamped between 0.1 and 1.0, so even a tap produces a tenth of the damage rather than nothing. The full aim time is taken from the weapon's aim-time modifier in milliseconds, floored at 1500, then reduced by 20 milliseconds per point of dexterity above 10 and floored again, so a clumsy character cannot be slower than 1.5 seconds and a nimble one still cannot beat that floor. Any ratio above 0.8 also unlocks the strike shout and the backstab opportunity check.",
+      "behavior": "Attack is a two-stage gesture. Pressing attack starts the wind-up animation. When the wind-up ends, the weapon enters a looping hold animation and the aim timer starts. The timer adds the frame time on every update while it is above zero. Releasing the button while the hold loop plays starts the strike animation, sends the strike event and resets the timer. At that moment the game computes the strike ratio as the elapsed aim time divided by the full aim time, clamped between 0.1 and 1. The damage routine multiplies the attacker melee damage by this ratio, so even a tap deals a tenth of the damage. The full aim time starts from the aim-time modifier of the equipped weapon in milliseconds, or 1500 when that value is zero or negative. The game then subtracts 20 ms per point of dexterity above 10. A dexterity below 10 adds 20 ms per point. The result cannot go below 1500, so a quick weapon or a nimble character never charges faster than 1.5 seconds. A ratio above 0.8 makes the character speak the strike line. That is the only effect of the threshold in this routine.",
       "constants": [
         {
           "name": "minimum full aim time",
           "value": 1500,
-          "unit": "milliseconds of hold for a full charge",
+          "unit": "milliseconds; the default when the weapon gives no value and the floor after the dexterity handicap",
           "source": "src/game/Player.cpp:421"
         },
         {
           "name": "dexterity aim handicap",
           "value": 20,
-          "unit": "milliseconds of aim time removed per point of dexterity above 10",
+          "unit": "milliseconds removed from the aim time per point of dexterity above 10 (added per point below 10)",
           "source": "src/game/Player.cpp:417"
         },
         {
@@ -1116,7 +1132,7 @@
         {
           "name": "committed strike threshold",
           "value": 0.8,
-          "unit": "fraction of the full aim time needed before the strike is treated as committed",
+          "unit": "fraction of the full aim time above which the strike line is spoken",
           "source": "src/core/Core.cpp:478"
         }
       ],
@@ -1157,8 +1173,8 @@
       "id": "melee-damage-resolution",
       "node": "melee-combat",
       "name": "Melee hit chance, absorption and knockback",
-      "summary": "Damage is attack power times charge ratio, reduced by a percentage absorb, then checked against a hit chance built from armour class minus attack power, with backstab and critical multipliers applied last.",
-      "behavior": "The attacker's melee damage value is multiplied by the charge ratio to give raw damage. Armour reduces it by an absorb percentage, which for the player is half of the defence skill and for creatures comes from their own absorb stat; a curse spell scales both armour class and absorb downward per level. Hit chance is 100 minus armour class minus attack power, and a random roll above that chance means a clean miss with no damage and no sound of impact. A target flagged as backstabbable, combined with a stealth roll, multiplies damage by 1.5; a successful critical roll multiplies it by another 1.5. The final damage pushes the target along the source-to-target axis, and the player receives that push through a dedicated force accumulator with separate horizontal and vertical divisors, so a heavy hit staggers the camera without sliding the player across the floor.",
+      "summary": "Damage is attack power times the charge ratio, with backstab and absorb applied first; a hit roll of 100 minus armour class plus attack follows, and a critical hit multiplies the result last.",
+      "behavior": "Raw damage is the attacker melee damage times the charge ratio. Creature attackers also multiply by a random value between 0.5 and 1. A backstab multiplies the damage by 1.5. The player needs a target with the backstab flag and a successful roll against half of the stealth skill. Creatures roll their own backstab skill. Armour then reduces the damage by the absorb percentage. For the player, absorb is half of the defence skill. For creatures it is their own absorb stat. A curse spell lowers both armour class and absorb by 5 percent per spell level. The impact sound plays before the hit roll. The hit chance is 100 minus the difference of armour class and attack. Higher attack therefore raises the chance. A random roll above the chance is a clean miss with no damage. On a hit, a flesh sound plays. A critical roll made earlier then multiplies the damage by 1.5. A creature target is pushed along the line from the attacker to the target by the full damage value. A player target gets the damage times 1/11 on each horizontal axis and 1/30 on the vertical axis, added to a push force accumulator.",
       "constants": [
         {
           "name": "player damage absorb",
@@ -1169,7 +1185,7 @@
         {
           "name": "hit chance base",
           "value": 100,
-          "unit": "percentage points; chance equals this minus armour class minus attack power",
+          "unit": "percentage points; chance equals this minus (armour class minus attack)",
           "source": "src/game/Equipment.cpp:541"
         },
         {
@@ -1187,13 +1203,13 @@
         {
           "name": "player push divisor on the attack axis",
           "value": 11,
-          "unit": "divisor applied to damage before adding to the player push force, per 33.3 ms reference step",
+          "unit": "divisor of damage for each horizontal push component; the accumulated force is divided by the 33.3 ms reference step before use",
           "source": "src/game/Equipment.cpp:561"
         },
         {
           "name": "player push divisor on the vertical axis",
           "value": 30,
-          "unit": "divisor applied to damage for the vertical push component, per 33.3 ms reference step",
+          "unit": "divisor of damage for the vertical push component; the accumulated force is divided by the 33.3 ms reference step before use",
           "source": "src/game/Equipment.cpp:561"
         }
       ],
@@ -1236,7 +1252,7 @@
       "node": "melee-combat",
       "name": "Hit spheres from weapon action points",
       "summary": "A swing hits whatever overlaps the spheres authored on the weapon mesh, so reach and arc come from animation data rather than from a fixed range cone.",
-      "behavior": "Each frame a swing is active the game walks the weapon model's action points and takes only the ones named as hit points with a numeric suffix; the suffix is parsed as the sphere radius. Every hit point becomes a sphere at the animated world position of that vertex and is tested against the world. Creatures attacking the player get 15 extra world units of radius, which compensates for their coarser animation without changing the player's own reach. Anything overlapping is damaged using the closest non-hidden vertex of the target as the impact point, so sparks and blood spray appear where the weapon actually touched rather than at the target's origin. Because the spheres ride on the animated mesh, a long weapon genuinely reaches further on the frames where it is extended.",
+      "behavior": "During a strike check, the game walks the action points of the weapon model. It keeps only the points named with the hit prefix and a numeric suffix, and the suffix is the sphere radius in world units. Each point becomes a sphere at the animated world position of that vertex. The game tests every sphere against the other entities in the scene, not against level geometry. Creatures that attack the player get 15 extra units of radius. Every entity inside a sphere is damaged once per check. The impact point is the vertex of the target that lies closest to the sphere, ignoring hidden faces. Sparks and blood appear there. For the two-handed swing of the player, the first hit test runs only between 30 and 70 percent of the strike animation. A later pass up to 90 percent only spawns blood after a hit is already recorded. Because the spheres ride on the animated mesh, a long weapon reaches further on the frames where it is extended.",
       "constants": [
         {
           "name": "hit point name prefix",
@@ -1284,8 +1300,8 @@
       "id": "arrow-ballistics",
       "node": "projectiles",
       "name": "Arrow flight and swept hit probes",
-      "summary": "Arrows travel as a straight velocity with a per-frame gravity ramp, and each frame sweeps a short chain of expanding spheres along the flight direction so fast arrows cannot tunnel.",
-      "behavior": "A released arrow is spawned at the hand position with a direction vector scaled by its launch speed and a gravity value; the projectile stores both plus the source, the mesh, the attach vertex and a damage figure. Every update advances the position by velocity times frame time and, if gravity is non-zero, adds gravity times frame time to the vertical velocity, re-orienting the arrow mesh to the new direction so a dropping arrow visibly noses down. Collision is not a single ray: the update tests 12 spheres spaced along the arrow's local forward axis in half-unit increments of a precision value, each with the hit radius plus a small margin, and the first overlap that is not the shooter resolves the hit. A parallel ray cast against level geometry produces sparks and a surface-appropriate impact sound, and the arrow sticks where it landed instead of vanishing.",
+      "summary": "Arrows fly with a velocity and a per-millisecond drop, and each update probes 12 look-ahead spheres along the flight direction; a level hit freezes the arrow and an entity hit removes it.",
+      "behavior": "A released arrow starts at the hand position with a direction vector scaled by its launch speed and a gravity value. The projectile stores both, plus the source, the mesh, the attach vertex and a damage figure. Every update moves the position by the velocity times the frame time in milliseconds. When gravity is not zero, it adds gravity times the frame time to the vertical velocity and re-orients the mesh, so a dropping arrow noses down. Hit detection uses the action points of the arrow mesh that carry the hit prefix. For each point, the game first casts a ray against level geometry from the previous position to the new point, and checks force fields. On a level hit it spawns sparks and an impact sound, moves the arrow to the contact and sets its velocity to zero, so the arrow stays stuck. A force-field hit removes the arrow. For entities, the game then tests 12 spheres. The centers are at 2.25 times k times the current velocity vector from the point, for k from 1 to 12. Each radius is half the hit value plus 3. The first overlap that is not the shooter ends the flight. Only arrows of the player apply damage to creatures here. A hit on a creature removes the arrow. A prop with the fixed flag takes 0.1 damage.",
       "constants": [
         {
           "name": "swept probe count",
@@ -1296,7 +1312,7 @@
         {
           "name": "probe precision step",
           "value": 0.5,
-          "unit": "increments of the precision factor, each probe offset by 4.5 times that factor along the flight vector",
+          "unit": "step of the probe index factor; each probe sits at 4.5 times this factor times the velocity vector (in world units per millisecond) ahead of the hit point",
           "source": "src/physics/Projectile.cpp:373"
         },
         {
@@ -1308,7 +1324,7 @@
         {
           "name": "launch speed bonus over aim ratio",
           "value": 0.3,
-          "unit": "world units per millisecond added to the aim ratio before the speed floor is applied",
+          "unit": "world units per millisecond added to the aim ratio before the speed floor of 0.9 applies",
           "source": "src/core/Core.cpp:902"
         }
       ],
@@ -1332,6 +1348,14 @@
         {
           "path": "src/core/Core.cpp",
           "line": 904
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 336
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 344
         }
       ],
       "capabilities": [
@@ -1349,8 +1373,8 @@
       "id": "flight-distance-damage",
       "node": "projectiles",
       "name": "Flight distance damage modifier",
-      "summary": "A projectile's damage is scaled by how far it has flown: half damage point-blank, full damage at 1000 units, and double beyond 2000.",
-      "behavior": "When a projectile connects, the game measures the straight-line distance from where it was spawned to where it currently is and turns that into a modifier. Under 2000 world units the modifier is the flight distance divided by 1000, floored at 0.5, so a shot fired from touching range does half damage and one that has covered 1000 units does full damage. Past 2000 units the modifier is simply 2, so damage keeps scaling with range instead of tapering off, which rewards leading a target across a room. The modifier multiplies the projectile's base damage along with critical and backstab terms and the target's absorb reduction, then a separate roll against armour class versus projectile damage can still cancel the hit entirely. A carried quiver's poison charge is applied on the same hit.",
+      "summary": "Arrow damage scales with distance flown: half at point-blank, full at 1000 units, up to double from 2000 units on, where it stops growing.",
+      "behavior": "When an arrow connects with a creature, the game measures the straight distance from the spawn point to the current position. Under 2000 world units, the modifier is that distance divided by 1000, with a floor of 0.5. A shot from touching range does half damage, and 1000 units gives full damage. From 2000 units on, the modifier stays at 2, so damage grows up to that range and then stops growing. The damage multiplies the arrow base damage, a critical factor of 1.5 and a backstab factor of 1.5. The critical chance is two per dexterity point above 9 plus 0.2 per point of projectile skill. The backstab roll uses the stealth skill and needs the backstab flag on the target. The absorb percentage of the target then reduces the damage. Finally a random roll between 0 and 100 that is below armour class minus the base arrow damage cancels the hit with no damage. A hit adds the poison value of the arrow, which comes from the quiver used for the shot, unless the creature resists it by a random roll.",
       "constants": [
         {
           "name": "reference flight distance",
@@ -1367,7 +1391,7 @@
         {
           "name": "long range modifier",
           "value": 2,
-          "unit": "damage multiplier applied beyond twice the reference distance",
+          "unit": "damage multiplier from 2000 world units of flight onward (twice the reference distance)",
           "source": "src/physics/Projectile.cpp:160"
         },
         {
@@ -1410,8 +1434,8 @@
       "id": "rune-gesture-recognition",
       "node": "rune-casting",
       "name": "Mouse-drawn rune recognition",
-      "summary": "A drawn stroke is resampled to 20 points, reduced to 19 compass directions, and matched against authored direction strings with a small tolerance.",
-      "behavior": "While the cast button is held the game collects raw mouse positions, capped at 200 samples so a long scribble cannot grow without bound. On release the stroke first has its corners picked out as key points, then is resampled into a fixed set of 20 positions spread across those segments by arc length, and each consecutive pair becomes one of eight compass directions derived from the screen-space angle of the segment. That gives 19 direction codes per stroke, which are compared against a table of hand-authored direction strings, one string per rune; several runes accept two alternative strings so a rounded or angular handwriting both register. Matching allows up to two direction codes to differ, which absorbs jitter and a sloppy corner without letting distinct runes collide. A recognised rune is pushed into the current spell symbol list and resets the stroke buffer; an unrecognised one clears the buffer and records the failed sequence.",
+      "summary": "A drawn stroke is reduced to corner points, resampled to 20 points, turned into 19 compass directions and matched against authored direction strings with a small total error.",
+      "behavior": "While the cast button is held, the game collects mouse positions and skips a position equal to the last one. The list holds at most 200 points. When it is full, each new point replaces the last point. On release the stroke goes through four steps. First, the game finds corner points. A point counts as a corner when it lies farther than 30 percent of the average of the bounding box width and height from the last corner, and the angle at it is below 120 degrees. A stroke with more than 20 corners is rejected without any result. Second, the game resamples the stroke to 20 points. It spreads the points over the segments between corners in proportion to their length. Third, each pair of neighbouring points becomes one of eight compass directions, which gives 19 direction codes. Fourth, the codes are compared with a table of hand-authored direction strings, one or more per rune. A pattern may repeat each of its directions along the stroke. A candidate fails when any single direction differs by more than one compass step, or when the summed difference over the stroke exceeds 2. The game picks the pattern with the smallest sum. A failed stroke stores a shortened direction string as the last failed sequence. A match calls the handler of the rune.",
       "constants": [
         {
           "name": "resampled stroke length",
@@ -1422,13 +1446,13 @@
         {
           "name": "matching tolerance",
           "value": 2,
-          "unit": "direction codes that may differ between a drawn stroke and a stored rune pattern",
+          "unit": "sum over the stroke of compass-step differences allowed between drawn and stored directions; no single direction may differ by more than 1 step",
           "source": "src/game/magic/SpellRecognition.cpp:104"
         },
         {
           "name": "raw stroke sample cap",
           "value": 200,
-          "unit": "mouse positions retained per stroke before the buffer is reset",
+          "unit": "mouse positions kept per stroke; at the cap, each new point replaces the last one",
           "source": "src/game/magic/SpellRecognition.cpp:454"
         }
       ],
@@ -1469,13 +1493,13 @@
       "id": "spell-precast-queue",
       "node": "rune-casting",
       "name": "Precast spell queue",
-      "summary": "Completed rune sequences wait in a short first-in-first-out queue; pressing cast launches the oldest entry, and no two launches can happen within one second.",
-      "behavior": "Recognising a full rune sequence does not cast immediately. The spell is pushed onto a small queue with its level and duration, and if the queue is already full the oldest entry is discarded to make room, so the buffer holds the three most recent invocations. Launching is a separate player action: it reads the oldest queued spell, computes the mana cost from the player's effective spell level, and only spends mana if the cost is affordable or the spell is flagged as free. A global timestamp guards the whole system so a second launch inside one second is silently ignored, which stops a player from emptying the queue in a single frame and makes each cast a deliberate beat. If the player is in combat stance when the launch fires, the stance is dropped and the casting animation restarted so the two animation layers do not fight.",
+      "summary": "Completed rune sequences wait in a queue of three slots; a slot launches by player input, at most once per second, after a cast animation.",
+      "behavior": "Recognising a full rune sequence does not cast at once. The spell goes onto a queue with its level and duration. The queue holds three entries. When it is full, the oldest entry is discarded to make room. Launching is a separate player action, and each of the three slots has its own input and its own button on the interface. The launch request is ignored when less than one second of game time has passed since the previous launch. It then reads the mana cost for the effective spell level of the player. When the player has enough mana or the spell is flagged as free, the request stamps the slot with a launch time and starts the casting sound. Otherwise it plays a fizzle sound and a speech line, with a notification. Every frame, the check pass handles slots with a launch time. If the player is in combat stance, it leaves the stance and remembers to return to it afterwards. It plays the cast animation on the second animation layer. When less than 550 ms of that animation remains, it launches the spell and frees the slot.",
       "constants": [
         {
           "name": "precast queue depth",
           "value": 3,
-          "unit": "queued spells retained; the oldest is dropped when a fourth is added",
+          "unit": "queued spells retained; adding another discards the oldest",
           "source": "src/game/magic/Precast.cpp:34"
         },
         {
@@ -1483,6 +1507,12 @@
           "value": 1,
           "unit": "seconds of game time between two launched spells",
           "source": "src/game/magic/Precast.cpp:71"
+        },
+        {
+          "name": "cast animation lead time",
+          "value": 550,
+          "unit": "milliseconds of cast animation that must remain before the queued spell is launched",
+          "source": "src/game/magic/Precast.cpp:121"
         }
       ],
       "sources": [
@@ -1522,13 +1552,13 @@
       "id": "magic-missile-volley",
       "node": "spell-projectiles",
       "name": "Magic missile volley",
-      "summary": "Missile count grows with spell level up to five, each extra missile is fanned out by a small random angle, and every missile detonates in an 80-unit sphere.",
-      "behavior": "Casting magic missile computes the number of projectiles as half of the spell level plus one, clamped between one and five, then spawns each missile from the caster's hand with the camera pitch and yaw. The first missile flies exactly where the player aims; every additional missile is jittered by up to four degrees of pitch and six degrees of yaw, giving a ragged fan rather than a tight cluster. Each missile has a six-second life with up to a second of random variation, never less than one second, and carries its own coloured light. Every frame each missile tests a ten-unit sphere against the world; on contact it explodes, dealing damage in an 80-unit radius with a base of four plus a fifth of a point per level, scaled by 0.8, typed as magical and flagged as a single-hit area effect that cannot hurt the caster. Once every missile has stopped moving the spell ends itself.",
+      "summary": "Missile count is (level + 1) / 2 clamped to 1..5; each missile follows its own jittered curve for about six seconds and explodes in an 80-unit sphere on contact.",
+      "behavior": "Casting magic missile sets the number of projectiles to the spell level plus one, divided by two with whole-number division, clamped between 1 and 5. Level 9 and above give 5. Each missile starts 60 units in front of the hand, along the pitch and yaw of the caster. The first missile uses the exact aim. Every other missile adds up to 4 degrees of random pitch and 6 degrees of random yaw. A missile does not fly straight. Its path is a smooth curve through six control points on a nominal line of 2000 units, which is 40 steps of 50 units. A recursive random split displaces the points, and the height of every point is capped 150 units above the start. The missile moves along this curve at a constant rate over its lifetime. The lifetime is 6 seconds plus or minus up to 1 second at random, and never below 1 second. The spell lasts until the longest missile ends, plus 1 second. Every update, a missile that has not exploded tests a sphere of 10 units against other entities and level objects, ignoring the caster group. On contact it explodes. The explosion deals damage in an 80-unit radius of 4 plus 0.2 per spell level, times 0.8. The damage is magical, hits each target once, and cannot hurt the caster. When no missile is still moving, the spell ends itself.",
       "constants": [
         {
           "name": "missile count clamp",
           "value": 5,
-          "unit": "upper clamp on the projectile count, reached at spell level 9 and above",
+          "unit": "upper clamp on the projectile count; the count is (level + 1) / 2 with whole-number division, so level 9 reaches it",
           "source": "src/game/magic/spells/SpellsLvl01.cpp:173"
         },
         {
@@ -1566,6 +1596,24 @@
           "value": 0.8,
           "unit": "multiplier applied to base damage of four plus a fifth of a point per spell level",
           "source": "src/game/magic/spells/SpellsLvl01.cpp:270"
+        },
+        {
+          "name": "missile path steps",
+          "value": 40,
+          "unit": "number of 50-unit steps in the nominal path line before random displacement",
+          "source": "src/graphics/effects/MagicMissile.cpp:92"
+        },
+        {
+          "name": "missile path step length",
+          "value": 50,
+          "unit": "world units per path step",
+          "source": "src/graphics/effects/MagicMissile.cpp:94"
+        },
+        {
+          "name": "missile path height cap",
+          "value": 150,
+          "unit": "world units above the start position that limit the height of every path control point",
+          "source": "src/graphics/effects/MagicMissile.cpp:102"
         }
       ],
       "sources": [
@@ -1588,6 +1636,10 @@
         {
           "path": "src/game/magic/spells/SpellsLvl01.cpp",
           "line": 125
+        },
+        {
+          "path": "src/graphics/effects/MagicMissile.cpp",
+          "line": 86
         }
       ],
       "capabilities": [
@@ -1605,8 +1657,8 @@
       "id": "fireball-flight",
       "node": "spell-projectiles",
       "name": "Fireball flight and blast",
-      "summary": "A fireball spends two seconds gathering in the caster's hands, then flies at a fixed speed and detonates the first thing it touches with a blast that scales with level.",
-      "behavior": "On launch the spell sets a six-second duration and starts a two-second creation window. During creation the ball is re-aimed at the caster's current view every frame and its speed is set for the gathering phase; once the window elapses the speed is re-fixed at the higher flight value and the ball stops following the aim, so a caster who turns after release cannot steer it. Motion uses a per-frame multiplier on the velocity rather than raw frame time, which keeps the flight visually consistent across frame rates. The contact sphere radius is twice the spell level, floored at 12 world units, so a high-level fireball is much easier to land. On contact the velocity is halved, a scorch decal and a boom are spawned, and spherical damage is applied over a radius of 30 units per level with 3 damage per level, typed fire and magical; fire protection scales the damage and everything in the blast is ignited.",
+      "summary": "A fireball is held in front of the caster for two seconds while it follows the aim, then flies on a locked heading at a fixed speed and blasts on first contact.",
+      "behavior": "The spell lasts 6 seconds and has a 2-second creation window. During that window every update re-places the ball at the chest of the caster, 60 units ahead, and re-aims it along the current view. The velocity scale is set to 100 in every one of those updates. The value 80 written at launch is replaced before the ball moves, so it never takes effect. Position advances every update by the velocity scale times 0.0045 times the frame time in milliseconds, so the ball flies at 0.45 world units per millisecond. When the window ends, the code stops re-aiming, and the last heading stays fixed. A caster who turns after that cannot steer the ball. A contact sphere is tested on every update, including the creation window. Its radius is twice the spell level, with a minimum of 12 world units. It ignores the caster group. On contact the ball spawns a scorch decal and a blast effect, halves its velocity and ends the spell. It also applies spherical damage of 3 per level in a radius of 30 units per level. The damage is fire and magical. Each creature takes the damage times the blast radius plus 30 units minus the distance of its nearest vertex, divided by the blast radius, so damage falls off toward the edge. Fire protection reduces the damage, and creatures and lights inside the sphere are ignited.",
       "constants": [
         {
           "name": "fireball duration",
@@ -1617,25 +1669,25 @@
         {
           "name": "gathering window",
           "value": 2,
-          "unit": "seconds during which the ball tracks the caster and cannot be steered away from",
+          "unit": "seconds during which the ball is held at the chest of the caster and re-aimed every update",
           "source": "src/game/magic/spells/SpellsLvl03.cpp:162"
         },
         {
           "name": "launch speed scale",
           "value": 80,
-          "unit": "velocity magnitude at launch, multiplied per frame by 0.0045 of frame time in milliseconds",
+          "unit": "velocity scale written at launch; it is overwritten with 100 before the ball first moves, so it never affects flight",
           "source": "src/game/magic/spells/SpellsLvl03.cpp:204"
         },
         {
           "name": "flight speed scale",
           "value": 100,
-          "unit": "velocity magnitude after the gathering window, multiplied per frame by 0.0045 of frame time in milliseconds",
+          "unit": "velocity scale used in every update; the ball moves by this times 0.0045 per millisecond of frame time",
           "source": "src/game/magic/spells/SpellsLvl03.cpp:259"
         },
         {
           "name": "per-frame flight multiplier",
           "value": 0.0045,
-          "unit": "world units travelled per millisecond of frame time per unit of velocity scale",
+          "unit": "world units per millisecond of frame time per unit of velocity scale (0.45 units per millisecond at a scale of 100)",
           "source": "src/game/magic/spells/SpellsLvl03.cpp:262"
         },
         {
@@ -1649,6 +1701,12 @@
           "value": 30,
           "unit": "world units of damage radius per spell level",
           "source": "src/game/magic/spells/SpellsLvl03.cpp:293"
+        },
+        {
+          "name": "blast falloff margin",
+          "value": 30,
+          "unit": "world units added to the blast radius for the distance falloff of creatures",
+          "source": "src/game/Damage.cpp:1323"
         }
       ],
       "sources": [
@@ -1671,6 +1729,10 @@
         {
           "path": "src/game/magic/spells/SpellsLvl03.cpp",
           "line": 293
+        },
+        {
+          "path": "src/game/Damage.cpp",
+          "line": 1323
         }
       ],
       "capabilities": [
@@ -1689,8 +1751,8 @@
       "id": "npc-vision-cone",
       "node": "npc-perception",
       "name": "NPC vision cone with light gating",
-      "summary": "A creature sees the player only inside a 110-degree half-angle within 2000 units, and only if the player is lit above the stealth threshold, carrying a torch, or standing close.",
-      "behavior": "Detection measures the ground-plane angle between the creature's facing and the direction toward a point 90 world units above the player's position. Three gates must pass. First the distance must be under 2000 squared units and the player must not be invisible or dead. Second the angle between the creature's facing and the direction to the player must be within 110 degrees, measured on the ground plane. Third the player must be visible by one of three routes: the light sampled at the player's feet must exceed a stealth threshold that rises with the stealth skill, the player must be carrying a lit torch, or the player must be within 200 units where proximity overrides darkness. Touching at body radii plus 15 units with less than 200 units of vertical separation always counts, bypassing the angle test entirely. A ray against level geometry must then actually reach the player, and a hit within 25 units of the target is treated as clear. Entering and leaving visibility raise distinct events so scripts can react.",
+      "summary": "A creature sees the player within 110 degrees of its facing and 2000 units, if the player is lit above the stealth threshold, holds a torch or stands within 200 units, and a ray reaches the player.",
+      "behavior": "Detection fails at once when the player is invisible or dead, farther than 2000 world units, or farther than 2000 units by portal-room distance. A player in contact range is always detected. Contact range is the sum of both body radii plus 15 units, with less than 200 units of height difference. Contact skips the angle, light and ray checks. Otherwise the game measures the ground-plane angle between the facing of the creature and the direction from its eye to a point of the player 90 units offset from the player position. The eye is 120 units from the creature position when the model has a head group, and 90 units otherwise. The angle must be below 110 degrees. The player must then pass one of three light tests. The sampled light at the feet must exceed a threshold of 15 plus one tenth of the stealth skill. Or the player carries a torch. Or the player is within 200 units. The sampled light is smoothed. It rises by 0.125 per millisecond toward the ground light minus 15, and it falls by 0.25 per millisecond. At the end, a ray from the eye must reach the player, and a hit within 25 units of the player counts as a clear line. When the result changes, the creature script receives a detect event or an undetect event.",
       "constants": [
         {
           "name": "vision half-angle",
@@ -1701,7 +1763,7 @@
         {
           "name": "sight range",
           "value": 2000,
-          "unit": "world units of distance beyond which the player is ignored",
+          "unit": "world units of distance beyond which the player is ignored (the code compares squared distance with 2000 squared)",
           "source": "src/game/NPC.cpp:2549"
         },
         {
@@ -1731,7 +1793,7 @@
         {
           "name": "stealth threshold base",
           "value": 15,
-          "unit": "light level at zero stealth skill before any skill bonus is added",
+          "unit": "light level at zero stealth skill; one tenth of the stealth skill is added",
           "source": "src/game/Player.cpp:2300"
         }
       ],
@@ -1755,6 +1817,14 @@
         {
           "path": "src/game/Player.cpp",
           "line": 2299
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1777
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1781
         }
       ],
       "capabilities": [
@@ -1774,7 +1844,7 @@
       "node": "npc-perception",
       "name": "Footstep noise and hearing range",
       "summary": "Steps are emitted every 120 units travelled; stealth mode both quiets the step and shrinks the radius at which creatures hear it, and crouching effectively doubles the distance counted per step.",
-      "behavior": "Player movement accumulates travelled distance, and once that accumulator passes 120 world units a step noise is emitted and the accumulator is reduced. While crouching the travelled distance is doubled before it is added, so a crouched player produces a step roughly every 60 units of real movement, while levitation suppresses steps entirely. The emitted noise carries a volume and a falloff factor: stealth mode lowers the volume from 1.0 toward 0.94 and raises the falloff factor from 1.0 toward 4.5 in proportion to stealth skill, so a skilled sneak is barely audible past a few metres. Playing a collision sound also raises a hear event on every living creature in a trigger zone within range, carrying the distance to the noise. That range is 600 world units for anything sourced by the player and 800 for an item, multiplied by the presence value baked into the played sample and divided by the stealth-driven falloff factor, so a skilled sneak is heard from a fraction of the normal radius. When source and listener sit in different rooms the straight distance is replaced by the portal-graph room distance, so a shout through a doorway carries further than the geometry suggests. Jumps, weapon impacts, arrow hits and spell detonations all raise the same kind of event, which is why a quiet approach has to avoid combat as well as footsteps.",
+      "behavior": "Player movement adds the distance moved to an accumulator. When it passes 120 world units, and the player is neither jumping nor falling, a step noise plays and the accumulator drops by 120. A crouched player counts double distance, so a step happens about every 60 units. Levitation produces no steps. Only in stealth movement, the noise carries a volume that falls from 1.0 toward 0.94 and a falloff factor that rises from 1.0 toward 4.5, both in proportion to the stealth skill divided by 100. Playing a collision sound, including a footstep, raises a hear event on creatures. The game uses this range: 600 world units when the source is the player, or 800 when the source is an item. Other sources raise no event. The range is multiplied by the presence value of the sound sample and divided by the falloff factor. Only living creatures inside the treat zone and within the range in a straight line receive the event. When source and creature stand in known rooms and the portal-graph distance is below 1.5 times the range, the event carries that distance instead of the straight one. The straight distance still decides who hears. The jump start, weapon hits, arrow impacts and spell blasts also raise this event, so a quiet approach has to avoid combat as well.",
       "constants": [
         {
           "name": "step distance",
@@ -1797,13 +1867,13 @@
         {
           "name": "quietest step volume",
           "value": 0.94,
-          "unit": "sample volume at maximum stealth skill, down from a default of 1.0",
+          "unit": "sample volume at maximum stealth skill in stealth movement, down from a default of 1.0",
           "source": "src/game/NPC.h:227"
         },
         {
           "name": "harshest step falloff factor",
           "value": 4.5,
-          "unit": "hearing-range divisor at maximum stealth skill, up from a default of 1.0",
+          "unit": "hearing-range divisor at maximum stealth skill in stealth movement, up from a default of 1.0",
           "source": "src/game/NPC.h:232"
         },
         {
@@ -1857,8 +1927,8 @@
       "id": "light-aware-pathfinding",
       "node": "npc-navigation",
       "name": "Pathfinding that prefers darkness",
-      "summary": "The anchor-graph search is ordinary A-star, but a sneaking creature adds a large surcharge for every anchor inside a lit radius, so its path drifts toward shadow.",
-      "behavior": "The search expands anchors from a level-built graph, skipping nodes that are flagged blocked or whose radius or height cannot fit the mover's cylinder. Edge cost is the straight distance between anchors; when the caller asks for a stealth path, the illumination cost of the destination anchor is added on top. That illumination cost sums, over every active light whose falloff reaches the anchor, a base charge multiplied by the light's intensity and average colour, and scaled down for anchors between the light's falloff start and falloff end so the edge of a pool of light is cheaper than its centre. The resulting cost can easily exceed the geometric distance, which is what bends the path around braziers instead of through them. A separate flee search inverts the goal: it walks away from a danger point until it reaches a safe radius, weighting the remaining estimate so it clears the immediate area quickly. Wandering picks a handful of random linked anchors to produce a patrol route.",
+      "summary": "The anchor-graph search is weighted A-star; a stealth search adds a surcharge for each lit anchor, with the scale of a light inverted near its falloff edge.",
+      "behavior": "The search expands anchors from a level graph. It skips anchors that are blocked, whose height exceeds the mover height, or whose radius is smaller than the mover radius. The edge cost is the straight distance between anchors. For a stealth path, the illumination cost of the next anchor is added to it. The default weight of 0.5 splits the estimate evenly between cost so far and the remaining straight distance, which is plain A-star. The illumination cost sums over every ignited light whose falloff end reaches the anchor. Each light adds 300 times its intensity times the mean of its colour channels. Inside the falloff start distance, the light adds this full charge. Between falloff start and end, the code scales the charge by the distance past the start divided by the band width. That factor grows toward the edge, so as written the charge is zero just past the start and full at the end. A copy that wants a soft edge should invert the factor. A separate flee search walks away from a danger point. It estimates the remaining cost as 130 per world unit still missing from the safe distance, and it ends at the first anchor outside that distance. Wandering builds a patrol of four to nine hops through random linked anchors, paths between them, and returns to the start. A wander radius of 110 or less keeps the creature on its anchor.",
       "constants": [
         {
           "name": "minimum anchor radius",
@@ -1899,6 +1969,10 @@
         {
           "path": "src/ai/PathFinder.cpp",
           "line": 312
+        },
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 63
         }
       ],
       "capabilities": [
@@ -1916,13 +1990,13 @@
       "id": "prop-tumble-solver",
       "node": "prop-physics",
       "name": "Loose prop tumbling and settling",
-      "summary": "Dropped and knocked items are simulated as a cloud of mass-carrying particles under Runge-Kutta integration, bouncing off geometry with a fixed restitution and going to sleep after enough contacts.",
-      "behavior": "Every dynamic item carries a physics box built from its own vertices: an oriented set of particles with positions, velocities, masses and a radius derived from the mesh bounds. Launching the box rotates every particle by the throw orientation, offsets it to the launch position, and gives it a velocity proportional to the object's surface area so a big crate tumbles less wildly than a small pot, with mass rising slightly with that same surface ratio. Integration is fourth-order Runge-Kutta over a fixed small step: a constant gravity of 65 is divided by particle mass, and a damping term of 0.5 times velocity acts as drag so nothing accelerates forever. After integration the solver casts rays from each particle's old position to its new one; on a hit it reflects the velocity about the surface normal and multiplies it by separate restitution factors per axis, then restores the old position. Contacts increment a stop counter while free flight decrements it, and once the counter reaches 16 the object is put to sleep until something disturbs it, which keeps a room full of debris from costing anything.",
+      "summary": "Dropped items are a few mass-carrying particles under fourth-order Runge-Kutta integration, bouncing with per-axis damping and sleeping after 16 net contacts.",
+      "behavior": "Every dynamic item carries a physics box built from its own vertices. It holds 15 particles with positions, velocities, masses and a radius from the mesh bounds. A launch rotates the particles by the throw orientation, moves them to the launch position and gives each a velocity of the throw vector times 250 times a ratio. The ratio is 1 minus a quarter of the surface area divided by 10000, with the area term capped at 0.8. It therefore lies between 0.8 and 1, and a larger item launches up to 20 percent slower. Mass is 0.4 plus 0.1 times the ratio. Gravity is 65 per solver time unit squared and drag is 0.5 times velocity; the integrator scales the force by mass, so mass does not change the fall. The solver runs fourth-order Runge-Kutta steps of 0.11 solver time units. An accumulator adds frame time in milliseconds times the per-entity rubber factor times 0.0055, and a step runs each time it passes 0.18. The default rubber factor is 1.5, so a step runs about every 22 ms. The position gain carries an unexplained factor of 1.2. Before each step the solver clamps every velocity axis to plus or minus 400. After each step it casts a ray from every old particle position to the new one. It also checks the entity shapes and force fields. On a hit, every particle position returns to its old value. The velocity reflects about the surface normal and is multiplied by 0.3, 0.4 and 0.3 on the three axes. A hit without a surface normal reverses the velocity with the same factors. Each contact adds 1 to a stop counter, and each free step lowers it by 2, down to zero. At 16 the box goes to sleep.",
       "constants": [
         {
           "name": "prop gravity",
           "value": 65,
-          "unit": "world units of acceleration per solver time unit, divided by particle mass before each integration step",
+          "unit": "acceleration per solver time unit squared; the force is divided by particle mass and then scaled by mass again in the integrator",
           "source": "src/physics/Physics.cpp:294"
         },
         {
@@ -1934,7 +2008,7 @@
         {
           "name": "launch velocity scale",
           "value": 250,
-          "unit": "velocity multiplier per solver time unit, scaled by the object's surface-area ratio",
+          "unit": "multiplier of the throw vector in solver velocity units, times a ratio between 0.8 and 1 that falls as the surface area grows",
           "source": "src/physics/Physics.cpp:277"
         },
         {
@@ -1946,20 +2020,32 @@
         {
           "name": "velocity clamp",
           "value": 400,
-          "unit": "velocity per solver time unit per axis, clamped before every integration step",
+          "unit": "solver velocity units per axis, applied before every step",
           "source": "src/physics/Physics.cpp:289"
         },
         {
           "name": "integration threshold",
           "value": 0.18,
-          "unit": "accumulator threshold per frame; frame time in milliseconds times 0.0055 is added each step, and a step runs only when the accumulator passes it",
+          "unit": "accumulator threshold; frame time in milliseconds times the rubber factor (default 1.5) times 0.0055 is added each frame, and one solver step runs per threshold crossing",
           "source": "src/physics/Physics.cpp:607"
         },
         {
           "name": "sleep contact count",
           "value": 16,
-          "unit": "accumulated contacts before the prop is put to sleep",
+          "unit": "stop counter value at which the prop sleeps; contacts add 1 and free steps subtract 2",
           "source": "src/physics/Physics.cpp:622"
+        },
+        {
+          "name": "solver step size",
+          "value": 0.11,
+          "unit": "solver time units per Runge-Kutta step",
+          "source": "src/physics/Physics.cpp:616"
+        },
+        {
+          "name": "default rubber factor",
+          "value": 1.5,
+          "unit": "multiplier of the frame time in the solver accumulator for an ordinary entity",
+          "source": "src/game/Entity.h:82"
         }
       ],
       "sources": [
@@ -1982,6 +2068,10 @@
         {
           "path": "src/physics/Physics.cpp",
           "line": 622
+        },
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 616
         }
       ],
       "capabilities": [
@@ -2001,7 +2091,7 @@
       "node": "torch-light",
       "name": "Carried torch light and burn-down",
       "summary": "A held torch is one dynamic point light with a 1.6 intensity, a falloff band around 280 units that flickers per frame, and a durability that drains while it is held.",
-      "behavior": "Equipping a torch does not add a light per torch: it fills one reserved dynamic light slot owned by the player. Every frame, while a torch is held, that light is moved to the player position, given an intensity of 1.6, a falloff start of about 280 units with a small per-frame random flicker and a falloff end another 280 units further out, and coloured from the player's torch tint with a small random darkening so the pool of light breathes rather than sitting still. The light is marked as existing with no countdown, so it lasts as long as the torch does. Durability is drained per millisecond of frame time, and when it reaches zero the torch is destroyed, the light handle is cleared and the looping sound stops. With no torch the same slot falls back to a dim flare-driven light when magic flares are active, which is why carried spells light the player's surroundings without a torch.",
+      "behavior": "Holding a torch does not add a light per torch. It fills one reserved dynamic light slot owned by the player. Every frame while a torch is held, the light moves to the player position. It gets an intensity of 1.6 and a falloff start of 280 units plus up to 20 units of random flicker. The falloff end is another 280 units further out. The colour comes from the torch tint of the player, darkened by up to 0.1 at random. The light has no countdown, so it lasts as long as the torch does. Durability drops by 0.0001 per millisecond of frame time while the torch is held. When it reaches zero, the torch is destroyed. With no torch, the same light slot becomes a dim light when magic flares exist. Its falloff start is 140 plus a third of the flare count, and its colour grows with the count.",
       "constants": [
         {
           "name": "torch light intensity",
@@ -2030,7 +2120,7 @@
         {
           "name": "fallback flare light intensity",
           "value": 1.6,
-          "unit": "light intensity units used when magic flares supply the player's light instead of a torch",
+          "unit": "light intensity units when magic flares supply the light instead of a torch; falloff and colour grow with the flare count",
           "source": "src/graphics/particle/ParticleEffects.cpp:443"
         }
       ],

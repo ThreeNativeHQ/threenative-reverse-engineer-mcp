@@ -322,8 +322,8 @@
       "id": "ground-state-restore",
       "node": "actor-core",
       "name": "Ground state restore",
-      "summary": "Leaving a special state rebuilds the movement numbers instead of inheriting them: gravity 4.0, horizontal speed 15.0, water flag cleared and running locked for six update units.",
-      "behavior": "Whenever an actor becomes an ordinary walker again, one routine rewrites the values the movement integrator reads rather than trusting what the previous state left behind. The water flag is cleared, two state bytes are zeroed, the lateral impulse is set to zero, and the run lock is set to six update units, but only while the actor still has health: a dead actor is not given a run delay. Gravity is restored to 4.0 world units of acceleration per update and horizontal speed to 15.0 world units per update. Because the run lock is a short countdown instead of zero, the actor cannot sprint out of a landing, cutscene exit or respawn for a few updates, which is what stops the first frame after a transition from looking like a dash. Copy this as one reset routine that every transition calls, so a new state can never start with a stale speed.",
+      "summary": "One reset routine rewrites gravity, horizontal speed, the lateral impulse and the water flag, and sets a short run lock while the actor still has health.",
+      "behavior": "A small reset routine rewrites the values the movement code reads instead of trusting what the previous state left behind. It clears the water flag, a lateral impulse field and two other fields. When the actor still has health, it also zeroes two state bytes and sets the run lock to 6. A dead actor gets no run lock. It then sets gravity to 4.0 and horizontal speed to 15.0. The run lock is a short countdown, so the actor cannot sprint for a few updates after the reset. The caller context is not shown in this tree, so which transitions use it is unverified. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "restoredGravity",
@@ -381,8 +381,8 @@
       "id": "turn-steer",
       "node": "actor-core",
       "name": "Steer by the side of the target angle",
-      "summary": "A steering call converts facing to degrees with 360 divided by 65536 and applies a lateral impulse left or right depending on which half of the circle the target angle falls on.",
-      "behavior": "Steering is a sideways impulse, not a direct heading write. The call takes a target angle, a magnitude and a gain. It first writes a secondary facing value in degrees by adding a quarter turn to the actor facing and multiplying by 360 divided by 65536, so the stored angle is ready for anything that wants degrees. It then tests the signed difference between the target and the current facing after the same quarter-turn offset: if the half-turn bit is set the impulse decreases by magnitude times gain, otherwise it increases. The visible facing is chased separately, so the impulse and the turn rate can be tuned apart: a larger gain makes a character slide into corners, a smaller one makes the same input read as a pivot in place. The sign test costs one mask and covers the whole circle without any wrap arithmetic.",
+      "summary": "A steering call adds or subtracts a lateral impulse depending on which side of the actor the target angle lies.",
+      "behavior": "Steering is a sideways impulse, not a direct heading write. The call takes a target angle, a magnitude and a gain, and the gain is first multiplied by a global scale value. It writes a second facing value in degrees, from the actor facing plus a quarter turn times 360 over 65536. It then tests the signed difference between the target and the current facing, shifted by the same quarter turn. If the half-turn bit of that difference is set, the lateral impulse falls by magnitude times gain. Otherwise it rises by that amount. The single mask test covers the whole circle with no wrap arithmetic. The impulse field is the same one that the ground reset clears and the stomp bounce sets. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "quarterTurn",
@@ -440,8 +440,8 @@
       "id": "facing-chase",
       "node": "actor-core",
       "name": "Facing chase with a one-unit floor",
-      "summary": "A current angle closes on a wanted angle by a twelfth of the gap plus one angle unit each update, clamped so it never passes the target.",
-      "behavior": "Turning uses a proportional chase with a fixed divisor. Each update the current angle moves one twelfth of the remaining gap toward the wanted angle, plus one extra angle unit, and the result is clamped on both sides so it cannot overshoot. The fixed divisor makes the approach exponential rather than linear: the first update closes about eight percent of a large gap, roughly two thirds of the gap is gone after twelve updates, and each later step closes a twelfth of what is left. The extra unit guarantees that small gaps finish instead of stalling on integer truncation, which matters because the angles are integers. Because the step is not scaled by the update delta, this is per-update smoothing: a slow frame makes the turn visibly lag, and the divisor is the one number to change if a character should feel snappier without changing its top speed.",
+      "summary": "Each update one signed 16-bit field moves a twelfth of its gap toward another, plus one unit toward the target, clamped so it cannot overshoot.",
+      "behavior": "A proportional chase moves one signed 16-bit field toward a second one. Each update, the step is the gap divided by 12 with integer truncation, plus one extra unit in the direction of the target. The result is clamped so it cannot pass the target. The first update closes about eight percent of a large gap, and about two thirds of the gap is gone after twelve updates. The extra unit makes small gaps finish instead of stalling on truncation. The step does not use the update delta, so this is per-update smoothing and a slow frame makes the turn lag. The code does not wrap angles, so a gap that crosses the 16-bit seam is chased the long way. The fields are probably a current and a target facing, but the names are unknown in this tree.",
       "constants": [
         {
           "name": "gapDivisor",
@@ -486,7 +486,7 @@
       "node": "actor-core",
       "name": "Effect timer convention",
       "summary": "Run, jump and immunity locks share one countdown: zero means finished, 255 means held, every other value drops by the update delta, and the run lock treats 250 and above as held too.",
-      "behavior": "Every timed effect on an actor uses one convention. The run lock, the jump lock, the immunity counter and the chase and interaction timers that share the same block are all decremented by the update delta rather than by a constant one, so a long update consumes several units at once and the effect still ends at the same wall-clock moment. Two values are sentinels: zero means the effect is over and the field is left alone, and 255 means held on forever because the countdown branch skips it. The run lock adds a third rule, treating any value from 250 upward as held, so the top of the byte is a second permanent marker and the usable range stops at 249. Every branch clamps to zero instead of wrapping, so a caller only has to test for non-zero to know whether a lock is live. This is the single most reusable pattern in the file: one decrement helper, two sentinels, no per-effect bookkeeping.",
+      "behavior": "Timed effects on an actor share one convention. The run lock, the jump lock, the immunity counter and one more byte counter are decremented by a per-update step value that is read from a global byte, so a longer update consumes more units. Each of these clamps to zero instead of wrapping. Zero means the effect is over and the field is left alone. For the jump lock and immunity, 255 means held forever, because the countdown branch skips it. The run lock treats any value from 250 up as held. A few other counters, such as a chase timer and an interaction timer, subtract the same step only while positive and can end below zero. Two further byte counters decrement by exactly one. A caller only has to test for non-zero to know whether a clamped lock is live.",
       "constants": [
         {
           "name": "heldValue",
@@ -534,8 +534,8 @@
       "id": "fall-past-floor",
       "node": "actor-core",
       "name": "Fall past the stored floor",
-      "summary": "A scripted descent subtracts the update vertical step each update and ends when the actor is 100 world units below the stored floor height.",
-      "behavior": "One vertical state does not integrate velocity at all: it subtracts the update vertical step from height every update, which gives a constant descent rate independent of gravity, and it watches a stored floor height for the actor. When the actor drops more than 100 world units below that stored height the state calls the shared state-exit routine with a zero argument, which hands the actor back to its normal update. The 100-unit margin keeps an actor from ending its state on a floor that is stored slightly high, and it doubles as a pit plane: lower the value and pits must be shallower to register, raise it and an actor survives a longer drop. Because the step is the update delta, the descent covers the same distance per second on a slow frame as on a fast one.",
+      "summary": "A vertical state lowers the actor by a fixed global step each update and exits when it is more than 100 units below a stored floor height.",
+      "behavior": "One vertical state does not integrate velocity. Each update it subtracts a global per-update vertical step from the actor height. It also sets a flag bit on the actor. It compares the height with a stored floor height for that actor. When the actor is more than 100 world units below that value, the state calls the shared state-exit routine with a zero argument. The 100 units act as a pit margin: a stored floor that is slightly high does not end the state early. The meaning and units of the global step are not named in this tree. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "pitMargin",
@@ -574,7 +574,7 @@
       "node": "actor-core",
       "name": "Death dissolve countdown",
       "summary": "A dying actor counts up by the update delta while its scales and horizontal speed decay by 0.95 each update, then locks into a dead state with zeroed motion at 141 units.",
-      "behavior": "Dying is a countdown, not a switch. The counter gains the update delta every update while it stays below 141, and on each of those updates the horizontal scale, the vertical scale and the horizontal speed are multiplied by 0.95, so the character shrinks and slows geometrically and ends at roughly seven hundredths of a percent of its starting size. When the counter reaches 141 the actor is locked out: immunity, stun and run lock all go to 255, a set of state flags is raised, every velocity is zeroed, health becomes zero and the interaction state moves to 5. The threshold test sits above the rest of the routine, so the lockout runs once and the decay stops. Copying this shape gives a death that reads as a fade rather than a disappearance, and the 0.95 step is the one number to tune for how long the fade feels.",
+      "behavior": "Dying is a countdown, not a switch. Each update the counter gains the per-update step value, and while it is below 141 the horizontal scale, the vertical scale and the horizontal speed are all multiplied by 0.95. Health is also forced to zero on those updates. With a step of one, the character ends at about 0.07 percent of its starting size. When the counter reaches 141, the actor is locked out. The routine sets bits in a global per-actor mask, sets immunity, stun and run lock to 255, raises a state flag, zeroes velocity and gravity, and sets the interaction state to 5. The threshold test returns early, so the lockout runs once and the decay stops. This gives a fade instead of a pop, and the 0.95 factor sets how long it feels. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "dissolveUnits",
@@ -626,8 +626,8 @@
       "id": "heading-from-flat-vector",
       "node": "world-math",
       "name": "Heading from a flat direction",
-      "summary": "A flat vector becomes a compass bearing by normalizing x to the horizontal length, taking an inverse cosine, folding the sign of z through 270 or 90 degrees, shifting by 90 and wrapping into one full turn.",
-      "behavior": "Facing is derived from movement, not from the stick. The helper normalizes the x component by the horizontal length, feeds that into an inverse cosine, and then picks an offset from the sign of the z component: 270 degrees minus the angle when z is positive, 90 plus the angle otherwise. It then subtracts 90 and adds a full turn to negative results, producing a bearing between zero and 360 degrees. A twin version answers in the eight-bit angle units the actor facing byte uses, mirroring around 128 below a quarter turn and around 384 above it, which keeps the wrap intact at the byte boundary. Both work on the horizontal pair only, so jumping or falling never spins a character, and both return zero for a zero-length vector instead of dividing by zero. The inverse cosine is an approximation, so the result is smooth enough for steering and cheap enough to call for several actors per update.",
+      "summary": "Two helpers turn a flat direction vector into a bearing, one in degrees and one in 256-step byte units.",
+      "behavior": "The degree helper takes the horizontal pair of a vector, returns zero for zero length, and otherwise divides the negated x by the horizontal length. It passes the result to an approximate inverse cosine and scales the angle to degrees. It then uses 270 minus the angle when z is positive, and 90 plus the angle otherwise. It subtracts 90 and adds 360 to a negative result, giving a bearing in 0 to 360 degrees. The byte helper does the same flat projection with the unnegated x. It uses an approximate inverse cosine in 256-step units. When z is positive, it mirrors the result around 128 for values below 64, and around 384 otherwise. It also returns zero for zero length. Both ignore the vertical component, so jumping does not change the bearing. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "positiveZOffset",
@@ -711,8 +711,8 @@
       "id": "shortest-turn",
       "node": "world-math",
       "name": "Shortest signed turn between angles",
-      "summary": "Two helpers return the signed shortest turn from one angle to another by moving one angle a full turn whenever the raw difference leaves the half-turn range.",
-      "behavior": "Comparing headings needs the short way round the circle. The floating helper subtracts the two angles and then, if the difference is more than 180 degrees, moves the first angle back by a full turn; if the difference is minus 180 degrees or less it moves the second angle back by a full turn instead. The returned value therefore always lies inside a half turn and carries the sign of the turn direction. An integer twin uses 181 and minus 179 as its thresholds, keeping the accepted range symmetric for the eight-bit facing units used elsewhere. Without this step a raw subtraction reports a one-degree correction on the far side of the seam as a 359-degree turn, which is exactly the long swing this pair prevents. The helper makes that impossible in one place instead of at every call site.",
+      "summary": "Two helpers return the signed shortest difference between two angles, one in floating degrees and one in integer degrees.",
+      "behavior": "Comparing headings needs the short way round the circle. The float helper subtracts the two angles. When the difference is above 180, it moves the first angle back by 360. When the difference is minus 180 or lower, it moves the second angle back by 360 instead. It returns second minus first, which lies inside a half turn and carries the sign of the turn. The integer helper uses the same rule in whole degrees. Its thresholds of 181 and minus 179 match the float boundaries at integer steps. Without the helper, a one degree correction across the 0 and 360 seam would read as a 359 degree swing.",
       "constants": [
         {
           "name": "halfTurn",
@@ -735,13 +735,13 @@
         {
           "name": "integerUpperBound",
           "value": 181,
-          "unit": "eight-bit angle units, upper threshold; evaluated per angle comparison",
+          "unit": "whole degrees, difference at or above this wraps the first angle; evaluated per angle comparison",
           "source": "conker/src/game_75E60.c:47"
         },
         {
           "name": "integerLowerBound",
           "value": -179,
-          "unit": "eight-bit angle units, lower threshold; evaluated per angle comparison",
+          "unit": "whole degrees, difference below this wraps the second angle; evaluated per angle comparison",
           "source": "conker/src/game_75E60.c:50"
         }
       ],
@@ -783,7 +783,7 @@
       "node": "camera",
       "name": "Camera aim from the eye-to-actor offset",
       "summary": "Yaw is the bearing of the flattened eye-to-actor offset, pitch is the height difference over the horizontal distance wrapped into half a turn, and the look direction is rebuilt from both with sine and cosine.",
-      "behavior": "The chase camera derives its orientation every update from two points: an eye position and the tracked actor. Yaw is the compass bearing of the offset projected onto the horizontal plane, produced with the same vector-to-bearing helper the characters use and then scaled into radians. Pitch is the angle of the height difference over the horizontal distance, wrapped so values past 180 degrees lose a full turn, negated, offset by stored bias values and finally scaled into radians. The forward direction is rebuilt from those two angles as sine yaw times cosine pitch on one horizontal axis, minus sine pitch on the vertical axis and cosine yaw times cosine pitch on the other horizontal axis. That is the standard yaw-then-pitch basis, so the camera looks exactly along the line of sight it just measured rather than at a smoothed approximation of it. Because the offset is the source, closing the vertical gap levels the camera out and shortening the horizontal distance steepens the pitch, and the aim always points at the actor it measured.",
+      "behavior": "The camera aim is rebuilt every update from stored positions. Yaw is the bearing of the horizontal offset between two stored points, computed with the same flat-vector bearing helper as the actors, and scaled to radians. Pitch is the angle of the height difference over the horizontal distance, scaled to degrees. A value above 180 loses 360. It is then negated, reduced by one stored bias, increased by another, and scaled to radians. The forward direction is sine yaw times cosine pitch on one horizontal axis, minus sine pitch on the vertical axis, and cosine yaw times cosine pitch on the other horizontal axis. This is the standard yaw-then-pitch basis. Which stored point is the eye and which is the target is not named in this tree. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "pitchWrap",
@@ -796,12 +796,6 @@
           "value": 360,
           "unit": "degrees removed from an over-wrapped pitch; applied per camera update",
           "source": "conker/src/game_14FF90.c:406"
-        },
-        {
-          "name": "flatOffsetY",
-          "value": 0,
-          "unit": "world units, the flattened offset height; rebuilt per camera update",
-          "source": "conker/src/game_14FF90.c:418"
         }
       ],
       "sources": [
@@ -858,7 +852,7 @@
       "node": "camera-presets",
       "name": "Camera mode presets",
       "summary": "Each view mode installs a near distance pair and a larger outer distance; the tightest special case is 40 and 40 with an outer 150, the widest 500 and 500 with an outer 800.",
-      "behavior": "Camera views are chosen as presets, not solved from scratch. A dispatcher reads a view-mode index into a table, copies the table outer value into one field and its near value into both members of a pair, and overrides them for special states: a mode bit with a held button gives 40 and 40 with an outer 150, a mode bit without the button rebuilds the near value from an eye-height difference, and a flag raised by the tracked actor gives 40 and 40 with an outer 194. Scene setup calls dedicated setters that write the extremes: 500 and 500 with 800 for a wide overview, 117 and 117 with 370 for a close follow, 230 and 230 with 290 for a mid shot. Two setters also write tilt: one puts minus 38 degrees into a single field for its close case, the other writes 30 degrees into two fields alongside 155 and 155 with an outer 178. Copy the ratios rather than the absolute numbers, because the unit is the world scale of the game, and keep the pair equal unless a mode needs asymmetric damping.",
+      "behavior": "Camera views are chosen as presets, not solved from scratch. A dispatcher reads a view-mode index into a preset table. It copies one table entry into an outer value, and the other into both members of a pair, which the code uses like a near value. Special states override this. A mode bit with a held button gives 40 and 40 with an outer value of 150. A mode bit without the button rebuilds the near value from a stored height difference. A flag on the tracked actor gives 40 and 40 with an outer value of 194. A third branch that also tests the mode bit can never run, because the branch before it already takes every case with that bit set. Scene setup calls dedicated setters. They write 500 and 500 with 800 for a wide view, 117 and 117 with 370 for a close view, and 230 and 230 with 290 for a mid view. Two more setters also write a tilt field. One writes minus 38 degrees with 143, 143 and 150. The other writes 30 degrees into two fields with 155, 155 and 178. The table values themselves are not in this source. Field names are unknown in this decompiled source, so the roles below come from how the code uses them. The values act like camera distances, but the unit is not stated.",
       "constants": [
         {
           "name": "tightNear",
@@ -971,7 +965,7 @@
       "node": "actor-actions",
       "name": "Bounce off a stomped target",
       "summary": "A bounce sets vertical speed to 12 and gravity to 5, and adds a lateral push of 5 mirrored against the current horizontal speed direction.",
-      "behavior": "The bounce after landing on a target is three numbers and a sign. Vertical speed becomes 12 world units per update, gravity becomes 5 units of acceleration per update, and the lateral impulse is written as 5 with the opposite sign to the current horizontal speed, so an actor moving one way is pushed the other way and the hop reads as recoil rather than continuation. Gravity above the resting ground value shortens the hop, which is what keeps a bounce chain from drifting upward, and the small lateral number next to the vertical launch is what stops a bounce from throwing a player off a narrow platform. A single function owns all four writes, so every stompable surface produces the same feel and only the vertical number needs tuning to change hop height.",
+      "behavior": "A small callback sets the bounce after a hit on a target. Vertical speed becomes 12 and gravity becomes 5. The lateral impulse field is set to 5, or to minus 5 when the current horizontal speed is above zero. A moving actor is therefore pushed backward. A single function owns all of these writes, so every caller produces the same hop. This tree does not show which contact calls it, and the update rate for the speeds is unverified. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "bounceSpeed",
@@ -1030,7 +1024,7 @@
       "node": "actor-actions",
       "name": "Scripted launch and stun",
       "summary": "A launch action stamps horizontal 18, vertical 40 and gravity 6 on its target, copies the attacker facing and stuns it at 254; one target id gets its motion zeroed instead.",
-      "behavior": "One action in the scripted set is a launch. It resolves the target from the current actor target index, checks a state byte on that target, and then writes a velocity triple: 18 world units per update horizontally, 40 upward and gravity 6, well above an ordinary bounce. It copies the attacker facing onto the target, sets the stun byte to 254, clears two counters and raises a bit on the target flags. A target whose id matches one particular value is exempt: its three velocities are zeroed and a different flag is raised instead, so the same action throws most targets and only shoves that one. The gravity is part of the action rather than a property of the target, which lets the same actor be thrown softly by one script point and hard by another.",
+      "behavior": "One action in a scripted set launches a target. It resolves the target from the actor target index, minus 100, and acts only when a state byte on the target is at least 100. It then clears that byte and writes a velocity triple: horizontal speed 18, vertical speed 40, and gravity 6. It copies the attacker facing onto the target and clears one counter. It sets the stun byte to 254, clears another counter and sets a third from a helper call. It sets a field to 0xFFFF and raises a flag bit. When the target id equals 0x20, all three velocity values are zeroed and a different flag is raised, so that target stays in place. The target index is cleared on every call. The gravity is part of the action, not of the target. The speed unit and update rate are unverified. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "launchSpeed",
@@ -1095,7 +1089,7 @@
       "node": "actor-actions",
       "name": "Immunity split on contact",
       "summary": "Contact gives the attacker 255 immunity, a held value that never ticks, and the victim 200 units that count down by the update delta.",
-      "behavior": "A successful contact writes two different immunity values. The attacker gets 255, which the timer convention treats as held, so it cannot be touched again until something clears the field explicitly. The victim gets 200, which counts down by the update delta and returns it to vulnerability after roughly two hundred update units, about three seconds if the update runs at sixty hertz. Splitting the two values lets one contact resolution serve both sides: the acting side is protected for the whole swing, while the receiving side is protected only for a recovery window that can be tuned without touching the attacker. Because 255 is the held sentinel rather than a large finite number, a script can grant permanent immunity by writing the same value the timer already knows how to skip.",
+      "behavior": "Three contact handlers use the same immunity write. When the second actor argument is in interaction state 1, the first actor gets an immunity of 255 and the second gets 200. They also set a shared global value and call one common routine. 255 is the held value in the timer convention, so the first actor stays immune until something clears the field. The second actor count falls by the per-update step, so it returns to vulnerable after roughly 200 steps. At one step per update and 60 updates per second, that is about three seconds. One handler sets a different global value for one particular actor id. The roles of the two actors are not named in this tree. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "attackerHeldImmunity",
@@ -1138,9 +1132,9 @@
     {
       "id": "hit-resolve",
       "node": "actor-actions",
-      "name": "Melee hit resolution",
-      "summary": "One function owns every melee result: it bumps a per-id combo counter, runs the shared hit handler, then zeroes the target health, moves its state to index 8 and returns 39, except for one exempt id.",
-      "behavior": "Melee damage funnels through a single resolve function so every attack reports the same way. It first looks at the target id and the attacker counter: for one specific id, when the attacker counter is still below 55, the counter gains three. The shared hit handler then runs, and unless the target id matches one particular exempt value, the resolver zeroes the target health, calls the state changer with index 8 and writes 39 into the caller result byte. Copy the shape rather than the ids: one resolve step that owns the damage write, the state transition and the return code keeps separate attacks from drifting apart, and the counter bump is how a single attack keeps its own combo tally without another field on the actor.",
+      "name": "Kill-hit resolution",
+      "summary": "A hit handler zeroes the target health, switches it to state 8 and writes result code 39, except for one exempt target id.",
+      "behavior": "One hit handler resolves a hit from one actor on another. When the target id is 0x88 and a field on the attacker is below 55, another field on the attacker gains 3. The shared hit routine then runs. Unless the target id is 0x53, the handler calls a helper, sets the target health to zero, switches the target to state 8, and writes 39 into the caller result byte. Only one handler of this shape is shown, so the full set of attack results is unverified. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "comboCap",
@@ -1213,7 +1207,7 @@
       "node": "actor-physics",
       "name": "Follow a changing surface height",
       "summary": "An actor springs vertically with a surface height that moves at most 30 world units per update, moving by twice the gap to a point 230 units below it, capped at 300.",
-      "behavior": "Riding a changing surface is a spring, not a snap. The helper keeps the surface height from the previous update and subtracts it from the current one to get this update movement, then ignores anything larger than 30 world units so a teleported or newly streamed surface cannot fling the actor. Otherwise it moves the actor vertically by twice the gap between the actor and a point 230 world units below the surface, times that movement and a gain, with the gap capped at 300. The 230 is written as two constants, 60 and 170, and sets how firmly the actor is tied to the surface: a larger offset means a bigger response to the same movement. When the surface rises the actor rises with it, and when it falls the actor follows down, which is the cheap version of buoyancy and needs no volume queries per update.",
+      "behavior": "An actor follows a changing surface height through a spring-like rule. The helper keeps the surface height of the previous update and subtracts it from the current one to get this update movement. It computes a gap equal to twice the distance between the actor and a point 230 units below the surface. A negative gap, an actor further below that point, does nothing. A surface movement larger than 30 units in one update is ignored, so a jump in the surface cannot fling the actor. Otherwise the gap is capped at 300, and the actor moves vertically by gap times surface movement times a gain taken from a global value that is not defined in this tree. The 230 is written as 60 plus 170. A rising surface lifts the actor and a falling surface lowers it. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "surfaceGate",
@@ -1288,7 +1282,7 @@
       "node": "actor-physics",
       "name": "Tether radius clamp",
       "summary": "With a tether index set, an actor is held inside a sphere of eight world units per index around a table point, and rewritten onto that radius when it strays outside.",
-      "behavior": "One containment state ties an actor to a point stored in a scene table. Each update it measures the full three-dimensional distance to that point, adding a small epsilon inside the square root so a coincident actor cannot divide by zero, and compares the distance with the tether index times 8 world units. If the actor is outside that radius the position is rewritten to exactly the radius along the same direction, which keeps the actor on the sphere rather than dragging it back gradually, so a large index allows a wide circle and an index of zero releases the constraint entirely. Because the clamp preserves direction, an actor circling the anchor keeps its orbit and only loses outward distance, and because the measurement is three-dimensional a tall anchor point produces a sphere rather than a cylinder.",
+      "behavior": "One containment state ties an actor to a point stored in a scene table. When the actor tether index is not zero, each update it measures the 3D distance to that point and adds a small global constant inside the square root, so a coincident actor does not divide by zero. The radius is the tether index times 8 world units. If the actor is outside the radius, its position is rewritten to the point plus the unit direction times the radius. The actor therefore stays on the sphere and keeps its direction from the anchor, and an index of zero turns the constraint off. The distance is 3D, so the limit is a sphere, not a cylinder. Field names are unknown in this decompiled source, so the roles below come from how the code uses them.",
       "constants": [
         {
           "name": "radiusStep",
