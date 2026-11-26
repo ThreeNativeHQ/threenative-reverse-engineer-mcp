@@ -65,8 +65,10 @@ game is unclassified.
 `system-software` or `original-source`. Mapped games must name a real platform.
 
 Release assets in `.release/` are `index.json.gz` (catalog plus searchable stubs)
-and one lazy `game-<id>.json` per mapped game. Tag `v0.1` after review; the single
-workflow validates every source citation before publishing.
+and one lazy `game-<id>.json` per verified game. If fetching a pinned source fails, the
+release logs the affected game and leaves its row, stubs, and game asset out. A release
+with zero verified games fails, as does any bad citation in a fetched source. `npm run
+validate` still fails on an unavailable source. Tag a release after review.
 
 ThreeNative's existing engine MCP serves `engine_search_references`,
 `engine_reference_detail` and `engine_save_reference`; no new server is needed.

@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { gunzipSync } from 'node:zlib';
 import { validateGame } from '../scripts/validate.mjs';
 import { catalogRow, cleanup, demoGame, makeLibrary, makeSourceRepo, root, runNode, runNpm, write } from './support.mjs';
@@ -130,6 +131,37 @@ test('--game does not weaken whole-library consistency or pinned verification', 
   const ok = runNpm(dir, ['validate', '--', '--game', 'demo', '--source', source.dir]);
   assert.equal(ok.status, 0, ok.stderr);
   assert.doesNotMatch(ok.stdout, /second@/, 'only the selected game spends pinned-source checks');
+});
+
+test('release omits an unavailable source and its previous asset while validation stays strict', t => {
+  const source = makeSourceRepo();
+  const config = [catalogRow(), catalogRow('second')];
+  const dir = makeLibrary({ catalog: config, games: [demoGame(source.sha), demoGame(source.sha, 'second')] });
+  t.after(() => { cleanup(dir); cleanup(source.dir); });
+  const missing = path.join(dir, 'gone');
+  const withSources = (demo, second) => ({
+    GIT_CONFIG_COUNT: '2',
+    GIT_CONFIG_KEY_0: `url.${pathToFileURL(demo)}.insteadOf`, GIT_CONFIG_VALUE_0: config[0].repo,
+    GIT_CONFIG_KEY_1: `url.${pathToFileURL(second)}.insteadOf`, GIT_CONFIG_VALUE_1: config[1].repo,
+  });
+  const release = ['scripts/validate.mjs', '--release'];
+  const initial = runNode(dir, release, withSources(source.dir, source.dir));
+  assert.equal(initial.status, 0, initial.stderr);
+  assert.ok(existsSync(path.join(dir, '.release', 'game-second.json')));
+  const partial = runNode(dir, release, withSources(source.dir, missing));
+  assert.equal(partial.status, 0, partial.stderr);
+  assert.match(partial.stderr, /omitting second.*source unavailable/);
+  assert.deepEqual(readdirSync(path.join(dir, '.release')).sort(), ['game-demo.json', 'index.json.gz', 'watch.mjs']);
+  const publishedIndex = readFileSync(path.join(dir, '.release', 'index.json.gz'));
+  const index = JSON.parse(gunzipSync(publishedIndex));
+  assert.deepEqual(index.games, [config[0]]);
+  assert.deepEqual([...new Set(index.stubs.map(stub => stub.game))], ['demo']);
+  const strict = runNode(dir, ['scripts/validate.mjs', '--game', 'second'], withSources(source.dir, missing));
+  assert.notEqual(strict.status, 0, strict.stderr);
+  const offline = runNode(dir, release, withSources(missing, missing));
+  assert.notEqual(offline.status, 0, offline.stderr);
+  assert.match(offline.stderr, /no mapped games could be verified/);
+  assert.deepEqual(readFileSync(path.join(dir, '.release', 'index.json.gz')), publishedIndex);
 });
 
 test('release assets keep the version-1 contract and exact asset set', t => {
