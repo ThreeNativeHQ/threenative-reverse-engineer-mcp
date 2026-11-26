@@ -1,0 +1,2343 @@
+{
+  "version": 1,
+  "id": "resident-evil-1",
+  "title": "Resident Evil",
+  "repo": "https://github.com/ecruells/resident-evil-pc-decomp",
+  "sha": "01730553e0a6430048f9043a5fe3a3de28654208",
+  "nodes": [
+    {
+      "id": "player-control",
+      "name": "Player tank-control movement",
+      "purpose": "Turns held direction bits into one of the walk, turn-in-place, backward and run routines, and moves the character along its own facing by a per-update step. The camera never enters the calculation.",
+      "paths": [
+        "src/game/PlayerAnimations.cpp"
+      ],
+      "functions": [
+        {
+          "name": "player_state_01_control",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2329,
+            2390
+          ]
+        },
+        {
+          "name": "player_input_to_behavior",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            3139,
+            3270
+          ]
+        },
+        {
+          "name": "player_ctrl_frame2",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2313,
+            2390
+          ]
+        },
+        {
+          "name": "player_ctrl_behavior_walk",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2614,
+            2691
+          ]
+        },
+        {
+          "name": "player_ctrl_behavior_back",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2702,
+            2734
+          ]
+        },
+        {
+          "name": "player_ctrl_behavior_run",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2747,
+            2846
+          ]
+        },
+        {
+          "name": "player_behavior_0d_run",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            3356,
+            3499
+          ]
+        },
+        {
+          "name": "Add_speedXZ",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            1612,
+            1632
+          ]
+        }
+      ],
+      "dependsOn": [
+        "room-camera-collision"
+      ]
+    },
+    {
+      "id": "player-aim-fire",
+      "name": "Aiming, auto-target and firing",
+      "purpose": "Holds the stance while the aim button is down, picks a lock-on enemy, turns toward it, fires on fixed animation frames and consumes ammo from the loaded slot or a reserve stack.",
+      "paths": [
+        "src/game/PlayerAnimations.cpp"
+      ],
+      "functions": [
+        {
+          "name": "player_behavior_12_gun_aim",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            4366,
+            4455
+          ]
+        },
+        {
+          "name": "player_behavior_13_gun_hold_input",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            4559,
+            4662
+          ]
+        },
+        {
+          "name": "player_behavior_14_autoaim_fire",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            4693,
+            4837
+          ]
+        },
+        {
+          "name": "player_reticle_enemy",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            4196,
+            4253
+          ]
+        },
+        {
+          "name": "player_find_aim_target",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            4108,
+            4152
+          ]
+        },
+        {
+          "name": "weapon_autoaim_check",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            3997,
+            4025
+          ]
+        },
+        {
+          "name": "fire_consume_ammo_stack",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            5244,
+            5267
+          ]
+        },
+        {
+          "name": "auto_aim_pitch_update",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            3955,
+            3986
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-control",
+        "weapon-damage",
+        "inventory-health"
+      ]
+    },
+    {
+      "id": "weapon-damage",
+      "name": "Weapon hit detection and damage tables",
+      "purpose": "Finds the one enemy a shot hits, checks that room walls do not block it, then subtracts a damage value looked up by enemy type and weapon and starts the hurt or dying reaction.",
+      "paths": [
+        "src/game/WeaponDamage.cpp"
+      ],
+      "functions": [
+        {
+          "name": "check_weapon_line_of_sight",
+          "path": "src/game/WeaponDamage.cpp",
+          "lines": [
+            41,
+            53
+          ]
+        },
+        {
+          "name": "weapon_hit_detect_gun",
+          "path": "src/game/WeaponDamage.cpp",
+          "lines": [
+            217,
+            267
+          ]
+        },
+        {
+          "name": "apply_weapon_damage",
+          "path": "src/game/WeaponDamage.cpp",
+          "lines": [
+            312,
+            455
+          ]
+        },
+        {
+          "name": "enemy_hit_reaction_zombie",
+          "path": "src/game/WeaponDamage.cpp",
+          "lines": [
+            25,
+            53
+          ]
+        }
+      ],
+      "dependsOn": [
+        "room-camera-collision"
+      ]
+    },
+    {
+      "id": "zombie-ai",
+      "name": "Zombie-class perception and movement",
+      "purpose": "Spawns each zombie with random health and poise, checks detection ranges every update, chases by refreshing a waypoint, and wanders when it has not noticed the player.",
+      "paths": [
+        "src/game/entities/Zombie.cpp",
+        "src/game/entities/EntityCommon.cpp"
+      ],
+      "functions": [
+        {
+          "name": "zombie_update",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            180,
+            316
+          ]
+        },
+        {
+          "name": "zombie_init",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            324,
+            553
+          ]
+        },
+        {
+          "name": "zombie_state_check",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            560,
+            613
+          ]
+        },
+        {
+          "name": "zombie_chase_player",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            2113,
+            2142
+          ]
+        },
+        {
+          "name": "zombie_chase_walk",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            932,
+            1038
+          ]
+        },
+        {
+          "name": "zombie_idle",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            17,
+            316
+          ]
+        },
+        {
+          "name": "zombie_slow_walk",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            18,
+            316
+          ]
+        },
+        {
+          "name": "zombie_update_player_distance",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            2781,
+            2805
+          ]
+        },
+        {
+          "name": "checkAngularViewAndDistance",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            255,
+            283
+          ]
+        },
+        {
+          "name": "entity_pathfind_update",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            330,
+            371
+          ]
+        },
+        {
+          "name": "entity_check_visual_range",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            290,
+            302
+          ]
+        },
+        {
+          "name": "entity_check_alert_range",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            309,
+            321
+          ]
+        },
+        {
+          "name": "turn_toward_target",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            143,
+            156
+          ]
+        }
+      ],
+      "dependsOn": [
+        "room-camera-collision",
+        "weapon-damage"
+      ]
+    },
+    {
+      "id": "zombie-combat",
+      "name": "Zombie grab, stagger, knockdown and death",
+      "purpose": "Runs the grab-and-bite attack, the hit reaction that counts hits toward a knockdown, the fall and timed get-up, and the death sequence including the chance of a body rising again.",
+      "paths": [
+        "src/game/entities/Zombie.cpp",
+        "src/game/entities/EntityCommon.cpp"
+      ],
+      "functions": [
+        {
+          "name": "zombie_attack",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            1641,
+            1836
+          ]
+        },
+        {
+          "name": "zombie_damaged",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            1126,
+            1214
+          ]
+        },
+        {
+          "name": "zombie_die",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            1221,
+            1298
+          ]
+        },
+        {
+          "name": "zombie_falldown",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            665,
+            709
+          ]
+        },
+        {
+          "name": "zombie_dead_animation",
+          "path": "src/game/entities/Zombie.cpp",
+          "lines": [
+            1321,
+            1429
+          ]
+        },
+        {
+          "name": "reduce_attack_time_by_btn_press",
+          "path": "src/game/entities/EntityCommon.cpp",
+          "lines": [
+            1343,
+            1349
+          ]
+        }
+      ],
+      "dependsOn": [
+        "zombie-ai",
+        "weapon-damage",
+        "player-control"
+      ]
+    },
+    {
+      "id": "enemy-bosses",
+      "name": "Dog and heavy-boss behaviour",
+      "purpose": "Fast pack-animal chase with a leaping bite, and a large boss that picks an attack from distance and facing tests and clamps lethal blows to leave one health point.",
+      "paths": [
+        "src/game/entities/Cerberus.cpp",
+        "src/game/entities/Tyrant.cpp"
+      ],
+      "functions": [
+        {
+          "name": "cerberus_chase_run",
+          "path": "src/game/entities/Cerberus.cpp",
+          "lines": [
+            976,
+            1056
+          ]
+        },
+        {
+          "name": "cerberus_consider_attack",
+          "path": "src/game/entities/Cerberus.cpp",
+          "lines": [
+            915,
+            965
+          ]
+        },
+        {
+          "name": "cerberus_bite_player",
+          "path": "src/game/entities/Cerberus.cpp",
+          "lines": [
+            1155,
+            1206
+          ]
+        },
+        {
+          "name": "cerberus_leap_airborne",
+          "path": "src/game/entities/Cerberus.cpp",
+          "lines": [
+            1229,
+            1297
+          ]
+        },
+        {
+          "name": "tyrant_init",
+          "path": "src/game/entities/Tyrant.cpp",
+          "lines": [
+            1928,
+            2021
+          ]
+        },
+        {
+          "name": "tyrant_think_lab",
+          "path": "src/game/entities/Tyrant.cpp",
+          "lines": [
+            1799,
+            1825
+          ]
+        },
+        {
+          "name": "tyrant_damage_player",
+          "path": "src/game/entities/Tyrant.cpp",
+          "lines": [
+            692,
+            698
+          ]
+        },
+        {
+          "name": "tyrant_behavior_claw_slash",
+          "path": "src/game/entities/Tyrant.cpp",
+          "lines": [
+            1145,
+            1225
+          ]
+        }
+      ],
+      "dependsOn": [
+        "zombie-ai",
+        "weapon-damage"
+      ]
+    },
+    {
+      "id": "inventory-health",
+      "name": "Inventory, healing and status",
+      "purpose": "Keeps the small per-character item grid, stacks ammo, merges pickups, applies healing and cures, drains poison over time, and consumes ribbons and keys.",
+      "paths": [
+        "src/game/GameStart.cpp",
+        "src/game/RoomEvents.cpp",
+        "src/game/MainMenu.cpp",
+        "src/game/MenuData.cpp",
+        "src/game/SaveLoadScreen.cpp",
+        "src/game/PlayerAnimations.cpp",
+        "src/game/entities/Adder.cpp",
+        "src/game/BioCard.h",
+        "src/game/Types.h"
+      ],
+      "functions": [
+        {
+          "name": "SetInitialItems",
+          "path": "src/game/GameStart.cpp",
+          "lines": [
+            85,
+            175
+          ]
+        },
+        {
+          "name": "CountHeldItems",
+          "path": "src/game/GameStart.cpp",
+          "lines": [
+            182,
+            191
+          ]
+        },
+        {
+          "name": "get_item_slot",
+          "path": "src/game/GameStart.cpp",
+          "lines": [
+            232,
+            248
+          ]
+        },
+        {
+          "name": "room_event_item_pickup",
+          "path": "src/game/RoomEvents.cpp",
+          "lines": [
+            889,
+            981
+          ]
+        },
+        {
+          "name": "menu_item_use_heal",
+          "path": "src/game/MainMenu.cpp",
+          "lines": [
+            244,
+            680
+          ]
+        },
+        {
+          "name": "use_room_action_item",
+          "path": "src/game/SaveLoadScreen.cpp",
+          "lines": [
+            709,
+            751
+          ]
+        },
+        {
+          "name": "player_state_01_control",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2329,
+            2390
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "room-camera-collision",
+      "name": "Fixed cameras and room boundary collision",
+      "purpose": "Chooses the active fixed camera from quadrilateral trigger zones around the player, and pushes characters out of rectangular and circular boundary records with a rollback when they stay stuck.",
+      "paths": [
+        "src/game/Room.cpp",
+        "src/game/RoomCollision.cpp"
+      ],
+      "functions": [
+        {
+          "name": "is_entity_in_switch_zone",
+          "path": "src/game/Room.cpp",
+          "lines": [
+            83,
+            131
+          ]
+        },
+        {
+          "name": "check_camera_switch",
+          "path": "src/game/Room.cpp",
+          "lines": [
+            173,
+            211
+          ]
+        },
+        {
+          "name": "display_room_camera_bg",
+          "path": "src/game/Room.cpp",
+          "lines": [
+            143,
+            157
+          ]
+        },
+        {
+          "name": "ChkOutsideCell",
+          "path": "src/game/RoomCollision.cpp",
+          "lines": [
+            56,
+            61
+          ]
+        },
+        {
+          "name": "collision_push_rect",
+          "path": "src/game/RoomCollision.cpp",
+          "lines": [
+            148,
+            236
+          ]
+        },
+        {
+          "name": "check_room_collision",
+          "path": "src/game/RoomCollision.cpp",
+          "lines": [
+            348,
+            454
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "doors-interaction",
+      "name": "Doors, locks, action zones and typewriter saves",
+      "purpose": "Probes action zones in front of the player, runs the door open sequence, checks locks and keys, plays the full-screen door scene during room load, and spends a ribbon at a save point.",
+      "paths": [
+        "src/game/PlayerAnimations.cpp",
+        "src/game/DoorSystem.cpp",
+        "src/game/SaveLoadScreen.cpp",
+        "src/game/RoomEvents.cpp"
+      ],
+      "functions": [
+        {
+          "name": "door_try_enter",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            6806,
+            6877
+          ]
+        },
+        {
+          "name": "door_begin_transition",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            6779,
+            6804
+          ]
+        },
+        {
+          "name": "player_door_open_sequence",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2893,
+            3127
+          ]
+        },
+        {
+          "name": "check_door",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            6897,
+            6939
+          ]
+        },
+        {
+          "name": "check_typewriter",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            7284,
+            7312
+          ]
+        },
+        {
+          "name": "check_action_object",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            2527,
+            2562
+          ]
+        },
+        {
+          "name": "update_player_position",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            7350,
+            7404
+          ]
+        },
+        {
+          "name": "stairs_height_update",
+          "path": "src/game/PlayerAnimations.cpp",
+          "lines": [
+            7320,
+            7335
+          ]
+        },
+        {
+          "name": "DoorAnimLoop",
+          "path": "src/game/DoorSystem.cpp",
+          "lines": [
+            1117,
+            1139
+          ]
+        }
+      ],
+      "dependsOn": [
+        "room-camera-collision",
+        "inventory-health",
+        "player-control"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "tank-walk-turn",
+      "node": "player-control",
+      "name": "Tank-control walk and turn in place",
+      "summary": "Forward movement follows the character's own facing at a fixed step, and left or right either spins in place or bends the path.",
+      "behavior": "Every update the held direction bits pick one routine: forward, forward with a bend, a pure spin, backward, or the run modifier. Walking sets a step of 93 units along the current facing, then subtracts 13 during two seven-frame windows of the stride and 14 during two three-frame windows nested inside them, so the speed of the first character bottoms out at 66 where a window pair overlaps. Holding left or right while walking adds a 40 unit yaw change per update, which is about 3.5 degrees. With forward released, left or right alone adds 96 units per update, about 8.4 degrees, and the character does not translate. A fresh press resets the routine state so the cycle restarts, while a held direction keeps the animation running, and releasing forward plays one short stop step before returning to idle.",
+      "constants": [
+        {
+          "name": "Walk base step",
+          "value": "0x5d",
+          "unit": "world units per game update at 30 Hz (decimal 93, before footfall dips)",
+          "source": "src/game/PlayerAnimations.cpp:2662"
+        },
+        {
+          "name": "Footfall dip, first window",
+          "value": "0x0D",
+          "unit": "world units per game update at 30 Hz removed (decimal 13, first character)",
+          "source": "src/game/PlayerAnimations.cpp:2617"
+        },
+        {
+          "name": "Footfall dip, second window",
+          "value": "0x0E",
+          "unit": "world units per game update at 30 Hz removed (decimal 14, first character)",
+          "source": "src/game/PlayerAnimations.cpp:2617"
+        },
+        {
+          "name": "Bend while walking",
+          "value": "0x28",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz (decimal 40)",
+          "source": "src/game/PlayerAnimations.cpp:5830"
+        },
+        {
+          "name": "Spin in place",
+          "value": "0x60",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz (decimal 96)",
+          "source": "src/game/PlayerAnimations.cpp:5838"
+        },
+        {
+          "name": "Angle wrap mask",
+          "value": "0xfff",
+          "unit": "mask, 4096 yaw units per full turn",
+          "source": "src/game/PlayerAnimations.cpp:5838"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2614
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 3229
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2642
+        }
+      ],
+      "capabilities": [
+        "camera-independent tank controls",
+        "gait-shaped walk speed",
+        "in-place spinning"
+      ],
+      "tags": [
+        "movement",
+        "horror",
+        "input"
+      ]
+    },
+    {
+      "id": "run-sprint",
+      "node": "player-control",
+      "name": "Run modifier with steady speed and short stop",
+      "summary": "Holding the run modifier while forward is held switches to a constant fast step, steered by a fixed yaw rate, with a four update decay on release.",
+      "behavior": "The walk routine hands over to the run routine as soon as the modifier bit is held with forward. The run uses a flat step of 210 units per update from the first update, with no ramp, and steering adds or subtracts 48 yaw units per update from the left and right bits. Releasing forward, or raising a weapon with the aim button, starts the stop: the step falls by 30 units each update for about four updates, then control returns to idle. Releasing only the modifier drops back into the walk without stopping and picks the walk frame that continues the stride. Pushing an object or pressing the action button during the run still works, so doors and items can be used at full speed.",
+      "constants": [
+        {
+          "name": "Run step",
+          "value": "0xd2",
+          "unit": "world units per game update at 30 Hz (decimal 210)",
+          "source": "src/game/PlayerAnimations.cpp:3445"
+        },
+        {
+          "name": "Steering right factor",
+          "value": "0x18",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz; the bit value 2 times 0x18 gives +48",
+          "source": "src/game/PlayerAnimations.cpp:3413"
+        },
+        {
+          "name": "Steering left factor",
+          "value": -6,
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz; the bit value 8 times -6 gives -48",
+          "source": "src/game/PlayerAnimations.cpp:3415"
+        },
+        {
+          "name": "Stop decay",
+          "value": "0x1e",
+          "unit": "world units per game update at 30 Hz removed each update (decimal 30)",
+          "source": "src/game/PlayerAnimations.cpp:3492"
+        },
+        {
+          "name": "Stop length",
+          "value": 3,
+          "unit": "game updates counted before control returns (check is greater than 3, so about 4 updates)",
+          "source": "src/game/PlayerAnimations.cpp:3485"
+        },
+        {
+          "name": "Run modifier bit",
+          "value": "0x200",
+          "unit": "pad bit mask",
+          "source": "src/game/PlayerAnimations.cpp:3460"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 3356
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 3405
+        }
+      ],
+      "capabilities": [
+        "sprint modifier",
+        "flat-speed run with abrupt stop"
+      ],
+      "tags": [
+        "movement",
+        "horror",
+        "input"
+      ]
+    },
+    {
+      "id": "backward-step",
+      "node": "player-control",
+      "name": "Backward walk, slower and guarded near enemies",
+      "summary": "The back input moves the character opposite its facing at a lower step than walking, and uses a guarded animation when a living enemy is ahead.",
+      "behavior": "The backward routine applies the same step vector as the walk but rotated half a turn, so the character keeps facing forward while sliding back. With no live enemy in the view wedge the step is 64 units per update; the code intends 60 for that case, but its frame test is always true, so 64 is what runs. When any active enemy that is not script-controlled stands within a 90 degree wedge ahead (half angle 512 yaw units) and 8000 units Manhattan distance, the step is 60 and the guarded walk animation plays instead of the full backward animation. Left and right bits bend the backward path by 40 yaw units per update. No separate quick turn or 180 degree spin exists in this code: turning around is done only by the in-place spin.",
+      "constants": [
+        {
+          "name": "Backward step, no enemy ahead",
+          "value": "0x40",
+          "unit": "world units per game update at 30 Hz (decimal 64, effective)",
+          "source": "src/game/PlayerAnimations.cpp:2817"
+        },
+        {
+          "name": "Backward step, enemy ahead",
+          "value": "0x3c",
+          "unit": "world units per game update at 30 Hz (decimal 60)",
+          "source": "src/game/PlayerAnimations.cpp:2830"
+        },
+        {
+          "name": "Enemy scan range",
+          "value": 8000,
+          "unit": "world units, Manhattan distance |dx|+|dz|",
+          "source": "src/game/PlayerAnimations.cpp:2791"
+        },
+        {
+          "name": "Enemy scan half angle",
+          "value": "0x200",
+          "unit": "yaw units (decimal 512, 45 degrees)",
+          "source": "src/game/PlayerAnimations.cpp:2791"
+        },
+        {
+          "name": "Half-turn offset",
+          "value": "0x800",
+          "unit": "yaw units (180 degrees) added to the move direction",
+          "source": "src/game/PlayerAnimations.cpp:2769"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2747
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2816
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 5845
+        }
+      ],
+      "capabilities": [
+        "reverse stepping",
+        "enemy-aware guarded retreat",
+        "no quick turn"
+      ],
+      "tags": [
+        "movement",
+        "horror",
+        "combat"
+      ]
+    },
+    {
+      "id": "aim-stance-fire-gate",
+      "node": "player-aim-fire",
+      "name": "Planted aim stance with tilt classes and fire gate",
+      "summary": "Holding the aim button with a weapon equipped stops translation, turns the body at a character-specific rate and allows fire after the raise animation passes a set frame.",
+      "behavior": "The aim button works only when an equipped item is a knife or firearm. While it is held the character cannot walk; left and right rotate the body by 72 yaw units per update for the first character and 56 for the second, about 6.3 and 4.9 degrees. The aim has three vertical tilt classes, up, level and down, chosen from the held direction bits and refreshed from the target height at the fire frame, and changing tilt plays a short transition before the next shot. Firing is accepted only after the raise animation reaches frame 9, or frame 4 for the first character with the handgun or one of the two revolver items. Releasing the aim button starts the holster animation and returns control, and the knife uses a different raise frame and its own swing routine.",
+      "constants": [
+        {
+          "name": "Aim turn rate, first character",
+          "value": "0x48",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz (decimal 72)",
+          "source": "src/game/PlayerAnimations.cpp:4419"
+        },
+        {
+          "name": "Second character turn penalty",
+          "value": "0x10",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz subtracted (decimal 16, so 56 total)",
+          "source": "src/game/PlayerAnimations.cpp:4419"
+        },
+        {
+          "name": "Fire gate frame",
+          "value": 9,
+          "unit": "animation frame of the raise motion",
+          "source": "src/game/PlayerAnimations.cpp:4431"
+        },
+        {
+          "name": "Early fire gate frame",
+          "value": 4,
+          "unit": "animation frame for the first character with weapons 2, 4 and 5",
+          "source": "src/game/PlayerAnimations.cpp:4428"
+        },
+        {
+          "name": "Highest firearm item id range start",
+          "value": "0x6e",
+          "unit": "item id above which special weapons count as aimable",
+          "source": "src/game/PlayerAnimations.cpp:3217"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4366
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4559
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4605
+        }
+      ],
+      "capabilities": [
+        "stationary aim stance",
+        "three aim tilt classes",
+        "per-character turn rates"
+      ],
+      "tags": [
+        "combat",
+        "horror",
+        "input"
+      ]
+    },
+    {
+      "id": "auto-aim-lock",
+      "node": "player-aim-fire",
+      "name": "Auto-aim reticle target pick and follow turn",
+      "summary": "When the aim stance begins, the nearest eligible enemy becomes the lock target, upright enemies are preferred over prone ones, and the body turns toward it at a rate that drops once nearly aligned.",
+      "behavior": "On entering the aim stance the game scans the 30 enemy slots for entries that are active, alive, inside the current camera zone, not script-controlled and of a normal enemy type id below 19, and ignores any whose line to the player crosses a sight-blocking boundary. The knife locks the nearest candidate. Firearms track two nearest candidates, those with a height value below 1 and those at or above 1, where prone bodies sit at exactly 1, and the below-1 group wins when both exist, so upright enemies are targeted before crawling ones. The facing test in the scan uses a half-circle step, so it never rejects a candidate. While locked, the body turns toward the target by 240 yaw units per update for the first character and 272 for the second, then by 192 and 224 once within 512 units of angle. Pressing fire drops the lock for that shot, and the Western difficulty setting disables the follow turn entirely.",
+      "constants": [
+        {
+          "name": "Far follow turn, base",
+          "value": "0xf0",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz (decimal 240, first character)",
+          "source": "src/game/PlayerAnimations.cpp:4402"
+        },
+        {
+          "name": "Second character far turn bonus",
+          "value": "0x20",
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz added (decimal 32)",
+          "source": "src/game/PlayerAnimations.cpp:4402"
+        },
+        {
+          "name": "Near follow turn multiplier",
+          "value": 6,
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz basis: (id bit + 6) times 32 gives 192 or 224",
+          "source": "src/game/PlayerAnimations.cpp:4404"
+        },
+        {
+          "name": "Near alignment window",
+          "value": "0x200",
+          "unit": "yaw units (decimal 512, about 45 degrees)",
+          "source": "src/game/PlayerAnimations.cpp:4403"
+        },
+        {
+          "name": "Enemy type id limit",
+          "value": "0x13",
+          "unit": "enemy ids below this value can be locked",
+          "source": "src/game/PlayerAnimations.cpp:4207"
+        },
+        {
+          "name": "Enemy slot count",
+          "value": 30,
+          "unit": "slots in the active enemy list",
+          "source": "src/game/PlayerAnimations.cpp:4120"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4196
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4108
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4398
+        }
+      ],
+      "capabilities": [
+        "soft lock-on",
+        "target priority by height",
+        "rate-limited aim follow"
+      ],
+      "tags": [
+        "combat",
+        "ai",
+        "horror"
+      ]
+    },
+    {
+      "id": "ammo-capacity-reload",
+      "node": "player-aim-fire",
+      "name": "Loaded magazine, reserve stacks and reload from the largest stack",
+      "summary": "Each weapon holds a small loaded count in its own inventory slot and refills from the largest matching ammo stack when it is empty.",
+      "behavior": "A firearm item carries its loaded rounds in its own slot quantity, and a shot removes one round on a fixed animation frame. Loaded capacity comes from the max-quantity record of the matching ammo item: 15 for the handgun, 7 for the shotgun and 6 for the magnum, while flamethrower fuel holds 240. When the weapon is empty and fire is pressed, an empty click plays; if a matching ammo item is in the inventory, the reload routine finds the largest stack and moves up to the capacity into the weapon. A stack bigger than the capacity is reduced by that amount, and a smaller stack is consumed whole and its slot freed. Special weapons are topped back up to 4 rounds, and the knife never counts as having ammo.",
+      "constants": [
+        {
+          "name": "Handgun loaded capacity",
+          "value": "0x0F",
+          "unit": "rounds (decimal 15), record for handgun item 2",
+          "source": "src/game/MenuData.cpp:611"
+        },
+        {
+          "name": "Shotgun loaded capacity",
+          "value": "0x07",
+          "unit": "rounds (decimal 7), record for shotgun item 3",
+          "source": "src/game/MenuData.cpp:611"
+        },
+        {
+          "name": "Magnum loaded capacity",
+          "value": "0x06",
+          "unit": "rounds (decimal 6), record for the python items",
+          "source": "src/game/MenuData.cpp:612"
+        },
+        {
+          "name": "Flamethrower fuel capacity",
+          "value": "0xF0",
+          "unit": "fuel units (decimal 240)",
+          "source": "src/game/MenuData.cpp:612"
+        },
+        {
+          "name": "Special weapon refill",
+          "value": 4,
+          "unit": "rounds restored when empty",
+          "source": "src/game/PlayerAnimations.cpp:4010"
+        },
+        {
+          "name": "Ammo stack cap",
+          "value": "0xfa",
+          "unit": "items per stack (decimal 250)",
+          "source": "src/game/RoomEvents.cpp:956"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 5244
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 3997
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 4706
+        }
+      ],
+      "capabilities": [
+        "loaded magazine plus reserve",
+        "reload by largest stack",
+        "empty click feedback"
+      ],
+      "tags": [
+        "combat",
+        "inventory",
+        "horror"
+      ]
+    },
+    {
+      "id": "gun-hit-wedge",
+      "node": "weapon-damage",
+      "name": "Single-target gun hit wedge with height class and wall check",
+      "summary": "A shot hits only the closest enemy inside a two-tier wedge ahead of the player, gated by aim tilt class and by sight-blocking walls.",
+      "behavior": "When the fire frame arrives, every active enemy that is not already in a hit reaction is tested, and only the closest one inside the wedge is damaged. The wedge has a near tier reaching the enemy radius plus 200 units and a far tier reaching the enemy radius plus the weapon range: 1200 for the handgun (1300 for the second character), 2600 for the shotgun and 800 for the magnum. An enemy carries height class bits and the shot carries the aim tilt class, and the two must share a bit: a standing zombie exposes the level class plus the down class inside 4500 units and the up class inside 3000, while a prone one exposes only the down class, so a level shot misses it. A zombie cannot be hit by an upward-tilted shot unless the weapon is the shotgun. Walls block guns and knives through a four-layer sight test, while thrown or explosive weapons ignore it.",
+      "constants": [
+        {
+          "name": "Handgun range, first character",
+          "value": 1200,
+          "unit": "world units, far tier depth",
+          "source": "src/game/WeaponDamage.cpp:572"
+        },
+        {
+          "name": "Handgun range, second character",
+          "value": 1300,
+          "unit": "world units, far tier depth",
+          "source": "src/game/WeaponDamage.cpp:583"
+        },
+        {
+          "name": "Shotgun range",
+          "value": 2600,
+          "unit": "world units, far tier depth",
+          "source": "src/game/WeaponDamage.cpp:573"
+        },
+        {
+          "name": "Magnum range",
+          "value": 800,
+          "unit": "world units, far tier depth",
+          "source": "src/game/WeaponDamage.cpp:575"
+        },
+        {
+          "name": "Near tier reach",
+          "value": 200,
+          "unit": "world units added to the enemy radius",
+          "source": "src/game/WeaponDamage.cpp:238"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 217
+        },
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 363
+        },
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 41
+        }
+      ],
+      "capabilities": [
+        "hitscan with cone tolerance",
+        "height-class gating",
+        "wall-blocked shots"
+      ],
+      "tags": [
+        "combat",
+        "collision",
+        "horror"
+      ]
+    },
+    {
+      "id": "weapon-damage-table",
+      "node": "weapon-damage",
+      "name": "Per-enemy, per-weapon damage records with playthrough variants",
+      "summary": "Damage is read from a table of ten weapon records per enemy type, with a lower shotgun and magnum value after the game has been cleared once.",
+      "behavior": "The damage for a hit is a table lookup keyed by enemy type and weapon, with a separate hit-state class that later drives the reaction animation. Against the common zombie the first playthrough values are 8 for the knife, 9 for the handgun, 53 for the shotgun and 130 for the magnum, and after the first clear the shotgun drops to 20 and the magnum to 60. The enemy is hurt if its health stays at or above zero and dying once it falls below zero. A shotgun hit inside 3000 units at level or raised aim, and a magnum hit at level aim, set health to a large negative value and kill the zombie outright with a head burst. Against zombie-type enemies the second character adds 3 extra damage to every handgun hit, and 7 against dogs.",
+      "constants": [
+        {
+          "name": "Knife vs zombie",
+          "value": 8,
+          "unit": "health points per hit, first playthrough",
+          "source": "src/game/WeaponDamage.cpp:612"
+        },
+        {
+          "name": "Handgun vs zombie",
+          "value": 9,
+          "unit": "health points per hit",
+          "source": "src/game/WeaponDamage.cpp:613"
+        },
+        {
+          "name": "Shotgun vs zombie, first playthrough",
+          "value": 53,
+          "unit": "health points per hit",
+          "source": "src/game/WeaponDamage.cpp:614"
+        },
+        {
+          "name": "Magnum vs zombie, first playthrough",
+          "value": 130,
+          "unit": "health points per hit",
+          "source": "src/game/WeaponDamage.cpp:616"
+        },
+        {
+          "name": "Shotgun vs zombie, after clear",
+          "value": 20,
+          "unit": "health points per hit",
+          "source": "src/game/WeaponDamage.cpp:844"
+        },
+        {
+          "name": "Magnum vs zombie, after clear",
+          "value": 60,
+          "unit": "health points per hit",
+          "source": "src/game/WeaponDamage.cpp:846"
+        },
+        {
+          "name": "Head-burst kill value",
+          "value": -300,
+          "unit": "health points set on an instant kill",
+          "source": "src/game/WeaponDamage.cpp:1214"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 430
+        },
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 447
+        },
+        {
+          "path": "src/game/WeaponDamage.cpp",
+          "line": 1256
+        }
+      ],
+      "capabilities": [
+        "data-driven damage table",
+        "second-run difficulty scaling",
+        "instant-kill head burst"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "horror"
+      ]
+    },
+    {
+      "id": "zombie-spawn-health-poise",
+      "node": "zombie-ai",
+      "name": "Zombie spawn health, hit threshold and poise",
+      "summary": "Each zombie rolls health from a four-value table minus random variance, plus a hit threshold and a poise counter that decide when it falls.",
+      "behavior": "On spawn the base health is picked from sixteen table entries of 39, 59, 79 or 99, then 0 to 21 is subtracted, so health lands between 18 and 99 and the same room can hold both fragile and tough zombies. A hit threshold of 1 to 4 is rolled on the first playthrough, or 2 to 4 after clearing the game, and a poise counter of 3 to 5 is rolled alongside it. Blade hits count against the threshold, and handgun hits count the poise counter down; either reaching the limit sets a knocked-down flag on the zombie. The threshold is re-rolled after each knockdown. Move speed is 45 units per update and turn speed is 24 yaw units per update.",
+      "constants": [
+        {
+          "name": "Health table",
+          "value": "59, 59, 79, 59, 59, 39, 59, 79,",
+          "unit": "health points, first row of sixteen entries",
+          "source": "src/game/entities/Zombie.cpp:89"
+        },
+        {
+          "name": "Health variance modulus",
+          "value": 22,
+          "unit": "subtracted value is the random number modulo this",
+          "source": "src/game/entities/Zombie.cpp:404"
+        },
+        {
+          "name": "Move speed",
+          "value": 45,
+          "unit": "world units per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:471"
+        },
+        {
+          "name": "Turn speed",
+          "value": 24,
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:498"
+        },
+        {
+          "name": "Poise table, first row",
+          "value": "4, 3, 5, 3, 4, 4, 3, 4,",
+          "unit": "poise points, first row of thirty-two entries",
+          "source": "src/game/entities/Zombie.cpp:112"
+        },
+        {
+          "name": "Hit threshold, first playthrough row",
+          "value": "1, 2, 3, 2, 3, 3, 2, 3,",
+          "unit": "bullet-class hits, first row of thirty-two entries",
+          "source": "src/game/entities/Zombie.cpp:1113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 409
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 468
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 464
+        }
+      ],
+      "capabilities": [
+        "randomized enemy toughness",
+        "poise-based staggering",
+        "second-run difficulty"
+      ],
+      "tags": [
+        "ai",
+        "horror",
+        "damage"
+      ]
+    },
+    {
+      "id": "zombie-detect-chase",
+      "node": "zombie-ai",
+      "name": "Zombie detection ranges, waypoint chase and weave",
+      "summary": "Zombies sense the player inside 3000 and 4500 units, refresh a chase waypoint when sight is clear, and weave while walking at 45 units per update.",
+      "behavior": "Each update the zombie measures Euclidean distance to the player and raises awareness bits inside 3000 and 4500 units, and replaces them with a single above or below bit when the player is more than 100 units higher or lower. It steers toward a stored waypoint and runs a 16-update path cycle in which it tests sight across a 1512 unit half-angle and, on the fourth update of the cycle, replaces the waypoint with the player position if the line is clear. While chasing it walks at 45 units per update, and on a random timer of 10 to 137 updates it starts a weave of 20 to 35 updates in which it turns at twice its turn speed and crawls at 10. If the player is already being grabbed and is within 800 units, it stands still for 60 updates.",
+      "constants": [
+        {
+          "name": "Alert radius",
+          "value": 3000,
+          "unit": "world units, Euclidean distance",
+          "source": "src/game/entities/Zombie.cpp:580"
+        },
+        {
+          "name": "Visual radius",
+          "value": 4500,
+          "unit": "world units, Euclidean distance",
+          "source": "src/game/entities/Zombie.cpp:584"
+        },
+        {
+          "name": "Vertical offset limit",
+          "value": 100,
+          "unit": "world units of height difference before the above or below bit replaces the level bits",
+          "source": "src/game/entities/Zombie.cpp:591"
+        },
+        {
+          "name": "Sight-check half angle",
+          "value": 1512,
+          "unit": "yaw units (about 133 degrees) used when refreshing the waypoint",
+          "source": "src/game/entities/EntityCommon.cpp:349"
+        },
+        {
+          "name": "Chase step",
+          "value": 45,
+          "unit": "world units per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:978"
+        },
+        {
+          "name": "Weave crawl step",
+          "value": 10,
+          "unit": "world units per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:992"
+        },
+        {
+          "name": "Stand-still wait when player is grabbed",
+          "value": 60,
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:1010"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 560
+        },
+        {
+          "path": "src/game/entities/EntityCommon.cpp",
+          "line": 330
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 932
+        }
+      ],
+      "capabilities": [
+        "range-based awareness",
+        "last-seen waypoint chase",
+        "random weave"
+      ],
+      "tags": [
+        "ai",
+        "horror",
+        "stealth"
+      ]
+    },
+    {
+      "id": "zombie-idle-wander",
+      "node": "zombie-ai",
+      "name": "Unaware zombie idle, head turns and shuffling wander",
+      "summary": "A zombie that has not noticed the player alternates between idling with head turns and shuffling toward a waypoint 5000 units ahead at 20 units per update.",
+      "behavior": "The idle phase lasts 50 to 177 updates, then the zombie switches to a slow shuffle for 300 to 427 updates at 20 units per update toward a waypoint 5000 units ahead of its facing, nudged by 8 yaw units. The stride only moves the body after animation frame 15, so the shuffle advances in lurching steps. After the shuffle ends it returns to the idle routine at its second sub-state, which runs a sequence of random-length head turns: right by 12 yaw units per update, left by 24, left by 32 and right by 24. Each turn lasts 4 to 23 updates and the whole routine then restarts. Blocked movement triggers a random turn so zombies slide off walls instead of pressing into them.",
+      "constants": [
+        {
+          "name": "Idle base duration",
+          "value": 50,
+          "unit": "game updates, plus a random 0 to 127",
+          "source": "src/game/entities/Zombie.cpp:2310"
+        },
+        {
+          "name": "Shuffle step",
+          "value": 20,
+          "unit": "world units per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:2381"
+        },
+        {
+          "name": "Shuffle base duration",
+          "value": 300,
+          "unit": "game updates, plus a random 0 to 127",
+          "source": "src/game/entities/Zombie.cpp:2387"
+        },
+        {
+          "name": "Waypoint distance",
+          "value": 5000,
+          "unit": "world units ahead of the facing",
+          "source": "src/game/entities/Zombie.cpp:2400"
+        },
+        {
+          "name": "Stride gate frame",
+          "value": 15,
+          "unit": "animation frame after which the body moves",
+          "source": "src/game/entities/Zombie.cpp:2433"
+        },
+        {
+          "name": "Head turn, first sub-state",
+          "value": 12,
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:2339"
+        },
+        {
+          "name": "Head turn, third sub-state",
+          "value": 32,
+          "unit": "yaw units (4096 per full turn) per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:2355"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 2302
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 2378
+        }
+      ],
+      "capabilities": [
+        "idle patrol with head turns",
+        "lurching shuffle wander"
+      ],
+      "tags": [
+        "ai",
+        "horror",
+        "movement"
+      ]
+    },
+    {
+      "id": "zombie-grab-bite",
+      "node": "zombie-combat",
+      "name": "Zombie grab and repeated bite with button-mash escape",
+      "summary": "A zombie inside the attack wedge grabs the player, bites every 19 updates for fixed damage, and the player shortens the grab by mashing buttons.",
+      "behavior": "A zombie starts the grab when the player is within a 700 unit half-angle wedge and 1500 units Manhattan distance, the sight line is clear, and nobody else is holding the player; a zombie in its pushed-back behaviour uses a 512 half-angle and 2200 range instead. The grab snaps the player to a hold pose and the first bite lands on the first update of the damage loop, then every 19 updates. Bite damage is 10 per hit on the first playthrough and 12 after a clear, or 6 and 9 for a crawling zombie. A bite timer of 105 is reduced every update by 1, plus 3 if any direction is held and plus 2 if any button is held, so mashing ends it in roughly 18 updates. A crawling zombie cannot kill, because the health is raised to 1 if its bite would drop it below zero.",
+      "constants": [
+        {
+          "name": "Grab wedge half angle",
+          "value": 700,
+          "unit": "yaw units (about 61.5 degrees)",
+          "source": "src/game/entities/Zombie.cpp:2118"
+        },
+        {
+          "name": "Grab range",
+          "value": 1500,
+          "unit": "world units, Manhattan distance",
+          "source": "src/game/entities/Zombie.cpp:2118"
+        },
+        {
+          "name": "Bite interval",
+          "value": 19,
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:1713"
+        },
+        {
+          "name": "Bite timer",
+          "value": 105,
+          "unit": "game updates, decremented 1 to 6 per update",
+          "source": "src/game/entities/Zombie.cpp:1695"
+        },
+        {
+          "name": "Damage, first playthrough standing",
+          "value": "10, 10, 6, 6,",
+          "unit": "health points per bite, first four behaviour entries",
+          "source": "src/game/entities/Zombie.cpp:1464"
+        },
+        {
+          "name": "Damage, after clear standing",
+          "value": "12, 12, 9, 9,",
+          "unit": "health points per bite, first four behaviour entries",
+          "source": "src/game/entities/Zombie.cpp:1470"
+        },
+        {
+          "name": "Mash reduction, direction held",
+          "value": 3,
+          "unit": "timer units removed per update",
+          "source": "src/game/entities/EntityCommon.cpp:1346"
+        },
+        {
+          "name": "Mash reduction, button held",
+          "value": 2,
+          "unit": "timer units removed per update",
+          "source": "src/game/entities/EntityCommon.cpp:1347"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1641
+        },
+        {
+          "path": "src/game/entities/EntityCommon.cpp",
+          "line": 1343
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1731
+        }
+      ],
+      "capabilities": [
+        "grab and hold attack",
+        "escape by input mashing",
+        "non-lethal grab on prone attackers"
+      ],
+      "tags": [
+        "combat",
+        "ai",
+        "damage",
+        "horror"
+      ]
+    },
+    {
+      "id": "zombie-knockdown-getup",
+      "node": "zombie-combat",
+      "name": "Zombie knockdown, timed lie and get-up",
+      "summary": "Enough blade or handgun hits arm a knockdown; the zombie finishes its stagger, falls, lies for 60 to 270 updates, then rises to resume the chase.",
+      "behavior": "A hit tagged as blade class adds one to a hit counter and a hit tagged as handgun class removes one from the poise counter. When the counter reaches its threshold, or the poise reaches zero, a knocked-down flag is set unless the zombie is already prone. The stagger or drop reaction plays, and the move routines see the flag and start the fall. On the ground the zombie waits a random recovery time of 2, 4, 6 or 9 blocks of 30 updates, which is 2 to 9 seconds at 30 Hz, and then plays the get-up animation in reverse. If the poise reached zero it is refilled from the table and the flag is cleared so another knockdown can happen; otherwise the counter resets to zero.",
+      "constants": [
+        {
+          "name": "Recovery time block",
+          "value": 30,
+          "unit": "game updates multiplied by the table entry",
+          "source": "src/game/entities/Zombie.cpp:3138"
+        },
+        {
+          "name": "Recovery table",
+          "value": "2, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 9, 9, 9",
+          "unit": "blocks of 30 updates",
+          "source": "src/game/entities/Zombie.cpp:3089"
+        },
+        {
+          "name": "Knockdown flag",
+          "value": "0x80",
+          "unit": "flag bit raised on the zombie action byte",
+          "source": "src/game/entities/Zombie.cpp:1163"
+        },
+        {
+          "name": "Fall push step",
+          "value": 20,
+          "unit": "world units per game update at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:3107"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1126
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 3098
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1158
+        }
+      ],
+      "capabilities": [
+        "hit-count knockdown",
+        "timed recovery",
+        "poise refill"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "horror"
+      ]
+    },
+    {
+      "id": "zombie-death-revive",
+      "node": "zombie-combat",
+      "name": "Zombie death, corpse timer and one-in-four revival",
+      "summary": "A zombie killed by the plain fall animation can get back up with 1 health on a one-in-four roll if nothing destroyed its head and the body has room.",
+      "behavior": "A killed zombie plays one of four death routines: the plain fall, a headshot fall chosen from the hit class and facing, a prone collapse for zombies already down, and a blown-back drop used when a heavy round hits the head joint and a coin flip allows it. After the fall the corpse sets a 70 update timer and a persistent room flag that records the kill. At the end of the fall a revival is allowed only if every test passes: the body is not script-controlled, the head is intact, the death used the plain fall, the prone body has room at both ends, a one-in-four roll succeeds, and the room is not on a short exclusion list. A revived zombie has 1 health and returns to the chase. Otherwise health is set to negative, the shadow shrinks and the body is parked.",
+      "constants": [
+        {
+          "name": "Corpse timer",
+          "value": 70,
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/entities/Zombie.cpp:730"
+        },
+        {
+          "name": "Revival roll mask",
+          "value": 3,
+          "unit": "revives when random value masked with 3 equals 0 (one chance in four)",
+          "source": "src/game/entities/Zombie.cpp:1383"
+        },
+        {
+          "name": "Revived health",
+          "value": 1,
+          "unit": "health points",
+          "source": "src/game/entities/Zombie.cpp:1387"
+        },
+        {
+          "name": "Head destroyed mask",
+          "value": "0xCC",
+          "unit": "joint flag bits that block revival",
+          "source": "src/game/entities/Zombie.cpp:1379"
+        },
+        {
+          "name": "Corpse body probe",
+          "value": 800,
+          "unit": "world units each side of the body centre",
+          "source": "src/game/entities/Zombie.cpp:724"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1221
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 1321
+        },
+        {
+          "path": "src/game/entities/Zombie.cpp",
+          "line": 815
+        }
+      ],
+      "capabilities": [
+        "persistent kill flags",
+        "revival with conditions",
+        "prone body collision probe"
+      ],
+      "tags": [
+        "ai",
+        "horror",
+        "damage"
+      ]
+    },
+    {
+      "id": "dog-leap-bite",
+      "node": "enemy-bosses",
+      "name": "Dog chase ramp, leap decision and bite",
+      "summary": "The dog ramps to 240 units per update, chooses between a running leap and a flanking strafe by player health, and bites for 12 on contact.",
+      "behavior": "The dog accelerates by 20 units per update until it reaches 240 and steers toward a waypoint, swerving off walls it probes. Inside 5000 units, and only when the player is not already held, it faces the player and decides: if the player health is below 13 on the first playthrough (17 after a clear) and the player faces the dog, a random 7-bit value below 126 (100 if the player is poisoned) selects a flanking strafe for a lethal lunge; otherwise it leaps. The leap runs at 280 units per update, and the bite lands when the jaw joint comes within 1000 units of the player, shrinking to 800 for a very weak player and growing to 1500 when poisoned. A normal bite takes 12 health, and a player below the health limit who faces away is mauled instead.",
+      "constants": [
+        {
+          "name": "Chase acceleration",
+          "value": "0x14",
+          "unit": "world units per game update at 30 Hz gained per update (decimal 20)",
+          "source": "src/game/entities/Cerberus.cpp:978"
+        },
+        {
+          "name": "Chase top speed",
+          "value": "0xF0",
+          "unit": "world units per game update at 30 Hz (decimal 240)",
+          "source": "src/game/entities/Cerberus.cpp:978"
+        },
+        {
+          "name": "Leap speed",
+          "value": "0x118",
+          "unit": "world units per game update at 30 Hz (decimal 280)",
+          "source": "src/game/entities/Cerberus.cpp:1217"
+        },
+        {
+          "name": "Decision distance",
+          "value": 5000,
+          "unit": "world units",
+          "source": "src/game/entities/Cerberus.cpp:918"
+        },
+        {
+          "name": "Bite damage",
+          "value": "0xC",
+          "unit": "health points (decimal 12)",
+          "source": "src/game/entities/Cerberus.cpp:1198"
+        },
+        {
+          "name": "Maul health limit, first playthrough",
+          "value": "0x0D",
+          "unit": "health points (decimal 13)",
+          "source": "src/game/entities/Cerberus.cpp:1160"
+        },
+        {
+          "name": "Bite reach, poisoned player",
+          "value": "0x5DC",
+          "unit": "world units (decimal 1500)",
+          "source": "src/game/entities/Cerberus.cpp:1254"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Cerberus.cpp",
+          "line": 915
+        },
+        {
+          "path": "src/game/entities/Cerberus.cpp",
+          "line": 1229
+        },
+        {
+          "path": "src/game/entities/Cerberus.cpp",
+          "line": 123
+        }
+      ],
+      "capabilities": [
+        "health-aware attack choice",
+        "ramped chase speed",
+        "leaping bite with reach test"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "horror"
+      ]
+    },
+    {
+      "id": "boss-attack-selection",
+      "node": "enemy-bosses",
+      "name": "Heavy boss attack choice, damage and non-lethal clamp",
+      "summary": "The large boss picks claw attacks from distance and facing tests and never kills with a swipe: a fatal blow leaves the player at 1 health and arms a grab finisher.",
+      "behavior": "The boss has 220 health, or 600 for the id-16 variant. Each think step measures Manhattan distance: within 2000 units and aligned to 512 yaw units it uses the swipe, within 2700 and aligned to 832 it uses the slash, and at short range with the player below 16 health it switches to the grab finisher when the player faces away. Staying within 4000 units for more than 120 updates sets an aggression timer of 60 updates, and health under 60 sets an aggressive flag. Hits deal 10 to 20 health on the first playthrough and 18 to 30 after a clear. If a slash would leave the player below zero, health is set to 1 and the boss chains into a backhand grab instead.",
+      "constants": [
+        {
+          "name": "Boss health",
+          "value": 220,
+          "unit": "health points",
+          "source": "src/game/entities/Tyrant.cpp:1939"
+        },
+        {
+          "name": "Variant boss health",
+          "value": 600,
+          "unit": "health points",
+          "source": "src/game/entities/Tyrant.cpp:1940"
+        },
+        {
+          "name": "Swipe range",
+          "value": 2000,
+          "unit": "world units, Manhattan distance",
+          "source": "src/game/entities/Tyrant.cpp:1817"
+        },
+        {
+          "name": "Slash range",
+          "value": "0xa8c",
+          "unit": "world units (decimal 2700)",
+          "source": "src/game/entities/Tyrant.cpp:1805"
+        },
+        {
+          "name": "Aggression distance",
+          "value": 4000,
+          "unit": "world units",
+          "source": "src/game/entities/Tyrant.cpp:2040"
+        },
+        {
+          "name": "Slash damage",
+          "value": "0x0c",
+          "unit": "health points, first playthrough (decimal 12)",
+          "source": "src/game/entities/Tyrant.cpp:1203"
+        },
+        {
+          "name": "Charge damage",
+          "value": "0x14",
+          "unit": "health points, first playthrough (decimal 20)",
+          "source": "src/game/entities/Tyrant.cpp:1484"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/entities/Tyrant.cpp",
+          "line": 2030
+        },
+        {
+          "path": "src/game/entities/Tyrant.cpp",
+          "line": 692
+        },
+        {
+          "path": "src/game/entities/Tyrant.cpp",
+          "line": 1208
+        }
+      ],
+      "capabilities": [
+        "distance-gated attack set",
+        "non-lethal clamp with finisher",
+        "two-tier damage"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "damage",
+        "horror"
+      ]
+    },
+    {
+      "id": "inventory-slots-stacking",
+      "node": "inventory-health",
+      "name": "Small item grid, stacking and item box capacity",
+      "summary": "The player carries 6 or 8 slots depending on character, ammo and ribbons stack to 250, and the item box holds 48 slots.",
+      "behavior": "The first character carries 6 slots and the second carries 8; held items form a packed list with no gaps, and removing one compacts the rest. Ammo items and ink ribbons stack: a pickup merges into any slot of the same item, a slot is capped at 250, and the overflow goes to a new slot if one is free. The PC version overrides every ribbon pickup to 3 units, whatever the room stores. Picking up an unstackable item takes the first free slot and the pickup is removed from the room by a persistent flag. The item box is a separate 48-slot list opened through a room action, so a full inventory forces a choice of what to store.",
+      "constants": [
+        {
+          "name": "Slots, first character",
+          "value": 6,
+          "unit": "inventory slots",
+          "source": "src/game/GameStart.cpp:130"
+        },
+        {
+          "name": "Slots, second character",
+          "value": 8,
+          "unit": "inventory slots",
+          "source": "src/game/GameStart.cpp:136"
+        },
+        {
+          "name": "Stack cap",
+          "value": "0xfa",
+          "unit": "items per slot (decimal 250)",
+          "source": "src/game/RoomEvents.cpp:956"
+        },
+        {
+          "name": "Ribbon pickup size",
+          "value": 3,
+          "unit": "ribbons per pickup, PC override",
+          "source": "src/game/RoomEvents.cpp:927"
+        },
+        {
+          "name": "Item box slots",
+          "value": 48,
+          "unit": "slots in the item box list",
+          "source": "src/game/BioCard.h:87"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/RoomEvents.cpp",
+          "line": 889
+        },
+        {
+          "path": "src/game/GameStart.cpp",
+          "line": 182
+        },
+        {
+          "path": "src/game/SaveLoadScreen.cpp",
+          "line": 709
+        }
+      ],
+      "capabilities": [
+        "limited carry slots",
+        "ammo stacking",
+        "storage chest"
+      ],
+      "tags": [
+        "inventory",
+        "horror"
+      ]
+    },
+    {
+      "id": "healing-and-health-bar",
+      "node": "inventory-health",
+      "name": "Healing items, max health and four-band health state",
+      "summary": "Healing restores a third, two thirds or all of max health, cures poison where listed, and the status display splits health into four bands.",
+      "behavior": "Max health is 140 for the first character and 96 for the second. A heal byte per item gives the amount in a low nibble, where 1 is one third of max, 2 is two thirds and 3 is full, and a cure code in a high nibble. The spray heals fully, a green herb one third, a double green mix two thirds, and the red and green mix or the triple green mix fully; a red herb alone heals nothing, a blue herb only cures, and blue mixes add a cure to the heal. Using an item at full health with nothing to cure is refused so it is not consumed. The status display divides health minus one by a quarter of max health into four bands, and a poisoned player randomly flickers to a fifth poison state.",
+      "constants": [
+        {
+          "name": "Max health, first character",
+          "value": 140,
+          "unit": "health points",
+          "source": "src/game/GameStart.cpp:589"
+        },
+        {
+          "name": "Max health reduction, second character",
+          "value": -44,
+          "unit": "health points (gives 96)",
+          "source": "src/game/GameStart.cpp:589"
+        },
+        {
+          "name": "Heal byte table, ids 0x40 to 0x4B",
+          "value": "0x00,0x03,0x10,0x00,0x01,0x20,0x03,0x02,0x21,0x23,0x03,0x22",
+          "unit": "low nibble heal level 1, 2, 3, high nibble cure code",
+          "source": "src/game/MenuData.cpp:703"
+        },
+        {
+          "name": "Third heal divisor",
+          "value": 3,
+          "unit": "max health divided by this per level",
+          "source": "src/game/MainMenu.cpp:1289"
+        },
+        {
+          "name": "Band clamp",
+          "value": 3,
+          "unit": "highest normal band index",
+          "source": "src/game/MainMenu.cpp:2453"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/MainMenu.cpp",
+          "line": 1272
+        },
+        {
+          "path": "src/game/Types.h",
+          "line": 205
+        },
+        {
+          "path": "src/game/MainMenu.cpp",
+          "line": 2444
+        }
+      ],
+      "capabilities": [
+        "fractional heal levels",
+        "cure codes",
+        "four-band condition display"
+      ],
+      "tags": [
+        "inventory",
+        "damage",
+        "horror"
+      ]
+    },
+    {
+      "id": "poison-drain",
+      "node": "inventory-health",
+      "name": "Poison drain with a floor and a lethal variant",
+      "summary": "A poisoned player loses 2 health every 120 updates but never drops below 1, unless the rarer fast variant is active, which ticks every 7 updates.",
+      "behavior": "The status byte has separate bits for the common poison, a second venom type from one boss and a lethal fast variant. While any of the three is set a one-byte timer counts down once per update, and when it reaches zero the player loses 2 health and the timer reloads. The normal reload is 120 updates and the lethal variant uses 7. Only the fast variant may take health below zero; the others stop at 1 so poison alone never kills. A snake bite sets the common poison with an initial timer of 150 updates. A blue herb clears the common poison bit and a serum clears the second venom bit.",
+      "constants": [
+        {
+          "name": "Normal poison interval",
+          "value": 120,
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/PlayerAnimations.cpp:2368"
+        },
+        {
+          "name": "Lethal poison interval",
+          "value": 7,
+          "unit": "game updates at 30 Hz",
+          "source": "src/game/PlayerAnimations.cpp:2368"
+        },
+        {
+          "name": "Drain per tick",
+          "value": 2,
+          "unit": "health points",
+          "source": "src/game/PlayerAnimations.cpp:2369"
+        },
+        {
+          "name": "Bite starting timer",
+          "value": 150,
+          "unit": "game updates before the first tick",
+          "source": "src/game/entities/Adder.cpp:704"
+        },
+        {
+          "name": "Poison status mask",
+          "value": "0x62",
+          "unit": "status bits that drive the drain",
+          "source": "src/game/PlayerAnimations.cpp:2363"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2329
+        },
+        {
+          "path": "src/game/MainMenu.cpp",
+          "line": 1310
+        }
+      ],
+      "capabilities": [
+        "damage over time",
+        "non-lethal floor",
+        "cure items"
+      ],
+      "tags": [
+        "damage",
+        "horror"
+      ]
+    },
+    {
+      "id": "fixed-camera-switch",
+      "node": "room-camera-collision",
+      "name": "Fixed camera selection by quadrilateral switch zones",
+      "summary": "Each fixed camera owns a list of four-corner trigger zones; stepping into one cuts instantly to the camera it names.",
+      "behavior": "A room stores one camera record per view and, for each camera, a group of trigger zones whose four corners form a quadrilateral on the floor plane. Every update the game tests the player position against the zones of the active camera with four cross-product edge tests, two anchored at corner 0 and two at corner 2. On a hit the active camera index becomes the zone destination and the new background and sprite masks are displayed at once. Cutscenes can lock the camera so no zone fires, and some updates defer the redraw to the main loop. Because the cut is instant and independent of movement, tank-control directions stay tied to the character, not to the view.",
+      "constants": [
+        {
+          "name": "Camera record size",
+          "value": "0x2C",
+          "unit": "bytes per camera record in the room data",
+          "source": "src/game/PlayerAnimations.cpp:4265"
+        },
+        {
+          "name": "Camera table offset",
+          "value": "0x9C",
+          "unit": "bytes from the start of the room data",
+          "source": "src/game/PlayerAnimations.cpp:4265"
+        },
+        {
+          "name": "Immediate redisplay mask mode",
+          "value": 4,
+          "unit": "screen-mask mode code used for an immediate camera cut",
+          "source": "src/game/Room.cpp:200"
+        },
+        {
+          "name": "Deferred redisplay mask mode",
+          "value": 5,
+          "unit": "screen-mask mode code used when the redraw is deferred to the main loop",
+          "source": "src/game/Room.cpp:195"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Room.cpp",
+          "line": 173
+        },
+        {
+          "path": "src/game/Room.cpp",
+          "line": 83
+        },
+        {
+          "path": "src/game/Room.cpp",
+          "line": 190
+        }
+      ],
+      "capabilities": [
+        "fixed camera cuts",
+        "trigger quads",
+        "camera lock during scenes"
+      ],
+      "tags": [
+        "camera",
+        "horror"
+      ]
+    },
+    {
+      "id": "boundary-collision-push",
+      "node": "room-camera-collision",
+      "name": "Boundary push-out with skin, rollback and prone body probes",
+      "summary": "Characters are pushed out of rectangular and circular boundary records with an 18 unit skin, and the frame is undone if they remain stuck.",
+      "behavior": "The room stores boundary boxes split across four quadrants so a position only tests the records of its own quadrant. For rectangles the code computes the exit depth through each face, adds the character radius plus an 18 unit skin, and compares each push direction with the movement of this update: if neither axis opposes the movement the whole move is undone, a single-axis push is applied when it is 400 units or less, and otherwise the axis needing the smaller correction is used. A second pass re-tests the pushed position and, if it is still inside a blocking record, restores the previous position so the character cannot tunnel. A prone zombie additionally tests both body ends 600 units from its centre. Floor-step records report a height step instead of a wall.",
+      "constants": [
+        {
+          "name": "Collision skin",
+          "value": "0x12",
+          "unit": "world units (decimal 18) added to the radius",
+          "source": "src/game/RoomCollision.cpp:160"
+        },
+        {
+          "name": "Axis ambiguity limit",
+          "value": "0x190",
+          "unit": "world units (decimal 400)",
+          "source": "src/game/RoomCollision.cpp:203"
+        },
+        {
+          "name": "Standard zombie radius",
+          "value": "0x01a6",
+          "unit": "world units (decimal 422)",
+          "source": "src/game/entities/Zombie.cpp:68"
+        },
+        {
+          "name": "Naked zombie radius",
+          "value": "0x0142",
+          "unit": "world units (decimal 322)",
+          "source": "src/game/entities/Zombie.cpp:70"
+        },
+        {
+          "name": "Prone body half length",
+          "value": 600,
+          "unit": "world units each side of the centre",
+          "source": "src/game/entities/Zombie.cpp:192"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/RoomCollision.cpp",
+          "line": 148
+        },
+        {
+          "path": "src/game/RoomCollision.cpp",
+          "line": 348
+        },
+        {
+          "path": "src/game/RoomCollision.cpp",
+          "line": 443
+        }
+      ],
+      "capabilities": [
+        "wall sliding by push-out",
+        "rollback when stuck",
+        "multi-point body collision"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "movement"
+      ]
+    },
+    {
+      "id": "door-lock-key",
+      "node": "doors-interaction",
+      "name": "Door locks, key items and persistent unlock flags",
+      "summary": "A door record stores a lock index and a required item; the right item raises a persistent flag and is spent after the prompt is dismissed.",
+      "behavior": "Walking into a door zone reads its record. A door whose lock bit is clear opens at once, and one whose flag is already set also opens. Otherwise the record names a required item; a missing item shows a message chosen from the key identity, a code of 254 shows a locked-from-the-other-side message and unlocks the door for next time, and 255 shows a plain locked message with no way to open it. With the key in the inventory the lock flag in the persistent lock set is raised, a message plays, and the next frame the zone hit finds the flag and passes through. The key is removed after the message closes unless it is a lockpick, and one character can substitute the lockpick for one key once found. Some doors are barred for one party member by a separate bit.",
+      "constants": [
+        {
+          "name": "Lock bit",
+          "value": "0x80",
+          "unit": "flag bit set on a locked door record",
+          "source": "src/game/PlayerAnimations.cpp:6823"
+        },
+        {
+          "name": "Lock index mask",
+          "value": "0x3f",
+          "unit": "bits holding the persistent lock number",
+          "source": "src/game/PlayerAnimations.cpp:6823"
+        },
+        {
+          "name": "Other-side code",
+          "value": "0xfe",
+          "unit": "required-item value meaning the door opens only from the far side",
+          "source": "src/game/PlayerAnimations.cpp:6839"
+        },
+        {
+          "name": "Sealed code",
+          "value": "0xff",
+          "unit": "required-item value meaning the door cannot be opened",
+          "source": "src/game/PlayerAnimations.cpp:6845"
+        },
+        {
+          "name": "Message base",
+          "value": 200,
+          "unit": "message id offset added to the key index",
+          "source": "src/game/PlayerAnimations.cpp:6770"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 6806
+        },
+        {
+          "path": "src/game/SaveLoadScreen.cpp",
+          "line": 709
+        },
+        {
+          "path": "src/game/RoomEvents.cpp",
+          "line": 1016
+        }
+      ],
+      "capabilities": [
+        "key-and-lock doors",
+        "persistent unlock state",
+        "one-way doors"
+      ],
+      "tags": [
+        "inventory",
+        "horror",
+        "saving"
+      ]
+    },
+    {
+      "id": "door-transition-cut",
+      "node": "doors-interaction",
+      "name": "Door open sequence and full-screen door scene during load",
+      "summary": "Opening a door turns the player, plays a four-step open animation, then blacks the screen and runs a full-screen door scene while the next room loads.",
+      "behavior": "The open sequence has four steps: turn to face the door by easing a quarter of the remaining angle each update until the residual is under a small window, start the open animation and size the shadow, play it with a latch sound on a fixed frame, then displace the player 4350 units through the doorway and raise a flag for the room change. The black cut is instant: a full-screen black rectangle is drawn, one frame is waited, and then the room loads. While it loads a scripted door scene plays full-screen from one of 34 door data files chosen by the door record, black for the first 3 updates and then a bytecode-driven animation of panels. A door that swings the other way mirrors the animation and the displacement.",
+      "constants": [
+        {
+          "name": "Doorway displacement",
+          "value": "0x10fe",
+          "unit": "world units (decimal 4350) along the door axis",
+          "source": "src/game/PlayerAnimations.cpp:3053"
+        },
+        {
+          "name": "Shallow doorway displacement",
+          "value": "0x842",
+          "unit": "world units (decimal 2114) in two room types",
+          "source": "src/game/PlayerAnimations.cpp:3067"
+        },
+        {
+          "name": "Door scene count",
+          "value": "0x22",
+          "unit": "door data files (decimal 34)",
+          "source": "src/game/DoorSystem.cpp:63"
+        },
+        {
+          "name": "Initial black frames",
+          "value": 3,
+          "unit": "game updates",
+          "source": "src/game/DoorSystem.cpp:13"
+        },
+        {
+          "name": "Cut rectangle width",
+          "value": 320,
+          "unit": "pixels, full screen",
+          "source": "src/game/PlayerAnimations.cpp:6788"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2893
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 6779
+        },
+        {
+          "path": "src/game/DoorSystem.cpp",
+          "line": 1117
+        }
+      ],
+      "capabilities": [
+        "animated door entry",
+        "instant black cut",
+        "door scene hides loading"
+      ],
+      "tags": [
+        "camera",
+        "horror",
+        "movement"
+      ]
+    },
+    {
+      "id": "typewriter-ink-save",
+      "node": "doors-interaction",
+      "name": "Typewriter save that spends an ink ribbon",
+      "summary": "Using a save point needs an ink ribbon, which is consumed when the save is written, except for a free first-run save on one character.",
+      "behavior": "Pressing action at a save point checks that the typewriter is idle and the message system is ready, then looks for an ink ribbon in the inventory. With one present, the save flow starts and the ribbon slot is remembered; when the save is written one ribbon is spent. The second character on the first playthrough may save without a ribbon, and on a clear playthrough that exemption ends. With no ribbon and no exemption a message tells the player that a ribbon is needed and nothing is saved. Ribbon pickups give 3 per find on the PC build, so saves are a scarce resource tied to exploration.",
+      "constants": [
+        {
+          "name": "Ink ribbon item id",
+          "value": "0x2F",
+          "unit": "item id",
+          "source": "src/game/Types.h:181"
+        },
+        {
+          "name": "No-ribbon message",
+          "value": "0xde",
+          "unit": "message id",
+          "source": "src/game/PlayerAnimations.cpp:7308"
+        },
+        {
+          "name": "Free-save character id",
+          "value": 5,
+          "unit": "player id (with id 1) that may save without a ribbon on the first playthrough",
+          "source": "src/game/PlayerAnimations.cpp:7299"
+        },
+        {
+          "name": "Pickup size override",
+          "value": 3,
+          "unit": "ribbons per pickup",
+          "source": "src/game/RoomEvents.cpp:927"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 7284
+        },
+        {
+          "path": "src/game/SaveLoadScreen.cpp",
+          "line": 1235
+        },
+        {
+          "path": "src/game/SaveLoadScreen.cpp",
+          "line": 1222
+        }
+      ],
+      "capabilities": [
+        "consumable save token",
+        "first-run exemption",
+        "save-point prompt"
+      ],
+      "tags": [
+        "saving",
+        "inventory",
+        "horror"
+      ]
+    },
+    {
+      "id": "action-zone-probe",
+      "node": "doors-interaction",
+      "name": "Action zone probe ahead of the player and stair height ramp",
+      "summary": "Doors, items and examine spots are zone records tested 600 units ahead of the player; stairs set height from distance along the zone.",
+      "behavior": "Each room holds a table of 12 byte zone records. Every update the game tests the zones against a point 600 units in front of the facing, or against the player position for records marked as position-based, and fires the handler of any hit. Records marked as action-only skip that test and are checked only when the action button is pressed, which is why doors trigger on contact but items need a press. Climbable objects need a probe of 470 units and a facing within 299 yaw units, about 26 degrees. A stair zone converts distance along one axis into a height by dividing by a step length, adding one, and multiplying by a step height, so the character climbs in discrete treads.",
+      "constants": [
+        {
+          "name": "Reach probe",
+          "value": 600,
+          "unit": "world units ahead of the facing for zone tests",
+          "source": "src/game/PlayerAnimations.cpp:7355"
+        },
+        {
+          "name": "Climb probe",
+          "value": 470,
+          "unit": "world units ahead of the facing",
+          "source": "src/game/PlayerAnimations.cpp:2411"
+        },
+        {
+          "name": "Climb facing window",
+          "value": 299,
+          "unit": "yaw units (about 26 degrees)",
+          "source": "src/game/PlayerAnimations.cpp:2487"
+        },
+        {
+          "name": "Zone record size",
+          "value": 12,
+          "unit": "bytes",
+          "source": "src/game/PlayerAnimations.cpp:7399"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2527
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 7320
+        },
+        {
+          "path": "src/game/PlayerAnimations.cpp",
+          "line": 2467
+        }
+      ],
+      "capabilities": [
+        "contact vs press interactions",
+        "stepped stair height",
+        "reach-limited climbing"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "horror"
+      ]
+    }
+  ]
+}

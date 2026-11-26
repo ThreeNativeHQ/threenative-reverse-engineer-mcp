@@ -1,0 +1,2424 @@
+{
+  "version": 1,
+  "id": "system-shock",
+  "title": "System Shock",
+  "repo": "https://github.com/Interrupt/systemshock",
+  "sha": "f622c304f844d988782fb6029928ea97e5ef580f",
+  "nodes": [
+    {
+      "id": "ai-perception",
+      "name": "Enemy perception and awareness",
+      "purpose": "Visibility roll, sighting, mood changes and attack readiness for each enemy",
+      "paths": [
+        "src/GameSrc/Headers/visible.h",
+        "src/GameSrc/ai.c",
+        "src/GameSrc/newai.c",
+        "src/GameSrc/tools.c"
+      ],
+      "functions": [
+        {
+          "name": "compute_base_visibility",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            140,
+            183
+          ]
+        },
+        {
+          "name": "do_stealth_stuff",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            316,
+            381
+          ]
+        },
+        {
+          "name": "ai_spot_player",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            271,
+            312
+          ]
+        },
+        {
+          "name": "check_attitude_adjustment",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            510,
+            593
+          ]
+        },
+        {
+          "name": "ai_find_player",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            77,
+            99
+          ]
+        },
+        {
+          "name": "point_in_view_arc",
+          "path": "src/GameSrc/tools.c",
+          "lines": [
+            799,
+            820
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ai-combat",
+      "name": "Enemy attacks and hit reactions",
+      "purpose": "Attack choice, aim error, projectile launch, damage reactions and group alarm",
+      "paths": [
+        "src/GameSrc/ai.c",
+        "src/GameSrc/damage.c",
+        "src/GameSrc/effect.c",
+        "src/GameSrc/newai.c"
+      ],
+      "functions": [
+        {
+          "name": "ai_attack_player",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            633,
+            713
+          ]
+        },
+        {
+          "name": "ai_fire_special",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            720,
+            808
+          ]
+        },
+        {
+          "name": "ai_critter_hit",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            192,
+            293
+          ]
+        },
+        {
+          "name": "ai_misses",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            595,
+            602
+          ]
+        },
+        {
+          "name": "run_combat_ai",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            620,
+            712
+          ]
+        },
+        {
+          "name": "increment_anim",
+          "path": "src/GameSrc/effect.c",
+          "lines": [
+            284,
+            655
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-perception",
+        "ai-navigation"
+      ]
+    },
+    {
+      "id": "ai-brain",
+      "name": "Enemy AI scheduler and idle orders",
+      "purpose": "Per-frame AI loop, cadence, distance freezing, orders and roaming",
+      "paths": [
+        "src/GameSrc/ai.c",
+        "src/GameSrc/newai.c"
+      ],
+      "functions": [
+        {
+          "name": "ai_run",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            877,
+            976
+          ]
+        },
+        {
+          "name": "run_peaceful_ai",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            817,
+            872
+          ]
+        },
+        {
+          "name": "do_physics_stupidity",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            224,
+            266
+          ]
+        },
+        {
+          "name": "ai_roam_func",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            772,
+            794
+          ]
+        },
+        {
+          "name": "apply_EDMS_controls",
+          "path": "src/GameSrc/ai.c",
+          "lines": [
+            137,
+            175
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-perception",
+        "ai-combat",
+        "ai-navigation"
+      ]
+    },
+    {
+      "id": "ai-navigation",
+      "name": "Tile pathfinding",
+      "purpose": "Breadth-first route solving, route storage, waypoint following and door awareness",
+      "paths": [
+        "src/GameSrc/Headers/pathfind.h",
+        "src/GameSrc/newai.c",
+        "src/GameSrc/pathfind.c"
+      ],
+      "functions": [
+        {
+          "name": "request_pathfind",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            78,
+            110
+          ]
+        },
+        {
+          "name": "check_requests",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            201,
+            221
+          ]
+        },
+        {
+          "name": "find_path",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            606,
+            696
+          ]
+        },
+        {
+          "name": "expand_one_square",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            513,
+            559
+          ]
+        },
+        {
+          "name": "map_connectivity",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            478,
+            507
+          ]
+        },
+        {
+          "name": "pf_check_doors",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            370,
+            411
+          ]
+        },
+        {
+          "name": "check_path_cutting",
+          "path": "src/GameSrc/pathfind.c",
+          "lines": [
+            168,
+            193
+          ]
+        },
+        {
+          "name": "follow_pathfinding",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            407,
+            500
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-movement",
+      "name": "Player movement, posture and fatigue",
+      "purpose": "Control banks, walking and sprint speeds, lean and crouch handling, look pitch and fatigue",
+      "paths": [
+        "src/GameSrc/Headers/gamesys.h",
+        "src/GameSrc/Headers/physics.h",
+        "src/GameSrc/gamesys.c",
+        "src/GameSrc/leanmetr.c",
+        "src/GameSrc/movekeys.c",
+        "src/GameSrc/physics.c",
+        "src/GameSrc/player.c",
+        "src/GameSrc/weapons.c",
+        "src/Libraries/EDMS/Source/MODELS/pelvis.cc"
+      ],
+      "functions": [
+        {
+          "name": "physics_run",
+          "path": "src/GameSrc/physics.c",
+          "lines": [
+            389,
+            709
+          ]
+        },
+        {
+          "name": "relax_axis",
+          "path": "src/GameSrc/physics.c",
+          "lines": [
+            309,
+            318
+          ]
+        },
+        {
+          "name": "player_set_posture",
+          "path": "src/GameSrc/physics.c",
+          "lines": [
+            1383,
+            1386
+          ]
+        },
+        {
+          "name": "parse_motion_key",
+          "path": "src/GameSrc/movekeys.c",
+          "lines": [
+            50,
+            166
+          ]
+        },
+        {
+          "name": "velocity_crouch_filter",
+          "path": "src/GameSrc/leanmetr.c",
+          "lines": [
+            230,
+            237
+          ]
+        },
+        {
+          "name": "fatigue_player",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            340,
+            369
+          ]
+        },
+        {
+          "name": "pelvis_set_control",
+          "path": "src/Libraries/EDMS/Source/MODELS/pelvis.cc",
+          "lines": [
+            625,
+            670
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "damage-model",
+      "name": "Damage resolution and shields",
+      "purpose": "Damage type matrix, armor, critical roll, toughness, player damage and shield absorption",
+      "paths": [
+        "src/GameSrc/Headers/player.h",
+        "src/GameSrc/damage.c",
+        "src/GameSrc/player.c",
+        "src/GameSrc/wares.c"
+      ],
+      "functions": [
+        {
+          "name": "random_bell_modifier",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            173,
+            238
+          ]
+        },
+        {
+          "name": "randomize_damage",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            244,
+            267
+          ]
+        },
+        {
+          "name": "object_affect",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            275,
+            301
+          ]
+        },
+        {
+          "name": "armor_absorption",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            307,
+            318
+          ]
+        },
+        {
+          "name": "shield_absorb_damage",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            342,
+            395
+          ]
+        },
+        {
+          "name": "damage_player",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            522,
+            628
+          ]
+        },
+        {
+          "name": "damage_object",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            639,
+            728
+          ]
+        },
+        {
+          "name": "compute_damage",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            884,
+            958
+          ]
+        },
+        {
+          "name": "attack_object",
+          "path": "src/GameSrc/damage.c",
+          "lines": [
+            1025,
+            1072
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "weapons-explosives",
+      "name": "Weapons and explosives",
+      "purpose": "Energy weapon charge and heat, ballistic fire, grenade timers and blast falloff",
+      "paths": [
+        "src/GameSrc/Headers/weapons.h",
+        "src/GameSrc/grenades.c",
+        "src/GameSrc/weapons.c"
+      ],
+      "functions": [
+        {
+          "name": "weapon_energy_drain",
+          "path": "src/GameSrc/weapons.c",
+          "lines": [
+            535,
+            572
+          ]
+        },
+        {
+          "name": "player_fire_energy",
+          "path": "src/GameSrc/weapons.c",
+          "lines": [
+            580,
+            625
+          ]
+        },
+        {
+          "name": "player_fire_projectile",
+          "path": "src/GameSrc/weapons.c",
+          "lines": [
+            476,
+            524
+          ]
+        },
+        {
+          "name": "cool_off_beam_weapons",
+          "path": "src/GameSrc/weapons.c",
+          "lines": [
+            1209,
+            1235
+          ]
+        },
+        {
+          "name": "explosion_ray_cast_attack",
+          "path": "src/GameSrc/grenades.c",
+          "lines": [
+            105,
+            176
+          ]
+        },
+        {
+          "name": "do_explosion",
+          "path": "src/GameSrc/grenades.c",
+          "lines": [
+            184,
+            433
+          ]
+        },
+        {
+          "name": "activate_grenade",
+          "path": "src/GameSrc/grenades.c",
+          "lines": [
+            532,
+            573
+          ]
+        },
+        {
+          "name": "grenade_contact",
+          "path": "src/GameSrc/grenades.c",
+          "lines": [
+            621,
+            637
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-model"
+      ]
+    },
+    {
+      "id": "vitals-drugs",
+      "name": "Vitals, exposure and patches",
+      "purpose": "Periodic energy and health pass, hazard exposure, suit absorption and timed patch drugs",
+      "paths": [
+        "src/GameSrc/Headers/faketime.h",
+        "src/GameSrc/Headers/gamesys.h",
+        "src/GameSrc/drugs.c",
+        "src/GameSrc/gamesys.c"
+      ],
+      "functions": [
+        {
+          "name": "do_stuff_every_second",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            722,
+            865
+          ]
+        },
+        {
+          "name": "check_hazard_regions",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            565,
+            598
+          ]
+        },
+        {
+          "name": "enviro_suit_absorb",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            918,
+            970
+          ]
+        },
+        {
+          "name": "expose_player_real",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            877,
+            901
+          ]
+        },
+        {
+          "name": "apply_rate",
+          "path": "src/GameSrc/gamesys.c",
+          "lines": [
+            703,
+            707
+          ]
+        },
+        {
+          "name": "drug_use",
+          "path": "src/GameSrc/drugs.c",
+          "lines": [
+            135,
+            157
+          ]
+        },
+        {
+          "name": "drugs_update",
+          "path": "src/GameSrc/drugs.c",
+          "lines": [
+            181,
+            228
+          ]
+        },
+        {
+          "name": "drug_medic_effect",
+          "path": "src/GameSrc/drugs.c",
+          "lines": [
+            480,
+            496
+          ]
+        },
+        {
+          "name": "drug_detox_effect",
+          "path": "src/GameSrc/drugs.c",
+          "lines": [
+            611,
+            633
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-model"
+      ]
+    },
+    {
+      "id": "wares-inventory",
+      "name": "Wares and inventory",
+      "purpose": "Hardware ware energy costs, jump jets, inventory slots and merged keycards",
+      "paths": [
+        "src/GameSrc/Headers/gamesys.h",
+        "src/GameSrc/Headers/objuse.h",
+        "src/GameSrc/Headers/player.h",
+        "src/GameSrc/invent.c",
+        "src/GameSrc/objuse.c",
+        "src/GameSrc/wares.c"
+      ],
+      "functions": [
+        {
+          "name": "energy_cost",
+          "path": "src/GameSrc/wares.c",
+          "lines": [
+            128,
+            141
+          ]
+        },
+        {
+          "name": "use_ware",
+          "path": "src/GameSrc/wares.c",
+          "lines": [
+            149,
+            248
+          ]
+        },
+        {
+          "name": "hardware_power_outage",
+          "path": "src/GameSrc/wares.c",
+          "lines": [
+            269,
+            276
+          ]
+        },
+        {
+          "name": "activate_jumpjets",
+          "path": "src/GameSrc/wares.c",
+          "lines": [
+            742,
+            763
+          ]
+        },
+        {
+          "name": "shield_set_absorb",
+          "path": "src/GameSrc/wares.c",
+          "lines": [
+            626,
+            635
+          ]
+        },
+        {
+          "name": "weapons_add_func",
+          "path": "src/GameSrc/invent.c",
+          "lines": [
+            779,
+            832
+          ]
+        },
+        {
+          "name": "add_access_card",
+          "path": "src/GameSrc/invent.c",
+          "lines": [
+            1522,
+            1582
+          ]
+        },
+        {
+          "name": "general_add_func",
+          "path": "src/GameSrc/invent.c",
+          "lines": [
+            1584,
+            1617
+          ]
+        },
+        {
+          "name": "inv_empty_trash",
+          "path": "src/GameSrc/invent.c",
+          "lines": [
+            1477,
+            1520
+          ]
+        },
+        {
+          "name": "remove_general_item",
+          "path": "src/GameSrc/invent.c",
+          "lines": [
+            1619,
+            1644
+          ]
+        }
+      ],
+      "dependsOn": [
+        "vitals-drugs"
+      ]
+    },
+    {
+      "id": "world-interaction",
+      "name": "Doors, triggers and spawning",
+      "purpose": "Door access and auto close, trigger comparators and monster spawn rules",
+      "paths": [
+        "src/GameSrc/Headers/doorparm.h",
+        "src/GameSrc/Headers/objuse.h",
+        "src/GameSrc/gamesys.c",
+        "src/GameSrc/objuse.c",
+        "src/GameSrc/pathfind.c",
+        "src/GameSrc/trigger.c"
+      ],
+      "functions": [
+        {
+          "name": "door_locked",
+          "path": "src/GameSrc/objuse.c",
+          "lines": [
+            143,
+            173
+          ]
+        },
+        {
+          "name": "use_door",
+          "path": "src/GameSrc/objuse.c",
+          "lines": [
+            189,
+            348
+          ]
+        },
+        {
+          "name": "comparator_check",
+          "path": "src/GameSrc/trigger.c",
+          "lines": [
+            210,
+            273
+          ]
+        },
+        {
+          "name": "trap_monster_func",
+          "path": "src/GameSrc/trigger.c",
+          "lines": [
+            423,
+            533
+          ]
+        },
+        {
+          "name": "trap_ai_func",
+          "path": "src/GameSrc/trigger.c",
+          "lines": [
+            556,
+            628
+          ]
+        },
+        {
+          "name": "trap_damage_func",
+          "path": "src/GameSrc/trigger.c",
+          "lines": [
+            936,
+            964
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ai-navigation"
+      ]
+    },
+    {
+      "id": "cyberspace",
+      "name": "Cyberspace mode",
+      "purpose": "Cyberspace entry and exit rules, cyberspace health, flight controls, nodes and ICE",
+      "paths": [
+        "src/GameSrc/Headers/cyber.h",
+        "src/GameSrc/cyber.c",
+        "src/GameSrc/newai.c",
+        "src/GameSrc/objuse.c",
+        "src/GameSrc/physics.c"
+      ],
+      "functions": [
+        {
+          "name": "check_cspace_death",
+          "path": "src/GameSrc/cyber.c",
+          "lines": [
+            65,
+            105
+          ]
+        },
+        {
+          "name": "enter_cyberspace_stuff",
+          "path": "src/GameSrc/cyber.c",
+          "lines": [
+            110,
+            181
+          ]
+        },
+        {
+          "name": "exit_cyberspace_stuff",
+          "path": "src/GameSrc/cyber.c",
+          "lines": [
+            192,
+            233
+          ]
+        },
+        {
+          "name": "run_cspace_ice",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            114,
+            137
+          ]
+        },
+        {
+          "name": "run_evil_otto",
+          "path": "src/GameSrc/newai.c",
+          "lines": [
+            186,
+            216
+          ]
+        },
+        {
+          "name": "run_cspace_collisions",
+          "path": "src/GameSrc/physics.c",
+          "lines": [
+            332,
+            359
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "damage-model"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "stealth-visibility-roll",
+      "node": "ai-perception",
+      "name": "Stealth visibility roll",
+      "summary": "Each awake enemy turns one shared player visibility number into a random spotting chance, then confirms with a line-of-sight ray.",
+      "behavior": "Once per enemy AI turn the game builds one visibility number for the player. It starts from a base of 178, adds a light term of 75 divided by the average floor and ceiling light level of the player tile (never dividing by less than 1), adds 80 per lantern setting, and adds a gunfire term of 168 times 280 divided by the ticks since the last shot, so a fresh shot swamps every other term and the bonus then decays hyperbolically. Outside cyberspace each posture step (stand 0, stoop 1, prone 2) subtracts 16. Each enemy then subtracts one point per height unit of vertical offset, subtracts a distance term that is always zero in practice because it drops 16 bits from a distance measured in 1/256 tile units, adds its own perception rating minus 64, and subtracts 128 only when the player is exactly behind it because the facing difference is divided by a half turn with integer arithmetic. If the result is above zero the enemy rolls a random value from 0 to 254, and a lower roll sends a thin ray up to 20 tiles that must actually strike the player to count as a sighting.",
+      "constants": [
+        {
+          "name": "base visibility",
+          "value": 178,
+          "unit": "visibility points, compared with a random 0-254 roll once per enemy AI turn",
+          "source": "src/GameSrc/newai.c:62"
+        },
+        {
+          "name": "lantern visibility per setting",
+          "value": 80,
+          "unit": "visibility points per lamp setting level",
+          "source": "src/GameSrc/newai.c:65"
+        },
+        {
+          "name": "gunfire visibility numerator",
+          "value": 168,
+          "unit": "visibility points multiplied by 280 ticks per second, divided by ticks since the last shot (minimum divisor 1)",
+          "source": "src/GameSrc/newai.c:66"
+        },
+        {
+          "name": "posture visibility penalty",
+          "value": 16,
+          "unit": "visibility points subtracted per posture step (0 stand, 1 stoop, 2 prone)",
+          "source": "src/GameSrc/newai.c:68"
+        },
+        {
+          "name": "behind-the-enemy penalty",
+          "value": 128,
+          "unit": "visibility points, applied only at a facing difference of exactly 180 degrees",
+          "source": "src/GameSrc/newai.c:71"
+        },
+        {
+          "name": "median perception",
+          "value": 64,
+          "unit": "perception rating points subtracted before the enemy rating is added",
+          "source": "src/GameSrc/newai.c:73"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 156
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 161
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 364
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 372
+        },
+        {
+          "path": "src/GameSrc/tools.c",
+          "line": 799
+        }
+      ],
+      "capabilities": [
+        "light and noise dependent detection chance",
+        "stance based stealth bonus",
+        "per enemy perception skill"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "detection"
+      ]
+    },
+    {
+      "id": "detection-awareness-states",
+      "node": "ai-perception",
+      "name": "Awareness, chase and attack readiness",
+      "summary": "A sighting flips a calm enemy to hostile, a chasing enemy tracks the true player position, and the attack mood needs range, facing and a clear ray.",
+      "behavior": "A successful sighting stores the player position as the last known location, starts combat music, and, when the combat difficulty setting is above zero, turns a neutral or isolated enemy hostile with a chasing flag and a notice sound while discarding its wander path. A hostile enemy keeps its path unless the path destination is more than 4 tiles from the last known position, but the repath code clears the path id before it calls the delete routine, so the old path slot is never released. While the chasing flag is set the enemy copies the true player position into the last known location every turn, so sight only refreshes the timer. The forgetting test compares the time of the last sighting against game time plus a 10 second span in a direction that cannot be true, so enemies effectively never lose track and the lost-track marker is never set; the only way back to neutral is an 18.75 percent chance per turn when the pathfinder finds no route. Each hostile turn the enemy checks both attack ranges, requires a small vertical gap for attacks of range 2 or less, and enters the attacking mood only when it faces the player within 45 degrees and a ray reaches the player, otherwise it stays hostile and stands.",
+      "constants": [
+        {
+          "name": "memory span",
+          "value": 10,
+          "unit": "seconds, as 10 times 280 ticks; the comparison that uses it can never be true",
+          "source": "src/GameSrc/newai.c:79"
+        },
+        {
+          "name": "repath distance",
+          "value": 4,
+          "unit": "tiles between old path destination and last known player tile",
+          "source": "src/GameSrc/newai.c:270"
+        },
+        {
+          "name": "attack facing cone",
+          "value": "0x2000",
+          "unit": "fixed-angle units where 0x10000 is a full turn, so 45 degrees either side",
+          "source": "src/GameSrc/newai.c:567"
+        },
+        {
+          "name": "short range vertical gate",
+          "value": "0xA0",
+          "unit": "scaled height units, applied to attacks with range 2 tiles or less",
+          "source": "src/GameSrc/newai.c:509"
+        },
+        {
+          "name": "lost route reset chance",
+          "value": "0x30",
+          "unit": "chance out of 256 per combat AI turn to drop back to neutral when no path exists",
+          "source": "src/GameSrc/newai.c:703"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 306
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 338
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 146
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 567
+        }
+      ],
+      "capabilities": [
+        "sighting to hostile mood transition",
+        "omniscient chase once alerted",
+        "attack readiness gated by range facing and sight"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "combat"
+      ]
+    },
+    {
+      "id": "enemy-attack-accuracy",
+      "node": "ai-combat",
+      "name": "Enemy aim error and projectile attacks",
+      "summary": "Enemy ranged attacks aim at the last known player position with a random error that shrinks with the attack accuracy, using rays or slow physical projectiles.",
+      "behavior": "When an attack animation reaches its firing frame the game rolls an aim error: the miss amount is 255 minus the attack accuracy minus a random 0-254. Only a positive amount disturbs the aim, spreading x and y by up to half the amount either way in 1/256 tile units and lifting z by up to the full amount. The aim point is the stored last known player position, which projectile users always take from the head-level state and other enemies take from it about 25 percent of the time, otherwise from the body state. No attack fires while that position is unset. Hitscan attackers cast one ray out to their listed range and apply the attack damage record on a hit; a miss gives a 1 in 4 chance of raising the get-closer flag and otherwise clears it. Slow projectile attackers first test a thin ray out to 20 tiles and only launch if it would reach the player, then spawn a physical shot at speed 5 that lives 1000 ticks (about 3.6 seconds) and falls under a mild gravity, while thrown-grenade attackers use speed 7 and a heavier gravity.",
+      "constants": [
+        {
+          "name": "miss amount base",
+          "value": 255,
+          "unit": "accuracy scale; miss amount = 255 minus accuracy minus a random 0-254, positive values perturb aim",
+          "source": "src/GameSrc/ai.c:666"
+        },
+        {
+          "name": "head aim chance",
+          "value": "0x40",
+          "unit": "chance out of 256 per target lookup for non-projectile attackers to use the head-level state",
+          "source": "src/GameSrc/ai.c:76"
+        },
+        {
+          "name": "pre-launch ray range",
+          "value": 20,
+          "unit": "tiles, thin ray that must reach the player before a slow projectile is launched",
+          "source": "src/GameSrc/ai.c:717"
+        },
+        {
+          "name": "slow projectile speed",
+          "value": 5,
+          "unit": "physics speed units, fixed-point 1.0 = 1 unit, per update rate unverified",
+          "source": "src/GameSrc/ai.c:61"
+        },
+        {
+          "name": "slow projectile lifetime",
+          "value": 1000,
+          "unit": "game ticks (280 per second), about 3.6 seconds",
+          "source": "src/GameSrc/ai.c:60"
+        },
+        {
+          "name": "thrown grenade speed",
+          "value": 7,
+          "unit": "physics speed units, per update rate unverified",
+          "source": "src/GameSrc/ai.c:63"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 666
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 680
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 689
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 597
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 735
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 77
+        }
+      ],
+      "capabilities": [
+        "accuracy based aim error",
+        "ray gated projectile launch",
+        "distinct grenade lobbing arc"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "ranged"
+      ]
+    },
+    {
+      "id": "combat-ai-approach",
+      "node": "ai-combat",
+      "name": "Combat approach, strafing and attack choice",
+      "summary": "Attacking enemies choose between two attacks by range, strafe randomly, and either take slow potshots or charge at the player.",
+      "behavior": "An enemy in the attacking mood that is not already mid-attack picks an attack when any attack range is satisfied and its cooldown has expired. If only one attack is in range it uses that one, and if both are it picks the secondary attack when a random value from 0 to 254 is below the secondary attack percentage. The cooldown is the chosen attack speed value added to game time, and the damage itself is delivered when the animation reaches its fire frame, three quarters of the way through the cycle by default. With a clear view of the player the enemy abandons any path, faces the center of the player tile and picks a fresh sidestep value from minus 200 to 199 unless it is a hold-position type. If it is in range, not flagged to close in, not an exploding drone and combat difficulty is below 3, it shoots from a near standstill at speed 13 divided by 8 and urgency 48 divided by 2; otherwise it charges at full speed 13 with urgency doubled to 96. Without a view it follows its existing path or, when hostile or flagged to close in, asks for a high priority route to the player tile. Combat enemies think every 2 frames instead of the 13 used by idle ones.",
+      "constants": [
+        {
+          "name": "desired speed",
+          "value": "0xD",
+          "unit": "physics speed units (13.0 in fixed point), applied as the full charge speed",
+          "source": "src/GameSrc/newai.c:75"
+        },
+        {
+          "name": "urgency base",
+          "value": "0x30",
+          "unit": "control urgency units (48.0 in fixed point); halved when shooting, doubled when charging",
+          "source": "src/GameSrc/newai.c:613"
+        },
+        {
+          "name": "sidestep span",
+          "value": 400,
+          "unit": "control units; sidestep = random 0-399 minus 200, refreshed each combat turn with a clear view",
+          "source": "src/GameSrc/newai.c:668"
+        },
+        {
+          "name": "potshot speed shift",
+          "value": 3,
+          "unit": "right shift applied to the desired speed while standing and shooting",
+          "source": "src/GameSrc/newai.c:679"
+        },
+        {
+          "name": "combat AI period",
+          "value": 2,
+          "unit": "main loop frames between AI turns for hostile or attacking enemies; frame rate dependent",
+          "source": "src/GameSrc/newai.c:874"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 645
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 651
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 668
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 677
+        },
+        {
+          "path": "src/GameSrc/effect.c",
+          "line": 576
+        }
+      ],
+      "capabilities": [
+        "two attack enemy with range based choice",
+        "random strafing under fire",
+        "charge versus potshot behavior switch"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "movement"
+      ]
+    },
+    {
+      "id": "enemy-pain-and-alert",
+      "node": "ai-combat",
+      "name": "Hit reactions, tranquilize, stun and group alarm",
+      "summary": "Damaged enemies flinch, turn hostile at once, can be tranquilized or stunned by chance, and anger nearby creatures of the same group type.",
+      "behavior": "Damage on a stunned or tranquilized enemy first gives a 7 in 16 chance to clear those states, and a sleeping enemy ignores the hit entirely. A hit larger than 25 percent of the maximum health plays a pain sound, and a random 0-254 roll below the disruption percentage plus the damage shifted right by 5 minus the combat difficulty puts the enemy into a disrupted posture and restarts its attack cooldown. The enemy then becomes hostile, locks onto the player position and has its wait counter zeroed so it acts on the next frame. Tranquilizer hits need the tranquilizer damage flag and succeed when a 0-100 roll is below 450 times the damage divided by the remaining health, and stun does the same except robots are immune. A tranquilized enemy stops moving, regains gravity and wakes with a chance of 5 in 4096 on every main loop frame. When combat difficulty is above zero every creature inside a 7 by 7 tile block of the target, with the same solo or pack flag and not in the isolation mood, also turns hostile.",
+      "constants": [
+        {
+          "name": "group anger radius",
+          "value": 3,
+          "unit": "tiles in each direction, a 7 by 7 block around the damaged enemy",
+          "source": "src/GameSrc/ai.c:185"
+        },
+        {
+          "name": "pain sound threshold",
+          "value": 25,
+          "unit": "percent of maximum health in a single hit",
+          "source": "src/GameSrc/ai.c:181"
+        },
+        {
+          "name": "unconfuse threshold",
+          "value": 6,
+          "unit": "random 0-15 roll at or below this value clears stun and tranquilizer (7 in 16)",
+          "source": "src/GameSrc/ai.c:202"
+        },
+        {
+          "name": "disruption damage shift base",
+          "value": 5,
+          "unit": "damage is shifted right by this value minus the combat difficulty before adding to the disruption percentage",
+          "source": "src/GameSrc/ai.c:228"
+        },
+        {
+          "name": "tranquilize scale",
+          "value": 450,
+          "unit": "percent scale; chance = 450 times damage divided by current health, compared with a 0-100 roll",
+          "source": "src/GameSrc/damage.c:661"
+        },
+        {
+          "name": "tranquilize wake chance",
+          "value": 5,
+          "unit": "out of 4096 per main loop frame, rolled for every tranquilized enemy",
+          "source": "src/GameSrc/newai.c:813"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 202
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 228
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 239
+        },
+        {
+          "path": "src/GameSrc/ai.c",
+          "line": 283
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 670
+        }
+      ],
+      "capabilities": [
+        "hit stun and attack interruption",
+        "probabilistic tranquilize and stun status",
+        "group alarm radius for pack enemies"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "damage"
+      ]
+    },
+    {
+      "id": "enemy-peaceful-orders",
+      "node": "ai-brain",
+      "name": "Idle orders, roaming and far-distance freeze",
+      "summary": "Idle enemies think slowly, follow their orders (guard, roam, patrol, sleep), and freeze entirely when the player is far away.",
+      "behavior": "Idle enemies run an AI turn every 13 frames plus a 0 or 2 frame jitter taken from the tick counter, while enemies in combat use 2 frames, so the cadence follows the frame rate rather than real time. Enemies farther than 6 tiles from the player (10 in cyberspace) are frozen: their physics body is given zero control and they skip all thinking, unless they are following a path or are hostile or attacking. Sleeping and dead enemies are skipped entirely and tranquilized ones only roll their wake chance. Orders pick the destination: guard, sleep and hold-position request nothing, patrol swaps between two stored points, roam picks a random open tile within 5 tiles after up to 25 tries and requests a path to it, and highway orders follow a chain of marker objects. A roaming path is dropped after more than 126 AI turns without arriving, confused enemies count 4 turns at once, and the path-length check beside it never fires because the counter is incremented before the test.",
+      "constants": [
+        {
+          "name": "idle AI period",
+          "value": 13,
+          "unit": "main loop frames between AI turns for calm enemies; frame rate dependent",
+          "source": "src/GameSrc/newai.c:875"
+        },
+        {
+          "name": "combat AI period",
+          "value": 2,
+          "unit": "main loop frames between AI turns for hostile or attacking enemies; frame rate dependent",
+          "source": "src/GameSrc/newai.c:874"
+        },
+        {
+          "name": "freeze distance",
+          "value": 6,
+          "unit": "tiles from the player beyond which enemies stop thinking and their physics sleeps",
+          "source": "src/GameSrc/newai.c:222"
+        },
+        {
+          "name": "freeze distance in cyberspace",
+          "value": 10,
+          "unit": "tiles from the player, used when the level is cyberspace",
+          "source": "src/GameSrc/newai.c:222"
+        },
+        {
+          "name": "roam radius",
+          "value": 5,
+          "unit": "tiles, side length of the random destination square when no custom value is stored",
+          "source": "src/GameSrc/newai.c:769"
+        },
+        {
+          "name": "roam give-up turns",
+          "value": 126,
+          "unit": "AI turns before an unfinished roam path is dropped (confused enemies add 4 per turn)",
+          "source": "src/GameSrc/newai.c:810"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 967
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 244
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 806
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 787
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 910
+        }
+      ],
+      "capabilities": [
+        "order driven idle behaviors",
+        "distance based AI freezing",
+        "cheap staggered AI scheduling"
+      ],
+      "tags": [
+        "ai",
+        "roaming",
+        "performance"
+      ]
+    },
+    {
+      "id": "grid-pathfinding",
+      "node": "ai-navigation",
+      "name": "Tile grid pathfinding and path following",
+      "summary": "A breadth-first flood over tiles builds paths of at most 64 moves for enemies, which follow them waypoint by waypoint and open doors on the way.",
+      "behavior": "Enemies request routes into one of 16 shared slots and the requests are solved at most every 70 ticks (a quarter second) unless the request is high priority, which combat code forces to solve immediately. The solver grows a four-way flood one ring per step, remembers only the direction taken into each tile in two bits, and gives up after 64 rings or when the frontier empties; frontier lists hold 64 tiles and a finished route stores at most 64 moves, packed four per byte and read backwards from the destination. A step is allowed when the next tile has at least one height unit of headroom above the current floor and its floor is no more than one unit above it, so enemies climb one unit but may drop any distance. Closed doors block a step only when locked or needing access; other doors are allowed and the follower opens them when within one tile. A follower advances when it reaches its waypoint tile, skips ahead up to 3 waypoints if it finds itself further along the route, and discards the path after 25 failed turns of trying to reach one waypoint.",
+      "constants": [
+        {
+          "name": "max route moves",
+          "value": 64,
+          "unit": "tile moves stored per path, also the flood ring limit",
+          "source": "src/GameSrc/Headers/pathfind.h:32"
+        },
+        {
+          "name": "path slots",
+          "value": 16,
+          "unit": "simultaneous paths shared by all enemies",
+          "source": "src/GameSrc/Headers/pathfind.h:33"
+        },
+        {
+          "name": "frontier list size",
+          "value": 64,
+          "unit": "tiles per flood frontier list",
+          "source": "src/GameSrc/pathfind.c:294"
+        },
+        {
+          "name": "request check interval shift",
+          "value": 2,
+          "unit": "right shift of 280 ticks per second, so requests are solved every 70 ticks (0.25 s)",
+          "source": "src/GameSrc/pathfind.c:195"
+        },
+        {
+          "name": "waypoint lookahead",
+          "value": 3,
+          "unit": "route steps a follower may skip ahead when it is already further along",
+          "source": "src/GameSrc/pathfind.c:164"
+        },
+        {
+          "name": "stuck turns before dropping path",
+          "value": 25,
+          "unit": "AI turns spent failing to reach the current waypoint",
+          "source": "src/GameSrc/newai.c:399"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/pathfind.c",
+          "line": 46
+        },
+        {
+          "path": "src/GameSrc/pathfind.c",
+          "line": 497
+        },
+        {
+          "path": "src/GameSrc/pathfind.c",
+          "line": 403
+        },
+        {
+          "path": "src/GameSrc/pathfind.c",
+          "line": 201
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 455
+        }
+      ],
+      "capabilities": [
+        "shared pathfinding budget with timed batches",
+        "small compact route storage",
+        "door aware navigation"
+      ],
+      "tags": [
+        "ai",
+        "pathfinding",
+        "navigation"
+      ]
+    },
+    {
+      "id": "player-locomotion",
+      "node": "player-movement",
+      "name": "Player locomotion from control banks",
+      "summary": "Averaged control banks of plus or minus 100 become forward, strafe and turn forces on a physics body, with a jog to sprint speed curve.",
+      "behavior": "Four control banks (keyboard, mouse and others) each hold a signed value from -100 to 100 per axis, and the effective control is the average of the banks that are non-zero. Forward speed maps linearly from 0 to 8 as the control rises to the jog threshold of 70, then from 8 to 25 as it rises to 100, and the result is divided by a posture damping factor that runs from 1 standing to 4 prone. The plain forward and back keys set half control (50) and the run key sets full control, so a walk is about 5.7 and a run is 25 in the same units. Strafe is the control divided by 7 and turn is the control divided by minus 5, both applied as forces to a body with gravity 4. The reflex drug multiplies forward, strafe and turn by 4 while the game clock runs at a quarter of real speed. Skates double forward speed with a cap of 1.5 times sprint and quarter the strafe, and boosters pin forward speed at 50. The physics step is capped to one sixth of a second so low frame rates do not tunnel through geometry.",
+      "constants": [
+        {
+          "name": "jog to sprint control threshold",
+          "value": 70,
+          "unit": "control units out of 100; above this the sprint ramp and fatigue start",
+          "source": "src/GameSrc/Headers/gamesys.h:111"
+        },
+        {
+          "name": "maximum jog speed",
+          "value": 8,
+          "unit": "physics speed units at control 70, per update rate unverified",
+          "source": "src/GameSrc/physics.c:364"
+        },
+        {
+          "name": "maximum sprint speed",
+          "value": 25,
+          "unit": "physics speed units at control 100, per update rate unverified",
+          "source": "src/GameSrc/physics.c:363"
+        },
+        {
+          "name": "strafe divisor",
+          "value": 7,
+          "unit": "strafe control divided by this value, then by the posture damping",
+          "source": "src/GameSrc/physics.c:466"
+        },
+        {
+          "name": "turn divisor",
+          "value": -5,
+          "unit": "turn control divided by this value; the negative sign sets the turn direction",
+          "source": "src/GameSrc/physics.c:467"
+        },
+        {
+          "name": "standard gravity",
+          "value": 4,
+          "unit": "physics acceleration units, rate unverified",
+          "source": "src/GameSrc/Headers/physics.h:83"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 468
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 416
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 479
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 496
+        },
+        {
+          "path": "src/GameSrc/movekeys.c",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "averaged multi source input banks",
+        "jog and sprint speed curve",
+        "movement item modifiers such as skates and boosters"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "input"
+      ]
+    },
+    {
+      "id": "player-lean-crouch-look",
+      "node": "player-movement",
+      "name": "Lean, crouch and look control",
+      "summary": "Lean and eye pitch advance at fixed rates, lean snaps back on release, and posture drives a crouch force and a movement damping curve.",
+      "behavior": "Lean is stored from -100 to 100 and advances at 400 units per second of game time at full input, so a full lean takes a quarter second. When no lean key is held and either a lean key was just released or forward speed has shrunk the allowed lean below the current lean, the lean is reset to zero in a single frame instead of easing back. The physics body receives one third of the lean value as a sideways tilt force. Look pitch moves at a quarter of a half turn per second (45 degrees) at full input and the eye angle is clamped to plus or minus 90 degrees. Each posture sends a different crouch force to the body (0 standing, 6 stooping, 10 prone), which overpowers a jump while held, and jumping forces the posture back to standing. The movement damping is computed from a filtered crouch height that follows the measured height of the body toward the intended height (full, half or zero of 0.74 units) with a weighted filter at rate 20, settling faster while moving, so crouching slows the player smoothly.",
+      "constants": [
+        {
+          "name": "lean rate",
+          "value": 400,
+          "unit": "lean units per second of game time at full input (lean range is plus or minus 100)",
+          "source": "src/GameSrc/physics.c:326"
+        },
+        {
+          "name": "pitch rate divisor",
+          "value": 4,
+          "unit": "full turn half-angle divided by this, giving 45 degrees per second at full input",
+          "source": "src/GameSrc/physics.c:325"
+        },
+        {
+          "name": "stoop crouch force",
+          "value": 6,
+          "unit": "crouch control units sent to the physics body",
+          "source": "src/GameSrc/physics.c:320"
+        },
+        {
+          "name": "prone crouch force",
+          "value": 10,
+          "unit": "crouch control units sent to the physics body",
+          "source": "src/GameSrc/physics.c:320"
+        },
+        {
+          "name": "lean to tilt divisor",
+          "value": 3,
+          "unit": "lean value divided by this before it reaches the physics body",
+          "source": "src/GameSrc/physics.c:533"
+        },
+        {
+          "name": "posture filter rate",
+          "value": 20,
+          "unit": "weight of the crouch height smoothing filter",
+          "source": "src/GameSrc/leanmetr.c:192"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 519
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 465
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 440
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 81
+        },
+        {
+          "path": "src/GameSrc/Headers/physics.h",
+          "line": 129
+        },
+        {
+          "path": "src/GameSrc/leanmetr.c",
+          "line": 230
+        },
+        {
+          "path": "src/Libraries/EDMS/Source/MODELS/pelvis.cc",
+          "line": 663
+        }
+      ],
+      "capabilities": [
+        "fixed rate lean with instant recentering",
+        "posture based movement damping",
+        "clamped look pitch"
+      ],
+      "tags": [
+        "movement",
+        "camera",
+        "stance"
+      ]
+    },
+    {
+      "id": "fatigue-sprint",
+      "node": "player-movement",
+      "name": "Sprint fatigue and recovery",
+      "summary": "Only the sprint portion of forward control builds fatigue, recovery speeds up the longer the player rests, and fatigue spreads weapon aim.",
+      "behavior": "Fatigue runs from 0 to 10000 and only the part of forward control above the jog threshold counts. Each game tick adds 5 times the excess over 70 divided by 30, so a full sprint adds 5 per tick, 1400 per second, and fills the meter in about seven seconds with a warning at 7000. Jump and thrust control counts double toward the same formula, stooping divides the gain by 4, prone by 9, skates by 8, and jump jets and climbing add nothing. Once per second update, fatigue recovers only while forward control is at or below the jog threshold: the amount removed starts at the base 100, grows by 100 each second of continuous rest up to 400, and is reset to the base the moment the player sprints again. Fatigue feeds back into combat because each 400 points add one unit of weapon spread, and drug wear-off gets faster as fatigue rises. A stamina patch pins fatigue at zero while it lasts and then slams it to the maximum.",
+      "constants": [
+        {
+          "name": "fatigue gain rate",
+          "value": 5,
+          "unit": "fatigue points per tick per 30 control units above the jog threshold; ticks are 280 per second",
+          "source": "src/GameSrc/gamesys.c:95"
+        },
+        {
+          "name": "maximum fatigue",
+          "value": 10000,
+          "unit": "fatigue points",
+          "source": "src/GameSrc/gamesys.c:89"
+        },
+        {
+          "name": "fatigue warning level",
+          "value": 7000,
+          "unit": "fatigue points that raise the exhaustion warning",
+          "source": "src/GameSrc/gamesys.c:90"
+        },
+        {
+          "name": "recovery growth per second",
+          "value": 100,
+          "unit": "fatigue points per second, added to the recovery amount each second of rest",
+          "source": "src/GameSrc/gamesys.c:124"
+        },
+        {
+          "name": "recovery cap",
+          "value": 400,
+          "unit": "fatigue points removed per second at most",
+          "source": "src/GameSrc/player.c:140"
+        },
+        {
+          "name": "aim spread per fatigue",
+          "value": 400,
+          "unit": "fatigue points per one unit of cursor spread after a ballistic shot",
+          "source": "src/GameSrc/weapons.c:72"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 346
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 353
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 820
+        },
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 519
+        }
+      ],
+      "capabilities": [
+        "stamina meter for sprinting",
+        "rest accelerated recovery",
+        "fatigue affects aim and drug duration"
+      ],
+      "tags": [
+        "movement",
+        "stamina",
+        "survival"
+      ]
+    },
+    {
+      "id": "damage-resolution",
+      "node": "damage-model",
+      "name": "Damage resolution pipeline",
+      "summary": "Weapon damage passes through type effectiveness, armor penetration, a bell-curve critical roll, toughness and a randomized final value.",
+      "behavior": "Damage starts as the weapon damage value times a power percentage times an effectiveness multiplier: nothing when the target does not resist that damage type, 1 for a plain match, 2 when the primary class matches, and 3 or 4 when the special class matches (3 on the hardest combat setting). Armor then subtracts its rating minus the attack penetration, where penetration is randomized to 90 to 110 percent, and damage never drops below zero. Outside cyberspace a critical modifier is formed from the attacker offense minus the target defense (a fixed 4 when the target is the player) plus a bell-curve value of minus 12 to plus 12 built by summing several dice whose count and size depend on the combat difficulty. Below minus 3 the damage is divided by the square of the modifier plus 3, and above 3 it is multiplied by the modifier over 3 with the modifier capped at 12, except against targets whose defense is 255. Toughness then right-shifts the damage (toughness 3 means immune), and a final roll turns the number into half of it plus one d7 per 8 points, capped at 2500. On combat difficulty 0 every non-immune enemy dies in one hit.",
+      "constants": [
+        {
+          "name": "maximum damage",
+          "value": 2500,
+          "unit": "damage points per hit",
+          "source": "src/GameSrc/damage.c:69"
+        },
+        {
+          "name": "player defense value",
+          "value": 4,
+          "unit": "defense rating subtracted from attacker offense when the target is the player",
+          "source": "src/GameSrc/damage.c:68"
+        },
+        {
+          "name": "critical modifier cap",
+          "value": 12,
+          "unit": "modifier points, so the damage multiplier peaks at 12 divided by 3 = 4",
+          "source": "src/GameSrc/damage.c:913"
+        },
+        {
+          "name": "penetration low bound",
+          "value": 90,
+          "unit": "percent of attack penetration kept at minimum",
+          "source": "src/GameSrc/damage.c:308"
+        },
+        {
+          "name": "penetration spread",
+          "value": 20,
+          "unit": "percentage points of random penetration spread (90 to 110 percent)",
+          "source": "src/GameSrc/damage.c:308"
+        },
+        {
+          "name": "default bell dice count",
+          "value": 5,
+          "unit": "dice summed for the critical roll at combat difficulty 2, each rolling 0 to 20",
+          "source": "src/GameSrc/damage.c:197"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 895
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 897
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 907
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 921
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 251
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 1047
+        }
+      ],
+      "capabilities": [
+        "damage type resistance matrix",
+        "armor versus penetration",
+        "critical hits from offense defense and dice"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "rpg"
+      ]
+    },
+    {
+      "id": "player-damage-shields",
+      "node": "damage-model",
+      "name": "Player damage and shield absorption",
+      "summary": "Incoming player damage is scaled by difficulty, partly or fully absorbed by a powered shield, and cyberspace health cannot be lost in one hit.",
+      "behavior": "Radiation and biological damage skip both the difficulty shift and the shield; all other player damage is first shifted right by 2 minus the damage difficulty setting, so the two easiest settings quarter or halve it. When a shield is on, a hit at or below the shield threshold is absorbed completely, and a larger hit loses the shield absorb percentage plus a random jitter of minus 8 to plus 8. The shield table by setting is 20, 40, 75 and 75 percent absorption with thresholds 0, 10, 15 and 30. Health is a single byte with a maximum of 255 and a new game starts at five sixths of that. Lethal damage zeroes health, drops any item held on the cursor and triggers the death sequence. In cyberspace the same function uses a separate cyberspace health value and a shield program, and a hit that would be lethal leaves exactly 1 health so that only a second hit kills.",
+      "constants": [
+        {
+          "name": "maximum health",
+          "value": 255,
+          "unit": "hit points, stored in one byte",
+          "source": "src/GameSrc/Headers/player.h:99"
+        },
+        {
+          "name": "highest shield absorb rate",
+          "value": 75,
+          "unit": "percent of damage absorbed above the threshold, for the strongest settings",
+          "source": "src/GameSrc/wares.c:623"
+        },
+        {
+          "name": "highest shield threshold",
+          "value": 30,
+          "unit": "damage points below which a shield absorbs everything, for the strongest setting",
+          "source": "src/GameSrc/wares.c:624"
+        },
+        {
+          "name": "shield jitter span",
+          "value": 16,
+          "unit": "percentage points of random absorb variation (minus 8 to plus 8)",
+          "source": "src/GameSrc/damage.c:350"
+        },
+        {
+          "name": "difficulty shift base",
+          "value": 2,
+          "unit": "damage is shifted right by this value minus the damage difficulty",
+          "source": "src/GameSrc/damage.c:550"
+        },
+        {
+          "name": "shield flash cap",
+          "value": 100,
+          "unit": "drained damage points used to scale the shield flash effect",
+          "source": "src/GameSrc/damage.c:332"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 548
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 356
+        },
+        {
+          "path": "src/GameSrc/damage.c",
+          "line": 584
+        },
+        {
+          "path": "src/GameSrc/player.c",
+          "line": 107
+        },
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 626
+        }
+      ],
+      "capabilities": [
+        "percentage shield with absorb threshold",
+        "difficulty scaled incoming damage",
+        "two hit minimum cyberspace death rule"
+      ],
+      "tags": [
+        "damage",
+        "shield",
+        "survival"
+      ]
+    },
+    {
+      "id": "beam-weapon-heat",
+      "node": "weapons-explosives",
+      "name": "Energy weapon charge, heat and cooldown",
+      "summary": "Energy weapons spend player energy per charge setting, accumulate heat, refuse to fire when too hot, and cool by a fixed amount per tick interval.",
+      "behavior": "An energy weapon has a charge setting from 0 to 100 and a heat meter that is capped at 255. A shot is refused when heat is already 80 or more, or when the player energy store is below 20. The charge used is limited to the heat headroom (100 minus heat), the energy drawn is the weapon maximum charge times that charge over 100, and the heat added is half the charge. The overload setting makes a single shot cost and heat as though the charge were 200 while the damage power stays at 100 percent, and then the setting resets. The damage system receives the unclamped setting as its power level, so a hot weapon spends less energy but does not lose damage. Every beam weapon loses 1 heat for each 25 game ticks (about 11 heat per second) through a running accumulator that does not depend on frame rate. A hot warning appears when the heat plus half the next shot setting would exceed 82.",
+      "constants": [
+        {
+          "name": "maximum heat",
+          "value": 100,
+          "unit": "heat points used as charge headroom",
+          "source": "src/GameSrc/Headers/weapons.h:36"
+        },
+        {
+          "name": "overheat threshold",
+          "value": 80,
+          "unit": "heat points at or above which the weapon refuses to fire",
+          "source": "src/GameSrc/Headers/weapons.h:37"
+        },
+        {
+          "name": "minimum energy to fire",
+          "value": 20,
+          "unit": "player energy points required, out of 255",
+          "source": "src/GameSrc/weapons.c:71"
+        },
+        {
+          "name": "cool-off interval",
+          "value": 25,
+          "unit": "game ticks (280 per second) per heat point removed",
+          "source": "src/GameSrc/weapons.c:1184"
+        },
+        {
+          "name": "heat per charge divisor",
+          "value": 2,
+          "unit": "charge divided by this value is added to heat per shot",
+          "source": "src/GameSrc/weapons.c:569"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 538
+        },
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 556
+        },
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 552
+        },
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 615
+        },
+        {
+          "path": "src/GameSrc/weapons.c",
+          "line": 1209
+        }
+      ],
+      "capabilities": [
+        "charge based energy weapons",
+        "heat limited fire rate",
+        "overload burst shot"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "energy"
+      ]
+    },
+    {
+      "id": "explosions-grenades",
+      "node": "weapons-explosives",
+      "name": "Grenade timers and explosion falloff",
+      "summary": "Timed, contact and mine grenades detonate on a schedule or on touch, damage everything in a radius with a two-zone falloff and can chain.",
+      "behavior": "A timed grenade schedules its blast at the player-set timer measured in tenths of a second plus a random deviation of plus or minus the grenade type timing deviation, so no two throws are identical. Contact grenades explode on the first touch once armed, mines also need to have come to rest, and a released grenade is re-armed 0.3 seconds later so it cannot hit the body that threw it. The explosion scans every tile in the radius square, skips targets whose ray from the blast center is blocked, and measures the 3D distance to each. Damage falls linearly from the full value at the center to the inner-ring value at the inner radius and then to zero at the outer radius, with both values quartered before use and converted to a percentage of the maximum before they enter the normal damage pipeline. A nearby grenade chains when its touchiness plus the percent damage over 15 plus a roll of minus 3 to 3 is above 7. Explosions from destroyed objects skip non-creature targets half of the time, and a grenade that goes off in the hand of the player does double damage and ignores shields.",
+      "constants": [
+        {
+          "name": "grenade timer unit",
+          "value": 10,
+          "unit": "timer setting units per second of game time (timer setting divided by 10 gives seconds)",
+          "source": "src/GameSrc/grenades.c:78"
+        },
+        {
+          "name": "re-arm delay after release",
+          "value": 3,
+          "unit": "tenths of a second after a grenade leaves the thrower before it can touch-trigger",
+          "source": "src/GameSrc/grenades.c:591"
+        },
+        {
+          "name": "chain reaction threshold",
+          "value": 7,
+          "unit": "touchiness plus percent damage over 15 plus roll must exceed this",
+          "source": "src/GameSrc/grenades.c:362"
+        },
+        {
+          "name": "chain damage divisor",
+          "value": 15,
+          "unit": "percent damage divided by this value feeds the chain test",
+          "source": "src/GameSrc/grenades.c:359"
+        },
+        {
+          "name": "largest preset blast radius",
+          "value": 8,
+          "unit": "tiles, the third built-in explosion preset",
+          "source": "src/GameSrc/grenades.c:66"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/grenades.c",
+          "line": 561
+        },
+        {
+          "path": "src/GameSrc/grenades.c",
+          "line": 319
+        },
+        {
+          "path": "src/GameSrc/grenades.c",
+          "line": 268
+        },
+        {
+          "path": "src/GameSrc/grenades.c",
+          "line": 383
+        },
+        {
+          "path": "src/GameSrc/grenades.c",
+          "line": 621
+        }
+      ],
+      "capabilities": [
+        "timed contact and mine grenades",
+        "radius damage with two zone falloff",
+        "chain reactions between explosives"
+      ],
+      "tags": [
+        "explosives",
+        "combat",
+        "physics"
+      ]
+    },
+    {
+      "id": "drug-patches",
+      "node": "vitals-drugs",
+      "name": "Timed patch drugs",
+      "summary": "Seven patch types run on a slow update tick, wear off by chance and can be stacked, with the medic patch healing on a tapering schedule.",
+      "behavior": "A patch is applied from a counted stack and either stacks its duration (for stackable types, up to a cap of 127 units) or resets it. Every 1024 ticks, about 3.7 seconds, each active patch runs its ongoing effect and then loses one duration unit with probability (8 plus fatigue divided by 16384) over 16, so a rested player sees a 50 percent chance per update and a tired one sees more. Durations are listed per type, for example 10 for stamina and medic, 20 for sight, 8 for reflex and 4 for berserk and genius. The medic patch adds 430 to the health regeneration rate when applied and then removes a shrinking slice from that rate on each update (110, 100, 55, 50, 30, 25, 25, 25, 5, 5), which gives roughly 90 health over ten updates if the patch lasts that long, and any unspent slices are removed immediately when it wears off. The detox patch clears negative and then active effects one at a time and divides all exposure damage. The sight patch brightens the world and leaves a short dimming after-effect when it ends.",
+      "constants": [
+        {
+          "name": "drug update period",
+          "value": 1024,
+          "unit": "game ticks (280 per second), about 3.66 seconds",
+          "source": "src/GameSrc/drugs.c:60"
+        },
+        {
+          "name": "base wear-off numerator",
+          "value": 8,
+          "unit": "chance out of the wear-off denominator per update, plus fatigue divided by 16384",
+          "source": "src/GameSrc/drugs.c:61"
+        },
+        {
+          "name": "wear-off denominator",
+          "value": 16,
+          "unit": "denominator of the per-update wear-off chance",
+          "source": "src/GameSrc/drugs.c:62"
+        },
+        {
+          "name": "medic regeneration added",
+          "value": 430,
+          "unit": "health per 64 time-step minute added when a medic patch is applied",
+          "source": "src/GameSrc/drugs.c:462"
+        },
+        {
+          "name": "medic taper steps",
+          "value": 10,
+          "unit": "updates over which the added regeneration is withdrawn",
+          "source": "src/GameSrc/drugs.c:459"
+        },
+        {
+          "name": "stack duration cap",
+          "value": "0x7F",
+          "unit": "duration units, the largest stacked drug status",
+          "source": "src/GameSrc/drugs.c:147"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/drugs.c",
+          "line": 192
+        },
+        {
+          "path": "src/GameSrc/drugs.c",
+          "line": 204
+        },
+        {
+          "path": "src/GameSrc/drugs.c",
+          "line": 461
+        },
+        {
+          "path": "src/GameSrc/drugs.c",
+          "line": 456
+        },
+        {
+          "path": "src/GameSrc/drugs.c",
+          "line": 611
+        }
+      ],
+      "capabilities": [
+        "timed consumable buffs with random expiry",
+        "stackable durations",
+        "tapering heal over time"
+      ],
+      "tags": [
+        "inventory",
+        "survival",
+        "consumable"
+      ]
+    },
+    {
+      "id": "vitals-hazards",
+      "node": "vitals-drugs",
+      "name": "Energy, health regeneration and hazard exposure",
+      "summary": "A once-per-second pass applies energy and health rates, converts exposure into damage that decays, and lets an environment suit absorb part of it.",
+      "behavior": "Once more than 256 ticks (about 0.91 seconds) have passed, a periodic pass applies energy, health and exposure. Rates are stated per minute of 64 time steps and are integrated using differences of scaled clocks so many small steps add up exactly. Energy changes by regeneration minus the running cost of hardware wares up to 255, and at zero the power outage turns off every costed ware and the tractor beam. Each damage type has an exposure value acting as a damage rate: every pass converts it into health damage that bypasses shields and shrinks the exposure by about 1.56 percent, since the table lists 100 percent per minute. Standing near the floor of a radiation or biological zone adds exposure equal to the zone level times the level strength minus the exposure already held, capped at 255. An environment suit removes up to (n minus 1) over n of the sum of the incoming and already held exposure from the incoming amount, where n is 5 plus its version (radiation uses one version lower), spends energy in proportion to the exposure held, and removes less when energy runs short.",
+      "constants": [
+        {
+          "name": "periodic pass interval",
+          "value": 256,
+          "unit": "game ticks (280 per second), about 0.91 seconds",
+          "source": "src/GameSrc/Headers/faketime.h:28"
+        },
+        {
+          "name": "rate minute shift",
+          "value": 6,
+          "unit": "shift giving a 64 step minute for regeneration and exposure rates",
+          "source": "src/GameSrc/gamesys.c:85"
+        },
+        {
+          "name": "exposure decay rate",
+          "value": 100,
+          "unit": "percent per 64 step minute, for every damage type",
+          "source": "src/GameSrc/gamesys.c:681"
+        },
+        {
+          "name": "suit absorb base denominator",
+          "value": 5,
+          "unit": "plus the suit version; the suit lets through one part in this value",
+          "source": "src/GameSrc/gamesys.c:910"
+        },
+        {
+          "name": "suit drain rate",
+          "value": 32,
+          "unit": "divisor in the energy drain computed from held exposure",
+          "source": "src/GameSrc/gamesys.c:912"
+        },
+        {
+          "name": "maximum energy",
+          "value": 255,
+          "unit": "energy points",
+          "source": "src/GameSrc/Headers/gamesys.h:113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 730
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 773
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 804
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 569
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 933
+        }
+      ],
+      "capabilities": [
+        "per minute rate system for energy and health",
+        "environmental exposure with decay",
+        "protective suit with energy cost"
+      ],
+      "tags": [
+        "survival",
+        "hazard",
+        "health"
+      ]
+    },
+    {
+      "id": "hardware-wares",
+      "node": "wares-inventory",
+      "name": "Hardware wares and energy costs",
+      "summary": "Installed hardware wares toggle on and off, charge a continuous energy drain by version or setting, and jump jets drain per second of thrust.",
+      "behavior": "Turning a hardware ware on first checks that stored energy is at least one fifth of its per-minute cost rounded up, then adds that cost to a continuous drain, and turning it off removes it again. Costs per minute are tabled by version or setting: infrared goggles 50, the 360 degree view 9, the bioscan 1, the shield 24, 60, 105 or 30, and the lantern 10, 25 or 30. Jump jets are charged per second of thrust (25, 30 or 35 by version) in real time as the thruster fires, set a vertical control of magnitude 25, 50 or 75, scale forward thrust by 1/64, 1/32 or 1/16 and zero the strafe, and the thrust shrinks in proportion when energy runs short. Hardware only works in real space and software only in cyberspace, so a ware of the wrong world is ignored. When energy reaches zero the outage pass switches off every active ware that has a cost, plus the jump jets.",
+      "constants": [
+        {
+          "name": "infrared goggle cost",
+          "value": 50,
+          "unit": "energy points per 64 step minute",
+          "source": "src/GameSrc/wares.c:905"
+        },
+        {
+          "name": "top shield setting cost",
+          "value": 105,
+          "unit": "energy points per 64 step minute for the third of four settings",
+          "source": "src/GameSrc/wares.c:919"
+        },
+        {
+          "name": "lantern top setting cost",
+          "value": 30,
+          "unit": "energy points per 64 step minute",
+          "source": "src/GameSrc/wares.c:924"
+        },
+        {
+          "name": "top jump jet cost",
+          "value": 35,
+          "unit": "energy points per second of thrust for the third version",
+          "source": "src/GameSrc/wares.c:933"
+        },
+        {
+          "name": "top jump jet thrust control",
+          "value": -75,
+          "unit": "vertical control units for the third version (stored negative in the source)",
+          "source": "src/GameSrc/wares.c:736"
+        },
+        {
+          "name": "power gate divisor",
+          "value": 5,
+          "unit": "a ware starts only when energy is at least (cost plus 4) divided by this value",
+          "source": "src/GameSrc/wares.c:172"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 128
+        },
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 149
+        },
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 753
+        },
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 269
+        },
+        {
+          "path": "src/GameSrc/wares.c",
+          "line": 761
+        }
+      ],
+      "capabilities": [
+        "toggled equipment with continuous energy drain",
+        "versioned gadgets with different costs",
+        "energy proportional thrust"
+      ],
+      "tags": [
+        "inventory",
+        "equipment",
+        "energy"
+      ]
+    },
+    {
+      "id": "inventory-slots-access-cards",
+      "node": "wares-inventory",
+      "name": "Inventory slots, trash cleanup and keycards",
+      "summary": "The player has fixed weapon and general slots, empties junk when full, and merges all keycards into one item holding a bitmask of access codes.",
+      "behavior": "The player has 7 weapon slots, 14 general item slots and counted stacks for ammunition cartridges, grenades and patches, plus versioned hardware and software wares, with 7 kinds each of grenades and patches. Picking up a weapon uses the first empty weapon slot or swaps with the targeted slot, copies the ammo count and type into the slot and destroys the world object. A general item takes the first empty general slot; when none is free the code first deletes every item not flagged as true general inventory and compacts the list, and only then reports no room, and a swap returns the displaced item to the cursor. All keycards merge into a single card item whose mask is the union of every access code collected, and the pickup message names only the newly gained codes or says nothing was gained. Removing an item shifts later slots down, and removing an active tractor beam switches it off. Containers hold at most 4 items.",
+      "constants": [
+        {
+          "name": "general slots",
+          "value": 14,
+          "unit": "item slots",
+          "source": "src/GameSrc/Headers/player.h:63"
+        },
+        {
+          "name": "weapon slots",
+          "value": 7,
+          "unit": "weapon slots",
+          "source": "src/GameSrc/Headers/player.h:61"
+        },
+        {
+          "name": "access code bits",
+          "value": 32,
+          "unit": "distinct access codes in one keycard mask",
+          "source": "src/GameSrc/Headers/objuse.h:36"
+        },
+        {
+          "name": "patch types",
+          "value": 7,
+          "unit": "distinct patch drug types carried as counts",
+          "source": "src/GameSrc/Headers/gamesys.h:100"
+        },
+        {
+          "name": "container capacity",
+          "value": 4,
+          "unit": "objects inside one container",
+          "source": "src/GameSrc/objuse.c:351"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/invent.c",
+          "line": 378
+        },
+        {
+          "path": "src/GameSrc/invent.c",
+          "line": 396
+        },
+        {
+          "path": "src/GameSrc/invent.c",
+          "line": 1551
+        },
+        {
+          "path": "src/GameSrc/invent.c",
+          "line": 395
+        },
+        {
+          "path": "src/GameSrc/invent.c",
+          "line": 397
+        }
+      ],
+      "capabilities": [
+        "fixed slot inventory with swap on pickup",
+        "automatic junk removal when full",
+        "single merged keycard with access bitmask"
+      ],
+      "tags": [
+        "inventory",
+        "items",
+        "access"
+      ]
+    },
+    {
+      "id": "doors-access",
+      "node": "world-interaction",
+      "name": "Doors, access levels and auto close",
+      "summary": "Doors test a keycard bit, a lock flag or a condition, animate open, schedule an auto close and keep paired doors in step.",
+      "behavior": "Using a door with an access level requires the keycard item to have the bit for that level set in its mask, otherwise the door refuses with a message; condition-gated doors instead evaluate a quest bit or variable test and clear themselves once it passes. A door with a lock flag still refuses when the card is good, with a separate message. An opening door plays its animation forward, clears the render blocking flag, plays a type dependent sound, and when it has an auto close time that is not the never-close marker it schedules a close after that many half seconds, using a rolling 2 bit code so stale close events are ignored. Using a door that is open or moving reverses the animation, and a paired door is kept in the same state by also using its other half. Mission difficulty below 2 skips the keycard test and difficulty 0 also ignores ordinary lock flags. Enemies treat locked and access doors as walls but open any other door they walk into.",
+      "constants": [
+        {
+          "name": "door time unit",
+          "value": 2,
+          "unit": "door close time units per second, so a stored value of 6 means 3 seconds",
+          "source": "src/GameSrc/objuse.c:98"
+        },
+        {
+          "name": "access code bits",
+          "value": 32,
+          "unit": "distinct access codes tested with a shifted bit",
+          "source": "src/GameSrc/Headers/objuse.h:36"
+        },
+        {
+          "name": "never auto close marker",
+          "value": -1,
+          "unit": "stored auto close value meaning the door stays open",
+          "source": "src/GameSrc/Headers/doorparm.h:25"
+        },
+        {
+          "name": "condition door marker",
+          "value": "0xFF",
+          "unit": "access level value that selects a condition test instead of a keycard bit",
+          "source": "src/GameSrc/objuse.c:141"
+        },
+        {
+          "name": "close code mask",
+          "value": 3,
+          "unit": "two bit rolling code that invalidates stale close events",
+          "source": "src/GameSrc/objuse.c:291"
+        },
+        {
+          "name": "keycard mission difficulty",
+          "value": 2,
+          "unit": "mission difficulty at or above which keycards are required",
+          "source": "src/GameSrc/objuse.c:200"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/objuse.c",
+          "line": 85
+        },
+        {
+          "path": "src/GameSrc/objuse.c",
+          "line": 223
+        },
+        {
+          "path": "src/GameSrc/objuse.c",
+          "line": 286
+        },
+        {
+          "path": "src/GameSrc/objuse.c",
+          "line": 302
+        },
+        {
+          "path": "src/GameSrc/pathfind.c",
+          "line": 370
+        }
+      ],
+      "capabilities": [
+        "keycard bitmask door access",
+        "timed auto closing doors",
+        "paired door synchronization"
+      ],
+      "tags": [
+        "doors",
+        "interaction",
+        "access"
+      ]
+    },
+    {
+      "id": "triggers-spawning",
+      "node": "world-interaction",
+      "name": "Trigger conditions and monster spawn rules",
+      "summary": "A packed comparator word tests quest bits or variables for triggers, and the spawn trap picks tiles away from the player under flag driven rules.",
+      "behavior": "Triggers pass when a comparator word allows them: the low 12 bits name a quest bit or a quest variable, further bits select equal, less, less or equal, greater, greater or equal, not equal or a random test against a 0-254 roll, the top byte picks a failure message, and a zero comparator always passes. The monster spawn trap picks random tiles in a rectangle, or in a square twice the radius, and gives up on a creature after 100 tries; a tile must leave enough vertical room for the creature and hold no other creature. Flags then reject tiles within 7 tiles (Manhattan) of the player, tiles within 14 tiles that sit inside the facing arc of about 52 degrees either side, and elevator zones. The quantity comes from a quest data value, zero on the easiest combat setting and one extra on the hardest. Spawned creatures start neutral and roaming. An orders trap retargets the mood and orders of creatures in an area, scanning tiles for areas up to 81 tiles and the creature list for larger ones, and continuous triggers are swept every 5 seconds.",
+      "constants": [
+        {
+          "name": "minimum spawn distance",
+          "value": 7,
+          "unit": "tiles, Manhattan distance from the player when the flag is set",
+          "source": "src/GameSrc/trigger.c:389"
+        },
+        {
+          "name": "no-look spawn distance",
+          "value": 14,
+          "unit": "tiles, Manhattan distance inside which the facing arc blocks a spawn",
+          "source": "src/GameSrc/trigger.c:390"
+        },
+        {
+          "name": "facing arc",
+          "value": "0x2500",
+          "unit": "fixed-angle units where 0x10000 is a full turn, about 52 degrees either side",
+          "source": "src/GameSrc/trigger.c:392"
+        },
+        {
+          "name": "spawn tile tries",
+          "value": 100,
+          "unit": "random tiles tried per spawned creature",
+          "source": "src/GameSrc/trigger.c:458"
+        },
+        {
+          "name": "area search switch",
+          "value": 81,
+          "unit": "tile count above which the creature list is scanned instead of tiles",
+          "source": "src/GameSrc/trigger.c:387"
+        },
+        {
+          "name": "continuous trigger interval",
+          "value": 5,
+          "unit": "seconds between sweeps of continuous triggers",
+          "source": "src/GameSrc/gamesys.c:379"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/trigger.c",
+          "line": 210
+        },
+        {
+          "path": "src/GameSrc/trigger.c",
+          "line": 228
+        },
+        {
+          "path": "src/GameSrc/trigger.c",
+          "line": 140
+        },
+        {
+          "path": "src/GameSrc/trigger.c",
+          "line": 436
+        },
+        {
+          "path": "src/GameSrc/gamesys.c",
+          "line": 547
+        }
+      ],
+      "capabilities": [
+        "packed condition words over quest data",
+        "constraint based monster spawning",
+        "area retargeting of enemy orders"
+      ],
+      "tags": [
+        "triggers",
+        "spawning",
+        "scripting"
+      ]
+    },
+    {
+      "id": "cyberspace-session",
+      "node": "cyberspace",
+      "name": "Cyberspace session rules and flight controls",
+      "summary": "Cyberspace swaps in a separate health value, a countdown, six-axis flight controls and node pickups, with penalties when the player is thrown out.",
+      "behavior": "On entry the real-space position and level are stored, cyberspace health is refilled to the maximum and a countdown starts from the stored cyberspace time, capped by difficulty at 1800 seconds on the easiest setting and one third, one sixth or one twelfth of that on harder ones. Real-space hardware and patches are shut down on entry and restored on exit. Movement uses a free-flight frame instead of the walking body: turn and strafe input are squared and divided by 16 so small deflections are fine, the climb axis is limited to 8 on tiles with a floor light value, turbo doubles the thrust, climb and strafe axes, and above difficulty 1 a constant push on the thrust axis of 5 per difficulty step is added. Heal nodes restore 70 plus their own value, mines do 15 times their value plus 1, and a multiplexer node adds 30 seconds back to the time budget. At zero health the player is expelled to real space with half health (at least 10), full fatigue and a time penalty of 0, 3 or 12 seconds by difficulty, and leaving by the exit node costs 5 seconds only on the hardest setting. Hostile ICE fires a projectile every half second with a chance of 25, 50, 81 or 94 percent by level when the player is within 7 tiles.",
+      "constants": [
+        {
+          "name": "base cyberspace time",
+          "value": 1800,
+          "unit": "seconds, multiplied by 280 ticks per second in the source",
+          "source": "src/GameSrc/Headers/cyber.h:36"
+        },
+        {
+          "name": "multiplexer time bonus",
+          "value": 30,
+          "unit": "seconds added to the cyberspace time budget",
+          "source": "src/GameSrc/Headers/cyber.h:47"
+        },
+        {
+          "name": "mine damage",
+          "value": 15,
+          "unit": "damage points multiplied by the mine value plus 1",
+          "source": "src/GameSrc/Headers/cyber.h:49"
+        },
+        {
+          "name": "heal node amount",
+          "value": 70,
+          "unit": "cyberspace health points added to the node own value",
+          "source": "src/GameSrc/Headers/cyber.h:50"
+        },
+        {
+          "name": "minimum health after expulsion",
+          "value": 10,
+          "unit": "real-space hit points after a cyberspace death",
+          "source": "src/GameSrc/cyber.c:44"
+        },
+        {
+          "name": "flight control squaring divisor",
+          "value": 16,
+          "unit": "turn and strafe controls are multiplied by their absolute value then divided by this",
+          "source": "src/GameSrc/physics.c:555"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/GameSrc/cyber.c",
+          "line": 110
+        },
+        {
+          "path": "src/GameSrc/cyber.c",
+          "line": 65
+        },
+        {
+          "path": "src/GameSrc/physics.c",
+          "line": 559
+        },
+        {
+          "path": "src/GameSrc/objuse.c",
+          "line": 606
+        },
+        {
+          "path": "src/GameSrc/newai.c",
+          "line": 111
+        }
+      ],
+      "capabilities": [
+        "separate cyberspace health and countdown",
+        "six axis flight control tuning",
+        "difficulty scaled exit penalties"
+      ],
+      "tags": [
+        "cyberspace",
+        "flight",
+        "survival"
+      ]
+    }
+  ]
+}
