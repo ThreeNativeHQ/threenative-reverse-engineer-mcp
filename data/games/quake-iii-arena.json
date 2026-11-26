@@ -1,0 +1,3543 @@
+{
+  "version": 1,
+  "id": "quake-iii-arena",
+  "title": "Quake III Arena",
+  "repo": "https://github.com/id-Software/Quake-III-Arena",
+  "sha": "dbe4ddb10315479fc00086f08e25d968b4b43c49",
+  "nodes": [
+    {
+      "id": "pmove-core",
+      "name": "Shared player movement step",
+      "purpose": "One movement function runs identically on the server and on the predicting client: command timing, friction, acceleration, ground contact, crouch hull, view angle limits and the ground, air and water dispatch.",
+      "paths": [
+        "code/game/bg_pmove.c",
+        "code/game/bg_local.h",
+        "code/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "Pmove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            2026,
+            2068
+          ]
+        },
+        {
+          "name": "PmoveSingle",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1836,
+            2016
+          ]
+        },
+        {
+          "name": "PM_Friction",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            172,
+            230
+          ]
+        },
+        {
+          "name": "PM_Accelerate",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            240,
+            277
+          ]
+        },
+        {
+          "name": "PM_CmdScale",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            290,
+            311
+          ]
+        },
+        {
+          "name": "PM_WalkMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            692,
+            809
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            601,
+            658
+          ]
+        },
+        {
+          "name": "PM_ClipVelocity",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            145,
+            162
+          ]
+        },
+        {
+          "name": "PM_GroundTrace",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1107,
+            1197
+          ]
+        },
+        {
+          "name": "PM_CheckDuck",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1249,
+            1310
+          ]
+        },
+        {
+          "name": "PM_UpdateViewAngles",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1797,
+            1825
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-slide"
+      ]
+    },
+    {
+      "id": "pmove-slide",
+      "name": "Collide-and-slide and stair stepping",
+      "purpose": "Moves the player hull through the world with up to four plane clips per step, integrates gravity in half steps and lifts the hull over low ledges.",
+      "paths": [
+        "code/game/bg_slidemove.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_SlideMove",
+          "path": "code/game/bg_slidemove.c",
+          "lines": [
+            45,
+            225
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove",
+          "path": "code/game/bg_slidemove.c",
+          "lines": [
+            233,
+            324
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "pmove-actions",
+      "name": "Jump, landing, water, grapple pull and flight",
+      "purpose": "Discrete movement modes layered on the movement step: jump launch, crash landing, swimming, water-exit hop, grapple pull and flight powerup movement.",
+      "paths": [
+        "code/game/bg_pmove.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_CheckJump",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            359,
+            393
+          ]
+        },
+        {
+          "name": "PM_CrashLand",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            924,
+            1001
+          ]
+        },
+        {
+          "name": "PM_WaterMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            471,
+            535
+          ]
+        },
+        {
+          "name": "PM_CheckWaterJump",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            400,
+            440
+          ]
+        },
+        {
+          "name": "PM_WaterJumpMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            452,
+            463
+          ]
+        },
+        {
+          "name": "PM_GrappleMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            666,
+            684
+          ]
+        },
+        {
+          "name": "PM_FlyMove",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            560,
+            592
+          ]
+        },
+        {
+          "name": "PM_SetWaterLevel",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1205,
+            1240
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core",
+        "pmove-slide"
+      ]
+    },
+    {
+      "id": "weapon-state",
+      "name": "Weapon timer, switching and ammo use",
+      "purpose": "Runs inside the movement step so that fire cadence follows command time: weapon countdown, raise and drop times, dry-fire delay, ammo spend and the fire event.",
+      "paths": [
+        "code/game/bg_pmove.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_Weapon",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1538,
+            1706
+          ]
+        },
+        {
+          "name": "PM_BeginWeaponChange",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1469,
+            1486
+          ]
+        },
+        {
+          "name": "PM_FinishWeaponChange",
+          "path": "code/game/bg_pmove.c",
+          "lines": [
+            1494,
+            1510
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "weapon-fire",
+      "name": "Instant-hit weapon firing",
+      "purpose": "Server-side firing of the machinegun, shotgun, railgun, lightning gun and gauntlet with spread, range, damage and muzzle placement.",
+      "paths": [
+        "code/game/g_weapon.c",
+        "code/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "Bullet_Fire",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            159,
+            231
+          ]
+        },
+        {
+          "name": "ShotgunPellet",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            265,
+            319
+          ]
+        },
+        {
+          "name": "ShotgunPattern",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            322,
+            350
+          ]
+        },
+        {
+          "name": "weapon_railgun_fire",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            441,
+            561
+          ]
+        },
+        {
+          "name": "Weapon_LightningFire",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            612,
+            689
+          ]
+        },
+        {
+          "name": "CheckGauntletAttack",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            69,
+            119
+          ]
+        },
+        {
+          "name": "CalcMuzzlePointOrigin",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            797,
+            803
+          ]
+        },
+        {
+          "name": "FireWeapon",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            812,
+            893
+          ]
+        },
+        {
+          "name": "weapon_grenadelauncher_fire",
+          "path": "code/game/g_weapon.c",
+          "lines": [
+            375,
+            387
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-state",
+        "damage"
+      ]
+    },
+    {
+      "id": "missiles",
+      "name": "Projectile spawn, flight, bounce and explosion",
+      "purpose": "Creates rockets, plasma bolts, BFG balls, grenades and grapple hooks as time-evaluated trajectories and resolves their impact, bounce and fuse.",
+      "paths": [
+        "code/game/g_missile.c",
+        "code/game/bg_misc.c"
+      ],
+      "functions": [
+        {
+          "name": "G_BounceMissile",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            33,
+            56
+          ]
+        },
+        {
+          "name": "G_ExplodeMissile",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            66,
+            92
+          ]
+        },
+        {
+          "name": "G_MissileImpact",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            269,
+            440
+          ]
+        },
+        {
+          "name": "G_RunMissile",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            447,
+            510
+          ]
+        },
+        {
+          "name": "fire_plasma",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            521,
+            552
+          ]
+        },
+        {
+          "name": "fire_grenade",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            562,
+            594
+          ]
+        },
+        {
+          "name": "fire_bfg",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            604,
+            634
+          ]
+        },
+        {
+          "name": "fire_rocket",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            644,
+            674
+          ]
+        },
+        {
+          "name": "fire_grapple",
+          "path": "code/game/g_missile.c",
+          "lines": [
+            681,
+            710
+          ]
+        },
+        {
+          "name": "BG_EvaluateTrajectory",
+          "path": "code/game/bg_misc.c",
+          "lines": [
+            1198,
+            1235
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage"
+      ]
+    },
+    {
+      "id": "damage",
+      "name": "Damage, armor, knockback and splash",
+      "purpose": "Central damage function with knockback impulse, armor absorption, self-damage rules and the radius damage query used by explosions.",
+      "paths": [
+        "code/game/g_combat.c",
+        "code/game/bg_public.h"
+      ],
+      "functions": [
+        {
+          "name": "CheckArmor",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            690,
+            719
+          ]
+        },
+        {
+          "name": "G_Damage",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            821,
+            1067
+          ]
+        },
+        {
+          "name": "CanDamage",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            1078,
+            1125
+          ]
+        },
+        {
+          "name": "G_RadiusDamage",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            1133,
+            1195
+          ]
+        },
+        {
+          "name": "player_die",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            439,
+            682
+          ]
+        },
+        {
+          "name": "TossClientItems",
+          "path": "code/game/g_combat.c",
+          "lines": [
+            76,
+            127
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "client-frame",
+      "name": "Per-client server frame, powerups and hazards",
+      "purpose": "Applies the command to the player: speed and gravity cvars, haste, once-per-second health and armor timers, fall damage events, drowning, lava and slime, and the respawn gate.",
+      "paths": [
+        "code/game/g_active.c",
+        "code/game/g_client.c"
+      ],
+      "functions": [
+        {
+          "name": "ClientThink_real",
+          "path": "code/game/g_active.c",
+          "lines": [
+            756,
+            1018
+          ]
+        },
+        {
+          "name": "ClientTimerActions",
+          "path": "code/game/g_active.c",
+          "lines": [
+            403,
+            506
+          ]
+        },
+        {
+          "name": "ClientEvents",
+          "path": "code/game/g_active.c",
+          "lines": [
+            537,
+            663
+          ]
+        },
+        {
+          "name": "P_WorldEffects",
+          "path": "code/game/g_active.c",
+          "lines": [
+            99,
+            175
+          ]
+        },
+        {
+          "name": "P_DamageFeedback",
+          "path": "code/game/g_active.c",
+          "lines": [
+            37,
+            88
+          ]
+        },
+        {
+          "name": "ClientSpawn",
+          "path": "code/game/g_client.c",
+          "lines": [
+            1051,
+            1261
+          ]
+        },
+        {
+          "name": "SelectRandomFurthestSpawnPoint",
+          "path": "code/game/g_client.c",
+          "lines": [
+            175,
+            232
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core",
+        "damage"
+      ]
+    },
+    {
+      "id": "items",
+      "name": "Item pickup, respawn and drops",
+      "purpose": "Health, armor, ammo, weapon and powerup pickup rules, respawn timers, and the static item table with quantities.",
+      "paths": [
+        "code/game/g_items.c",
+        "code/game/bg_misc.c"
+      ],
+      "functions": [
+        {
+          "name": "Pickup_Powerup",
+          "path": "code/game/g_items.c",
+          "lines": [
+            49,
+            116
+          ]
+        },
+        {
+          "name": "Add_Ammo",
+          "path": "code/game/g_items.c",
+          "lines": [
+            209,
+            215
+          ]
+        },
+        {
+          "name": "Pickup_Ammo",
+          "path": "code/game/g_items.c",
+          "lines": [
+            217,
+            230
+          ]
+        },
+        {
+          "name": "Pickup_Weapon",
+          "path": "code/game/g_items.c",
+          "lines": [
+            235,
+            273
+          ]
+        },
+        {
+          "name": "Pickup_Health",
+          "path": "code/game/g_items.c",
+          "lines": [
+            278,
+            313
+          ]
+        },
+        {
+          "name": "Pickup_Armor",
+          "path": "code/game/g_items.c",
+          "lines": [
+            317,
+            341
+          ]
+        },
+        {
+          "name": "RespawnItem",
+          "path": "code/game/g_items.c",
+          "lines": [
+            350,
+            410
+          ]
+        },
+        {
+          "name": "Touch_Item",
+          "path": "code/game/g_items.c",
+          "lines": [
+            418,
+            551
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "map-triggers",
+      "name": "Jump pads and teleporters",
+      "purpose": "Launch trigger velocity solving, the shared jump pad touch rule and the teleport placement that fires players out of the destination.",
+      "paths": [
+        "code/game/g_trigger.c",
+        "code/game/g_misc.c",
+        "code/game/bg_misc.c",
+        "code/game/g_utils.c"
+      ],
+      "functions": [
+        {
+          "name": "AimAtTarget",
+          "path": "code/game/g_trigger.c",
+          "lines": [
+            160,
+            192
+          ]
+        },
+        {
+          "name": "trigger_push_touch",
+          "path": "code/game/g_trigger.c",
+          "lines": [
+            143,
+            150
+          ]
+        },
+        {
+          "name": "Use_target_push",
+          "path": "code/game/g_trigger.c",
+          "lines": [
+            216,
+            235
+          ]
+        },
+        {
+          "name": "SP_target_push",
+          "path": "code/game/g_trigger.c",
+          "lines": [
+            242,
+            261
+          ]
+        },
+        {
+          "name": "TeleportPlayer",
+          "path": "code/game/g_misc.c",
+          "lines": [
+            79,
+            124
+          ]
+        },
+        {
+          "name": "G_KillBox",
+          "path": "code/game/g_utils.c",
+          "lines": [
+            525,
+            546
+          ]
+        },
+        {
+          "name": "BG_TouchJumpPad",
+          "path": "code/game/bg_misc.c",
+          "lines": [
+            1415,
+            1448
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    },
+    {
+      "id": "client-prediction",
+      "name": "Client prediction and error smoothing",
+      "purpose": "The client replays unacknowledged commands through the shared movement step on top of the newest snapshot and fades out position corrections.",
+      "paths": [
+        "code/cgame/cg_predict.c",
+        "code/cgame/cg_main.c"
+      ],
+      "functions": [
+        {
+          "name": "CG_TouchTriggerPrediction",
+          "path": "code/cgame/cg_predict.c",
+          "lines": [
+            328,
+            384
+          ]
+        },
+        {
+          "name": "CG_PredictPlayerState",
+          "path": "code/cgame/cg_predict.c",
+          "lines": [
+            414,
+            626
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core",
+        "map-triggers"
+      ]
+    },
+    {
+      "id": "first-person-view",
+      "name": "First-person camera offsets and kicks",
+      "purpose": "Adds bob, run lean, landing dip, stair smoothing, crouch smoothing, damage kick, zoom and field of view on top of the predicted eye position.",
+      "paths": [
+        "code/cgame/cg_view.c",
+        "code/cgame/cg_playerstate.c",
+        "code/cgame/cg_local.h"
+      ],
+      "functions": [
+        {
+          "name": "CG_StepOffset",
+          "path": "code/cgame/cg_view.c",
+          "lines": [
+            294,
+            303
+          ]
+        },
+        {
+          "name": "CG_OffsetFirstPersonView",
+          "path": "code/cgame/cg_view.c",
+          "lines": [
+            311,
+            441
+          ]
+        },
+        {
+          "name": "CG_CalcFov",
+          "path": "code/cgame/cg_view.c",
+          "lines": [
+            472,
+            553
+          ]
+        },
+        {
+          "name": "CG_DamageFeedback",
+          "path": "code/cgame/cg_playerstate.c",
+          "lines": [
+            89,
+            179
+          ]
+        }
+      ],
+      "dependsOn": [
+        "client-prediction"
+      ]
+    },
+    {
+      "id": "bot-combat",
+      "name": "Bot aiming, view turning and attack movement",
+      "purpose": "Skill-scaled bot aim with target leading and ground aiming for splash weapons, smoothed view turning, and the strafe-and-range-keeping attack movement.",
+      "paths": [
+        "code/game/ai_dmq3.c",
+        "code/game/ai_main.c"
+      ],
+      "functions": [
+        {
+          "name": "BotAimAtEnemy",
+          "path": "code/game/ai_dmq3.c",
+          "lines": [
+            3261,
+            3548
+          ]
+        },
+        {
+          "name": "BotAttackMove",
+          "path": "code/game/ai_dmq3.c",
+          "lines": [
+            2631,
+            2761
+          ]
+        },
+        {
+          "name": "BotChangeViewAngles",
+          "path": "code/game/ai_main.c",
+          "lines": [
+            761,
+            811
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-fire"
+      ]
+    },
+    {
+      "id": "bot-navigation",
+      "name": "Bot movement physics model and rocket jump",
+      "purpose": "The navigation library keeps its own copy of the player movement constants, predicts jump and rocket jump heights, and drives the rocket jump travel type.",
+      "paths": [
+        "code/botlib/be_aas_move.c",
+        "code/botlib/be_ai_move.c"
+      ],
+      "functions": [
+        {
+          "name": "AAS_WeaponJumpZVelocity",
+          "path": "code/botlib/be_aas_move.c",
+          "lines": [
+            290,
+            334
+          ]
+        },
+        {
+          "name": "AAS_RocketJumpZVelocity",
+          "path": "code/botlib/be_aas_move.c",
+          "lines": [
+            341,
+            345
+          ]
+        },
+        {
+          "name": "BotTravel_RocketJump",
+          "path": "code/botlib/be_ai_move.c",
+          "lines": [
+            2744,
+            2802
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-core"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-friction-and-acceleration",
+      "node": "pmove-core",
+      "name": "Ground friction and capped acceleration",
+      "summary": "Walking speed comes from a stop-speed-floored friction drop followed by an acceleration that only adds the missing speed along the wished direction.",
+      "behavior": "Each movement step first applies friction, then acceleration. The friction drop is the larger of the current speed and a stop-speed floor, times the friction coefficient, times the step time in seconds. Slope height is ignored when the speed is measured. Below 1 unit per second the horizontal velocity is set to zero. Friction is skipped on slick surfaces and while the knockback hold timer runs, so a hit player cannot brake. Acceleration projects the current velocity on the wished direction and adds at most the shortfall to the wished speed, limited by acceleration times step time times wished speed. The wished speed is the server speed value scaled by the command strength. Strength is normalized by the largest command axis so diagonal input is not faster than straight input. Ground velocity is projected on the floor plane and its length is restored after the projection, so slopes do not slow the player. Crouching caps the wished speed at one quarter of the server speed. The live acceleration is the older additive style. A second, unused variant sits in the source under a disabled branch. Do not copy that variant.",
+      "constants": [
+        {
+          "name": "friction coefficient",
+          "value": 6,
+          "unit": "per second, scaled by the step time of each command",
+          "source": "code/game/bg_pmove.c:44"
+        },
+        {
+          "name": "stop speed floor for friction",
+          "value": 100,
+          "unit": "units per second",
+          "source": "code/game/bg_pmove.c:34"
+        },
+        {
+          "name": "ground acceleration",
+          "value": 10,
+          "unit": "per second, times step time times wished speed",
+          "source": "code/game/bg_pmove.c:39"
+        },
+        {
+          "name": "server speed cvar default",
+          "value": 320,
+          "unit": "units per second",
+          "source": "code/game/g_main.c:142"
+        },
+        {
+          "name": "crouch speed scale",
+          "value": 0.25,
+          "unit": "fraction of server speed",
+          "source": "code/game/bg_pmove.c:35"
+        },
+        {
+          "name": "command axis full scale",
+          "value": 127,
+          "unit": "signed command units, maps to full speed",
+          "source": "code/game/bg_pmove.c:308"
+        },
+        {
+          "name": "standing-still cutoff",
+          "value": 1,
+          "unit": "units per second, below it horizontal velocity is zeroed",
+          "source": "code/game/bg_pmove.c:186"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 172
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 240
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 290
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 692
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 241
+        }
+      ],
+      "capabilities": [
+        "snappy ground movement with a fixed top speed",
+        "no diagonal speed bonus",
+        "no braking while being knocked back"
+      ],
+      "tags": [
+        "movement",
+        "friction",
+        "acceleration",
+        "feel"
+      ]
+    },
+    {
+      "id": "air-acceleration-and-strafe-jumping",
+      "node": "pmove-core",
+      "name": "Air acceleration and strafe jumping",
+      "summary": "In the air the same capped acceleration runs with a low coefficient and no extra speed cap, so turning the view while strafing builds speed beyond the ground top speed.",
+      "behavior": "Airborne steps apply no ground friction and call the same additive acceleration with a coefficient of one instead of ten. The wished speed is the full commanded speed, not a small air cap. Only the part of the velocity along the wished direction is limited, so a sideways wish while the body already moves forward still adds speed. Steering the view so the wish direction stays near perpendicular to the velocity grows the total speed past the ground limit. The jump frame skips ground friction because the walk step hands off to the air step right after the jump check. A held jump does not repeat. The jump-held flag stays set until the button is released, and the multi-step command loop keeps it set by feeding a small up value to later sub-steps. So chained jumps need a fresh press each hop. The gain per step depends on step time because the cap is rechecked on each sub-step. A fixed-step server option exists for that reason.",
+      "constants": [
+        {
+          "name": "air acceleration",
+          "value": 1,
+          "unit": "per second, times step time times wished speed",
+          "source": "code/game/bg_pmove.c:40"
+        },
+        {
+          "name": "jump press threshold",
+          "value": 10,
+          "unit": "signed up command units, at or above it counts as jump held",
+          "source": "code/game/bg_pmove.c:364"
+        },
+        {
+          "name": "held-jump carry value",
+          "value": 20,
+          "unit": "up command units fed to later sub-steps of one command",
+          "source": "code/game/bg_pmove.c:2062"
+        },
+        {
+          "name": "server speed cvar default",
+          "value": 320,
+          "unit": "units per second, also the air wished speed",
+          "source": "code/game/g_main.c:142"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 601
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 359
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 2026
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 773
+        }
+      ],
+      "capabilities": [
+        "strafe jumping speed gain",
+        "bunny hop requires repeated presses",
+        "low air control with high speed ceiling"
+      ],
+      "tags": [
+        "movement",
+        "air control",
+        "strafe jump",
+        "feel"
+      ]
+    },
+    {
+      "id": "jump-launch-and-half-step-gravity",
+      "node": "pmove-actions",
+      "name": "Jump launch and half-step gravity",
+      "summary": "A jump replaces the vertical velocity with a fixed launch speed, and gravity is integrated with a mean-velocity half step so arcs are stable at any step time.",
+      "behavior": "When jump is pressed on the ground and was not held, the vertical velocity is set, not added, to the launch speed. The player leaves the ground at once, and a jump event is queued. With the server gravity default the arc peaks about 45.6 units above the launch point and lasts about 0.68 seconds on flat ground. Both numbers are derived from the two constants. In the air the slide step applies gravity by averaging the vertical velocity at the start and at the end of the step for the displacement, then stores the end velocity. This keeps height gain independent of step size. On the ground no gravity is added, because the floor clip keeps the vertical component on slopes. Knockback hold and slick floors do add gravity on the ground branch. A respawned player cannot jump until the attack and jump keys are released once.",
+      "constants": [
+        {
+          "name": "jump launch speed",
+          "value": 270,
+          "unit": "units per second, vertical, set at the jump step",
+          "source": "code/game/bg_local.h:29"
+        },
+        {
+          "name": "gravity cvar default",
+          "value": 800,
+          "unit": "units per second squared",
+          "source": "code/game/g_main.c:143"
+        },
+        {
+          "name": "half-step velocity average",
+          "value": 0.5,
+          "unit": "factor on start plus end vertical speed, per movement step",
+          "source": "code/game/bg_slidemove.c:68"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 359
+        },
+        {
+          "path": "code/game/bg_slidemove.c",
+          "line": 45
+        },
+        {
+          "path": "code/game/bg_slidemove.c",
+          "line": 65
+        },
+        {
+          "path": "code/game/bg_slidemove.c",
+          "line": 67
+        }
+      ],
+      "capabilities": [
+        "fixed-height jump independent of frame rate",
+        "jump arc integration"
+      ],
+      "tags": [
+        "jump",
+        "gravity",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "collide-slide-and-stair-step",
+      "node": "pmove-slide",
+      "name": "Collide-and-slide with stair stepping",
+      "summary": "The hull slides along up to four contact planes per step, then retries from a raised position to climb ledges up to the step height.",
+      "behavior": "A step moves the hull along its velocity for the step time. On contact the velocity is clipped along the plane. The clip pushes slightly outward so the hull does not stick. A repeated contact with nearly the same plane nudges the velocity away from it. When two planes squeeze the velocity, the move slides along their crease. Three planes stop the player. At most four bumps run in one step. The step-up pass runs only when the first slide was blocked. It traces down to see whether the player is on a walkable floor, and it refuses to step while the player still moves upward and has no floor within the step height. Otherwise it lifts the hull by the step height or less, slides again, then drops the hull back down onto the floor. Step events are sorted by the final rise so the client can smooth the camera. Only rises above 2 units raise an event.",
+      "constants": [
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "world units, vertical lift tried by the step-up pass",
+          "source": "code/game/bg_local.h:27"
+        },
+        {
+          "name": "maximum slide bumps per step",
+          "value": 4,
+          "unit": "plane contacts per movement step",
+          "source": "code/game/bg_slidemove.c:61"
+        },
+        {
+          "name": "maximum remembered clip planes",
+          "value": 5,
+          "unit": "planes",
+          "source": "code/game/bg_slidemove.c:44"
+        },
+        {
+          "name": "clip overbounce",
+          "value": 1.001,
+          "unit": "velocity multiplier on the clip, unitless",
+          "source": "code/game/bg_local.h:34"
+        },
+        {
+          "name": "same-plane dot threshold",
+          "value": 0.99,
+          "unit": "unitless cosine",
+          "source": "code/game/bg_slidemove.c:131"
+        },
+        {
+          "name": "walkable floor normal for stepping",
+          "value": 0.7,
+          "unit": "unit normal z, minimum",
+          "source": "code/game/bg_slidemove.c:255"
+        },
+        {
+          "name": "minimum rise that raises a step event",
+          "value": 2,
+          "unit": "world units",
+          "source": "code/game/bg_slidemove.c:309"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_slidemove.c",
+          "line": 45
+        },
+        {
+          "path": "code/game/bg_slidemove.c",
+          "line": 233
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 145
+        }
+      ],
+      "capabilities": [
+        "smooth stair climbing",
+        "sliding along walls and creases",
+        "no sticking in corners"
+      ],
+      "tags": [
+        "collision",
+        "stairs",
+        "slide",
+        "physics"
+      ]
+    },
+    {
+      "id": "ground-contact-and-slope-rules",
+      "node": "pmove-core",
+      "name": "Ground contact and slope walkability",
+      "summary": "A short probe under the feet decides ground state, slopes steeper than a fixed normal slope count as walls, and upward launches detach the player from the floor.",
+      "behavior": "Each step traces the hull a quarter unit below its origin. No hit means free fall. A hit with a steep surface keeps the ground plane for sliding but clears the walking flag, so the player gets no ground friction and no ground acceleration there. A hit is also ignored as ground when the player moves upward and the velocity into the surface normal passes a small threshold, which lets jumps and pushes leave the floor cleanly. Walkable ground sets the ground entity, ends a water hop and triggers the crash landing check on the first touching step. When the trace starts inside a solid, the code tries a small jitter search around the origin to unstick the hull. The code also probes 64 units below when ground is lost to pick a jump pose and avoid stair-step backflips. That probe only changes animation and does not change physics.",
+      "constants": [
+        {
+          "name": "ground probe depth",
+          "value": 0.25,
+          "unit": "world units below the origin, traced each step",
+          "source": "code/game/bg_pmove.c:1113"
+        },
+        {
+          "name": "walkable surface normal minimum",
+          "value": 0.7,
+          "unit": "unit normal z, below it the slope is a wall",
+          "source": "code/game/bg_local.h:25"
+        },
+        {
+          "name": "detach speed along the normal",
+          "value": 10,
+          "unit": "units per second, upward velocity into the surface that lifts off",
+          "source": "code/game/bg_pmove.c:1133"
+        },
+        {
+          "name": "animation-only lift probe",
+          "value": 64,
+          "unit": "world units, affects pose only",
+          "source": "code/game/bg_pmove.c:1082"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1107
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1069
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1024
+        }
+      ],
+      "capabilities": [
+        "steep slope sliding",
+        "clean jump takeoff",
+        "unstick from tight geometry"
+      ],
+      "tags": [
+        "ground",
+        "slopes",
+        "collision",
+        "physics"
+      ]
+    },
+    {
+      "id": "crouch-hull-and-view-height",
+      "node": "pmove-core",
+      "name": "Player hull, crouch and eye height",
+      "summary": "The player is a fixed box that shrinks on crouch, with eye heights per pose and a stand-up check against the standing box.",
+      "behavior": "The hull offsets are measured from the origin. It extends 15 units each way on both horizontal axes, so the box is 30 units wide. It reaches 24 units below the origin and 32 above it, so the standing box is 56 units tall. Crouching lifts the top to 16 units above the origin, so the box is 40 tall. Holding crouch sets the flag on the same step. Releasing it only clears the flag when a trace of the standing box at the same spot finds no solid. The eye sits 26 units above the origin standing and 12 units crouched. The client smooths that eye change over 100 milliseconds. Dead players use a very flat box and a low eye. Crouch caps ground speed to one quarter of the server speed. Water depth sampling uses the eye height, so crouching changes the water level the player sees.",
+      "constants": [
+        {
+          "name": "hull half-width x and y",
+          "value": 15,
+          "unit": "world units each side of the origin, so full width is 30",
+          "source": "code/game/bg_pmove.c:1272"
+        },
+        {
+          "name": "hull bottom offset",
+          "value": -24,
+          "unit": "world units below the origin",
+          "source": "code/game/bg_public.h:49"
+        },
+        {
+          "name": "standing hull top offset",
+          "value": 32,
+          "unit": "world units above the origin",
+          "source": "code/game/bg_pmove.c:1307"
+        },
+        {
+          "name": "crouched hull top offset",
+          "value": 16,
+          "unit": "world units above the origin",
+          "source": "code/game/bg_pmove.c:1302"
+        },
+        {
+          "name": "standing eye height",
+          "value": 26,
+          "unit": "world units above the origin",
+          "source": "code/game/bg_public.h:50"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 12,
+          "unit": "world units above the origin",
+          "source": "code/game/bg_public.h:51"
+        },
+        {
+          "name": "dead hull top offset",
+          "value": -8,
+          "unit": "world units above the origin",
+          "source": "code/game/bg_pmove.c:1279"
+        },
+        {
+          "name": "client eye smoothing time on crouch",
+          "value": 100,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:49"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1249
+        },
+        {
+          "path": "code/game/bg_public.h",
+          "line": 49
+        },
+        {
+          "path": "code/cgame/cg_view.c",
+          "line": 395
+        }
+      ],
+      "capabilities": [
+        "crouch under low gaps",
+        "safe stand-up check",
+        "distinct eye heights per pose"
+      ],
+      "tags": [
+        "crouch",
+        "collision",
+        "camera",
+        "hull"
+      ]
+    },
+    {
+      "id": "swimming-and-water-exit-hop",
+      "node": "pmove-actions",
+      "name": "Swimming, wading and the water-exit hop",
+      "summary": "Water depth has three levels, swimming uses slower speed and weaker acceleration, and a forward probe triggers a scripted hop onto ledges.",
+      "behavior": "Three points sample the water: near the feet, at mid body and at the eye. They give levels 1 to 3. At level 2 or more the player swims. Swim speed is half of the server speed and the acceleration is lower. Water friction grows with the water level. With no input the player sinks at a slow fixed speed. On the ground in shallow water the speed cap scales between full speed and the swim cap by the level. When swimming at level 2 against a ledge, the code probes 30 units ahead at body height and then 16 units higher. If the first point is solid and the second is free, the player is thrown out with a fixed forward and upward velocity. Control is locked until the player starts to fall or lands, or for 2 seconds. Swimming direction includes the view pitch.",
+      "constants": [
+        {
+          "name": "swim speed scale",
+          "value": 0.5,
+          "unit": "fraction of server speed",
+          "source": "code/game/bg_pmove.c:36"
+        },
+        {
+          "name": "water acceleration",
+          "value": 4,
+          "unit": "per second, times step time times wished speed",
+          "source": "code/game/bg_pmove.c:41"
+        },
+        {
+          "name": "water friction",
+          "value": 1,
+          "unit": "per second per water level, times step time",
+          "source": "code/game/bg_pmove.c:45"
+        },
+        {
+          "name": "idle sink speed",
+          "value": -60,
+          "unit": "units per second, wished vertical speed with no input",
+          "source": "code/game/bg_pmove.c:506"
+        },
+        {
+          "name": "ledge probe distance ahead",
+          "value": 30,
+          "unit": "world units along flat forward",
+          "source": "code/game/bg_pmove.c:419"
+        },
+        {
+          "name": "water hop forward speed",
+          "value": 200,
+          "unit": "units per second along view forward",
+          "source": "code/game/bg_pmove.c:433"
+        },
+        {
+          "name": "water hop upward speed",
+          "value": 350,
+          "unit": "units per second",
+          "source": "code/game/bg_pmove.c:434"
+        },
+        {
+          "name": "water hop control lock",
+          "value": 2000,
+          "unit": "milliseconds of command time, ends early when falling",
+          "source": "code/game/bg_pmove.c:437"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 471
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 400
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1205
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 452
+        }
+      ],
+      "capabilities": [
+        "swim with view-pitch steering",
+        "scripted ledge exit",
+        "depth-scaled wading"
+      ],
+      "tags": [
+        "water",
+        "swim",
+        "movement",
+        "ledge"
+      ]
+    },
+    {
+      "id": "fall-damage-and-landing",
+      "node": "pmove-actions",
+      "name": "Fall damage thresholds",
+      "summary": "Landing severity is the square of the exact impact speed, mapped to three event tiers where only the two hardest tiers hurt.",
+      "behavior": "On the first step that touches walkable ground after being airborne, the code solves the exact vertical speed at contact from the start speed, height change and gravity. It forms a severity value as the square of that speed times a small factor. Crouching doubles the value. Full water cover cancels damage and shallower water cuts it to a half or a quarter. Values below 1 do nothing. Above 7 the code queues a short fall sound. Above 40 it queues a medium fall, and above 60 a hard fall. The server turns the medium event into 5 damage and the hard event into 10 damage, both through the normal damage path so armor absorbs a share. A server flag can switch fall damage off. Surfaces marked as no-damage, such as bounce pads, queue no fall event. The 40 tier is an impact speed near 632 units per second and the 60 tier near 775 units per second. Both are derived from the factor.",
+      "constants": [
+        {
+          "name": "severity factor on squared speed",
+          "value": 0.0001,
+          "unit": "per unit squared per second squared, unitless result",
+          "source": "code/game/bg_pmove.c:956"
+        },
+        {
+          "name": "short fall sound tier",
+          "value": 7,
+          "unit": "severity units, above it a sound plays",
+          "source": "code/game/bg_pmove.c:992"
+        },
+        {
+          "name": "medium fall tier",
+          "value": 40,
+          "unit": "severity units, above it 5 damage",
+          "source": "code/game/bg_pmove.c:987"
+        },
+        {
+          "name": "hard fall tier",
+          "value": 60,
+          "unit": "severity units, above it 10 damage",
+          "source": "code/game/bg_pmove.c:985"
+        },
+        {
+          "name": "medium fall damage",
+          "value": 5,
+          "unit": "health points, once per landing event",
+          "source": "code/game/g_active.c:568"
+        },
+        {
+          "name": "hard fall damage",
+          "value": 10,
+          "unit": "health points, once per landing event",
+          "source": "code/game/g_active.c:566"
+        },
+        {
+          "name": "crouch landing multiplier",
+          "value": 2,
+          "unit": "factor on severity",
+          "source": "code/game/bg_pmove.c:960"
+        },
+        {
+          "name": "shallow water landing factor",
+          "value": 0.5,
+          "unit": "factor on severity at water level 1",
+          "source": "code/game/bg_pmove.c:973"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 924
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 557
+        },
+        {
+          "path": "code/game/bg_public.h",
+          "line": 657
+        }
+      ],
+      "capabilities": [
+        "speed-squared fall damage",
+        "safe landing in water",
+        "bounce pads without damage"
+      ],
+      "tags": [
+        "fall damage",
+        "landing",
+        "health",
+        "physics"
+      ]
+    },
+    {
+      "id": "knockback-impulse-and-pain-hold",
+      "node": "damage",
+      "name": "Knockback impulse and pain hold",
+      "summary": "Every damage point adds a fixed velocity along the hit direction, and a short hold removes friction so the victim cannot brake.",
+      "behavior": "The impulse uses the damage amount capped at a limit. The velocity added is the knockback cvar times the capped amount, divided by a fixed player mass. At the defaults this is 5 units per second for each damage point, added at once and not scaled by the step time. The impulse is applied before the protection checks, so it also moves players who take no damage because of team protection or god mode. It does not apply to dead bodies, to entities flagged against it or to damage with no direction. After the impulse a hold timer is set to twice the amount, clamped between 50 and 200 milliseconds, unless a timer is already running. While it runs, ground friction is off and the ground step uses the air acceleration. A spawn also sets a 100 millisecond hold of the same kind.",
+      "constants": [
+        {
+          "name": "knockback cvar default",
+          "value": 1000,
+          "unit": "unitless scale, velocity gain numerator",
+          "source": "code/game/g_main.c:144"
+        },
+        {
+          "name": "player mass for knockback",
+          "value": 200,
+          "unit": "unitless divisor",
+          "source": "code/game/g_combat.c:913"
+        },
+        {
+          "name": "knockback cap",
+          "value": 200,
+          "unit": "damage points",
+          "source": "code/game/g_combat.c:898"
+        },
+        {
+          "name": "hold time factor",
+          "value": 2,
+          "unit": "milliseconds per knockback point",
+          "source": "code/game/g_combat.c:923"
+        },
+        {
+          "name": "hold time minimum",
+          "value": 50,
+          "unit": "milliseconds of command time",
+          "source": "code/game/g_combat.c:924"
+        },
+        {
+          "name": "hold time maximum",
+          "value": 200,
+          "unit": "milliseconds of command time",
+          "source": "code/game/g_combat.c:927"
+        },
+        {
+          "name": "spawn hold time",
+          "value": 100,
+          "unit": "milliseconds of command time",
+          "source": "code/game/g_client.c:1216"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_combat.c",
+          "line": 821
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 199
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 773
+        }
+      ],
+      "capabilities": [
+        "combat knockback",
+        "loss of control while hit",
+        "damage-scaled push"
+      ],
+      "tags": [
+        "knockback",
+        "combat",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "rocket-jump-self-damage",
+      "node": "damage",
+      "name": "Rocket jump knockback and halved self damage",
+      "summary": "Self hits get full knockback but only half damage because the impulse is computed first, so firing at your feet launches you cheaply.",
+      "behavior": "The rocket explodes at the point where its trace ends on the surface. The radius damage routine lifts the push direction by a fixed amount, so the target is thrown upward more than a pure outward push would do. The self hit skips the handicap scaling that applies to other attackers. The knockback is taken from the full damage value before the self-damage halving runs. So a close self hit near the full splash value gives the full push and takes half of the damage before armor. A rocket fired at the floor under the feet gives a large vertical impulse. Armor then absorbs two thirds of the halved damage. A direct hit on another player is separate and does the full impact damage. The splash skips that target, so no double count.",
+      "constants": [
+        {
+          "name": "rocket splash damage",
+          "value": 100,
+          "unit": "health points at zero distance",
+          "source": "code/game/g_missile.c:659"
+        },
+        {
+          "name": "rocket splash radius",
+          "value": 120,
+          "unit": "world units, damage falls to zero here",
+          "source": "code/game/g_missile.c:660"
+        },
+        {
+          "name": "push direction lift",
+          "value": 24,
+          "unit": "world units added to the vertical push direction",
+          "source": "code/game/g_combat.c:1189"
+        },
+        {
+          "name": "self damage factor",
+          "value": 0.5,
+          "unit": "multiplier applied after knockback",
+          "source": "code/game/g_combat.c:991"
+        },
+        {
+          "name": "knockback cap",
+          "value": 200,
+          "unit": "damage points",
+          "source": "code/game/g_combat.c:898"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_combat.c",
+          "line": 990
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 897
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 1189
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 644
+        }
+      ],
+      "capabilities": [
+        "rocket jumping",
+        "self-launch mobility",
+        "cheap vertical boost"
+      ],
+      "tags": [
+        "rocket jump",
+        "knockback",
+        "combat",
+        "mobility"
+      ]
+    },
+    {
+      "id": "splash-damage-falloff-and-line-check",
+      "node": "damage",
+      "name": "Splash damage falloff and line-of-sight check",
+      "summary": "Explosions damage everything whose box is inside the radius, scaled linearly by the distance to the box surface, and each target needs a clear line to its center or corners.",
+      "behavior": "The routine lists entities in a cube around the blast. For each damageable one it measures the distance from the blast point to the nearest point of the target box, not to the center. Targets at or past the radius are skipped. The damage is the base value times one minus the distance fraction, cut to a whole number. The target must pass a visibility test. The test traces to the box center, then to four points offset 15 units on both horizontal axes from the center. Any clear line counts. The push direction runs from the blast to the target origin with the vertical lift. The directly hit entity named by the caller is skipped. A minimum radius of one unit avoids division problems.",
+      "constants": [
+        {
+          "name": "visibility test corner offset",
+          "value": 15,
+          "unit": "world units on x and y from the box center",
+          "source": "code/game/g_combat.c:1096"
+        },
+        {
+          "name": "minimum radius",
+          "value": 1,
+          "unit": "world units",
+          "source": "code/game/g_combat.c:1145"
+        },
+        {
+          "name": "push lift",
+          "value": 24,
+          "unit": "world units added to the vertical push direction",
+          "source": "code/game/g_combat.c:1189"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_combat.c",
+          "line": 1133
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 1078
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 1180
+        }
+      ],
+      "capabilities": [
+        "linear splash falloff",
+        "splash blocked by walls",
+        "box-edge distance"
+      ],
+      "tags": [
+        "splash",
+        "explosion",
+        "combat",
+        "damage"
+      ]
+    },
+    {
+      "id": "armor-absorption-and-decay",
+      "node": "damage",
+      "name": "Armor absorption, caps and decay",
+      "summary": "Armor takes two thirds of each hit, rounded up, until it runs out. Armor above the health maximum decays one point per second.",
+      "behavior": "After damage is finalized, armor absorbs the rounded-up share of the hit, but never more than the armor pool. The rest hits health. Some damage types skip armor, such as drowning. Armor pickups add their amount, and the pool is capped at twice the maximum health. The small shard adds 5, the mid armor 50 and the heavy armor 100. Once per second any armor above the maximum health value loses one point. The damage feedback to the client uses the absorbed and the taken amounts separately for the screen effect.",
+      "constants": [
+        {
+          "name": "armor protection share",
+          "value": 0.66,
+          "unit": "fraction of each hit, rounded up, per hit",
+          "source": "code/game/bg_public.h:32"
+        },
+        {
+          "name": "armor pool cap factor",
+          "value": 2,
+          "unit": "times maximum health",
+          "source": "code/game/g_items.c:335"
+        },
+        {
+          "name": "shard amount",
+          "value": 5,
+          "unit": "armor points per pickup",
+          "source": "code/game/bg_misc.c:75"
+        },
+        {
+          "name": "mid armor amount",
+          "value": 50,
+          "unit": "armor points per pickup",
+          "source": "code/game/bg_misc.c:91"
+        },
+        {
+          "name": "heavy armor amount",
+          "value": 100,
+          "unit": "armor points per pickup",
+          "source": "code/game/bg_misc.c:107"
+        },
+        {
+          "name": "armor decay period",
+          "value": 1000,
+          "unit": "milliseconds per point lost above the maximum",
+          "source": "code/game/g_active.c:412"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_combat.c",
+          "line": 690
+        },
+        {
+          "path": "code/game/g_items.c",
+          "line": 317
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 463
+        }
+      ],
+      "capabilities": [
+        "armor as a damage buffer",
+        "overcharged armor that decays",
+        "armor-ignoring damage types"
+      ],
+      "tags": [
+        "armor",
+        "health",
+        "combat",
+        "balance"
+      ]
+    },
+    {
+      "id": "health-items-and-overheal-decay",
+      "node": "items",
+      "name": "Health items, overheal and spawn health",
+      "summary": "Normal health items stop at the maximum, small and mega items overheal to twice the maximum, and overheal drains one point per second.",
+      "behavior": "Pickups add their quantity to health. Items worth 5 or 100 may push health up to twice the maximum health. Other items stop at the maximum. A player spawns with the maximum plus 25 health. The extra drains back to the maximum at one point per second like all overheal. The maximum is 100 and a handicap setting can only lower it. A medkit holdable is not used when health is at or above the maximum plus 25. The regeneration powerup replaces the drain with healing, and it is described in the powerup card.",
+      "constants": [
+        {
+          "name": "small health amount",
+          "value": 5,
+          "unit": "health points per pickup",
+          "source": "code/game/bg_misc.c:127"
+        },
+        {
+          "name": "medium health amount",
+          "value": 25,
+          "unit": "health points per pickup",
+          "source": "code/game/bg_misc.c:144"
+        },
+        {
+          "name": "large health amount",
+          "value": 50,
+          "unit": "health points per pickup",
+          "source": "code/game/bg_misc.c:161"
+        },
+        {
+          "name": "mega health amount",
+          "value": 100,
+          "unit": "health points per pickup",
+          "source": "code/game/bg_misc.c:178"
+        },
+        {
+          "name": "overheal cap rule item quantities",
+          "value": 100,
+          "unit": "item quantity that may overheal, with 5",
+          "source": "code/game/g_items.c:289"
+        },
+        {
+          "name": "spawn health bonus over maximum",
+          "value": 25,
+          "unit": "health points",
+          "source": "code/game/g_client.c:1191"
+        },
+        {
+          "name": "handicap maximum health ceiling",
+          "value": 100,
+          "unit": "health points",
+          "source": "code/game/g_client.c:762"
+        },
+        {
+          "name": "overheal drain period",
+          "value": 1000,
+          "unit": "milliseconds per point lost",
+          "source": "code/game/g_active.c:412"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_items.c",
+          "line": 278
+        },
+        {
+          "path": "code/game/g_client.c",
+          "line": 1190
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 457
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1561
+        }
+      ],
+      "capabilities": [
+        "overheal that decays",
+        "handicap lowers max health",
+        "medkit guard"
+      ],
+      "tags": [
+        "health",
+        "items",
+        "pickup",
+        "balance"
+      ]
+    },
+    {
+      "id": "item-respawn-and-weapon-pickup-rules",
+      "node": "items",
+      "name": "Item respawn schedule and weapon pickup rules",
+      "summary": "Each item class has its own respawn time in seconds, weapons respawn on a cvar, and picking a weapon you already hold gives just one round.",
+      "behavior": "Picked items hide and stay in place as untouchable, then come back after their time. The time comes from the pickup function. A map value can replace it or randomize it. Dropped items never respawn. The mega health constant shows a 35 second value with the older 120 second value left in a comment. Use 35. Weapons respawn after the weapon respawn cvar, or after a longer value in team deathmatch. A weapon spawner tops the player up to its listed ammo when the player holds less than that amount. When the player already holds that much, it gives one round. Dropped weapons and team games always give the full amount. Ammo is capped at 200 per type. Powerups add their duration, in seconds, to any time left. Players near a powerup pickup who face it get a denial cue.",
+      "constants": [
+        {
+          "name": "armor respawn",
+          "value": 25,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:39"
+        },
+        {
+          "name": "health respawn",
+          "value": 35,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:40"
+        },
+        {
+          "name": "ammo respawn",
+          "value": 40,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:41"
+        },
+        {
+          "name": "holdable respawn",
+          "value": 60,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:42"
+        },
+        {
+          "name": "mega health respawn, effective",
+          "value": 35,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:43"
+        },
+        {
+          "name": "powerup respawn",
+          "value": 120,
+          "unit": "seconds",
+          "source": "code/game/g_items.c:44"
+        },
+        {
+          "name": "weapon respawn cvar default",
+          "value": 5,
+          "unit": "seconds",
+          "source": "code/game/g_main.c:146"
+        },
+        {
+          "name": "team weapon respawn cvar default",
+          "value": 30,
+          "unit": "seconds",
+          "source": "code/game/g_main.c:147"
+        },
+        {
+          "name": "ammo cap per type",
+          "value": 200,
+          "unit": "rounds",
+          "source": "code/game/g_items.c:212"
+        },
+        {
+          "name": "rocket launcher pickup ammo",
+          "value": 10,
+          "unit": "rounds",
+          "source": "code/game/bg_misc.c:263"
+        },
+        {
+          "name": "quad damage duration",
+          "value": 30,
+          "unit": "seconds",
+          "source": "code/game/bg_misc.c:531"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_items.c",
+          "line": 350
+        },
+        {
+          "path": "code/game/g_items.c",
+          "line": 235
+        },
+        {
+          "path": "code/game/g_items.c",
+          "line": 418
+        },
+        {
+          "path": "code/game/g_items.c",
+          "line": 49
+        }
+      ],
+      "capabilities": [
+        "timed pickup economy",
+        "respawn control per item class",
+        "weapon stacking rule"
+      ],
+      "tags": [
+        "items",
+        "respawn",
+        "ammo",
+        "balance"
+      ]
+    },
+    {
+      "id": "weapon-fire-cadence-and-switching",
+      "node": "weapon-state",
+      "name": "Weapon fire cadence and switch timing",
+      "summary": "A countdown in milliseconds of command time gates every shot, and switching takes a fixed drop plus raise.",
+      "behavior": "The weapon timer is reduced by the command step time, not by render frames. A shot happens when the timer is at or below zero and attack is held. The step first spends one ammo, unless the ammo is infinite, then queues the fire event, which makes the server run the weapon code. It then adds the weapon delay. With no ammo the step queues a click event and adds a half second delay. A weapon change starts only when the timer is idle or when the state is not firing. The drop adds a short delay, then the raise adds a longer one. The gauntlet only fires when the server reports a hit in front. The haste powerup divides every delay by a factor. The Team Arena weapons are left out of this card.",
+      "constants": [
+        {
+          "name": "gauntlet delay",
+          "value": 400,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1649"
+        },
+        {
+          "name": "lightning gun delay",
+          "value": 50,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1652"
+        },
+        {
+          "name": "shotgun delay",
+          "value": 1000,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1655"
+        },
+        {
+          "name": "machinegun delay",
+          "value": 100,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1658"
+        },
+        {
+          "name": "grenade launcher delay",
+          "value": 800,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1661"
+        },
+        {
+          "name": "rocket launcher delay",
+          "value": 800,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1664"
+        },
+        {
+          "name": "plasma gun delay",
+          "value": 100,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1667"
+        },
+        {
+          "name": "railgun delay",
+          "value": 1500,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1670"
+        },
+        {
+          "name": "BFG delay",
+          "value": 200,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1673"
+        },
+        {
+          "name": "grapple delay",
+          "value": 400,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1676"
+        },
+        {
+          "name": "weapon drop time",
+          "value": 200,
+          "unit": "milliseconds of command time",
+          "source": "code/game/bg_pmove.c:1484"
+        },
+        {
+          "name": "weapon raise time",
+          "value": 250,
+          "unit": "milliseconds of command time",
+          "source": "code/game/bg_pmove.c:1508"
+        },
+        {
+          "name": "dry fire delay",
+          "value": 500,
+          "unit": "milliseconds of command time",
+          "source": "code/game/bg_pmove.c:1634"
+        },
+        {
+          "name": "haste delay divisor",
+          "value": 1.3,
+          "unit": "factor on every delay",
+          "source": "code/game/bg_pmove.c:1702"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1538
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1469
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1494
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 575
+        }
+      ],
+      "capabilities": [
+        "deterministic fire rate",
+        "weapon switch cost",
+        "haste fire rate"
+      ],
+      "tags": [
+        "weapons",
+        "fire rate",
+        "combat",
+        "timing"
+      ]
+    },
+    {
+      "id": "machinegun-and-shotgun-spread",
+      "node": "weapon-fire",
+      "name": "Machinegun and shotgun spread",
+      "summary": "The machinegun fires one jittered ray per shot, and the shotgun fires eleven rays whose pattern is shared with the client through a seed.",
+      "behavior": "Both weapons trace to a far plane and add a random offset on that plane. For the machinegun, a random angle and two random signed amounts give a lateral and vertical offset up to the spread times 16. The far plane is 131072 units away, so the half cone is about 1.4 degrees. The shotgun uses the same scheme with a larger spread. It has independent signed offsets per axis, so each pellet lands in a square pattern, about 4.9 degrees each way. The shotgun rolls one seed byte and puts it in the fire event, so the client draws the same pellets the server traced. The machinegun does less damage in team deathmatch. Both weapons start at a muzzle point 14 units ahead of the eye, rounded to whole units. Each bullet or pellet damages only the first body in its path. The half-cone angles are derived.",
+      "constants": [
+        {
+          "name": "machinegun spread",
+          "value": 200,
+          "unit": "spread units, times 16 for lateral world units at the far plane",
+          "source": "code/game/g_weapon.c:155"
+        },
+        {
+          "name": "machinegun damage",
+          "value": 7,
+          "unit": "health points per bullet",
+          "source": "code/game/g_weapon.c:156"
+        },
+        {
+          "name": "machinegun team damage",
+          "value": 5,
+          "unit": "health points per bullet in team games",
+          "source": "code/game/g_weapon.c:157"
+        },
+        {
+          "name": "spread world scale",
+          "value": 16,
+          "unit": "world units per spread unit at the far plane",
+          "source": "code/game/g_weapon.c:174"
+        },
+        {
+          "name": "shotgun pellet count",
+          "value": 11,
+          "unit": "pellets per shot",
+          "source": "code/game/bg_public.h:39"
+        },
+        {
+          "name": "shotgun spread",
+          "value": 700,
+          "unit": "spread units, times 16 for lateral world units",
+          "source": "code/game/bg_public.h:38"
+        },
+        {
+          "name": "shotgun pellet damage",
+          "value": 10,
+          "unit": "health points per pellet",
+          "source": "code/game/g_weapon.c:263"
+        },
+        {
+          "name": "muzzle offset ahead of eye",
+          "value": 14,
+          "unit": "world units along the aim direction",
+          "source": "code/game/g_weapon.c:785"
+        },
+        {
+          "name": "spread seed range",
+          "value": 255,
+          "unit": "seed byte maximum sent in the fire event",
+          "source": "code/game/g_weapon.c:360"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 159
+        },
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 322
+        },
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 265
+        },
+        {
+          "path": "code/cgame/cg_weapons.c",
+          "line": 2051
+        }
+      ],
+      "capabilities": [
+        "hitscan spread cone",
+        "seed-synced pellet pattern",
+        "team damage reduction"
+      ],
+      "tags": [
+        "hitscan",
+        "spread",
+        "shotgun",
+        "machinegun"
+      ]
+    },
+    {
+      "id": "railgun-piercing-beam",
+      "node": "weapon-fire",
+      "name": "Railgun piercing beam",
+      "summary": "The railgun fires a perfectly straight instant beam that damages every body it crosses, up to four, and stops at solid world.",
+      "behavior": "The beam traces from the muzzle along the aim direction for a fixed range. For each damageable entity it hits, it deals the full damage. It then removes that entity from the world for the next trace so the beam continues behind it. It stops on solid geometry or after four such entities. It then restores the removed entities. Hitting with two shots in a row earns an award mark. There is no spread, no travel time and no falloff. The delay between shots is the longest of all weapons.",
+      "constants": [
+        {
+          "name": "railgun damage",
+          "value": 100,
+          "unit": "health points per body hit",
+          "source": "code/game/g_weapon.c:456"
+        },
+        {
+          "name": "railgun range",
+          "value": 8192,
+          "unit": "world units",
+          "source": "code/game/g_weapon.c:458"
+        },
+        {
+          "name": "maximum pierced bodies",
+          "value": 4,
+          "unit": "bodies per shot",
+          "source": "code/game/g_weapon.c:440"
+        },
+        {
+          "name": "railgun delay",
+          "value": 1500,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1670"
+        },
+        {
+          "name": "consecutive hits for a bonus",
+          "value": 2,
+          "unit": "hits",
+          "source": "code/game/g_weapon.c:550"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 441
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1669
+        }
+      ],
+      "capabilities": [
+        "penetrating hitscan",
+        "high-damage slow weapon",
+        "no spread beam"
+      ],
+      "tags": [
+        "railgun",
+        "hitscan",
+        "weapons",
+        "combat"
+      ]
+    },
+    {
+      "id": "lightning-gun-and-gauntlet",
+      "node": "weapon-fire",
+      "name": "Lightning gun beam and gauntlet melee",
+      "summary": "The lightning gun hits at short range every 50 ms with small damage, and the gauntlet strikes at arm length for a large hit only when it connects.",
+      "behavior": "The lightning gun traces a fixed range along the aim line each time the delay allows, and deals a small hit to the first damageable entity. With the delay of 50 milliseconds this gives a steady stream of damage while the target stays in the beam. The gauntlet traces a very short reach from the muzzle. It only counts as a shot when the trace hits something that can take damage, so swinging at air costs nothing and fires nothing. The gauntlet damage is a large single hit. Both multiply damage by the quad factor when the powerup runs.",
+      "constants": [
+        {
+          "name": "lightning gun damage",
+          "value": 8,
+          "unit": "health points per hit, 50 ms apart",
+          "source": "code/game/g_weapon.c:621"
+        },
+        {
+          "name": "lightning gun range",
+          "value": 768,
+          "unit": "world units",
+          "source": "code/game/bg_public.h:43"
+        },
+        {
+          "name": "lightning gun delay",
+          "value": 50,
+          "unit": "milliseconds of command time between hits",
+          "source": "code/game/bg_pmove.c:1652"
+        },
+        {
+          "name": "gauntlet damage",
+          "value": 50,
+          "unit": "health points per hit",
+          "source": "code/game/g_weapon.c:114"
+        },
+        {
+          "name": "gauntlet reach",
+          "value": 32,
+          "unit": "world units ahead of the muzzle",
+          "source": "code/game/g_weapon.c:81"
+        },
+        {
+          "name": "gauntlet delay",
+          "value": 400,
+          "unit": "milliseconds of command time between hits",
+          "source": "code/game/bg_pmove.c:1649"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 612
+        },
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 69
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1618
+        }
+      ],
+      "capabilities": [
+        "continuous beam damage",
+        "melee only fires on hit",
+        "short-range burst weapon"
+      ],
+      "tags": [
+        "lightning gun",
+        "gauntlet",
+        "melee",
+        "weapons"
+      ]
+    },
+    {
+      "id": "rocket-plasma-bfg-projectiles",
+      "node": "missiles",
+      "name": "Rocket, plasma and BFG projectiles",
+      "summary": "Projectiles are straight-line trajectories evaluated by time, spawned a few frames ahead, and they explode on first contact with a damage plus splash pair.",
+      "behavior": "A projectile stores a start point, a velocity and a start time. Its position is the start plus velocity times the elapsed time, so the path does not depend on frame rate. The start time is moved back by a small prestep so the shot is already a bit out of the muzzle on the first frame. The velocity is rounded to whole units for the network. Each server frame traces from the last point to the new point with the projectile box and ignores its owner. On contact with a damageable entity it deals the direct damage. It then explodes with splash that skips the entity it hit. Contact with sky removes it. A timer explodes the missile when its lifetime ends. The plasma bolt has a tiny splash radius. The rocket and BFG have wide radii.",
+      "constants": [
+        {
+          "name": "rocket speed",
+          "value": 900,
+          "unit": "units per second",
+          "source": "code/game/g_missile.c:669"
+        },
+        {
+          "name": "rocket direct damage",
+          "value": 100,
+          "unit": "health points",
+          "source": "code/game/g_missile.c:658"
+        },
+        {
+          "name": "rocket lifetime",
+          "value": 15000,
+          "unit": "milliseconds",
+          "source": "code/game/g_missile.c:651"
+        },
+        {
+          "name": "plasma speed",
+          "value": 2000,
+          "unit": "units per second",
+          "source": "code/game/g_missile.c:546"
+        },
+        {
+          "name": "plasma direct damage",
+          "value": 20,
+          "unit": "health points",
+          "source": "code/game/g_missile.c:535"
+        },
+        {
+          "name": "plasma splash damage",
+          "value": 15,
+          "unit": "health points",
+          "source": "code/game/g_missile.c:536"
+        },
+        {
+          "name": "plasma splash radius",
+          "value": 20,
+          "unit": "world units",
+          "source": "code/game/g_missile.c:537"
+        },
+        {
+          "name": "BFG speed",
+          "value": 2000,
+          "unit": "units per second",
+          "source": "code/game/g_missile.c:629"
+        },
+        {
+          "name": "BFG splash radius",
+          "value": 120,
+          "unit": "world units",
+          "source": "code/game/g_missile.c:620"
+        },
+        {
+          "name": "missile prestep",
+          "value": 50,
+          "unit": "milliseconds of trajectory time moved back at spawn",
+          "source": "code/game/g_missile.c:25"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_missile.c",
+          "line": 644
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 521
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 604
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 447
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 269
+        }
+      ],
+      "capabilities": [
+        "fast straight projectiles",
+        "frame-rate independent flight",
+        "direct plus splash damage"
+      ],
+      "tags": [
+        "projectile",
+        "rocket",
+        "plasma",
+        "bfg"
+      ]
+    },
+    {
+      "id": "grenade-bounce-fuse-and-arc",
+      "node": "missiles",
+      "name": "Grenade arc, bounce and fuse",
+      "summary": "Grenades fly on a gravity arc with an upward aim bias, bounce off walls losing speed, stop when slow on a floor, and explode on a timer or on contact with a player.",
+      "behavior": "The launcher raises the aim direction by a fixed vertical amount before it renormalizes it. The grenade then follows a gravity trajectory. Its gravity is the fixed default value and ignores the server gravity cvar, which the source marks as a known gap. On a wall or floor hit, a non-damageable surface reflects the velocity and scales it by a retention factor. It stops when the surface faces up enough and the speed is below a small limit. A damageable entity makes it explode at once instead of bouncing. The fuse explodes it after a fixed time. Direct damage and splash match the rocket, with a larger radius.",
+      "constants": [
+        {
+          "name": "grenade speed",
+          "value": 700,
+          "unit": "units per second",
+          "source": "code/game/g_missile.c:588"
+        },
+        {
+          "name": "grenade fuse",
+          "value": 2500,
+          "unit": "milliseconds",
+          "source": "code/game/g_missile.c:569"
+        },
+        {
+          "name": "bounce speed retention",
+          "value": 0.65,
+          "unit": "factor on reflected velocity",
+          "source": "code/game/g_missile.c:45"
+        },
+        {
+          "name": "stop speed on floor",
+          "value": 40,
+          "unit": "units per second, below it the grenade stops",
+          "source": "code/game/g_missile.c:47"
+        },
+        {
+          "name": "floor normal for stopping",
+          "value": 0.2,
+          "unit": "unit normal z, above it counts as floor",
+          "source": "code/game/g_missile.c:47"
+        },
+        {
+          "name": "aim lift before launch",
+          "value": 0.2,
+          "unit": "added to the vertical component of the aim direction",
+          "source": "code/game/g_weapon.c:379"
+        },
+        {
+          "name": "grenade splash damage",
+          "value": 100,
+          "unit": "health points",
+          "source": "code/game/g_missile.c:578"
+        },
+        {
+          "name": "grenade splash radius",
+          "value": 150,
+          "unit": "world units",
+          "source": "code/game/g_missile.c:579"
+        },
+        {
+          "name": "trajectory gravity",
+          "value": 800,
+          "unit": "units per second squared, fixed",
+          "source": "code/game/bg_public.h:30"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_missile.c",
+          "line": 562
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 33
+        },
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 375
+        },
+        {
+          "path": "code/game/bg_misc.c",
+          "line": 1226
+        }
+      ],
+      "capabilities": [
+        "bouncing grenades",
+        "fuse timing",
+        "arc aim bias"
+      ],
+      "tags": [
+        "grenade",
+        "projectile",
+        "bounce",
+        "weapons"
+      ]
+    },
+    {
+      "id": "grapple-hook-pull",
+      "node": "pmove-actions",
+      "name": "Grapple hook pull",
+      "summary": "A hook projectile anchors to the world and the player is then pulled toward the anchor at a speed that ramps down near the end, with steering still allowed.",
+      "behavior": "The hook is a projectile that flies straight at a fixed speed and lasts a fixed time. Firing is blocked while the fire button is still held from before. When the hook attaches, the player flag for pulling is set. Each movement step then replaces the velocity with a pull toward a point 16 units short of the anchor along the view direction. Beyond a threshold distance the pull has a fixed speed. Inside the threshold the speed is ten times the distance, so it starts at 1000 units per second, above the far speed, and shrinks to zero as the player settles on the anchor. The ordinary air step runs after the pull, so the player can still add small velocity. The hook is released when the attack button comes up. The grapple is not part of the starting kit.",
+      "constants": [
+        {
+          "name": "hook speed",
+          "value": 800,
+          "unit": "units per second",
+          "source": "code/game/g_missile.c:703"
+        },
+        {
+          "name": "hook lifetime",
+          "value": 10000,
+          "unit": "milliseconds",
+          "source": "code/game/g_missile.c:688"
+        },
+        {
+          "name": "pull speed far from anchor",
+          "value": 800,
+          "unit": "units per second",
+          "source": "code/game/bg_pmove.c:679"
+        },
+        {
+          "name": "pull ramp distance",
+          "value": 100,
+          "unit": "world units, inside it speed is 10 per unit of distance",
+          "source": "code/game/bg_pmove.c:676"
+        },
+        {
+          "name": "pull ramp slope",
+          "value": 10,
+          "unit": "units per second per world unit of distance",
+          "source": "code/game/bg_pmove.c:677"
+        },
+        {
+          "name": "anchor stop-short offset",
+          "value": -16,
+          "unit": "world units along the view forward, negative means short of the anchor",
+          "source": "code/game/bg_pmove.c:670"
+        },
+        {
+          "name": "grapple delay",
+          "value": 400,
+          "unit": "milliseconds of command time between shots",
+          "source": "code/game/bg_pmove.c:1676"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 666
+        },
+        {
+          "path": "code/game/g_missile.c",
+          "line": 681
+        },
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 572
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 855
+        }
+      ],
+      "capabilities": [
+        "swing and pull traversal",
+        "steerable pull",
+        "release on button up"
+      ],
+      "tags": [
+        "grapple",
+        "traversal",
+        "movement",
+        "weapons"
+      ]
+    },
+    {
+      "id": "powerups-quad-haste-battlesuit-regen-flight",
+      "node": "client-frame",
+      "name": "Powerup effects",
+      "summary": "Quad triples outgoing damage, haste raises speed and fire rate by 30 percent, the battle suit halves damage and blocks splash, regeneration heals every second, and flight replaces ground movement.",
+      "behavior": "Quad multiplies every weapon damage by a cvar factor, including splash. Haste raises the player speed and shortens every weapon delay by the same factor. The battle suit gives full immunity to splash and falls, and halves everything else, while still taking knockback. Regeneration adds health once per second. It adds 15 while under the maximum and caps at 110 percent of the maximum. Above that it adds 5 and caps at twice the maximum. Without regeneration, overheal drains. Flight switches movement to a free-fly mode with its own acceleration and friction and blocks jump pads. Each timed powerup lasts a duration in seconds and stacks on re-pickup. Dropped powerups keep their remaining seconds.",
+      "constants": [
+        {
+          "name": "quad factor cvar default",
+          "value": 3,
+          "unit": "damage multiplier",
+          "source": "code/game/g_main.c:145"
+        },
+        {
+          "name": "haste speed factor",
+          "value": 1.3,
+          "unit": "multiplier on server speed",
+          "source": "code/game/g_active.c:852"
+        },
+        {
+          "name": "haste fire delay divisor",
+          "value": 1.3,
+          "unit": "divides every weapon delay",
+          "source": "code/game/bg_pmove.c:1702"
+        },
+        {
+          "name": "battle suit damage factor",
+          "value": 0.5,
+          "unit": "multiplier on non-splash damage",
+          "source": "code/game/g_combat.c:973"
+        },
+        {
+          "name": "regeneration heal below maximum",
+          "value": 15,
+          "unit": "health points per second",
+          "source": "code/game/g_active.c:443"
+        },
+        {
+          "name": "regeneration heal above maximum",
+          "value": 5,
+          "unit": "health points per second",
+          "source": "code/game/g_active.c:449"
+        },
+        {
+          "name": "regeneration soft cap",
+          "value": 1.1,
+          "unit": "times maximum health",
+          "source": "code/game/g_active.c:444"
+        },
+        {
+          "name": "flight acceleration",
+          "value": 8,
+          "unit": "per second, times step time times wished speed",
+          "source": "code/game/bg_pmove.c:42"
+        },
+        {
+          "name": "flight friction",
+          "value": 3,
+          "unit": "per second, times step time",
+          "source": "code/game/bg_pmove.c:46"
+        },
+        {
+          "name": "flight duration",
+          "value": 60,
+          "unit": "seconds",
+          "source": "code/game/bg_misc.c:616"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_weapon.c",
+          "line": 812
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 843
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 966
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 403
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 560
+        }
+      ],
+      "capabilities": [
+        "damage multiplier powerup",
+        "speed and fire-rate boost",
+        "timed regeneration",
+        "flight movement"
+      ],
+      "tags": [
+        "powerups",
+        "quad",
+        "haste",
+        "regeneration"
+      ]
+    },
+    {
+      "id": "jump-pads-and-launch-targets",
+      "node": "map-triggers",
+      "name": "Jump pads and launch targets",
+      "summary": "A launch trigger overwrites the player velocity with a pre-solved vector that makes the arc peak at the target, and the client predicts it too.",
+      "behavior": "On the first server frame the launch volume solves its vector from the target point. The time to the apex is the square root of the target height over half the gravity. The vertical speed is that time times gravity. The horizontal speed covers the flat distance in that time. Touching the volume replaces the velocity with that vector, so speed before the touch does not matter. Players in spectator or dead movement and players under flight are ignored. A target push entity, fired by another trigger, sets the same velocity. Without a target it uses its facing and a default speed. Its sound repeats at most every 1.5 seconds. The client runs the same function against push volumes during prediction, so pads feel instant. The arc math does not check for a target below the pad, so place the target above it.",
+      "constants": [
+        {
+          "name": "default push speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "code/game/g_trigger.c:244"
+        },
+        {
+          "name": "push sound repeat gap",
+          "value": 1500,
+          "unit": "milliseconds of server time",
+          "source": "code/game/g_trigger.c:232"
+        },
+        {
+          "name": "target solve delay",
+          "value": 100,
+          "unit": "milliseconds, one game frame after spawn",
+          "source": "code/game/g_local.h:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_trigger.c",
+          "line": 160
+        },
+        {
+          "path": "code/game/bg_misc.c",
+          "line": 1415
+        },
+        {
+          "path": "code/game/g_trigger.c",
+          "line": 216
+        },
+        {
+          "path": "code/cgame/cg_predict.c",
+          "line": 375
+        }
+      ],
+      "capabilities": [
+        "jump pads with exact arcs",
+        "velocity override launch",
+        "predicted launch pads"
+      ],
+      "tags": [
+        "jump pad",
+        "trigger",
+        "movement",
+        "level design"
+      ]
+    },
+    {
+      "id": "teleporter-exit-and-telefrag",
+      "node": "map-triggers",
+      "name": "Teleporter exit and telefrag",
+      "summary": "A teleport moves the player to the destination, fires them out at a fixed speed along the destination facing, holds control briefly and kills anything occupying the spot.",
+      "behavior": "The player is unlinked, moved to the destination lifted by one unit, and given a new velocity. The old velocity is dropped. The new velocity points along the destination facing at a fixed speed. A short hold removes ground friction effects. A toggle bit tells the client not to blend the camera between positions. The view angles are set to the destination. After the move, a kill-box pass applies a huge damage value that ignores protection to every other player whose box overlaps the new one. The client treats the step as a teleport and skips the prediction error fade for it.",
+      "constants": [
+        {
+          "name": "teleport exit speed",
+          "value": 400,
+          "unit": "units per second along the destination facing",
+          "source": "code/game/g_misc.c:100"
+        },
+        {
+          "name": "teleport hold time",
+          "value": 160,
+          "unit": "milliseconds of command time",
+          "source": "code/game/g_misc.c:101"
+        },
+        {
+          "name": "destination lift",
+          "value": 1,
+          "unit": "world units added to origin z",
+          "source": "code/game/g_misc.c:96"
+        },
+        {
+          "name": "telefrag damage",
+          "value": 100000,
+          "unit": "health points, ignores protection",
+          "source": "code/game/g_utils.c:543"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_misc.c",
+          "line": 79
+        },
+        {
+          "path": "code/game/g_utils.c",
+          "line": 525
+        },
+        {
+          "path": "code/cgame/cg_predict.c",
+          "line": 373
+        }
+      ],
+      "capabilities": [
+        "teleporter with exit velocity",
+        "telefrag on arrival",
+        "no camera blend across teleport"
+      ],
+      "tags": [
+        "teleporter",
+        "telefrag",
+        "level design",
+        "movement"
+      ]
+    },
+    {
+      "id": "spawn-selection-death-and-respawn",
+      "node": "client-frame",
+      "name": "Spawn selection, starting kit and respawn gate",
+      "summary": "Players spawn at a random spot among the farther half of the safe points, start with a machinegun and a gauntlet, and may respawn after a fixed death delay.",
+      "behavior": "The spawn picker lists all deathmatch points that would not telefrag, sorts them by distance from the death point, and picks at random among the farther half of the list. A different, nearest-avoiding picker is left in a comment and is unused. The spawn origin is lifted by 9 units. The player starts with the machinegun with 100 rounds, or 50 in team deathmatch, and the gauntlet. Health starts above the maximum. Attack and jump input is ignored until the keys are released once. A short hold limits control at spawn. A dead player waits a fixed time and then respawns on an attack press. The server forces a respawn after a longer wait so players cannot hold powerups by waiting. Dying below the gib health gibs the body. The player drops the current weapon if it is not the machinegun. Outside team deathmatch the player also drops each powerup with its remaining time.",
+      "constants": [
+        {
+          "name": "spawn candidate list size",
+          "value": 64,
+          "unit": "spots kept for the distance sort",
+          "source": "code/game/g_client.c:179"
+        },
+        {
+          "name": "spawn height lift",
+          "value": 9,
+          "unit": "world units added to the spawn origin z",
+          "source": "code/game/g_client.c:228"
+        },
+        {
+          "name": "machinegun starting ammo",
+          "value": 100,
+          "unit": "rounds, free-for-all",
+          "source": "code/game/g_client.c:1183"
+        },
+        {
+          "name": "machinegun starting ammo in team games",
+          "value": 50,
+          "unit": "rounds",
+          "source": "code/game/g_client.c:1181"
+        },
+        {
+          "name": "death respawn delay",
+          "value": 1700,
+          "unit": "milliseconds of server time",
+          "source": "code/game/g_combat.c:628"
+        },
+        {
+          "name": "forced respawn cvar default",
+          "value": 20,
+          "unit": "seconds after the delay",
+          "source": "code/game/g_main.c:148"
+        },
+        {
+          "name": "gib health threshold",
+          "value": -40,
+          "unit": "health points, at or below it the body gibs",
+          "source": "code/game/bg_public.h:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_client.c",
+          "line": 175
+        },
+        {
+          "path": "code/game/g_client.c",
+          "line": 1051
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 997
+        },
+        {
+          "path": "code/game/g_combat.c",
+          "line": 76
+        }
+      ],
+      "capabilities": [
+        "far-from-death spawning",
+        "telefrag-safe spawns",
+        "forced respawn timer",
+        "death drops"
+      ],
+      "tags": [
+        "spawn",
+        "respawn",
+        "death",
+        "deathmatch"
+      ]
+    },
+    {
+      "id": "water-drowning-and-lava-damage",
+      "node": "client-frame",
+      "name": "Drowning, lava and slime damage",
+      "summary": "Air lasts twelve seconds under water, then each second hurts a little more up to a cap, and lava and slime hurt by depth.",
+      "behavior": "The air clock resets whenever the head is out of water. When the head is under water and the clock has run out, the server deals damage once per second, ignoring armor. The damage value resets to a small number out of water. Each tick adds a fixed amount before it applies, so the first tick deals 4. The value then grows to a cap. The battle suit refills air instead. In lava or slime, the damage is a base value times the water level, applied when the pain debounce timer allows. The suit blocks both.",
+      "constants": [
+        {
+          "name": "air supply",
+          "value": 12000,
+          "unit": "milliseconds of server time under water",
+          "source": "code/game/g_active.c:148"
+        },
+        {
+          "name": "drowning damage reset value",
+          "value": 2,
+          "unit": "health points, before the first tick adds the rise",
+          "source": "code/game/g_active.c:149"
+        },
+        {
+          "name": "drowning damage rise",
+          "value": 2,
+          "unit": "health points added per second",
+          "source": "code/game/g_active.c:127"
+        },
+        {
+          "name": "drowning damage cap",
+          "value": 15,
+          "unit": "health points per second",
+          "source": "code/game/g_active.c:128"
+        },
+        {
+          "name": "lava damage per water level",
+          "value": 30,
+          "unit": "health points per hit, times level",
+          "source": "code/game/g_active.c:165"
+        },
+        {
+          "name": "slime damage per water level",
+          "value": 10,
+          "unit": "health points per hit, times level",
+          "source": "code/game/g_active.c:170"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/g_active.c",
+          "line": 99
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1205
+        }
+      ],
+      "capabilities": [
+        "breath timer",
+        "escalating drowning damage",
+        "depth-scaled hazard damage"
+      ],
+      "tags": [
+        "drowning",
+        "lava",
+        "hazards",
+        "water"
+      ]
+    },
+    {
+      "id": "variable-step-movement-and-lag-limits",
+      "node": "pmove-core",
+      "name": "Variable-step movement and lag limits",
+      "summary": "The movement function runs with the real time between commands, chopped into short sub-steps, with hard limits on how far a late or early command can reach.",
+      "behavior": "Each user command carries a server time. The step time is the difference from the last processed time, clamped between 1 and 200 milliseconds. A long gap is chopped into sub-steps of at most 66 milliseconds. An optional fixed-step mode snaps the command time to a multiple of a configured step. The step time cvar is limited to a range. The server also clamps a command that claims a time too far ahead of or behind the server clock. Movement is not locked to a frame rate, so friction and acceleration use the step time as a factor. Weapon timers run on the same clock. The server frame rate is a cvar that sets how often the server runs game frames and snapshots. The command rate from the client is another cvar.",
+      "constants": [
+        {
+          "name": "minimum step",
+          "value": 1,
+          "unit": "milliseconds",
+          "source": "code/game/bg_pmove.c:1896"
+        },
+        {
+          "name": "maximum step per command",
+          "value": 200,
+          "unit": "milliseconds",
+          "source": "code/game/bg_pmove.c:1898"
+        },
+        {
+          "name": "sub-step chop",
+          "value": 66,
+          "unit": "milliseconds, per sub-step of a long command",
+          "source": "code/game/bg_pmove.c:2054"
+        },
+        {
+          "name": "fixed-step default",
+          "value": 8,
+          "unit": "milliseconds",
+          "source": "code/game/g_main.c:179"
+        },
+        {
+          "name": "fixed-step upper clamp",
+          "value": 33,
+          "unit": "milliseconds",
+          "source": "code/game/g_active.c:795"
+        },
+        {
+          "name": "server clock lead limit",
+          "value": 200,
+          "unit": "milliseconds a command may run ahead of the server",
+          "source": "code/game/g_active.c:773"
+        },
+        {
+          "name": "server clock lag limit",
+          "value": 1000,
+          "unit": "milliseconds a command may run behind the server",
+          "source": "code/game/g_active.c:777"
+        },
+        {
+          "name": "server frame rate default",
+          "value": 20,
+          "unit": "frames per second",
+          "source": "code/server/sv_init.c:596"
+        },
+        {
+          "name": "client command rate default",
+          "value": 30,
+          "unit": "packets per second",
+          "source": "code/client/cl_main.c:2304"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 2026
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1836
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 756
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent movement",
+        "bounded lag compensation",
+        "optional fixed-step movement"
+      ],
+      "tags": [
+        "timestep",
+        "netcode",
+        "movement",
+        "lag"
+      ]
+    },
+    {
+      "id": "client-prediction-and-error-decay",
+      "node": "client-prediction",
+      "name": "Client prediction and error decay",
+      "summary": "The client re-runs every unacknowledged command through the shared movement code and fades out any position error when the server disagrees.",
+      "behavior": "Each client frame starts from the newest snapshot player state. It then replays all commands newer than that snapshot through the same movement function the server uses. After each frame it compares where the last predicted state sat with where the replay now puts it. A difference over a small threshold becomes a stored error vector that fades to zero over a fixed time, so the camera does not snap. A second miss before the fade ends scales the old error and adds the new one. A teleport clears the error. Jump pads and item touches are also predicted. If the commands run out of the backup buffer the client freezes at the last good position. The client rounds fixed-step times the same way as the server.",
+      "constants": [
+        {
+          "name": "error fade time",
+          "value": 100,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_main.c:252"
+        },
+        {
+          "name": "error threshold",
+          "value": 0.1,
+          "unit": "world units, below it the miss is ignored",
+          "source": "code/cgame/cg_predict.c:550"
+        },
+        {
+          "name": "command backup size",
+          "value": 64,
+          "unit": "commands kept for replay",
+          "source": "code/cgame/cg_public.h:25"
+        },
+        {
+          "name": "item prediction default",
+          "value": 1,
+          "unit": "on",
+          "source": "code/cgame/cg_main.c:266"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/cgame/cg_predict.c",
+          "line": 414
+        },
+        {
+          "path": "code/cgame/cg_predict.c",
+          "line": 328
+        },
+        {
+          "path": "code/cgame/cg_view.c",
+          "line": 664
+        }
+      ],
+      "capabilities": [
+        "responsive local movement under latency",
+        "smoothed corrections",
+        "predicted pads and pickups"
+      ],
+      "tags": [
+        "prediction",
+        "netcode",
+        "smoothing",
+        "latency"
+      ]
+    },
+    {
+      "id": "first-person-bob-landing-and-step-smoothing",
+      "node": "first-person-view",
+      "name": "First-person bob, landing dip and step smoothing",
+      "summary": "The eye gets a speed-scaled bob, a short landing dip with a slower recovery, and a 200 ms smoothing of stair rises on top of the predicted position.",
+      "behavior": "The bob height is the bob phase times the horizontal speed times a small factor, capped at 6 units. The view also pitches and rolls with the bob. The roll flips sign each cycle, and crouching triples both. The bob speed has a floor so the motion shows at low speed. The run lean adds pitch and roll proportional to the velocity along the view axes. On landing the eye dips over a short time and then returns over a longer time. A stair rise event adds an offset equal to the event size of 4, 8, 12 or 16 units, capped, that fades out over a fixed time. A dead player gets a fixed tilted view and no kicks.",
+      "constants": [
+        {
+          "name": "bob height factor",
+          "value": 0.005,
+          "unit": "units per unit of speed",
+          "source": "code/cgame/cg_main.c:244"
+        },
+        {
+          "name": "bob height cap",
+          "value": 6,
+          "unit": "world units",
+          "source": "code/cgame/cg_view.c:404"
+        },
+        {
+          "name": "bob pitch factor",
+          "value": 0.002,
+          "unit": "degrees per unit of speed",
+          "source": "code/cgame/cg_main.c:245"
+        },
+        {
+          "name": "bob roll factor",
+          "value": 0.002,
+          "unit": "degrees per unit of speed",
+          "source": "code/cgame/cg_main.c:246"
+        },
+        {
+          "name": "bob speed floor",
+          "value": 200,
+          "unit": "units per second",
+          "source": "code/cgame/cg_view.c:377"
+        },
+        {
+          "name": "run lean pitch factor",
+          "value": 0.002,
+          "unit": "degrees per unit of speed",
+          "source": "code/cgame/cg_main.c:242"
+        },
+        {
+          "name": "run lean roll factor",
+          "value": 0.005,
+          "unit": "degrees per unit of speed",
+          "source": "code/cgame/cg_main.c:243"
+        },
+        {
+          "name": "landing dip time",
+          "value": 150,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:46"
+        },
+        {
+          "name": "landing return time",
+          "value": 300,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:47"
+        },
+        {
+          "name": "stair smoothing time",
+          "value": 200,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:48"
+        },
+        {
+          "name": "stair offset cap",
+          "value": 32,
+          "unit": "world units",
+          "source": "code/cgame/cg_local.h:62"
+        },
+        {
+          "name": "dead view roll",
+          "value": 40,
+          "unit": "degrees",
+          "source": "code/cgame/cg_view.c:331"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/cgame/cg_view.c",
+          "line": 311
+        },
+        {
+          "path": "code/cgame/cg_view.c",
+          "line": 294
+        },
+        {
+          "path": "code/cgame/cg_event.c",
+          "line": 565
+        }
+      ],
+      "capabilities": [
+        "head bob",
+        "landing feedback",
+        "smooth stair camera"
+      ],
+      "tags": [
+        "camera",
+        "bob",
+        "stairs",
+        "feel"
+      ]
+    },
+    {
+      "id": "damage-kick-zoom-and-pitch-limit",
+      "node": "first-person-view",
+      "name": "Damage kick, zoom and pitch limit",
+      "summary": "Hits kick the view by a health-scaled amount, the zoom blends the field of view in 150 ms, and the look pitch stops just short of straight up or down.",
+      "behavior": "When the server reports damage, the client computes a kick from the damage scaled up at low health, then clamps it. A centered kick is used for world damage like falls. A directional kick uses the hit direction. The kick ramps in fast and fades out slower. The default field of view is 90. The zoom field of view is much narrower and blends in over a short time. The look pitch is limited by a short value, and the limit maps to about 87.9 degrees, not exactly 90, even though the source comment says 90.",
+      "constants": [
+        {
+          "name": "kick minimum",
+          "value": 5,
+          "unit": "view units",
+          "source": "code/cgame/cg_playerstate.c:111"
+        },
+        {
+          "name": "kick maximum",
+          "value": 10,
+          "unit": "view units",
+          "source": "code/cgame/cg_playerstate.c:113"
+        },
+        {
+          "name": "low health scale base",
+          "value": 40,
+          "unit": "health points, below it the scale is 1",
+          "source": "code/cgame/cg_playerstate.c:107"
+        },
+        {
+          "name": "kick ramp in time",
+          "value": 100,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:43"
+        },
+        {
+          "name": "kick fade out time",
+          "value": 400,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:44"
+        },
+        {
+          "name": "default field of view",
+          "value": 90,
+          "unit": "degrees horizontal",
+          "source": "code/cgame/cg_main.c:212"
+        },
+        {
+          "name": "zoom field of view",
+          "value": 22.5,
+          "unit": "degrees horizontal",
+          "source": "code/cgame/cg_main.c:211"
+        },
+        {
+          "name": "zoom blend time",
+          "value": 150,
+          "unit": "milliseconds of client time",
+          "source": "code/cgame/cg_local.h:53"
+        },
+        {
+          "name": "look pitch limit",
+          "value": 16000,
+          "unit": "angle short units, 65536 per full turn",
+          "source": "code/game/bg_pmove.c:1814"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/cgame/cg_playerstate.c",
+          "line": 89
+        },
+        {
+          "path": "code/cgame/cg_view.c",
+          "line": 472
+        },
+        {
+          "path": "code/game/bg_pmove.c",
+          "line": 1797
+        },
+        {
+          "path": "code/game/g_active.c",
+          "line": 37
+        }
+      ],
+      "capabilities": [
+        "hit feedback",
+        "scope zoom blend",
+        "look limit"
+      ],
+      "tags": [
+        "camera",
+        "damage",
+        "zoom",
+        "feel"
+      ]
+    },
+    {
+      "id": "bot-aim-skill-model",
+      "node": "bot-combat",
+      "name": "Bot aim model",
+      "summary": "Bot aim error shrinks with a per-weapon accuracy number, target leading depends on a skill number, and splash weapons aim at the ground near the target.",
+      "behavior": "Each bot think step picks an aim point on the enemy. For slow projectiles, a skilled bot predicts the target motion with the same movement physics. A mid-skill bot uses a straight-line lead. A low-skill bot aims where the target is now. For splash weapons, a skilled bot tries to aim at the floor below an enemy that is not much higher than itself. Then random error is added in proportion to one minus the accuracy. At zero accuracy the error reaches 20 units sideways and 10 units in height. Accuracy drops when the enemy changes direction or is invisible, and for instant-hit weapons it scales from 0.6 at point-blank range to 1 at 150 units or more. Very skilled bots wait for a reaction time after first sight. When the enemy is not visible a skilled bot shoots at a predicted corner position with perfect accuracy. The extra challenge mode can set the view angle without turning delay.",
+      "constants": [
+        {
+          "name": "aim error horizontal",
+          "value": 20,
+          "unit": "world units times one minus accuracy",
+          "source": "code/game/ai_dmq3.c:3473"
+        },
+        {
+          "name": "aim error vertical",
+          "value": 10,
+          "unit": "world units times one minus accuracy",
+          "source": "code/game/ai_dmq3.c:3475"
+        },
+        {
+          "name": "accuracy floor",
+          "value": 0.0001,
+          "unit": "unitless",
+          "source": "code/game/ai_dmq3.c:3341"
+        },
+        {
+          "name": "invisible target accuracy factor",
+          "value": 0.4,
+          "unit": "factor, applied 90 percent of the time",
+          "source": "code/game/ai_dmq3.c:3346"
+        },
+        {
+          "name": "direction change accuracy factor",
+          "value": 0.7,
+          "unit": "factor",
+          "source": "code/game/ai_dmq3.c:3366"
+        },
+        {
+          "name": "exact prediction skill threshold",
+          "value": 0.8,
+          "unit": "skill value, above it use movement prediction",
+          "source": "code/game/ai_dmq3.c:3397"
+        },
+        {
+          "name": "linear lead skill threshold",
+          "value": 0.4,
+          "unit": "skill value, above it use a straight lead",
+          "source": "code/game/ai_dmq3.c:3424"
+        },
+        {
+          "name": "ground aim skill threshold",
+          "value": 0.6,
+          "unit": "skill value, above it splash weapons aim at the floor",
+          "source": "code/game/ai_dmq3.c:3440"
+        },
+        {
+          "name": "ground aim probe drop",
+          "value": 64,
+          "unit": "world units below the enemy",
+          "source": "code/game/ai_dmq3.c:3445"
+        },
+        {
+          "name": "reaction delay factor",
+          "value": 0.5,
+          "unit": "times the reaction characteristic, for skill above 0.95",
+          "source": "code/game/ai_dmq3.c:3304"
+        },
+        {
+          "name": "instant-hit range scale cap",
+          "value": 150,
+          "unit": "world units, accuracy scales from 0.6 to 1 up to it",
+          "source": "code/game/ai_dmq3.c:3522"
+        },
+        {
+          "name": "enemy memory refresh",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "code/game/ai_dmq3.c:3354"
+        },
+        {
+          "name": "bot think default",
+          "value": 100,
+          "unit": "milliseconds per bot think",
+          "source": "code/game/ai_main.c:1645"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/ai_dmq3.c",
+          "line": 3261
+        },
+        {
+          "path": "code/game/ai_dmq3.c",
+          "line": 3416
+        }
+      ],
+      "capabilities": [
+        "skill-scaled aim error",
+        "target leading",
+        "splash weapons aimed at feet",
+        "reaction delay"
+      ],
+      "tags": [
+        "bots",
+        "ai",
+        "aiming",
+        "combat"
+      ]
+    },
+    {
+      "id": "bot-view-turn-and-attack-strafe",
+      "node": "bot-combat",
+      "name": "Bot view turning and attack strafe",
+      "summary": "Bots turn their view with a capped angular speed and fight by strafing around a preferred range with random direction flips.",
+      "behavior": "The view code limits the turn per think step to a capped angular rate. The cap has a floor so that no bot turns slowly. Without an enemy the code uses a small response factor and a 360 degrees per second cap. In the normal mode, the turn speed overshoots toward the ideal angle, which is an intentional over-reaction. In challenge mode the speed eases out with distance. The attack movement keeps a preferred distance from the enemy with a margin. It strafes sideways and changes direction at random once a minimum time passed. The minimum time depends on skill. It sometimes steps back. It may jump or crouch based on character traits. A very low skill bot only walks toward or away from the enemy. The weakest bots do not move in combat at all.",
+      "constants": [
+        {
+          "name": "turn rate floor",
+          "value": 240,
+          "unit": "degrees per second",
+          "source": "code/game/ai_main.c:775"
+        },
+        {
+          "name": "idle turn rate",
+          "value": 360,
+          "unit": "degrees per second, no enemy",
+          "source": "code/game/ai_main.c:773"
+        },
+        {
+          "name": "idle turn factor",
+          "value": 0.05,
+          "unit": "unitless",
+          "source": "code/game/ai_main.c:772"
+        },
+        {
+          "name": "ideal attack distance",
+          "value": 140,
+          "unit": "world units",
+          "source": "code/game/ai_dmq3.c:66"
+        },
+        {
+          "name": "attack distance margin",
+          "value": 40,
+          "unit": "world units each side",
+          "source": "code/game/ai_dmq3.c:2701"
+        },
+        {
+          "name": "strafe time base",
+          "value": 0.4,
+          "unit": "seconds before a flip may occur",
+          "source": "code/game/ai_dmq3.c:2717"
+        },
+        {
+          "name": "strafe flip chance threshold",
+          "value": 0.935,
+          "unit": "random value above it flips, per check",
+          "source": "code/game/ai_dmq3.c:2722"
+        },
+        {
+          "name": "strafe move speed",
+          "value": 400,
+          "unit": "units per second move command",
+          "source": "code/game/ai_dmq3.c:2752"
+        },
+        {
+          "name": "step back chance threshold",
+          "value": 0.9,
+          "unit": "random value above it adds a step back, per check",
+          "source": "code/game/ai_dmq3.c:2739"
+        },
+        {
+          "name": "jump retry gap",
+          "value": 1,
+          "unit": "seconds between attack jumps",
+          "source": "code/game/ai_dmq3.c:2692"
+        },
+        {
+          "name": "no-combat-movement skill limit",
+          "value": 0.2,
+          "unit": "attack skill value, below it the bot does not move",
+          "source": "code/game/ai_dmq3.c:2662"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/game/ai_main.c",
+          "line": 761
+        },
+        {
+          "path": "code/game/ai_dmq3.c",
+          "line": 2631
+        }
+      ],
+      "capabilities": [
+        "strafing duelists",
+        "range keeping",
+        "skill-limited movement",
+        "capped turn rate"
+      ],
+      "tags": [
+        "bots",
+        "ai",
+        "strafe",
+        "combat"
+      ]
+    },
+    {
+      "id": "bot-rocket-jump-and-physics-mirror",
+      "node": "bot-navigation",
+      "name": "Bot rocket jump and physics mirror",
+      "summary": "The navigation library keeps its own copy of the movement constants and a rocket jump travel type that looks down, jumps and fires, with a height estimate that is not the real knockback.",
+      "behavior": "The navigation settings mirror the player movement values for gravity, speed, acceleration, jump speed and slope limit, so paths are planned with the real physics. The step height is one unit larger than the game value. For a rocket jump route the bot walks to the start point, looks straight down, then jumps and fires at once. It then moves toward the landing point. The planner estimates the jump height with its own hack. It models the rocket impact point, takes the radius damage with its own falloff, halves it for self damage and scales the knockback by a larger constant than the game uses. Treat that number as a planning guess. The real impulse comes from the knockback card. A route penalty value makes the planner prefer other routes when possible.",
+      "constants": [
+        {
+          "name": "library gravity",
+          "value": 800,
+          "unit": "units per second squared",
+          "source": "code/botlib/be_aas_move.c:81"
+        },
+        {
+          "name": "library ground acceleration",
+          "value": 10,
+          "unit": "per second",
+          "source": "code/botlib/be_aas_move.c:88"
+        },
+        {
+          "name": "library air acceleration",
+          "value": 1,
+          "unit": "per second",
+          "source": "code/botlib/be_aas_move.c:89"
+        },
+        {
+          "name": "library jump speed",
+          "value": 270,
+          "unit": "units per second",
+          "source": "code/botlib/be_aas_move.c:95"
+        },
+        {
+          "name": "library step height",
+          "value": 19,
+          "unit": "world units, the game uses 18",
+          "source": "code/botlib/be_aas_move.c:91"
+        },
+        {
+          "name": "library walkable normal",
+          "value": 0.7,
+          "unit": "unit normal z",
+          "source": "code/botlib/be_aas_move.c:92"
+        },
+        {
+          "name": "rocket splash radius used by the planner",
+          "value": 120,
+          "unit": "world units",
+          "source": "code/botlib/be_aas_move.c:344"
+        },
+        {
+          "name": "planner knockback hack constant",
+          "value": 1600,
+          "unit": "numerator, where the game uses 1000",
+          "source": "code/botlib/be_aas_move.c:331"
+        },
+        {
+          "name": "rocket jump route penalty",
+          "value": 500,
+          "unit": "planner travel time units, rate unverified",
+          "source": "code/botlib/be_aas_move.c:105"
+        },
+        {
+          "name": "rocket jump look pitch",
+          "value": 90,
+          "unit": "degrees, straight down",
+          "source": "code/botlib/be_ai_move.c:2761"
+        },
+        {
+          "name": "rocket jump trigger distance",
+          "value": 5,
+          "unit": "world units from the start point",
+          "source": "code/botlib/be_ai_move.c:2763"
+        }
+      ],
+      "sources": [
+        {
+          "path": "code/botlib/be_aas_move.c",
+          "line": 290
+        },
+        {
+          "path": "code/botlib/be_ai_move.c",
+          "line": 2744
+        },
+        {
+          "path": "code/botlib/be_aas_move.c",
+          "line": 81
+        }
+      ],
+      "capabilities": [
+        "bot rocket jumps",
+        "planning with player physics",
+        "route cost for risky moves"
+      ],
+      "tags": [
+        "bots",
+        "navigation",
+        "rocket jump",
+        "physics"
+      ]
+    }
+  ]
+}

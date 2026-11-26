@@ -1,0 +1,2981 @@
+{
+  "version": 1,
+  "id": "banjo-tooie",
+  "title": "Banjo-Tooie",
+  "repo": "https://github.com/Mr-Wiseguy/banjo-tooie",
+  "sha": "4c0525adfcd0346e38889580f35cbcc00ab66d54",
+  "nodes": [
+    {
+      "id": "frame-timing-physics",
+      "name": "Frame timing and player physics integrator",
+      "purpose": "Variable delta time source and the per-update integrator that turns a wanted ground speed, gravity and terminal velocity into player movement",
+      "paths": [
+        "src/core2/1EB2840.c",
+        "src/core2/baphysics.c"
+      ],
+      "functions": [
+        {
+          "name": "func_800D8F50",
+          "path": "src/core2/1EB2840.c",
+          "lines": [
+            10,
+            18
+          ]
+        },
+        {
+          "name": "func_800D8FA0",
+          "path": "src/core2/1EB2840.c",
+          "lines": [
+            25,
+            29
+          ]
+        },
+        {
+          "name": "time_getDelta",
+          "path": "src/core2/1EB2840.c",
+          "lines": [
+            36,
+            39
+          ]
+        },
+        {
+          "name": "func_800D902C",
+          "path": "src/core2/1EB2840.c",
+          "lines": [
+            46,
+            48
+          ]
+        },
+        {
+          "name": "func_8009AE08",
+          "path": "src/core2/baphysics.c",
+          "lines": [
+            37,
+            93
+          ]
+        },
+        {
+          "name": "func_8009B08C",
+          "path": "src/core2/baphysics.c",
+          "lines": [
+            95,
+            112
+          ]
+        },
+        {
+          "name": "func_8009B590",
+          "path": "src/core2/baphysics.c",
+          "lines": [
+            212,
+            285
+          ]
+        },
+        {
+          "name": "baphysics_set_type",
+          "path": "src/core2/baphysics.c",
+          "lines": [
+            293,
+            351
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "input-and-turning",
+      "name": "Stick zones, heading and bank smoothing",
+      "purpose": "Converts the analog stick into five magnitude zones and smooths heading and bank angles toward their ideal values with a proportional step that has a floor and a cap",
+      "paths": [
+        "src/core2/bastick.c",
+        "src/core2/yaw.c",
+        "src/core2/baroll.c"
+      ],
+      "functions": [
+        {
+          "name": "bastick_updateZone",
+          "path": "src/core2/bastick.c",
+          "lines": [
+            21,
+            38
+          ]
+        },
+        {
+          "name": "bastick_resetZones",
+          "path": "src/core2/bastick.c",
+          "lines": [
+            130,
+            136
+          ]
+        },
+        {
+          "name": "__yaw_update_limited",
+          "path": "src/core2/yaw.c",
+          "lines": [
+            41,
+            67
+          ]
+        },
+        {
+          "name": "__yaw_update_limitless",
+          "path": "src/core2/yaw.c",
+          "lines": [
+            14,
+            39
+          ]
+        },
+        {
+          "name": "yaw_update",
+          "path": "src/core2/yaw.c",
+          "lines": [
+            69,
+            83
+          ]
+        },
+        {
+          "name": "__baroll_update",
+          "path": "src/core2/baroll.c",
+          "lines": [
+            19,
+            45
+          ]
+        },
+        {
+          "name": "baroll_resetAngularVelocity",
+          "path": "src/core2/baroll.c",
+          "lines": [
+            82,
+            84
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics"
+      ]
+    },
+    {
+      "id": "banjo-ground-moves",
+      "name": "Walk, jump and ledge grab states",
+      "purpose": "Ground locomotion states with stick-to-speed mapping, the full-height jump with variable height, and the ledge grab with sideways shimmy",
+      "paths": [
+        "src/overlays/bs/walk.c",
+        "src/overlays/bs/jump.c",
+        "src/overlays/bs/ledge.c"
+      ],
+      "functions": [
+        {
+          "name": "func_80800000_bswalk",
+          "path": "src/overlays/bs/walk.c",
+          "lines": [
+            9,
+            45
+          ]
+        },
+        {
+          "name": "bswalk_entrypoint_3",
+          "path": "src/overlays/bs/walk.c",
+          "lines": [
+            107,
+            136
+          ]
+        },
+        {
+          "name": "bswalk_entrypoint_4",
+          "path": "src/overlays/bs/walk.c",
+          "lines": [
+            138,
+            211
+          ]
+        },
+        {
+          "name": "bsjump_entrypoint_0",
+          "path": "src/overlays/bs/jump.c",
+          "lines": [
+            14,
+            71
+          ]
+        },
+        {
+          "name": "bsjump_entrypoint_1",
+          "path": "src/overlays/bs/jump.c",
+          "lines": [
+            73,
+            197
+          ]
+        },
+        {
+          "name": "func_80800040_bsledge",
+          "path": "src/overlays/bs/ledge.c",
+          "lines": [
+            19,
+            50
+          ]
+        },
+        {
+          "name": "func_808005E0_bsledge",
+          "path": "src/overlays/bs/ledge.c",
+          "lines": [
+            157,
+            191
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics",
+        "input-and-turning"
+      ]
+    },
+    {
+      "id": "kazooie-air-moves",
+      "name": "Kazooie air moves and boot jumps",
+      "purpose": "Flutter, dive-slam, peck hop, Kazooie-controlled locomotion, shock and boot spring jumps, and the trot gait with footwear modifiers",
+      "paths": [
+        "src/overlays/bs/bflap.c",
+        "src/overlays/bs/bbuster.c",
+        "src/overlays/bs/bpeck.c",
+        "src/overlays/bs/kaz/move.c",
+        "src/overlays/bs/kaz/jump.c",
+        "src/overlays/bs/kaz/shock.c",
+        "src/overlays/bs/kaz/shoesspringjump.c",
+        "src/overlays/bs/btrot.c"
+      ],
+      "functions": [
+        {
+          "name": "bsbflap_init",
+          "path": "src/overlays/bs/bflap.c",
+          "lines": [
+            3,
+            21
+          ]
+        },
+        {
+          "name": "func_80800168_bsbflap",
+          "path": "src/overlays/bs/bflap.c",
+          "lines": [
+            31,
+            46
+          ]
+        },
+        {
+          "name": "bsbflap_update",
+          "path": "src/overlays/bs/bflap.c",
+          "lines": [
+            76,
+            174
+          ]
+        },
+        {
+          "name": "bsbbuster_setSubstate",
+          "path": "src/overlays/bs/bbuster.c",
+          "lines": [
+            3,
+            47
+          ]
+        },
+        {
+          "name": "bsbbuster_update",
+          "path": "src/overlays/bs/bbuster.c",
+          "lines": [
+            85,
+            189
+          ]
+        },
+        {
+          "name": "bsbpeck_entrypoint_0",
+          "path": "src/overlays/bs/bpeck.c",
+          "lines": [
+            6,
+            39
+          ]
+        },
+        {
+          "name": "bsbpeck_entrypoint_1",
+          "path": "src/overlays/bs/bpeck.c",
+          "lines": [
+            64,
+            128
+          ]
+        },
+        {
+          "name": "bskazmove_entrypoint_0",
+          "path": "src/overlays/bs/kaz/move.c",
+          "lines": [
+            22,
+            65
+          ]
+        },
+        {
+          "name": "bskazjump_entrypoint_0",
+          "path": "src/overlays/bs/kaz/jump.c",
+          "lines": [
+            10,
+            49
+          ]
+        },
+        {
+          "name": "bskazshock_entrypoint_5",
+          "path": "src/overlays/bs/kaz/shock.c",
+          "lines": [
+            120,
+            147
+          ]
+        },
+        {
+          "name": "func_80800000_bskazshoesspringjump",
+          "path": "src/overlays/bs/kaz/shoesspringjump.c",
+          "lines": [
+            7,
+            26
+          ]
+        },
+        {
+          "name": "func_80800164_bsbtrot",
+          "path": "src/overlays/bs/btrot.c",
+          "lines": [
+            63,
+            68
+          ]
+        },
+        {
+          "name": "func_80802380_bsbtrot",
+          "path": "src/overlays/bs/btrot.c",
+          "lines": [
+            907,
+            928
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics",
+        "input-and-turning"
+      ]
+    },
+    {
+      "id": "flight-glide-torpedo",
+      "name": "Flight, glide and torpedo",
+      "purpose": "Pitch-dependent flight envelope, stacked flap boosts, the glide and flutter descent, and the thrust-driven torpedo dive",
+      "paths": [
+        "src/overlays/ba/fly.c",
+        "src/overlays/ba/boost.c",
+        "src/overlays/bs/kaz/fly.c",
+        "src/overlays/bs/kaz/glide.c",
+        "src/overlays/bs/kaz/torpedo.c"
+      ],
+      "functions": [
+        {
+          "name": "bafly_entrypoint_8",
+          "path": "src/overlays/ba/fly.c",
+          "lines": [
+            77,
+            105
+          ]
+        },
+        {
+          "name": "bafly_entrypoint_9",
+          "path": "src/overlays/ba/fly.c",
+          "lines": [
+            107,
+            127
+          ]
+        },
+        {
+          "name": "bafly_entrypoint_10",
+          "path": "src/overlays/ba/fly.c",
+          "lines": [
+            129,
+            138
+          ]
+        },
+        {
+          "name": "baboost_entrypoint_2",
+          "path": "src/overlays/ba/boost.c",
+          "lines": [
+            23,
+            43
+          ]
+        },
+        {
+          "name": "baboost_entrypoint_5",
+          "path": "src/overlays/ba/boost.c",
+          "lines": [
+            66,
+            80
+          ]
+        },
+        {
+          "name": "func_80800320_bskazfly",
+          "path": "src/overlays/bs/kaz/fly.c",
+          "lines": [
+            69,
+            91
+          ]
+        },
+        {
+          "name": "func_80800540_bskazfly",
+          "path": "src/overlays/bs/kaz/fly.c",
+          "lines": [
+            129,
+            204
+          ]
+        },
+        {
+          "name": "func_8080024C_bskazglide",
+          "path": "src/overlays/bs/kaz/glide.c",
+          "lines": [
+            62,
+            84
+          ]
+        },
+        {
+          "name": "func_80800364_bskazglide",
+          "path": "src/overlays/bs/kaz/glide.c",
+          "lines": [
+            86,
+            125
+          ]
+        },
+        {
+          "name": "func_80800780_bskazglide",
+          "path": "src/overlays/bs/kaz/glide.c",
+          "lines": [
+            194,
+            227
+          ]
+        },
+        {
+          "name": "func_808000CC_bskaztorpedo",
+          "path": "src/overlays/bs/kaz/torpedo.c",
+          "lines": [
+            33,
+            43
+          ]
+        },
+        {
+          "name": "func_808002E0_bskaztorpedo",
+          "path": "src/overlays/bs/kaz/torpedo.c",
+          "lines": [
+            77,
+            116
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics",
+        "input-and-turning"
+      ]
+    },
+    {
+      "id": "swimming",
+      "name": "Swimming",
+      "purpose": "Water-surface thresholds, stroke impulses chosen by held buttons, and steering with pitch under zero gravity",
+      "paths": [
+        "src/overlays/ba/swim.c",
+        "src/overlays/bs/ban/swim.c"
+      ],
+      "functions": [
+        {
+          "name": "baswim_entrypoint_2",
+          "path": "src/overlays/ba/swim.c",
+          "lines": [
+            17,
+            21
+          ]
+        },
+        {
+          "name": "baswim_entrypoint_3",
+          "path": "src/overlays/ba/swim.c",
+          "lines": [
+            23,
+            46
+          ]
+        },
+        {
+          "name": "baswim_entrypoint_11",
+          "path": "src/overlays/ba/swim.c",
+          "lines": [
+            114,
+            131
+          ]
+        },
+        {
+          "name": "baswim_entrypoint_12",
+          "path": "src/overlays/ba/swim.c",
+          "lines": [
+            139,
+            158
+          ]
+        },
+        {
+          "name": "baswim_entrypoint_13",
+          "path": "src/overlays/ba/swim.c",
+          "lines": [
+            160,
+            170
+          ]
+        },
+        {
+          "name": "func_80800030_bsbanswim",
+          "path": "src/overlays/bs/ban/swim.c",
+          "lines": [
+            13,
+            34
+          ]
+        },
+        {
+          "name": "func_8080025C_bsbanswim",
+          "path": "src/overlays/bs/ban/swim.c",
+          "lines": [
+            68,
+            104
+          ]
+        },
+        {
+          "name": "func_808004F4_bsbanswim",
+          "path": "src/overlays/bs/ban/swim.c",
+          "lines": [
+            160,
+            203
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics",
+        "input-and-turning"
+      ]
+    },
+    {
+      "id": "egg-aiming",
+      "name": "First-person egg aiming and firing",
+      "purpose": "Screen-space aim cursor with eased stick tracking, camera panning at the cursor bounds, and the shot cadence state machine",
+      "paths": [
+        "src/overlays/ba/egg/aim.c",
+        "src/overlays/ba/egg/cursor.c",
+        "src/overlays/ba/egg/fire.c"
+      ],
+      "functions": [
+        {
+          "name": "func_80800008_baeggaim",
+          "path": "src/overlays/ba/egg/aim.c",
+          "lines": [
+            8,
+            16
+          ]
+        },
+        {
+          "name": "func_808000B4_baeggaim",
+          "path": "src/overlays/ba/egg/aim.c",
+          "lines": [
+            18,
+            31
+          ]
+        },
+        {
+          "name": "func_80800170_baeggaim",
+          "path": "src/overlays/ba/egg/aim.c",
+          "lines": [
+            33,
+            63
+          ]
+        },
+        {
+          "name": "func_80800264_baeggaim",
+          "path": "src/overlays/ba/egg/aim.c",
+          "lines": [
+            65,
+            86
+          ]
+        },
+        {
+          "name": "baeggcursor_entrypoint_11",
+          "path": "src/overlays/ba/egg/cursor.c",
+          "lines": [
+            150,
+            199
+          ]
+        },
+        {
+          "name": "func_808000B8_baeggfire",
+          "path": "src/overlays/ba/egg/fire.c",
+          "lines": [
+            38,
+            58
+          ]
+        },
+        {
+          "name": "func_80800180_baeggfire",
+          "path": "src/overlays/ba/egg/fire.c",
+          "lines": [
+            60,
+            85
+          ]
+        },
+        {
+          "name": "func_80800250_baeggfire",
+          "path": "src/overlays/ba/egg/fire.c",
+          "lines": [
+            87,
+            141
+          ]
+        },
+        {
+          "name": "baeggfire_entrypoint_3",
+          "path": "src/overlays/ba/egg/fire.c",
+          "lines": [
+            143,
+            165
+          ]
+        },
+        {
+          "name": "baeggfire_entrypoint_6",
+          "path": "src/overlays/ba/egg/fire.c",
+          "lines": [
+            182,
+            222
+          ]
+        }
+      ],
+      "dependsOn": [
+        "input-and-turning"
+      ]
+    },
+    {
+      "id": "split-up-swap",
+      "name": "Split-up, swap and rejoin",
+      "purpose": "Duo state that lets the two characters swap control, split into two bodies and rejoin, including the catch-up when the partner is far away",
+      "paths": [
+        "src/overlays/ba/duo.c",
+        "src/overlays/bs/walk.c"
+      ],
+      "functions": [
+        {
+          "name": "baduo_entrypoint_6",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            48,
+            69
+          ]
+        },
+        {
+          "name": "baduo_entrypoint_7",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            71,
+            100
+          ]
+        },
+        {
+          "name": "baduo_entrypoint_12",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            121,
+            128
+          ]
+        },
+        {
+          "name": "baduo_entrypoint_13",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            130,
+            198
+          ]
+        },
+        {
+          "name": "baduo_entrypoint_15",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            221,
+            255
+          ]
+        },
+        {
+          "name": "baduo_entrypoint_21",
+          "path": "src/overlays/ba/duo.c",
+          "lines": [
+            357,
+            384
+          ]
+        },
+        {
+          "name": "bswalk_entrypoint_4",
+          "path": "src/overlays/bs/walk.c",
+          "lines": [
+            138,
+            211
+          ]
+        }
+      ],
+      "dependsOn": [
+        "banjo-ground-moves"
+      ]
+    },
+    {
+      "id": "transformations",
+      "name": "Transformation locomotion",
+      "purpose": "Per-form movement tuning for the two dinosaur forms and the three analog-speed vehicle forms",
+      "paths": [
+        "src/overlays/bs/trexsmall.c",
+        "src/overlays/bs/trexlarge.c",
+        "src/overlays/bs/van.c",
+        "src/overlays/bs/washer.c",
+        "src/overlays/bs/snowball.c"
+      ],
+      "functions": [
+        {
+          "name": "func_808002B8_bstrexsmall",
+          "path": "src/overlays/bs/trexsmall.c",
+          "lines": [
+            129,
+            145
+          ]
+        },
+        {
+          "name": "func_80800CA4_bstrexsmall",
+          "path": "src/overlays/bs/trexsmall.c",
+          "lines": [
+            414,
+            454
+          ]
+        },
+        {
+          "name": "func_808004B4_bstrexlarge",
+          "path": "src/overlays/bs/trexlarge.c",
+          "lines": [
+            206,
+            222
+          ]
+        },
+        {
+          "name": "func_80800BC4_bstrexlarge",
+          "path": "src/overlays/bs/trexlarge.c",
+          "lines": [
+            420,
+            462
+          ]
+        },
+        {
+          "name": "func_80800000_bsvan",
+          "path": "src/overlays/bs/van.c",
+          "lines": [
+            19,
+            28
+          ]
+        },
+        {
+          "name": "func_80800000_bswasher",
+          "path": "src/overlays/bs/washer.c",
+          "lines": [
+            18,
+            27
+          ]
+        },
+        {
+          "name": "func_80800064_bssnowball",
+          "path": "src/overlays/bs/snowball.c",
+          "lines": [
+            26,
+            40
+          ]
+        }
+      ],
+      "dependsOn": [
+        "frame-timing-physics",
+        "input-and-turning"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "variable-delta-time",
+      "node": "frame-timing-physics",
+      "name": "Variable delta time",
+      "summary": "Every movement system scales by one delta time that is a whole number of 1/60 second frames, capped at 0.05 seconds, so physics stays stable when the frame rate drops.",
+      "behavior": "The frame loop stores how many 1/60 second video frames the last update spanned, clamped to a small whole number, and derives one delta time from it. A hard cap of 0.05 seconds stops a long hitch from launching the player through geometry. All velocities, gravity values, timers and turn rates in the rest of the player code multiply by this one delta. A helper returns delta times 30, which expresses elapsed time in 30 Hz ticks, so a value tuned per 30 Hz tick can be reused unchanged. A reset path sets delta to 0.01 seconds. Copy this as one shared delta that every system reads, quantised to the display refresh and capped, rather than letting each system read the clock.",
+      "constants": [
+        {
+          "name": "maxDelta",
+          "value": 0.050000004,
+          "unit": "seconds per update, hard cap",
+          "source": "src/core2/1EB2840.c:12"
+        },
+        {
+          "name": "frameQuantum",
+          "value": 0.016666668,
+          "unit": "seconds per video frame (1/60)",
+          "source": "src/core2/1EB2840.c:28"
+        },
+        {
+          "name": "resetDelta",
+          "value": 0.01,
+          "unit": "seconds, value used after a reset",
+          "source": "src/core2/1EB2840.c:21"
+        },
+        {
+          "name": "legacyTickScale",
+          "value": 30,
+          "unit": "multiplier converting delta to 30 Hz ticks",
+          "source": "src/core2/1EB2840.c:47"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/1EB2840.c",
+          "line": 10
+        },
+        {
+          "path": "src/core2/1EB2840.c",
+          "line": 25
+        },
+        {
+          "path": "src/core2/1EB2840.c",
+          "line": 36
+        },
+        {
+          "path": "src/core2/1EB2840.c",
+          "line": 46
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent physics",
+        "delta time cap against hitches",
+        "30 Hz tick conversion"
+      ],
+      "tags": [
+        "timing",
+        "physics",
+        "platformer"
+      ]
+    },
+    {
+      "id": "velocity-integration",
+      "node": "frame-timing-physics",
+      "name": "Velocity approach and gravity integration",
+      "summary": "Ground and air motion move current velocity toward a wanted vector by a per-state factor, add gravity to vertical speed with a floor at terminal velocity, then move the player by velocity times delta.",
+      "behavior": "Each update the integrator builds a wanted horizontal vector from the target yaw and the target speed, multiplied by a speed modifier that resets to one every update. The difference between wanted and current horizontal velocity is scaled by a factor from an unmapped helper (it differs per state) and by delta time times thirty, then added to velocity, so speed eases toward the wanted value instead of jumping. Vertical velocity adds gravity times delta and is clamped so it never drops below terminal velocity, which is a negative number. Position then advances by velocity times delta. When a ground slope vector exists the wanted vector is scaled by how much it points against that vector: moving against it shrinks the wanted speed by half the alignment, moving along it adds a fifth of the alignment (the slope vector is taken to be the ground normal, which is inferred from its use). A separate no-gravity type blends velocity toward a wanted vector at a default rate of 2.0 per second times delta and snaps once the squared change falls below 0.02. A dispatcher picks the integrator by physics type: normal ground follows the ideal yaw, airborne follows the stick relative to the camera, locked rotation keeps its own target yaw, and one type flips yaw by 180 degrees. The default gravity and terminal values live in an unmapped data table, so the jump and flap cards cite the values each state overrides.",
+      "constants": [
+        {
+          "name": "approachDeltaScale",
+          "value": 30,
+          "unit": "multiplier on delta for the velocity approach step",
+          "source": "src/core2/baphysics.c:83"
+        },
+        {
+          "name": "slopeOpposeScale",
+          "value": 0.5,
+          "unit": "fraction of slope alignment removed from wanted speed",
+          "source": "src/core2/baphysics.c:70"
+        },
+        {
+          "name": "slopeAlongScale",
+          "value": 0.2,
+          "unit": "fraction of slope alignment added to wanted speed",
+          "source": "src/core2/baphysics.c:76"
+        },
+        {
+          "name": "noGravityEaseRate",
+          "value": 2,
+          "unit": "per second, velocity blend rate for the no-gravity type",
+          "source": "src/core2/baphysics.c:209"
+        },
+        {
+          "name": "noGravitySnapSq",
+          "value": 0.02,
+          "unit": "squared velocity change below which velocity snaps to target",
+          "source": "src/core2/baphysics.c:102"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/baphysics.c",
+          "line": 37
+        },
+        {
+          "path": "src/core2/baphysics.c",
+          "line": 95
+        },
+        {
+          "path": "src/core2/baphysics.c",
+          "line": 212
+        },
+        {
+          "path": "src/core2/baphysics.c",
+          "line": 250
+        }
+      ],
+      "capabilities": [
+        "eased ground acceleration",
+        "gravity with terminal velocity floor",
+        "slope-scaled wanted speed",
+        "physics type dispatcher"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "platformer"
+      ]
+    },
+    {
+      "id": "stick-zone-ground-speed",
+      "node": "input-and-turning",
+      "name": "Stick zones and ground speed bands",
+      "summary": "Stick magnitude is cut into five zones at 0.12, 0.2, 0.5, 0.75 and 1.0, and each zone maps to a speed band of 30 to 80, 80 to 150, 150 to 225 and 225 to 500 units per second.",
+      "behavior": "The stick vector length is clamped to one and compared with five markers. Zone zero is a dead zone with a wanted speed of zero. Zones one to four each interpolate wanted speed across a band using how far the stick sits inside the zone, so speed grows smoothly inside a band and steps between bands. Each state restarts the markers when it begins and may replace them: swimming uses a tiny 0.03 dead zone then one wide zone, and the transformation states use 0.12, 0.6 and 1.0 for two bands. Walk cycle length follows speed: the slowest band (tiptoe) runs a cycle between 1.8 and 1.2 seconds, the next band between 1.3 and 0.6 seconds and the walking band between 0.92 and 0.58 seconds, so faster motion plays a shorter loop. A surface-condition test that the decompilation does not name switches this to a single 30 to 150 band driven by raw stick length. Pressing the jump button while idle at zero wanted speed can start a split or a swap instead of a jump.",
+      "constants": [
+        {
+          "name": "deadZoneEdge",
+          "value": 0.12,
+          "unit": "stick magnitude, zone 0 upper edge",
+          "source": "src/core2/bastick.c:131"
+        },
+        {
+          "name": "zone1Edge",
+          "value": 0.2,
+          "unit": "stick magnitude",
+          "source": "src/core2/bastick.c:132"
+        },
+        {
+          "name": "zone2Edge",
+          "value": 0.5,
+          "unit": "stick magnitude",
+          "source": "src/core2/bastick.c:133"
+        },
+        {
+          "name": "zone3Edge",
+          "value": 0.75,
+          "unit": "stick magnitude",
+          "source": "src/core2/bastick.c:134"
+        },
+        {
+          "name": "tiptoeTopSpeed",
+          "value": 80,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/walk.c:32"
+        },
+        {
+          "name": "slowWalkTopSpeed",
+          "value": 150,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/walk.c:35"
+        },
+        {
+          "name": "walkTopSpeed",
+          "value": 225,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/walk.c:38"
+        },
+        {
+          "name": "runTopSpeed",
+          "value": 500,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/walk.c:41"
+        },
+        {
+          "name": "tiptoeCycleLong",
+          "value": 1.8,
+          "unit": "seconds per walk cycle at the band minimum",
+          "source": "src/overlays/bs/walk.c:129"
+        },
+        {
+          "name": "slowWalkCycleLong",
+          "value": 1.3,
+          "unit": "seconds per walk cycle at the band minimum",
+          "source": "src/overlays/bs/walk.c:240"
+        },
+        {
+          "name": "walkCycleLong",
+          "value": 0.92,
+          "unit": "seconds per walk cycle at the band minimum",
+          "source": "src/overlays/bs/walk.c:359"
+        },
+        {
+          "name": "swimDeadZone",
+          "value": 0.03,
+          "unit": "stick magnitude",
+          "source": "src/overlays/ba/swim.c:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/bastick.c",
+          "line": 21
+        },
+        {
+          "path": "src/core2/bastick.c",
+          "line": 130
+        },
+        {
+          "path": "src/overlays/bs/walk.c",
+          "line": 9
+        },
+        {
+          "path": "src/overlays/bs/walk.c",
+          "line": 138
+        }
+      ],
+      "capabilities": [
+        "analog stick speed bands",
+        "speed-linked walk cycle length",
+        "per-state dead zones"
+      ],
+      "tags": [
+        "movement",
+        "input",
+        "platformer"
+      ]
+    },
+    {
+      "id": "turn-smoothing",
+      "node": "input-and-turning",
+      "name": "Heading, pitch and bank smoothing",
+      "summary": "Heading moves toward its ideal angle at a rate equal to the remaining angle times a step factor, held between a 3 degrees per second floor and a state-chosen cap that defaults to 700, so turns start fast and settle softly. Pitch and bank use the same rule.",
+      "behavior": "Every state writes an ideal heading from the stick and the camera, and the real heading chases it. Each update computes the remaining angle (folded to the shortest signed difference by an undecompiled helper), multiplies it by a step factor to get a turn rate in degrees per second, then clamps that rate to a floor of 3 and a cap. The default cap is 700 degrees per second with a factor of 7.5, so a half turn of 180 degrees starts near the cap and the rate decays smoothly as the gap closes. The step never overshoots the remaining angle. An unbounded mode instead turns at a fixed 360 degrees per second. Bank (roll) uses the same idea with its own default of 700 and 7.5 and a smaller floor of 0.1 degrees. Pitch (used by flight, swimming and the torpedo) uses the same floor of 3 with a default cap of 500 and factor 0.8. States change the pair to alter handling: the heavy large dinosaur uses a cap of 300 with factor 3.5, vehicles use 300 with 6.0 to 6.5, swimming uses 250 with 20 for fast reorientation, and flight uses 500 with 2.0, or 500 with 30 while the shoulder button is held.",
+      "constants": [
+        {
+          "name": "defaultTurnCap",
+          "value": 700,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/core2/yaw.c:63"
+        },
+        {
+          "name": "defaultTurnStep",
+          "value": 7.5,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/core2/yaw.c:63"
+        },
+        {
+          "name": "minTurnRate",
+          "value": 3,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/core2/yaw.c:53"
+        },
+        {
+          "name": "unboundedTurnRate",
+          "value": 360,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/core2/yaw.c:64"
+        },
+        {
+          "name": "defaultRollCap",
+          "value": 700,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/core2/baroll.c:83"
+        },
+        {
+          "name": "minRollStep",
+          "value": 0.1,
+          "unit": "degrees per update, floor of the bank step",
+          "source": "src/core2/baroll.c:32"
+        },
+        {
+          "name": "defaultPitchCap",
+          "value": 500,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/core2/1E75710.c:68"
+        },
+        {
+          "name": "defaultPitchStep",
+          "value": 0.8,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/core2/1E75710.c:68"
+        },
+        {
+          "name": "largeDinoTurnCap",
+          "value": 300,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexlarge.c:231"
+        },
+        {
+          "name": "largeDinoTurnStep",
+          "value": 3.5,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/overlays/bs/trexlarge.c:231"
+        },
+        {
+          "name": "swimTurnStep",
+          "value": 20,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/overlays/ba/swim.c:126"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core2/yaw.c",
+          "line": 41
+        },
+        {
+          "path": "src/core2/yaw.c",
+          "line": 14
+        },
+        {
+          "path": "src/core2/yaw.c",
+          "line": 69
+        },
+        {
+          "path": "src/core2/baroll.c",
+          "line": 19
+        },
+        {
+          "path": "src/core2/1E75710.c",
+          "line": 8
+        }
+      ],
+      "capabilities": [
+        "proportional turn with floor and cap",
+        "per-state handling presets",
+        "bank angle smoothing"
+      ],
+      "tags": [
+        "movement",
+        "camera-relative",
+        "platformer"
+      ]
+    },
+    {
+      "id": "jump-variable-height",
+      "node": "banjo-ground-moves",
+      "name": "Jump with variable height",
+      "summary": "A jump launches upward at 710 units per second under -1350 gravity, keeps the stick-driven horizontal speed, and restores the default gravity when the button is released while rising.",
+      "behavior": "On takeoff the state faces the stick direction relative to the camera, sets the wanted ground speed from the same stick mapping used for walking, copies that speed into the horizontal velocity and sets vertical velocity. The launch speed is 710 normally and 610 when a previous-state test is true (the earlier state looks like a water exit, which is an inference). Gravity during the rise is -1350. Releasing the button while vertical velocity is still positive restores the default gravity, which cuts the jump short; a spring-pad launch skips that early cut, and a player who lacks the full-height ability gets the default gravity at once. While airborne the stick keeps driving the wanted horizontal speed through the airborne physics type, so air control is the ground mapping reapplied each update. Fall detection, a tumble state when a fall test passes, water landing and grip grab are checked every update; touching stable ground ends the jump and picks run or landing depending on whether a wanted speed exists.",
+      "constants": [
+        {
+          "name": "launchSpeed",
+          "value": 710,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/jump.c:61"
+        },
+        {
+          "name": "launchSpeedAlt",
+          "value": 610,
+          "unit": "units/second, scaled by variable delta time each update (upward), alternate previous-state case",
+          "source": "src/overlays/bs/jump.c:57"
+        },
+        {
+          "name": "riseGravity",
+          "value": -1350,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/jump.c:63"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/jump.c",
+          "line": 14
+        },
+        {
+          "path": "src/overlays/bs/jump.c",
+          "line": 73
+        },
+        {
+          "path": "src/overlays/bs/jump.c",
+          "line": 95
+        }
+      ],
+      "capabilities": [
+        "variable jump height on button release",
+        "air control reusing ground speed mapping",
+        "spring pad launch"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "platformer"
+      ]
+    },
+    {
+      "id": "ledge-grab-shimmy",
+      "node": "banjo-ground-moves",
+      "name": "Ledge grab and sideways shimmy",
+      "summary": "While hanging, stick length maps to a shimmy speed of 40 to 200 units per second, a stick within 10 degrees of the facing axis is ignored, and pressing jump climbs up.",
+      "behavior": "The grab state locks heading to the wall direction. After the arrival animation passes 0.6329 of its length the player may act: moving the stick sideways starts a shimmy, pressing jump starts a climb-up, pressing the attack button starts a hanging attack (only when not split up), and pressing crouch drops. The shimmy direction is read from the stick angle relative to the camera compared with the wall heading. The angle is folded into 0 to 90 degrees and if the stick is within 10 degrees of straight at or straight away from the wall the shimmy vector is zero, which keeps a stick pushed into the wall from jittering. Otherwise the direction is the wall heading turned by plus or minus 90 degrees and the speed is the stick length mapped across 40 to 200. Losing the ledge geometry test drops the player into the fall state.",
+      "constants": [
+        {
+          "name": "shimmyDeadAngle",
+          "value": 10,
+          "unit": "degrees from the wall axis",
+          "source": "src/overlays/bs/ledge.c:41"
+        },
+        {
+          "name": "shimmyMinSpeed",
+          "value": 40,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/ledge.c:47"
+        },
+        {
+          "name": "shimmyMaxSpeed",
+          "value": 200,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/ledge.c:47"
+        },
+        {
+          "name": "actionLockPhase",
+          "value": 0.6329,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/ledge.c:172"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/ledge.c",
+          "line": 19
+        },
+        {
+          "path": "src/overlays/bs/ledge.c",
+          "line": 157
+        }
+      ],
+      "capabilities": [
+        "ledge shimmy with stick deadband",
+        "pull-up and drop from a hang"
+      ],
+      "tags": [
+        "ledge",
+        "movement",
+        "platformer"
+      ]
+    },
+    {
+      "id": "feathery-flutter",
+      "node": "kazooie-air-moves",
+      "name": "Feathery flutter",
+      "summary": "A mid-air flutter gives a small 280 upward kick, then slows the fall by capping descent at 399.9 units per second under -1100 gravity, with each wing cycle slower than the last and a 2.5 second limit.",
+      "behavior": "Pressing the flutter button in the air plays an entry animation, then at its end sets vertical velocity to 280, gravity to -1100 and terminal velocity to -399.9, so the player hovers down instead of dropping. Wing cycles repeat and lengthen: the first cycle lasts 0.15 seconds, then 0.2, 0.27, 0.38, 0.4 and finally 0.7 seconds, so the flutter loses pace as it goes. After four completed cycles the wanted horizontal speed is scaled to 35 percent of the stick speed. A 2.5 second timer ends the flutter and drops the player into the fall state, and releasing the button restores default gravity and terminal velocity at once. Beak bust, grip grab and landing can interrupt it. It needs the two characters to be together, and it sets a once-per-jump flag that blocks both a second flutter and a rat-a-tat peck until the player touches stable ground or water.",
+      "constants": [
+        {
+          "name": "kickSpeed",
+          "value": 280,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/bflap.c:92"
+        },
+        {
+          "name": "flutterGravity",
+          "value": -1100,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/bflap.c:13"
+        },
+        {
+          "name": "flutterFallCap",
+          "value": -399.9,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/bflap.c:94"
+        },
+        {
+          "name": "flutterTimeLimit",
+          "value": 2.5,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/bflap.c:16"
+        },
+        {
+          "name": "cycle1",
+          "value": 0.15,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:34"
+        },
+        {
+          "name": "cycle2",
+          "value": 0.2,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:36"
+        },
+        {
+          "name": "cycle3",
+          "value": 0.27,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:38"
+        },
+        {
+          "name": "cycle4",
+          "value": 0.38,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:40"
+        },
+        {
+          "name": "cycle5",
+          "value": 0.4,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:42"
+        },
+        {
+          "name": "cycle6Plus",
+          "value": 0.7,
+          "unit": "seconds per wing cycle",
+          "source": "src/overlays/bs/bflap.c:44"
+        },
+        {
+          "name": "lateSpeedScale",
+          "value": 0.35,
+          "unit": "fraction of stick wanted speed after four cycles",
+          "source": "src/overlays/bs/bflap.c:140"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/bflap.c",
+          "line": 3
+        },
+        {
+          "path": "src/overlays/bs/bflap.c",
+          "line": 76
+        },
+        {
+          "path": "src/overlays/bs/bflap.c",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "hover fall with capped descent speed",
+        "flutter that slows over time",
+        "timed flutter limit"
+      ],
+      "tags": [
+        "jump",
+        "air-move",
+        "platformer"
+      ]
+    },
+    {
+      "id": "beak-buster-slam",
+      "node": "kazooie-air-moves",
+      "name": "Dive slam with hang time",
+      "summary": "The slam freezes the body for about 0.46 seconds, kicks up at 2300 units per second under -20000 gravity so it plunges to a -5000 terminal speed, holds 0.09 seconds on impact, then rebounds at 730.",
+      "behavior": "The move runs as five sub-states. Wind-up plays the first 0.455 of a 1.02 second clip with gravity zero and all velocity cleared, which is roughly 0.46 seconds of hang time. The dive sub-state sets terminal velocity to -5000, gravity to -20000 and vertical velocity to a positive 2300, so the body rises for a fraction of a second then accelerates downward at a very high rate until it hits the terminal speed. Landing, a flagged contact, or a counter of four consecutive updates with a near-zero contact reading ends the dive. Impact removes gravity and horizontal speed, shakes the camera and holds for 0.09 seconds. Recovery then launches a hop of 730 under -2110 gravity (a flagged variant uses 400 and -800) and ends in the landing state. Holding crouch at 0.3637 of the wind-up clip, when the ability is owned, switches to a drilling dive instead. Entering water turns it into a water landing.",
+      "constants": [
+        {
+          "name": "windUpClipLength",
+          "value": 1.02,
+          "unit": "seconds, full clip",
+          "source": "src/overlays/bs/bbuster.c:62"
+        },
+        {
+          "name": "windUpClipFraction",
+          "value": 0.455,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/bbuster.c:63"
+        },
+        {
+          "name": "diveKickSpeed",
+          "value": 2300,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/bbuster.c:18"
+        },
+        {
+          "name": "diveGravity",
+          "value": -20000,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/bbuster.c:17"
+        },
+        {
+          "name": "diveTerminal",
+          "value": -5000,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/bbuster.c:16"
+        },
+        {
+          "name": "impactHold",
+          "value": 0.09,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/bbuster.c:33"
+        },
+        {
+          "name": "reboundSpeed",
+          "value": 730,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/bbuster.c:41"
+        },
+        {
+          "name": "reboundGravity",
+          "value": -2110,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/bbuster.c:42"
+        },
+        {
+          "name": "drillHoldPhase",
+          "value": 0.3637,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/bbuster.c:103"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/bbuster.c",
+          "line": 3
+        },
+        {
+          "path": "src/overlays/bs/bbuster.c",
+          "line": 57
+        },
+        {
+          "path": "src/overlays/bs/bbuster.c",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "telegraphed ground slam",
+        "impact freeze frame",
+        "rebound hop after slam"
+      ],
+      "tags": [
+        "attack",
+        "air-move",
+        "platformer"
+      ]
+    },
+    {
+      "id": "peck-hover-hops",
+      "node": "kazooie-air-moves",
+      "name": "Rapid peck hover",
+      "summary": "A rapid-peck move pins the player in the air by resetting vertical speed to 120 on each peck under -1400 gravity, for at most 0.5 seconds of pecking.",
+      "behavior": "The state starts with a short wind-up clip, then swaps to a peck loop at 0.9126 of the wind-up. Each time the loop passes 0.1621 and 0.7 of its length, a peck lands: vertical speed is set to 120 again, so gravity of -1400 never accumulates enough to drop the body. A 0.5 second timer limits the loop, after which a recovery clip plays and the player falls. Turn control is loose, at 1200 degrees per second with factor 10. Landing returns to idle and water returns to a water landing. It needs the two characters to be together. The move sets the same once-per-jump flag as the flutter, which blocks both moves until the player touches stable ground or water.",
+      "constants": [
+        {
+          "name": "peckGravity",
+          "value": -1400,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/bpeck.c:29"
+        },
+        {
+          "name": "peckHopSpeed",
+          "value": 120,
+          "unit": "units/second, scaled by variable delta time each update (upward), reapplied on each peck",
+          "source": "src/overlays/bs/bpeck.c:30"
+        },
+        {
+          "name": "peckWindow",
+          "value": 0.5,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/bpeck.c:86"
+        },
+        {
+          "name": "firstPeckPhase",
+          "value": 0.1621,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/bpeck.c:90"
+        },
+        {
+          "name": "secondPeckPhase",
+          "value": 0.7,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/bpeck.c:94"
+        },
+        {
+          "name": "peckTurnCap",
+          "value": 1200,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/bpeck.c:27"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/bpeck.c",
+          "line": 6
+        },
+        {
+          "path": "src/overlays/bs/bpeck.c",
+          "line": 64
+        },
+        {
+          "path": "src/overlays/bs/bpeck.c",
+          "line": 41
+        }
+      ],
+      "capabilities": [
+        "air hover while attacking",
+        "timed multi-hit air move",
+        "once-per-jump move lockout"
+      ],
+      "tags": [
+        "attack",
+        "air-move",
+        "platformer"
+      ]
+    },
+    {
+      "id": "kazooie-solo-locomotion",
+      "node": "kazooie-air-moves",
+      "name": "Kazooie-controlled ground speed and jump",
+      "summary": "When Kazooie is the controlled character the ground bands are 80 to 250 and 250 to 800, and the jump launches at 610 under -1000 gravity, a floatier arc with the same peak as the duo jump.",
+      "behavior": "The Kazooie states use a simpler stick map with two bands instead of four: the first zone interpolates the wanted speed from 80 to 250 and the second from 250 to 800 units per second. With a footwear test true the bands change to 250 to 1200 for one boot mode and 250 to 800 for two others, and each band gets half of the zone range. The walk cycle shortens from 1.3 to 0.45 seconds across the low band. The jump copies the stick-driven wanted speed into horizontal velocity, sets vertical velocity to 610 and gravity to -1000, so the rise takes 0.61 seconds against 0.53 for the 710 and -1350 duo jump, while both peak near 186 units (derived from the constants). Both once-per-jump flags (flutter and peck) clear at takeoff. Use these as a second movement preset that swaps the numbers on the same state machine.",
+      "constants": [
+        {
+          "name": "lowBandMin",
+          "value": 80,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/move.c:48"
+        },
+        {
+          "name": "lowBandMax",
+          "value": 250,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/move.c:49"
+        },
+        {
+          "name": "highBandMax",
+          "value": 800,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/move.c:59"
+        },
+        {
+          "name": "bootBandMax",
+          "value": 1200,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/move.c:9"
+        },
+        {
+          "name": "walkCycleLong",
+          "value": 1.3,
+          "unit": "seconds per walk cycle at the band minimum",
+          "source": "src/overlays/bs/kaz/move.c:111"
+        },
+        {
+          "name": "jumpLaunch",
+          "value": 610,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/kaz/jump.c:36"
+        },
+        {
+          "name": "jumpGravity",
+          "value": -1000,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/jump.c:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/kaz/move.c",
+          "line": 22
+        },
+        {
+          "path": "src/overlays/bs/kaz/move.c",
+          "line": 5
+        },
+        {
+          "path": "src/overlays/bs/kaz/jump.c",
+          "line": 10
+        }
+      ],
+      "capabilities": [
+        "second movement preset with lower jump",
+        "footwear-dependent speed bands"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "platformer"
+      ]
+    },
+    {
+      "id": "boot-trot-modifiers",
+      "node": "kazooie-air-moves",
+      "name": "Trot gait with footwear modifiers",
+      "summary": "The trot gait maps stick to 30 to 700 units per second, and one pair of fast boots raises the band to 80 to 1000 while also shortening the stride cycle.",
+      "behavior": "Wanted speed is zero in the dead zone and otherwise interpolates between a minimum and maximum chosen by a footwear check. Plain trot, the springy boots and the claw boots all use 30 to 700, and the fast boots use 80 to 1000. An unnamed surface-condition test caps the maximum at 300. The stride cycle length also depends on footwear: from 0.56 at the slow end to 0.34 at the fast end for plain trot, 0.51 to 0.29 for fast boots, 1.2 to 0.7 for springy boots and 1.4 to 0.53 for claw boots, Pitch and bank use a very loose 1000 degrees per second with factor 12. The footwear is read through named player queries, so the pattern is one switch function that returns the right number for each pair of boots.",
+      "constants": [
+        {
+          "name": "trotMinSpeed",
+          "value": 30,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:71"
+        },
+        {
+          "name": "fastBootsMinSpeed",
+          "value": 80,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:71"
+        },
+        {
+          "name": "trotMaxSpeed",
+          "value": 700,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:67"
+        },
+        {
+          "name": "fastBootsMaxSpeed",
+          "value": 1000,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:67"
+        },
+        {
+          "name": "harmfulSurfaceMaxSpeed",
+          "value": 300,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:65"
+        },
+        {
+          "name": "trotCycleSlow",
+          "value": 0.56,
+          "unit": "seconds per stride at the band minimum",
+          "source": "src/overlays/bs/btrot.c:85"
+        },
+        {
+          "name": "trotCycleFast",
+          "value": 0.34,
+          "unit": "seconds per stride at the band maximum",
+          "source": "src/overlays/bs/btrot.c:78"
+        },
+        {
+          "name": "clawBootsCycleSlow",
+          "value": 1.4,
+          "unit": "seconds per stride at the band minimum, claw boots",
+          "source": "src/overlays/bs/btrot.c:85"
+        },
+        {
+          "name": "trotTurnCap",
+          "value": 1000,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/btrot.c:174"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/btrot.c",
+          "line": 63
+        },
+        {
+          "path": "src/overlays/bs/btrot.c",
+          "line": 70
+        },
+        {
+          "path": "src/overlays/bs/btrot.c",
+          "line": 81
+        },
+        {
+          "path": "src/overlays/bs/btrot.c",
+          "line": 165
+        }
+      ],
+      "capabilities": [
+        "gear-dependent speed bands",
+        "gear-dependent stride length",
+        "turbo gait"
+      ],
+      "tags": [
+        "movement",
+        "items",
+        "platformer"
+      ]
+    },
+    {
+      "id": "spring-jumps",
+      "node": "kazooie-air-moves",
+      "name": "Spring and shock jumps",
+      "summary": "Three scripted high jumps: a shock spring at 1820 under -1200 gravity, and two boot springs at 3207 and 2383 whose crouch clip runs under -2700 gravity.",
+      "behavior": "A shock spring jump copies the stick-driven wanted speed into horizontal velocity and sets vertical velocity to 1820 with gravity -1200, so the arc stays steerable. The boot spring jump has two phases. The crouch phase plays a 1.9 second clip, zeroes wanted horizontal speed and sets gravity to -2700. When the clip reaches 0.4744 the launch phase switches to the airborne type and sets vertical velocity to 3207 for the Kazooie boots, or 2383 in the trot state, which makes it a very tall, nearly vertical hop. The launch phase keeps reading stick control for steering and ends in a fall state when the clip stops. The heavy gravity pairs with the huge launch speed so the apex is reached quickly and the descent feels weighty. This is a good template for a charged spring pad: crouch hold, scripted impulse, then normal air control.",
+      "constants": [
+        {
+          "name": "shockLaunch",
+          "value": 1820,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/kaz/shock.c:142"
+        },
+        {
+          "name": "shockGravity",
+          "value": -1200,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/shock.c:143"
+        },
+        {
+          "name": "kazBootLaunch",
+          "value": 3207,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/kaz/shoesspringjump.c:21"
+        },
+        {
+          "name": "bootCrouchGravity",
+          "value": -2700,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/shoesspringjump.c:16"
+        },
+        {
+          "name": "trotBootLaunch",
+          "value": 2383,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/btrot.c:923"
+        },
+        {
+          "name": "launchPhase",
+          "value": 0.4744,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/kaz/shoesspringjump.c:48"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/kaz/shock.c",
+          "line": 120
+        },
+        {
+          "path": "src/overlays/bs/kaz/shoesspringjump.c",
+          "line": 7
+        },
+        {
+          "path": "src/overlays/bs/btrot.c",
+          "line": 907
+        }
+      ],
+      "capabilities": [
+        "charged spring jump",
+        "scripted launch with steerable arc"
+      ],
+      "tags": [
+        "jump",
+        "items",
+        "platformer"
+      ]
+    },
+    {
+      "id": "flight-steering",
+      "node": "flight-glide-torpedo",
+      "name": "Flight steering and bank",
+      "summary": "Stick left and right turn the heading by 3 degrees per update (6 with the shoulder button) and bank the body by up to 75 degrees (85 held), while stick forward and back set pitch inside two windows.",
+      "behavior": "Flight reads the stick every update. Horizontal stick turns the ideal heading by a per-update step of 3 degrees, or 6 while the shoulder button is held, times a user turn-speed scale. It also sets the ideal bank angle across plus or minus 75 degrees, or 85 held. The heading chase uses a cap of 500 degrees per second with factor 2, and 500 with 30 while the shoulder button is held, so the held button gives a much snappier turn. Vertical stick sets the ideal pitch: pushing one way maps zero to the second limit (80 for the main flight state), and the other way maps from a first limit (300) up to 360, so pitch is expressed as an angle that wraps below zero. Pitch and roll follow with their own response rates of 500 with 1.2 in normal flight and 1000 with 2.2 right after a flap.",
+      "constants": [
+        {
+          "name": "turnStep",
+          "value": 3,
+          "unit": "degrees per update, heading step at full stick, rate unverified",
+          "source": "src/overlays/ba/fly.c:120"
+        },
+        {
+          "name": "turnStepFast",
+          "value": 6,
+          "unit": "degrees per update, heading step with shoulder button held, rate unverified",
+          "source": "src/overlays/ba/fly.c:116"
+        },
+        {
+          "name": "maxBank",
+          "value": 75,
+          "unit": "degrees",
+          "source": "src/overlays/ba/fly.c:121"
+        },
+        {
+          "name": "maxBankFast",
+          "value": 85,
+          "unit": "degrees, shoulder button held",
+          "source": "src/overlays/ba/fly.c:117"
+        },
+        {
+          "name": "headingCap",
+          "value": 500,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/ba/fly.c:119"
+        },
+        {
+          "name": "headingStepFast",
+          "value": 30,
+          "unit": "turn rate per degree of remaining angle, per second, shoulder held",
+          "source": "src/overlays/ba/fly.c:115"
+        },
+        {
+          "name": "pitchLowLimit",
+          "value": 300,
+          "unit": "degrees, pull-up window start",
+          "source": "src/overlays/bs/kaz/fly.c:140"
+        },
+        {
+          "name": "pitchHighLimit",
+          "value": 80,
+          "unit": "degrees, dive window end",
+          "source": "src/overlays/bs/kaz/fly.c:140"
+        },
+        {
+          "name": "postFlapPitchRate",
+          "value": 1000,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/ba/fly.c:322"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/fly.c",
+          "line": 107
+        },
+        {
+          "path": "src/overlays/ba/fly.c",
+          "line": 129
+        },
+        {
+          "path": "src/overlays/ba/fly.c",
+          "line": 307
+        },
+        {
+          "path": "src/overlays/ba/fly.c",
+          "line": 316
+        }
+      ],
+      "capabilities": [
+        "bank-and-turn flight steering",
+        "held-button tight turn",
+        "wrapped pitch angle window"
+      ],
+      "tags": [
+        "flight",
+        "camera-relative",
+        "platformer"
+      ]
+    },
+    {
+      "id": "flight-speed-envelope",
+      "node": "flight-glide-torpedo",
+      "name": "Pitch-dependent flight speed and sink",
+      "summary": "Forward speed, gravity and terminal fall speed all depend on pitch: level flight cruises at 800 units per second with -300 gravity and -50 sink cap, steep angles drop speed and raise fall rate.",
+      "behavior": "One function sets four numbers from the current pitch each update and takes seven parameters per flight type. Level flight uses the cruise speed (800 for the main flight, 600 for the glide), gravity -300 and terminal -50, so the player sinks at no more than 50 units per second. On the dive side, in the last 20 degrees below the high limit of 80, speed fades from cruise to a tenth, gravity ramps from -300 to -700 and terminal ramps from -50 to -1000, which makes a steep nose-down a fast plunge. On the pull-up side, below the low limit of 300 plus 40 degrees, speed climbs from zero at 300 up to cruise at 340 and terminal ramps from -399.99 at 300 to -50 at 310, so pulling up too hard stalls and drops. While one player flag (index 9, purpose unnamed) is set, terminal speed is zeroed, velocity is cleared and wanted speed is zero. The dive side is the stick-forward range and the pull-up side the stick-back range, which is inferred from the effects. These mappings are linear blends, which is why the controls feel analog.",
+      "constants": [
+        {
+          "name": "cruiseSpeed",
+          "value": 800,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/fly.c:191"
+        },
+        {
+          "name": "cruiseGravity",
+          "value": -300,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/fly.c:191"
+        },
+        {
+          "name": "cruiseSinkCap",
+          "value": -50,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/kaz/fly.c:191"
+        },
+        {
+          "name": "diveGravity",
+          "value": -700,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/fly.c:191"
+        },
+        {
+          "name": "diveTerminal",
+          "value": -1000,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/kaz/fly.c:191"
+        },
+        {
+          "name": "stallTerminal",
+          "value": -399.99,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward) at the pull-up limit",
+          "source": "src/overlays/ba/fly.c:95"
+        },
+        {
+          "name": "stallSpeedRamp",
+          "value": 40,
+          "unit": "degrees above the pull-up limit where speed is full",
+          "source": "src/overlays/ba/fly.c:96"
+        },
+        {
+          "name": "diveFadeWindow",
+          "value": 20,
+          "unit": "degrees below the dive limit where the dive curve starts",
+          "source": "src/overlays/ba/fly.c:90"
+        },
+        {
+          "name": "glideCruiseSpeed",
+          "value": 600,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/glide.c:100"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/fly.c",
+          "line": 77
+        },
+        {
+          "path": "src/overlays/bs/kaz/fly.c",
+          "line": 191
+        },
+        {
+          "path": "src/overlays/bs/kaz/glide.c",
+          "line": 100
+        }
+      ],
+      "capabilities": [
+        "pitch-driven speed curve",
+        "stall and dive behavior",
+        "low sink-rate cruise"
+      ],
+      "tags": [
+        "flight",
+        "physics",
+        "platformer"
+      ]
+    },
+    {
+      "id": "flap-boost-stack",
+      "node": "flight-glide-torpedo",
+      "name": "Stacked flap boosts",
+      "summary": "Each wing flap adds a boost timer worth 600 units per second of upward speed for 1 second, up to five at once, and two flaps cannot start closer than 0.25 seconds.",
+      "behavior": "A flap press is buffered, then commits only on an update where a counter is divisible by 3, which spreads taps and adds a slight lag. Committing consults an inventory check (bypassed in two special levels). A boost manager keeps five timer slots. A new flap is refused and queued if any slot still holds more than the new duration minus 0.25 seconds, otherwise it fills the first empty slot. The refused flap is retried after the timers tick down on the next update. Every update the number of nonzero slots is counted and vertical velocity is set directly to the count times 600, so one flap lifts at 600, three overlapping flaps at 1800 and five at 3000. A normal flap lasts 1 second, a flap made while a reduced flag is set lasts 0.35. When the count falls to zero the player returns to the normal sinking cruise. A beak bomb cannot start until a 1 second lockout from the start of flight has run out.",
+      "constants": [
+        {
+          "name": "boostSlots",
+          "value": 5,
+          "unit": "concurrent boost timers",
+          "source": "src/overlays/ba/boost.c:13"
+        },
+        {
+          "name": "minFlapGap",
+          "value": 0.25,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/boost.c:29"
+        },
+        {
+          "name": "liftPerSlot",
+          "value": 600,
+          "unit": "units/second, scaled by variable delta time each update (upward) per active slot",
+          "source": "src/overlays/bs/kaz/fly.c:179"
+        },
+        {
+          "name": "normalFlapDuration",
+          "value": 1,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/fly.c:159"
+        },
+        {
+          "name": "shortFlapDuration",
+          "value": 0.35,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/fly.c:157"
+        },
+        {
+          "name": "tapGate",
+          "value": 3,
+          "unit": "a pending press commits when a global counter modulo this is zero",
+          "source": "src/overlays/bs/kaz/fly.c:146"
+        },
+        {
+          "name": "bombLockout",
+          "value": 1,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/fly.c:122"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/boost.c",
+          "line": 23
+        },
+        {
+          "path": "src/overlays/ba/boost.c",
+          "line": 66
+        },
+        {
+          "path": "src/overlays/bs/kaz/fly.c",
+          "line": 129
+        }
+      ],
+      "capabilities": [
+        "stacking flap boosts",
+        "minimum gap between flaps",
+        "input buffering with a gate"
+      ],
+      "tags": [
+        "flight",
+        "input",
+        "platformer"
+      ]
+    },
+    {
+      "id": "flight-takeoff",
+      "node": "flight-glide-torpedo",
+      "name": "Flight takeoff",
+      "summary": "Taking off crouches, then at 0.39 of the clip launches straight up at 1600 units per second; once vertical speed turns negative the state hands over to cruise.",
+      "behavior": "The takeoff state plays a launch clip, steers the ideal heading from the stick, zeroes horizontal speed and sets gravity to -1200. When the clip reaches 0.39 of its length it stretches the clip from 1.4 to 2.4 seconds, sets vertical velocity to 1600 and sets a phase flag. After that, once the body starts to fall (vertical velocity below zero) it moves to state 0x162 (presumably cruise, inferred), whose entry starts at an 800 units per second forward speed along the current heading, with gravity -300 and sink cap -50. Cruise entry also copies the wanted speed into horizontal velocity at once, so there is no acceleration ramp; the same unnamed player flag (index 9) that blocks flight speed sets the wanted speed to zero instead. Touching water in cruise goes to the swim state, and touching stable ground ends the flight in a landing state. Repeat this with a launch impulse then a cruise state with a forward speed constant.",
+      "constants": [
+        {
+          "name": "launchPhase",
+          "value": 0.39,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/kaz/fly.c:78"
+        },
+        {
+          "name": "launchSpeed",
+          "value": 1600,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/kaz/fly.c:80"
+        },
+        {
+          "name": "launchGravity",
+          "value": -1200,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/fly.c:62"
+        },
+        {
+          "name": "launchClipLengthStart",
+          "value": 1.4,
+          "unit": "seconds",
+          "source": "src/overlays/bs/kaz/fly.c:53"
+        },
+        {
+          "name": "launchClipLength",
+          "value": 2.4,
+          "unit": "seconds, replaces the start length at the launch phase",
+          "source": "src/overlays/bs/kaz/fly.c:79"
+        },
+        {
+          "name": "cruiseEntrySpeed",
+          "value": 800,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/fly.c:112"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/kaz/fly.c",
+          "line": 52
+        },
+        {
+          "path": "src/overlays/bs/kaz/fly.c",
+          "line": 69
+        },
+        {
+          "path": "src/overlays/bs/kaz/fly.c",
+          "line": 103
+        }
+      ],
+      "capabilities": [
+        "flight launch impulse",
+        "handover from launch to cruise"
+      ],
+      "tags": [
+        "flight",
+        "air-move",
+        "platformer"
+      ]
+    },
+    {
+      "id": "glide-and-flutter-descent",
+      "node": "flight-glide-torpedo",
+      "name": "Glide and flutter descent",
+      "summary": "The glide cruises at 600 units per second with -300 gravity and a -50 sink cap, ignores transitions for the first 0.38 seconds, and a flutter option holds fall speed near -10 and relaxes it toward -1000 as a 1.7 second timer runs out.",
+      "behavior": "On entry the glide caps upward velocity at 150, and forces it to exactly 150 when a distance query reads below 100. It reuses the pitch-dependent flight envelope with a cruise speed of 600 instead of 800. A 0.38 second timer opens the transition window: before it expires, a pending flutter or attack press is stored in two flags and then fires when the timer ends. Releasing the crouch button after the lock, or an unnamed elapsed-air test, ends the glide. The flutter descent state sets gravity -1100, vertical velocity 0 and a 1.7 second timer, and maps remaining timer time (clamped to 1.2) to terminal velocity from -1000 at zero to -10 at 1.2, which makes the first half-second a near-hover that opens into a falling slide. The wing cycle time maps from 0.2 seconds at the start to 0.7 at the end of the timer, so beats slow down as the lift fades.",
+      "constants": [
+        {
+          "name": "glideSpeed",
+          "value": 600,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/glide.c:72"
+        },
+        {
+          "name": "glideGravity",
+          "value": -300,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/glide.c:30"
+        },
+        {
+          "name": "glideSinkCap",
+          "value": -50,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/kaz/glide.c:31"
+        },
+        {
+          "name": "entryUpCap",
+          "value": 150,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/kaz/glide.c:78"
+        },
+        {
+          "name": "transitionLock",
+          "value": 0.38,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/glide.c:81"
+        },
+        {
+          "name": "flutterGravity",
+          "value": -1100,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/glide.c:188"
+        },
+        {
+          "name": "flutterTimer",
+          "value": 1.7,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/glide.c:190"
+        },
+        {
+          "name": "flutterOpenSink",
+          "value": -10,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward) at the start of the timer",
+          "source": "src/overlays/bs/kaz/glide.c:206"
+        },
+        {
+          "name": "flutterRelaxWindow",
+          "value": 1.2,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/bs/kaz/glide.c:206"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/kaz/glide.c",
+          "line": 62
+        },
+        {
+          "path": "src/overlays/bs/kaz/glide.c",
+          "line": 86
+        },
+        {
+          "path": "src/overlays/bs/kaz/glide.c",
+          "line": 194
+        }
+      ],
+      "capabilities": [
+        "glide cruise",
+        "input buffering during a lock window",
+        "parachute-like flutter descent"
+      ],
+      "tags": [
+        "flight",
+        "air-move",
+        "platformer"
+      ]
+    },
+    {
+      "id": "torpedo-thrust-dive",
+      "node": "flight-glide-torpedo",
+      "name": "Torpedo thrust dive",
+      "summary": "The torpedo passes a thrust power to an unmapped thrust mover: 225 while the button is held and 22.5 otherwise, with zero gravity in water and -1800 gravity in air where thrust is cut to 5 percent.",
+      "behavior": "Each update the state sets a thrust power from the button: 225 while held, halved when an unnamed contact test passes, and 22.5 when released. In water gravity is zero and a second thrust parameter is 0.85; in air gravity is -1800 and that parameter is 0.93 with the thrust power multiplied by 0.05, so the dive is mostly ballistic out of water. Terminal velocity is -4000 either way. Steering reads the stick: horizontal stick turns heading at up to 350 degrees per second in air and 260 in water and banks plus or minus 45 degrees; vertical stick sets pitch across the 275 to 360 and 0 to 85 windows. Handling presets differ by medium (cap with factor): water uses 290 with 5 for heading, 220 with 3.5 for pitch and 120 with 1.8 for bank; air uses 350 with 3.5, 250 with 2.8 and 250 with 2.8. The mover itself is not decompiled, so thrust units are unverified. The torpedo ends on landing out of water, on a second press of the attack button, or when the partner body, after being more than 150 units away (squared distance 22500), comes back within 120 units (squared distance 14400); both distances are measured between points 50 units above each body. A speed gauge of speed times 100 over 1500 above 48 switches to another state.",
+      "constants": [
+        {
+          "name": "heldThrust",
+          "value": 225,
+          "unit": "thrust power, units unverified",
+          "source": "src/overlays/bs/kaz/torpedo.c:99"
+        },
+        {
+          "name": "idleThrust",
+          "value": 22.5,
+          "unit": "thrust power, units unverified",
+          "source": "src/overlays/bs/kaz/torpedo.c:105"
+        },
+        {
+          "name": "airThrustScale",
+          "value": 0.05,
+          "unit": "fraction of thrust used in air",
+          "source": "src/overlays/bs/kaz/torpedo.c:95"
+        },
+        {
+          "name": "airGravity",
+          "value": -1800,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/torpedo.c:92"
+        },
+        {
+          "name": "terminalSpeed",
+          "value": -4000,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/kaz/torpedo.c:88"
+        },
+        {
+          "name": "waterThrustFactor",
+          "value": 0.85,
+          "unit": "second thrust parameter in water, unit unverified",
+          "source": "src/overlays/bs/kaz/torpedo.c:89"
+        },
+        {
+          "name": "airThrustFactor",
+          "value": 0.93,
+          "unit": "second thrust parameter in air, unit unverified",
+          "source": "src/overlays/bs/kaz/torpedo.c:94"
+        },
+        {
+          "name": "airTurnRate",
+          "value": 350,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/torpedo.c:59"
+        },
+        {
+          "name": "waterTurnRate",
+          "value": 260,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/torpedo.c:57"
+        },
+        {
+          "name": "maxBank",
+          "value": 45,
+          "unit": "degrees",
+          "source": "src/overlays/bs/kaz/torpedo.c:55"
+        },
+        {
+          "name": "partnerNearSq",
+          "value": 14400,
+          "unit": "squared units (120 units)",
+          "source": "src/overlays/bs/kaz/torpedo.c:195"
+        },
+        {
+          "name": "partnerFarSq",
+          "value": 22500,
+          "unit": "squared units (150 units)",
+          "source": "src/overlays/bs/kaz/torpedo.c:201"
+        },
+        {
+          "name": "speedGaugeThreshold",
+          "value": 48,
+          "unit": "percent of 1500 units/second",
+          "source": "src/overlays/bs/kaz/torpedo.c:274"
+        },
+        {
+          "name": "waterPitchCap",
+          "value": 220,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/torpedo.c:35"
+        },
+        {
+          "name": "airPitchCap",
+          "value": 250,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/kaz/torpedo.c:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/kaz/torpedo.c",
+          "line": 77
+        },
+        {
+          "path": "src/overlays/bs/kaz/torpedo.c",
+          "line": 45
+        },
+        {
+          "path": "src/overlays/bs/kaz/torpedo.c",
+          "line": 33
+        }
+      ],
+      "capabilities": [
+        "thrust-driven dive",
+        "medium-dependent handling",
+        "banked steering"
+      ],
+      "tags": [
+        "flight",
+        "vehicle",
+        "platformer"
+      ]
+    },
+    {
+      "id": "swim-strokes",
+      "node": "swimming",
+      "name": "Swim strokes by held button",
+      "summary": "Swimming speed comes from impulse bursts chosen by held buttons: the first button 250 to 320, the second 300 to 450, and both together with the ability 400 to 600 units per second, each decaying every update.",
+      "behavior": "A helper reads the two action buttons: the first gives mode one, the second mode two, and both held with the fast-swim ability give mode three. Each mode is its own state with a stroke clip whose length is 1.0, 0.8 and 0.7 seconds. At 0.512 of the clip the stroke impulse is the high value and the rest of the time it is the low value: 320 and 250 in mode one, 450 and 300 in mode two, 600 and 400 in mode three. The impulse is only raised, never lowered, then decays at a rate each update, after which velocity follows the heading and pitch. The entry dive sets decay to 600, and after 0.37 of its clip drops it to 200, so a dive glides further. Releasing both buttons lets the clip finish and drops into a kick state at 0.99. Leaving the water returns to idle. Gravity is zero and terminal velocity is -399.99, so vertical motion comes only from pitch.",
+      "constants": [
+        {
+          "name": "mode1Low",
+          "value": 250,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:173"
+        },
+        {
+          "name": "mode1High",
+          "value": 320,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:170"
+        },
+        {
+          "name": "mode2Low",
+          "value": 300,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:236"
+        },
+        {
+          "name": "mode2High",
+          "value": 450,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:233"
+        },
+        {
+          "name": "mode3Low",
+          "value": 400,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:301"
+        },
+        {
+          "name": "mode3High",
+          "value": 600,
+          "unit": "units/second, scaled by variable delta time each update (impulse)",
+          "source": "src/overlays/bs/ban/swim.c:297"
+        },
+        {
+          "name": "impulsePhase",
+          "value": 0.512,
+          "unit": "fraction of one animation clip (0 to 1)",
+          "source": "src/overlays/bs/ban/swim.c:169"
+        },
+        {
+          "name": "mode1ClipLength",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/overlays/bs/ban/swim.c:157"
+        },
+        {
+          "name": "mode2ClipLength",
+          "value": 0.8,
+          "unit": "seconds",
+          "source": "src/overlays/bs/ban/swim.c:219"
+        },
+        {
+          "name": "mode3ClipLength",
+          "value": 0.7,
+          "unit": "seconds",
+          "source": "src/overlays/bs/ban/swim.c:283"
+        },
+        {
+          "name": "impulseDecayEntry",
+          "value": 600,
+          "unit": "units/second squared, decay applied to the impulse",
+          "source": "src/overlays/bs/ban/swim.c:63"
+        },
+        {
+          "name": "impulseDecayGlide",
+          "value": 200,
+          "unit": "units/second squared, decay applied to the impulse",
+          "source": "src/overlays/bs/ban/swim.c:85"
+        },
+        {
+          "name": "swimTerminal",
+          "value": -399.99,
+          "unit": "units/second, scaled by variable delta time each update (terminal, downward)",
+          "source": "src/overlays/bs/ban/swim.c:20"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 23
+        },
+        {
+          "path": "src/overlays/bs/ban/swim.c",
+          "line": 160
+        },
+        {
+          "path": "src/overlays/bs/ban/swim.c",
+          "line": 68
+        },
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 160
+        }
+      ],
+      "capabilities": [
+        "button-selected swim speeds",
+        "decaying stroke impulse",
+        "zero-gravity swimming"
+      ],
+      "tags": [
+        "swimming",
+        "movement",
+        "platformer"
+      ]
+    },
+    {
+      "id": "swim-steering-surface",
+      "node": "swimming",
+      "name": "Swim steering and surface test",
+      "summary": "Swimming steers by 4.3 degrees per update with up to 45 degrees of bank and a pitch window of 275 to 360 and 0 to 85 degrees, and a 100 unit and a 130 unit depth test decide surface behavior.",
+      "behavior": "Horizontal stick turns the ideal heading by 4.3 degrees per update at full stick, times a user turn-speed scale, and banks the body across plus or minus 45 degrees. Heading follows with a cap of 250 degrees per second and factor 20, so turns are tight. Vertical stick sets pitch: pushing one way maps from 275 to 360 degrees, and the other way from 0 to 85. The pitch response rate depends on swim speed normalised over 50 to 200 units per second: faster swimming gets a lower rate, mapped from 140 to 90, with a 1.6 factor, and a squared user scale for small inputs. Movement is a velocity along heading and pitch with the stroke impulse as speed. Two depth tests use the water surface height: the player counts as near the surface when the water surface is less than 100 units above the player, which an unnamed surface call at the dive stroke uses, and the swim-idle state is chosen when a contact flag is set and the player is within 130 units under the surface.",
+      "constants": [
+        {
+          "name": "turnStep",
+          "value": 4.3,
+          "unit": "degrees per update at full stick, rate unverified",
+          "source": "src/overlays/ba/swim.c:125"
+        },
+        {
+          "name": "maxBank",
+          "value": 45,
+          "unit": "degrees",
+          "source": "src/overlays/ba/swim.c:124"
+        },
+        {
+          "name": "headingCap",
+          "value": 250,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/ba/swim.c:126"
+        },
+        {
+          "name": "pitchPullWindow",
+          "value": 275,
+          "unit": "degrees, start of the stick-pull pitch window",
+          "source": "src/overlays/ba/swim.c:154"
+        },
+        {
+          "name": "pitchPushLimit",
+          "value": 85,
+          "unit": "degrees, end of the stick-push pitch window",
+          "source": "src/overlays/ba/swim.c:157"
+        },
+        {
+          "name": "surfaceNear",
+          "value": 100,
+          "unit": "units from the surface",
+          "source": "src/overlays/ba/swim.c:14"
+        },
+        {
+          "name": "surfaceIdleDepth",
+          "value": 130,
+          "unit": "units below the surface",
+          "source": "src/overlays/ba/swim.c:20"
+        },
+        {
+          "name": "speedNormaliseMin",
+          "value": 50,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/ba/swim.c:137"
+        },
+        {
+          "name": "speedNormaliseMax",
+          "value": 200,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/ba/swim.c:137"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 17
+        },
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 114
+        },
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 139
+        },
+        {
+          "path": "src/overlays/ba/swim.c",
+          "line": 133
+        }
+      ],
+      "capabilities": [
+        "swim steering with pitch",
+        "surface proximity checks",
+        "speed-dependent pitch response"
+      ],
+      "tags": [
+        "swimming",
+        "camera-relative",
+        "platformer"
+      ]
+    },
+    {
+      "id": "egg-aim-cursor",
+      "node": "egg-aiming",
+      "name": "First-person aim cursor",
+      "summary": "A screen cursor tracks the stick across a 114 by 85.5 pixel half-range around the point (152, 114), easing 4 percent of the gap per step, and the view pans when the cursor leaves a bounding box.",
+      "behavior": "First-person aiming draws a 2D cursor in screen space. The stick sets a wanted cursor position of 152 plus or minus 114 horizontally and 114 plus or minus 85.5 vertically (the offsets 38 and 28.5 plus the half ranges). The cursor then moves toward the wanted position in five small steps per elapsed video frame; each step closes 4 percent of the gap, limited to 7.4 pixels horizontally and 5.5 vertically, so it feels weighty and frame-rate independent. Separately, a box from 78 to 226 horizontally and 61 to 167 vertically defines the free zone. The distance outside the box maps linearly onto a view turn speed from zero up to 70 times the user sensitivity, reaching the maximum at 40 pixels outside horizontally and 32.5 vertically, which is exactly where the cursor stops at its screen limits. Horizontal offset turns the view sideways and vertical offset tilts it. Pitch pan is skipped when a flag locks it and pitch is clamped by a helper. The cursor graphic zooms in from 16 times its size over 0.3 seconds on entry and expands back out to 16 times over 0.2 seconds on exit while fading.",
+      "constants": [
+        {
+          "name": "centerX",
+          "value": 152,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/cursor.c:104"
+        },
+        {
+          "name": "centerY",
+          "value": 114,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/cursor.c:104"
+        },
+        {
+          "name": "halfRangeX",
+          "value": 114,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:25"
+        },
+        {
+          "name": "halfRangeY",
+          "value": 85.5,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:26"
+        },
+        {
+          "name": "easeFraction",
+          "value": 0.04,
+          "unit": "fraction of remaining gap per step",
+          "source": "src/overlays/ba/egg/aim.c:13"
+        },
+        {
+          "name": "stepsPerFrame",
+          "value": 5,
+          "unit": "steps per elapsed 1/60 second video frame",
+          "source": "src/overlays/ba/egg/aim.c:11"
+        },
+        {
+          "name": "maxStepX",
+          "value": 7.4,
+          "unit": "pixels per step",
+          "source": "src/overlays/ba/egg/aim.c:27"
+        },
+        {
+          "name": "maxStepY",
+          "value": 5.5,
+          "unit": "pixels per step",
+          "source": "src/overlays/ba/egg/aim.c:28"
+        },
+        {
+          "name": "freeBoxLeft",
+          "value": 78,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:39"
+        },
+        {
+          "name": "freeBoxRight",
+          "value": 226,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:46"
+        },
+        {
+          "name": "freeBoxTop",
+          "value": 61,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:51"
+        },
+        {
+          "name": "freeBoxBottom",
+          "value": 167,
+          "unit": "screen pixels",
+          "source": "src/overlays/ba/egg/aim.c:56"
+        },
+        {
+          "name": "fullPanDistanceX",
+          "value": 40,
+          "unit": "pixels outside the box where view turn speed is maximal",
+          "source": "src/overlays/ba/egg/aim.c:61"
+        },
+        {
+          "name": "fullPanDistanceY",
+          "value": 32.5,
+          "unit": "pixels outside the box where view turn speed is maximal",
+          "source": "src/overlays/ba/egg/aim.c:62"
+        },
+        {
+          "name": "panSpeedScale",
+          "value": 70,
+          "unit": "maximum view turn speed per unit of user sensitivity (degrees/second, unverified)",
+          "source": "src/overlays/ba/egg/aim.c:75"
+        },
+        {
+          "name": "enterAnimation",
+          "value": 0.3,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/cursor.c:103"
+        },
+        {
+          "name": "exitAnimation",
+          "value": 0.2,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/cursor.c:110"
+        },
+        {
+          "name": "cursorZoomScale",
+          "value": 16,
+          "unit": "multiple of normal cursor size",
+          "source": "src/overlays/ba/egg/cursor.c:105"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/egg/aim.c",
+          "line": 18
+        },
+        {
+          "path": "src/overlays/ba/egg/aim.c",
+          "line": 8
+        },
+        {
+          "path": "src/overlays/ba/egg/aim.c",
+          "line": 33
+        },
+        {
+          "path": "src/overlays/ba/egg/aim.c",
+          "line": 65
+        },
+        {
+          "path": "src/overlays/ba/egg/cursor.c",
+          "line": 150
+        }
+      ],
+      "capabilities": [
+        "screen-space aim cursor",
+        "edge-of-box camera pan",
+        "frame-rate independent cursor easing"
+      ],
+      "tags": [
+        "aiming",
+        "camera",
+        "shooter",
+        "platformer"
+      ]
+    },
+    {
+      "id": "egg-fire-cadence",
+      "node": "egg-aiming",
+      "name": "Egg shot cadence",
+      "summary": "A fire request starts a shot, then locks for 0.28 seconds (0.15 for rapid types), opens a 0.2 second buffer window, or locks for 0.5 seconds when a burst ends; each shot spawns 100 units ahead with a launch vector of length 3000.",
+      "behavior": "Pressing the fire button (held, for egg type 7) sets a request flag. In idle the shot fires and counts one in the burst. The first shot of a burst moves to a 0.28 second lock, or 0.15 for a rapid type; a type with a burst size of one goes straight to a 0.5 second lock. Follow-up shots in the burst choose 0.28 or 0.15 again until the count nears the burst size, then they choose the 0.5 second end lock; a rapid type resets the count every shot, so it never reaches the end lock. When the short lock ends the state enters a 0.2 second window where a fresh request fires at once, otherwise the state returns to idle. A separate queue guards launches with 0.25 and 0.17 second minimum gaps between spawns. The aim point is the cursor unprojected into the world at depth 100 (the cursor is forced to 152, 114 when hidden); the launch direction is that point minus the muzzle origin, normalised. The shot spawns 100 units along that line and gets a launch vector of length 3000, or 5000 for egg type 7. The spawner is not decompiled, so reading the vector as a speed is an inference.",
+      "constants": [
+        {
+          "name": "firstShotLock",
+          "value": 0.28,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:76"
+        },
+        {
+          "name": "rapidShotLock",
+          "value": 0.15,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:73"
+        },
+        {
+          "name": "bufferWindow",
+          "value": 0.2,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:79"
+        },
+        {
+          "name": "burstEndLock",
+          "value": 0.5,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:82"
+        },
+        {
+          "name": "launchGapA",
+          "value": 0.25,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:44"
+        },
+        {
+          "name": "launchGapB",
+          "value": 0.17,
+          "unit": "seconds, counted down by variable delta time",
+          "source": "src/overlays/ba/egg/fire.c:52"
+        },
+        {
+          "name": "muzzleOffset",
+          "value": 100,
+          "unit": "units along the aim line",
+          "source": "src/overlays/ba/egg/fire.c:134"
+        },
+        {
+          "name": "launchVector",
+          "value": 3000,
+          "unit": "launch vector length, units/second unverified",
+          "source": "src/overlays/ba/egg/fire.c:137"
+        },
+        {
+          "name": "holdFireLaunchVector",
+          "value": 5000,
+          "unit": "launch vector length for egg type 7, units/second unverified",
+          "source": "src/overlays/ba/egg/fire.c:137"
+        },
+        {
+          "name": "holdFireEggType",
+          "value": 7,
+          "unit": "egg type index that uses hold-to-fire and the longer vector",
+          "source": "src/overlays/ba/egg/fire.c:137"
+        },
+        {
+          "name": "unprojectDepth",
+          "value": 100,
+          "unit": "depth used to unproject the cursor",
+          "source": "src/overlays/ba/egg/fire.c:160"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/ba/egg/fire.c",
+          "line": 38
+        },
+        {
+          "path": "src/overlays/ba/egg/fire.c",
+          "line": 60
+        },
+        {
+          "path": "src/overlays/ba/egg/fire.c",
+          "line": 87
+        },
+        {
+          "path": "src/overlays/ba/egg/fire.c",
+          "line": 143
+        },
+        {
+          "path": "src/overlays/ba/egg/fire.c",
+          "line": 182
+        }
+      ],
+      "capabilities": [
+        "burst fire with lock and buffer window",
+        "aim ray from a screen cursor",
+        "launch from muzzle offset"
+      ],
+      "tags": [
+        "aiming",
+        "combat",
+        "shooter",
+        "platformer"
+      ]
+    },
+    {
+      "id": "split-up-swap-rejoin",
+      "node": "split-up-swap",
+      "name": "Split-up, swap and rejoin",
+      "summary": "Pressing jump while standing still either splits the two characters into two bodies or swaps control; rejoin recombines them and chooses its entry state from a 90 degree facing test.",
+      "behavior": "In the walk state, a jump press with zero wanted speed does not jump. If the split-up test passes the state becomes a split state (0xB8); otherwise, if a swap is allowed, it calls the swap routine and returns. The duo object keeps a sub-state from 1 to 4 (joined, splitting, split, rejoining). The split action creates a second character, copies the heading to both, marks both as splitting and sends a cloud effect. While split, the first character polls a rejoin query and moves to the rejoining sub-state. Completing the rejoin restores the combined form, moves control to it, and picks one of two entry states depending on whether the other body lies more than 90 degrees away from the current facing, so facing matters. A spawn routine for a small clockwork body places it at a requested point; if that point is more than 1000 units from the player (squared distance 1000000) the routine steps the update of the new body 60 times first (the purpose is inferred as letting it settle).",
+      "constants": [
+        {
+          "name": "farPartnerDistanceSq",
+          "value": 1000000,
+          "unit": "squared units (1000 units)",
+          "source": "src/overlays/ba/duo.c:239"
+        },
+        {
+          "name": "swapInFacingAngle",
+          "value": 90,
+          "unit": "degrees between facing and partner",
+          "source": "src/overlays/ba/duo.c:186"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/walk.c",
+          "line": 191
+        },
+        {
+          "path": "src/overlays/ba/duo.c",
+          "line": 121
+        },
+        {
+          "path": "src/overlays/ba/duo.c",
+          "line": 130
+        },
+        {
+          "path": "src/overlays/ba/duo.c",
+          "line": 221
+        },
+        {
+          "path": "src/overlays/ba/duo.c",
+          "line": 357
+        }
+      ],
+      "capabilities": [
+        "two-character control swap",
+        "split bodies and rejoin",
+        "catch-up simulation for a far partner"
+      ],
+      "tags": [
+        "coop",
+        "party",
+        "platformer"
+      ]
+    },
+    {
+      "id": "dinosaur-forms",
+      "node": "transformations",
+      "name": "Dinosaur form locomotion",
+      "summary": "The small form runs at 100 to 600 units per second and jumps at 1100 under -1800 gravity; the large form runs at 100 to 1000, jumps at 900 under -1350 and turns slower, both falling under -3000 gravity.",
+      "behavior": "Both dinosaur forms use a two-zone stick map with markers at 0.12 and 0.6 and a continuous speed inside each zone. The small form maps its first zone to 100 to 300 and its second to 300 to 600 units per second, the large form maps 100 to 400 and 400 to 1000. Heading is looser for the small form (cap 500, factor 6.5) than the large form (cap 300, factor 3.5), so the large form feels heavy. The walk cycle is 1.15 to 0.61 seconds for the small form over its low band and 1.5 to 1.0 seconds for the large form; the high band uses 0.86 to 0.48 and 1.0 to 0.6. A jump sets vertical velocity to 1100 under -1800 gravity for the small form and 900 under -1350 for the large form, while the default fall gravity of both forms is set to -3000, which makes landings fast and weighted. A roar action is gated by an ability. Form entry also passes 1.5 (small) or 6.0 (large) to an unnamed helper, probably the model scale.",
+      "constants": [
+        {
+          "name": "smallLowBandMax",
+          "value": 300,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexsmall.c:139"
+        },
+        {
+          "name": "smallHighBandMax",
+          "value": 600,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexsmall.c:142"
+        },
+        {
+          "name": "largeLowBandMax",
+          "value": 400,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexlarge.c:216"
+        },
+        {
+          "name": "largeHighBandMax",
+          "value": 1000,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexlarge.c:219"
+        },
+        {
+          "name": "smallJumpSpeed",
+          "value": 1100,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/trexsmall.c:439"
+        },
+        {
+          "name": "smallJumpGravity",
+          "value": -1800,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexsmall.c:440"
+        },
+        {
+          "name": "largeJumpSpeed",
+          "value": 900,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/trexlarge.c:446"
+        },
+        {
+          "name": "largeJumpGravity",
+          "value": -1350,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexlarge.c:447"
+        },
+        {
+          "name": "fallGravity",
+          "value": -3000,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexsmall.c:203"
+        },
+        {
+          "name": "smallTurnCap",
+          "value": 500,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/trexsmall.c:155"
+        },
+        {
+          "name": "upperZoneEdge",
+          "value": 0.6,
+          "unit": "stick magnitude",
+          "source": "src/overlays/bs/trexsmall.c:193"
+        },
+        {
+          "name": "smallFormScale",
+          "value": 1.5,
+          "unit": "unnamed helper argument, probably model scale",
+          "source": "src/overlays/bs/trexsmall.c:195"
+        },
+        {
+          "name": "largeFormScale",
+          "value": 6,
+          "unit": "unnamed helper argument, probably model scale",
+          "source": "src/overlays/bs/trexlarge.c:274"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/trexsmall.c",
+          "line": 129
+        },
+        {
+          "path": "src/overlays/bs/trexsmall.c",
+          "line": 414
+        },
+        {
+          "path": "src/overlays/bs/trexlarge.c",
+          "line": 206
+        },
+        {
+          "path": "src/overlays/bs/trexlarge.c",
+          "line": 420
+        }
+      ],
+      "capabilities": [
+        "form-specific speed and jump presets",
+        "heavy form with slow turning"
+      ],
+      "tags": [
+        "transformation",
+        "movement",
+        "platformer"
+      ]
+    },
+    {
+      "id": "vehicle-forms",
+      "node": "transformations",
+      "name": "Vehicle form locomotion",
+      "summary": "Vehicle forms map the whole stick range after a 0.12 dead zone onto one continuous speed band of 30 to 900 units per second (30 to 700 for the snowball), with a 693.5 jump and form-specific gravity.",
+      "behavior": "The van, washer and snowball each use two stick zones: a dead zone up to 0.12 with zero speed, then one zone from 0.12 to 1.0 mapped to a single continuous wanted speed of 30 to 900 units per second for the van and washer and 30 to 700 for the snowball. The snowball also has a boost target of 1400 while a button is held. The three share a launch speed of 693.5 for a jump, but gravity differs: -1200 for the van and -2400 for the washer and snowball, so the van floats and the other two drop quickly. Heading caps are 300 with factors 6.5 (van) and 6.0 (washer, snowball). Pitch and bank use 1000 with 12 in each form. Animation cycle ranges follow the speed band: the van cycle runs between 1.0 and 0.4 seconds and the washer cycle between 0.7 and 0.3 over the 30 to 900 band. This pattern gives a form with an analog throttle instead of discrete gait steps.",
+      "constants": [
+        {
+          "name": "vehicleMaxSpeed",
+          "value": 900,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/van.c:27"
+        },
+        {
+          "name": "snowballMaxSpeed",
+          "value": 700,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/snowball.c:39"
+        },
+        {
+          "name": "snowballBoostSpeed",
+          "value": 1400,
+          "unit": "units/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/snowball.c:31"
+        },
+        {
+          "name": "jumpSpeed",
+          "value": 693.5,
+          "unit": "units/second, scaled by variable delta time each update (upward)",
+          "source": "src/overlays/bs/van.c:336"
+        },
+        {
+          "name": "vanJumpGravity",
+          "value": -1200,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/van.c:337"
+        },
+        {
+          "name": "washerJumpGravity",
+          "value": -2400,
+          "unit": "units/second squared, scaled by variable delta time each update",
+          "source": "src/overlays/bs/washer.c:352"
+        },
+        {
+          "name": "vanTurnStep",
+          "value": 6.5,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/overlays/bs/van.c:252"
+        },
+        {
+          "name": "washerTurnStep",
+          "value": 6,
+          "unit": "turn rate per degree of remaining angle, per second",
+          "source": "src/overlays/bs/washer.c:45"
+        },
+        {
+          "name": "vehicleTurnCap",
+          "value": 300,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/van.c:252"
+        },
+        {
+          "name": "bodyPitchRollCap",
+          "value": 1000,
+          "unit": "degrees/second, scaled by variable delta time each update",
+          "source": "src/overlays/bs/van.c:76"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/bs/van.c",
+          "line": 19
+        },
+        {
+          "path": "src/overlays/bs/washer.c",
+          "line": 18
+        },
+        {
+          "path": "src/overlays/bs/snowball.c",
+          "line": 26
+        },
+        {
+          "path": "src/overlays/bs/van.c",
+          "line": 336
+        }
+      ],
+      "capabilities": [
+        "analog throttle vehicle form",
+        "form-specific jump gravity"
+      ],
+      "tags": [
+        "transformation",
+        "vehicle",
+        "platformer"
+      ]
+    }
+  ]
+}

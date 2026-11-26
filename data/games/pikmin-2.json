@@ -1,0 +1,1795 @@
+{
+  "version": 1,
+  "id": "pikmin-2",
+  "title": "Pikmin 2",
+  "repo": "https://github.com/projectPiki/pikmin2",
+  "sha": "999140f3521e22619547d5d61862a6577ea73882",
+  "nodes": [
+    {
+      "id": "navi",
+      "name": "Captain control, throw and whistle",
+      "purpose": "Playable captain: camera-relative stick handling, cursor aim, pikmin throw, whistle ring, punch and damage intake.",
+      "paths": [
+        "src/plugProjectKandoU/navi.cpp",
+        "src/plugProjectKandoU/naviState.cpp",
+        "src/plugProjectKandoU/naviWhistle.cpp",
+        "include/Game/NaviParms.h"
+      ],
+      "functions": [
+        {
+          "name": "Navi::makeVelocity",
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "lines": [
+            1480,
+            1557
+          ]
+        },
+        {
+          "name": "Navi::reviseController",
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "lines": [
+            1563,
+            1594
+          ]
+        },
+        {
+          "name": "Navi::throwPiki",
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "lines": [
+            2296,
+            2379
+          ]
+        },
+        {
+          "name": "Navi::startDamage",
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "lines": [
+            1671,
+            1698
+          ]
+        },
+        {
+          "name": "NaviPunchState::onKeyEvent",
+          "path": "src/plugProjectKandoU/naviState.cpp",
+          "lines": [
+            1358,
+            1435
+          ]
+        },
+        {
+          "name": "NaviWhistle::updateWhistle",
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "lines": [
+            142,
+            194
+          ]
+        }
+      ],
+      "dependsOn": [
+        "creature-sim",
+        "camera"
+      ]
+    },
+    {
+      "id": "piki",
+      "name": "Pikmin actors",
+      "purpose": "Individual pikmin: per-stage speed selection, carry strength, and the flight state that governs throwing and landing.",
+      "paths": [
+        "src/plugProjectKandoU/piki.cpp",
+        "src/plugProjectKandoU/pikiState.cpp",
+        "include/Game/PikiParms.h"
+      ],
+      "functions": [
+        {
+          "name": "Piki::getSpeed",
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "lines": [
+            634,
+            659
+          ]
+        },
+        {
+          "name": "Piki::getPelletCarryPower",
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "lines": [
+            837,
+            860
+          ]
+        },
+        {
+          "name": "PikiFlyingState::exec",
+          "path": "src/plugProjectKandoU/pikiState.cpp",
+          "lines": [
+            2385,
+            2457
+          ]
+        }
+      ],
+      "dependsOn": [
+        "creature-sim"
+      ]
+    },
+    {
+      "id": "piki-ai",
+      "name": "Pikmin task AI",
+      "purpose": "Behaviour layer that gives pikmin orders: charging a target, leaping onto it, and hauling a carrying load home.",
+      "paths": [
+        "src/plugProjectKandoU/aiAttack.cpp",
+        "src/plugProjectKandoU/aiPrimitives.cpp",
+        "src/plugProjectKandoU/aiFormation.cpp",
+        "src/plugProjectKandoU/aiAction.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ActAttack::initJump",
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "lines": [
+            146,
+            152
+          ]
+        },
+        {
+          "name": "ActPathMove::getCarrySpeed",
+          "path": "src/plugProjectKandoU/aiPrimitives.cpp",
+          "lines": [
+            771,
+            799
+          ]
+        }
+      ],
+      "dependsOn": [
+        "piki"
+      ]
+    },
+    {
+      "id": "creature-sim",
+      "name": "Shared creature simulation",
+      "purpose": "One step of movement for every creature: desired velocity easing, floor projection, slope slip, water and out-of-bounds handling.",
+      "paths": [
+        "src/plugProjectKandoU/fakePiki.cpp",
+        "src/plugProjectKandoU/creature.cpp",
+        "include/Game/Creature.h"
+      ],
+      "functions": [
+        {
+          "name": "FakePiki::doSimulation",
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "lines": [
+            898,
+            1003
+          ]
+        },
+        {
+          "name": "FakePiki::moveVelocity",
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "lines": [
+            535,
+            596
+          ]
+        },
+        {
+          "name": "FakePiki::move",
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "lines": [
+            620,
+            777
+          ]
+        },
+        {
+          "name": "Creature::checkHell",
+          "path": "src/plugProjectKandoU/creature.cpp",
+          "lines": [
+            523,
+            540
+          ]
+        }
+      ],
+      "dependsOn": [
+        "map-collision"
+      ]
+    },
+    {
+      "id": "map-collision",
+      "name": "Swept-sphere terrain tracing",
+      "purpose": "Moves a collision sphere through the level mesh, subdivides long steps, classifies triangles as floor or wall and reflects velocity off them.",
+      "paths": [
+        "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+        "src/sysCommonU/geomTraceMove.cpp",
+        "include/Game/MoveInfo.h"
+      ],
+      "functions": [
+        {
+          "name": "ShapeMapMgr::traceMove",
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "lines": [
+            19,
+            45
+          ]
+        },
+        {
+          "name": "MapMgr::traceMove_test1203_cylinder",
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "lines": [
+            69,
+            174
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "Follow camera",
+      "purpose": "Boom distance, pitch and field of view per preset, yaw driven by the camera stick, and terrain probing that lifts the camera out of geometry.",
+      "paths": [
+        "src/plugProjectNishimuraU/playCamera.cpp",
+        "src/plugProjectNishimuraU/CameraMgr.cpp",
+        "include/Game/CameraMgr.h"
+      ],
+      "functions": [
+        {
+          "name": "PlayCamera::updateCameraMode",
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "lines": [
+            373,
+            414
+          ]
+        },
+        {
+          "name": "PlayCamera::changeTargetTheta",
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "lines": [
+            572,
+            583
+          ]
+        },
+        {
+          "name": "PlayCamera::updateParms",
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "lines": [
+            623,
+            659
+          ]
+        },
+        {
+          "name": "PlayCamera::getCollisionCameraTargetPhi",
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "lines": [
+            779,
+            823
+          ]
+        }
+      ],
+      "dependsOn": [
+        "navi",
+        "map-collision"
+      ]
+    },
+    {
+      "id": "enemy",
+      "name": "Enemy steering and attack gates",
+      "purpose": "How a hostile creature turns toward a target, walks forward at its move speed, and decides that a target is inside attack reach.",
+      "paths": [
+        "src/plugProjectYamashitaU/enemyAction.cpp",
+        "src/plugProjectYamashitaU/enemyBase.cpp",
+        "include/Game/EnemyBase.h",
+        "include/Game/EnemyParmsBase.h"
+      ],
+      "functions": [
+        {
+          "name": "walkToTarget",
+          "path": "src/plugProjectYamashitaU/enemyAction.cpp",
+          "lines": [
+            457,
+            466
+          ]
+        },
+        {
+          "name": "turnToTarget",
+          "path": "include/Game/EnemyBase.h",
+          "lines": [
+            442,
+            450
+          ]
+        }
+      ],
+      "dependsOn": [
+        "creature-sim"
+      ]
+    },
+    {
+      "id": "formation",
+      "name": "Party formation plate",
+      "purpose": "Slot layout for the loose pikmin party: ring radius, per-slot positions and re-spacing when the party grows or shrinks.",
+      "paths": [
+        "src/plugProjectKandoU/gameCPlate.cpp",
+        "include/Game/CPlate.h"
+      ],
+      "functions": [
+        {
+          "name": "CPlate::refresh",
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "lines": [
+            385,
+            434
+          ]
+        },
+        {
+          "name": "CPlate::refreshSlot",
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "lines": [
+            440,
+            520
+          ]
+        }
+      ],
+      "dependsOn": [
+        "navi"
+      ]
+    },
+    {
+      "id": "session",
+      "name": "Section timing",
+      "purpose": "Gameplay section setup and the frame-rate divisor that sets the length of one simulation update.",
+      "paths": [
+        "src/plugProjectKandoU/baseGameSection.cpp",
+        "src/sysGCU/system.cpp"
+      ],
+      "functions": [
+        {
+          "name": "System::setFrameRate",
+          "path": "src/sysGCU/system.cpp",
+          "lines": [
+            1182,
+            1208
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "navi-ground-movement",
+      "node": "navi",
+      "name": "Captain ground movement",
+      "summary": "The captain walks in the direction the camera calls up, at a single tunable ground speed, with a shaped stick response.",
+      "behavior": "Every update the captain reads the main stick and reshapes it before it becomes motion. The stick angle is snapped into bins the width of the anti-shake angle, so a shaky hand does not jitter the walk direction. The magnitude is boosted so that a diagonal push reaches the same length as a cardinal push on a square-gate stick. A magnitude at or above the clamp becomes full tilt. A magnitude under the neutral threshold becomes zero, which is the dead zone. The resulting vector is mapped onto the camera side axis and the camera forward axis, both flattened into the ground plane, so pushing up always moves away from the viewer. Target velocity is that vector times the walk speed. Owning the rush-boot item swaps in a higher speed. This routine multiplies by a modifier of one and applies no other slow-down. Slopes and carried loads act elsewhere. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Captain ground speed",
+          "value": 160,
+          "unit": "game units/second, applied per 1/30 s update",
+          "source": "include/Game/NaviParms.h:18"
+        },
+        {
+          "name": "Captain speed with rush boots",
+          "value": 240,
+          "unit": "game units/second, applied per 1/30 s update",
+          "source": "include/Game/NaviParms.h:70"
+        },
+        {
+          "name": "Neutral stick dead zone",
+          "value": 0.1,
+          "unit": "fraction of full stick deflection",
+          "source": "include/Game/NaviParms.h:52"
+        },
+        {
+          "name": "Full tilt clamp",
+          "value": 0.85,
+          "unit": "fraction of full stick deflection",
+          "source": "include/Game/NaviParms.h:54"
+        },
+        {
+          "name": "Anti-shake bin angle",
+          "value": 10,
+          "unit": "degrees of stick direction",
+          "source": "include/Game/NaviParms.h:48"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1527
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1530
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1583
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1506
+        }
+      ],
+      "capabilities": [
+        "camera-relative locomotion",
+        "analog walk speed",
+        "stick dead zone",
+        "upgrade speed tier"
+      ],
+      "tags": [
+        "movement",
+        "input"
+      ]
+    },
+    {
+      "id": "navi-cursor-turn",
+      "node": "navi",
+      "name": "Cursor aim and turn in place",
+      "summary": "With the stick near neutral the captain stops walking and turns toward the whistle cursor instead.",
+      "behavior": "A second stick band sits between the dead zone and the walking band. The captain turns in place toward the whistle cursor when the corrected stick magnitude is at or below the cursor band and one of two things holds: the stick is pushed past the dead zone, or the captain has been idle (no button press and no stick push) for the cursor-look delay. In that case target velocity is zeroed and the facing moves 0.2 of the remaining angle difference per update, so long turns start fast and settle without overshoot. The cursor is a point offset from the captain. Each update it moves along the normalized stick direction at a fixed cursor speed times the update delta, so tilt does not change cursor speed. When the new offset length reaches the leash radius, the move keeps only the part of the stick velocity that is perpendicular to the offset. The cursor then orbits the captain at the rim instead of sticking. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1540
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1549
+        },
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 214
+        },
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 218
+        }
+      ],
+      "constants": [
+        {
+          "name": "Cursor aim stick band",
+          "value": 0.65,
+          "unit": "fraction of full stick deflection",
+          "source": "include/Game/NaviParms.h:53"
+        },
+        {
+          "name": "Idle delay before cursor look",
+          "value": 0.85,
+          "unit": "seconds; the idle timer gains 1/30 s per update",
+          "source": "include/Game/NaviParms.h:50"
+        },
+        {
+          "name": "Cursor travel speed",
+          "value": 300,
+          "unit": "game units/second, integrated with the 1/30 s update delta",
+          "source": "include/Game/NaviParms.h:57"
+        },
+        {
+          "name": "Cursor leash radius",
+          "value": 100,
+          "unit": "game units from the captain",
+          "source": "include/Game/NaviParms.h:56"
+        },
+        {
+          "name": "Turn fraction toward cursor",
+          "value": 0.2,
+          "unit": "fraction of the remaining angle per 1/30 s update",
+          "source": "src/plugProjectKandoU/navi.cpp:1549"
+        }
+      ],
+      "capabilities": [
+        "turn in place",
+        "cursor leashed to the captain",
+        "tangential cursor slide"
+      ],
+      "tags": [
+        "movement",
+        "aiming"
+      ]
+    },
+    {
+      "id": "navi-throw-ballistics",
+      "node": "navi",
+      "name": "Throw arc",
+      "summary": "A thrown pikmin is launched on a solved parabola that peaks at a set height and lands on the cursor after a set flight time.",
+      "behavior": "The thrown unit first moves to a release point behind the captain along the facing axis and a little above the captain origin. The game then solves a projectile problem. A nominal time to peak is half of the landing-time parameter, and it is halved again for the purple kind. Vertical launch speed is gravity times that time over two, plus the per-colour throw height divided by that time. With this speed the unit is at the throw height at the nominal time. The real apex time is then recomputed as vertical speed over gravity, and halved again for purple. Planar speed is the distance to the cursor divided by twice that apex time. Purple therefore flies faster and stops at the apex for its ground pound. The unit faces the cursor. The captain horizontal velocity is added on top with weight one, but only when the captain idle timer is zero, meaning a button was held or the second stick was pushed on that update. Otherwise the captain momentum is dropped. The gravity value comes from a data file that is not in the repository. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Nominal landing time",
+          "value": 1,
+          "unit": "seconds; the code uses half of it as the nominal time to peak",
+          "source": "include/Game/NaviParms.h:34"
+        },
+        {
+          "name": "Throw height, red and blue kinds",
+          "value": 75,
+          "unit": "game units above the release point at the nominal time to peak",
+          "source": "include/Game/NaviParms.h:30"
+        },
+        {
+          "name": "Throw height, yellow kind",
+          "value": 115,
+          "unit": "game units above the release point at the nominal time to peak",
+          "source": "include/Game/NaviParms.h:31"
+        },
+        {
+          "name": "Throw height, purple kind",
+          "value": 30,
+          "unit": "game units above the release point at the nominal time to peak",
+          "source": "include/Game/NaviParms.h:32"
+        },
+        {
+          "name": "Throw height, white kind",
+          "value": 75,
+          "unit": "game units above the release point at the nominal time to peak",
+          "source": "include/Game/NaviParms.h:33"
+        },
+        {
+          "name": "Release offset along the facing axis",
+          "value": -15,
+          "unit": "game units, negative means behind the captain",
+          "source": "src/plugProjectKandoU/navi.cpp:2307"
+        },
+        {
+          "name": "Release offset above captain",
+          "value": 10,
+          "unit": "game units",
+          "source": "src/plugProjectKandoU/navi.cpp:2308"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 2328
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 2342
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 2355
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 2370
+        },
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 812
+        }
+      ],
+      "capabilities": [
+        "cursor-aimed throw",
+        "per-colour arc height",
+        "momentum carried into the throw",
+        "apex dive for heavy pikmin"
+      ],
+      "tags": [
+        "throw",
+        "ballistics",
+        "combat"
+      ]
+    },
+    {
+      "id": "navi-whistle-call",
+      "node": "navi",
+      "name": "Whistle call radius",
+      "summary": "The call ring grows from a small starting radius to its maximum over a fixed call time, then fades after release.",
+      "behavior": "When the call starts the ring radius is set to the minimum and a timer starts. While the call is held, the radius is a straight interpolation from the minimum to the maximum, driven by the held time over the call duration. The ring reaches full size exactly when the duration runs out. Holding past the duration ends the call. Owning the amplifier upgrade replaces the maximum with a much larger radius, so the same duration covers more ground. When the button is released, or the duration ends, the call enters an ended state. The ring then fades out over the circle-disappear time, and only after that fade does the radius reset to a small idle size of 10 units. The timers advance by the update delta, which is 1/30 s during gameplay. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Initial call radius",
+          "value": 5,
+          "unit": "game units",
+          "source": "include/Game/NaviParms.h:15"
+        },
+        {
+          "name": "Maximum call radius",
+          "value": 90,
+          "unit": "game units",
+          "source": "include/Game/NaviParms.h:14"
+        },
+        {
+          "name": "Maximum call radius with amplifier upgrade",
+          "value": 200,
+          "unit": "game units",
+          "source": "include/Game/NaviParms.h:71"
+        },
+        {
+          "name": "Call growth time",
+          "value": 0.45,
+          "unit": "seconds, advanced 1/30 s per update",
+          "source": "include/Game/NaviParms.h:16"
+        },
+        {
+          "name": "Ring fade time",
+          "value": 1,
+          "unit": "seconds, advanced 1/30 s per update",
+          "source": "include/Game/NaviParms.h:17"
+        },
+        {
+          "name": "Idle ring radius after fade",
+          "value": 10,
+          "unit": "game units",
+          "source": "src/plugProjectKandoU/naviWhistle.cpp:188"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 88
+        },
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 156
+        },
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 168
+        },
+        {
+          "path": "src/plugProjectKandoU/naviWhistle.cpp",
+          "line": 188
+        }
+      ],
+      "capabilities": [
+        "time-driven call radius",
+        "upgradeable call range",
+        "fade out after release"
+      ],
+      "tags": [
+        "whistle",
+        "command"
+      ]
+    },
+    {
+      "id": "captain-punch-combo",
+      "node": "navi",
+      "name": "Captain punch and combo",
+      "summary": "The captain punches a short sphere ahead of the body and can chain into a longer, stronger third hit.",
+      "behavior": "The strike is resolved on an animation key. The game builds a sphere in front of the captain at a fixed horizontal reach, raised by its own radius so it sits at chest height. It then asks every nearby creature, except captains, which collision parts the sphere overlaps. Each overlapped part receives one attack. The first two punches use the short reach and small sphere. The third punch uses a longer reach and a wider sphere, and its damage is multiplied. Damage is only dealt once a tutorial progress flag for meeting the first unit kind is set. A combo continues only when the combo item is owned, the punch was started by player control, and the action button was pressed again during the swing. Two follow-up punches is the hard cap. When the chain ends the captain holds the idle pose for 4 updates before control returns to walking.",
+      "constants": [
+        {
+          "name": "Punch reach",
+          "value": 15,
+          "unit": "game units ahead of the captain",
+          "source": "src/plugProjectKandoU/naviState.cpp:1365"
+        },
+        {
+          "name": "Punch hit sphere radius",
+          "value": 20,
+          "unit": "game units",
+          "source": "src/plugProjectKandoU/naviState.cpp:1366"
+        },
+        {
+          "name": "Third punch reach",
+          "value": 25,
+          "unit": "game units ahead of the captain",
+          "source": "src/plugProjectKandoU/naviState.cpp:1369"
+        },
+        {
+          "name": "Third punch sphere radius",
+          "value": 35,
+          "unit": "game units",
+          "source": "src/plugProjectKandoU/naviState.cpp:1370"
+        },
+        {
+          "name": "Punch damage",
+          "value": 7.5,
+          "unit": "hit points per connecting hit",
+          "source": "src/plugProjectKandoU/naviState.cpp:1300"
+        },
+        {
+          "name": "Finishing punch damage multiplier",
+          "value": 2.5,
+          "unit": "multiplier on punch damage",
+          "source": "src/plugProjectKandoU/naviState.cpp:1304"
+        },
+        {
+          "name": "Combo hit limit",
+          "value": 2,
+          "unit": "extra hits that can be buffered per swing",
+          "source": "src/plugProjectKandoU/naviState.cpp:1459"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/naviState.cpp",
+          "line": 1358
+        },
+        {
+          "path": "src/plugProjectKandoU/naviState.cpp",
+          "line": 1379
+        },
+        {
+          "path": "src/plugProjectKandoU/naviState.cpp",
+          "line": 1307
+        },
+        {
+          "path": "src/plugProjectKandoU/naviState.cpp",
+          "line": 1426
+        }
+      ],
+      "capabilities": [
+        "sphere sweep melee",
+        "three hit combo",
+        "upgrade-gated finisher",
+        "idle recovery window"
+      ],
+      "tags": [
+        "combat",
+        "melee"
+      ]
+    },
+    {
+      "id": "captain-damage-guard",
+      "node": "navi",
+      "name": "Captain damage and shield",
+      "summary": "Incoming hits are ignored while the captain is invincible, scaled by a shield item, and end in death below one health point.",
+      "behavior": "A hit is ignored when the captain is dead or invincible. The state-change entry point also ignores a hit while the captain is already in the damaged state. Invincibility is true during a cutscene, while a frame countdown set by other code is above zero, and while the game world is not active. Owning the shield item multiplies the damage by the reduction rate, which halves every source by default. The reduced value is subtracted from health. The hit also plays the damage sound, a camera shake, controller rumble and the damaged state. When health falls below one point, the captain enters the death state. The maximum health copied into the save data at the start of a game comes from the parameter table. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Default maximum captain health",
+          "value": 100,
+          "unit": "hit points",
+          "source": "include/Game/NaviParms.h:58"
+        },
+        {
+          "name": "Shield damage multiplier",
+          "value": 0.5,
+          "unit": "multiplier on incoming damage",
+          "source": "include/Game/NaviParms.h:72"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1671
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1678
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1683
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1692
+        },
+        {
+          "path": "src/plugProjectKandoU/navi.cpp",
+          "line": 1641
+        }
+      ],
+      "capabilities": [
+        "invincibility gating",
+        "damage reduction upgrade",
+        "death transition",
+        "feedback on hit"
+      ],
+      "tags": [
+        "combat",
+        "damage"
+      ]
+    },
+    {
+      "id": "piki-maturity-speed",
+      "node": "piki",
+      "name": "Pikmin speed by maturity and colour",
+      "summary": "A pikmin top speed is chosen by bud and flower stage, then multiplied by its colour, with walking speed as the floor.",
+      "behavior": "A sprayed unit skips the table and returns the spray speed, which is above the flower speed by default. Otherwise the base speed is the leaf run speed. A budded unit replaces it with the bud speed, and a flowering unit with the flower speed. The speed multiplier then interpolates between walk speed at zero and the base speed at one, so an order for half effort gives the midpoint instead of a fixed crawl. The white colour multiplies the result by two, and the purple colour by 0.6. A fixed-size cap per update can lower the result further when a caller passes one. The size factor applied here is one, so all colours share the same table. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Walk speed floor",
+          "value": 84,
+          "unit": "game units/second",
+          "source": "include/Game/PikiParms.h:11"
+        },
+        {
+          "name": "Run speed, leaf stage",
+          "value": 120,
+          "unit": "game units/second",
+          "source": "include/Game/PikiParms.h:12"
+        },
+        {
+          "name": "Run speed, bud stage",
+          "value": 140,
+          "unit": "game units/second",
+          "source": "include/Game/PikiParms.h:14"
+        },
+        {
+          "name": "Run speed, flower stage",
+          "value": 170,
+          "unit": "game units/second",
+          "source": "include/Game/PikiParms.h:13"
+        },
+        {
+          "name": "White pikmin speed multiplier",
+          "value": 2,
+          "unit": "multiplier on the interpolated speed",
+          "source": "include/Game/PikiParms.h:103"
+        },
+        {
+          "name": "Purple pikmin speed multiplier",
+          "value": 0.6,
+          "unit": "multiplier on the interpolated speed",
+          "source": "include/Game/PikiParms.h:104"
+        },
+        {
+          "name": "Sprayed pikmin speed",
+          "value": 190,
+          "unit": "game units/second",
+          "source": "include/Game/PikiParms.h:113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 640
+        },
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 643
+        },
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 650
+        },
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 653
+        }
+      ],
+      "capabilities": [
+        "maturity speed tiers",
+        "colour speed modifiers",
+        "spray speed override",
+        "effort-scaled speed"
+      ],
+      "tags": [
+        "movement",
+        "pikmin"
+      ]
+    },
+    {
+      "id": "piki-flower-slow-fall",
+      "node": "piki",
+      "name": "Flower pikmin slow descent",
+      "summary": "A flowering pikmin catches itself in mid air and sinks under a tiny fraction of gravity while spinning.",
+      "behavior": "All simulated creatures lose the gravity value times the update delta from vertical speed each update. A flowering unit in flight gets special handling at the first update when its vertical speed is zero or negative. It switches to a hanging pose, sets vertical speed to zero, and rescales its planar velocity so the remaining drop lasts about the landing time. From then on, each update adds a counter-acceleration that cancels most of gravity. Net downward acceleration starts at 0.8 of gravity and ramps down linearly to the flower gravity fraction of gravity over 0.15 s. A random factor of plus or minus 0.5 percent on the counter term keeps a thrown group from falling in lockstep. The unit spins about its vertical axis at half a turn per 0.42 s. After 240 updates in flight the landing callback is forced. The purple kind skips all of this and goes to its ground pound at the apex. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Flower pikmin gravity fraction",
+          "value": 0.01,
+          "unit": "fraction of the gravity value, net fall rate at the end of the ramp",
+          "source": "include/Game/PikiParms.h:74"
+        },
+        {
+          "name": "Initial net fall scale",
+          "value": 0.8,
+          "unit": "multiplier on the gravity value at the start of the ramp",
+          "source": "src/plugProjectKandoU/pikiState.cpp:2399"
+        },
+        {
+          "name": "Gravity ramp window",
+          "value": 0.15,
+          "unit": "seconds, advanced 1/30 s per update",
+          "source": "src/plugProjectKandoU/pikiState.cpp:2403"
+        },
+        {
+          "name": "Fall spin half-turn time",
+          "value": 0.42,
+          "unit": "seconds per half turn, advanced 1/30 s per update",
+          "source": "src/plugProjectKandoU/pikiState.cpp:2441"
+        },
+        {
+          "name": "Flight updates before forced landing",
+          "value": 240,
+          "unit": "updates at 1/30 s each",
+          "source": "src/plugProjectKandoU/pikiState.cpp:2387"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/pikiState.cpp",
+          "line": 2399
+        },
+        {
+          "path": "src/plugProjectKandoU/pikiState.cpp",
+          "line": 2441
+        },
+        {
+          "path": "src/plugProjectKandoU/pikiState.cpp",
+          "line": 2447
+        },
+        {
+          "path": "src/plugProjectKandoU/pikiState.cpp",
+          "line": 2387
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 861
+        }
+      ],
+      "capabilities": [
+        "slow fall for flowering pikmin",
+        "air spin",
+        "per-pikmin fall jitter",
+        "flight timeout"
+      ],
+      "tags": [
+        "physics",
+        "pikmin",
+        "throw"
+      ]
+    },
+    {
+      "id": "slope-slip",
+      "node": "creature-sim",
+      "name": "Slope slip and slippery ground",
+      "summary": "Ground that is flagged slippery adds a downhill velocity every update, scaled by how steep it is.",
+      "behavior": "The simulation reads the slip code of the triangle the creature stands on. When a floor triangle exists, the target velocity is first re-aimed along the floor plane at the same speed. On non-slip ground, when the target speed is under the rest threshold, an extra velocity that cancels the downhill pull of gravity is added, so a creature standing still on a gentle incline does not creep. On slippery ground the creature instead gets a downhill velocity built from gravity, the update delta and a slip scale. The scale is 2.5 on steep faces, 4 for a captain wearing the rush-boot item on a steep face, and 1 on gradual slopes. That slip is added on top of the eased velocity, so the same walking input gives a normal walk on flat ground and a slide on a steep face. Gravity comes from a data file that is not in the repository.",
+      "constants": [
+        {
+          "name": "Steep slope slip scale",
+          "value": 2.5,
+          "unit": "multiplier on gravity times the update delta, per 1/30 s update",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:575"
+        },
+        {
+          "name": "Steep slope slip scale with rush-boot item",
+          "value": 4,
+          "unit": "multiplier on gravity times the update delta, per 1/30 s update",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:578"
+        },
+        {
+          "name": "Gentle slope slip scale",
+          "value": 1,
+          "unit": "multiplier on gravity times the update delta, per 1/30 s update",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:583"
+        },
+        {
+          "name": "Rest threshold",
+          "value": 0.1,
+          "unit": "game units/second, compared with target speed",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:555"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 552
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 567
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 587
+        }
+      ],
+      "capabilities": [
+        "surface-driven sliding",
+        "steepness scaling",
+        "speed based stop",
+        "upgrade-affected grip"
+      ],
+      "tags": [
+        "physics",
+        "terrain",
+        "movement"
+      ]
+    },
+    {
+      "id": "velocity-easing",
+      "node": "creature-sim",
+      "name": "Velocity easing and facing turn",
+      "summary": "Creatures chase their target velocity by a fixed share per update and turn toward the move direction at a speed-gated rate.",
+      "behavior": "Movement is not instant. First the target velocity is projected onto the floor plane and rescaled to its original speed, so walking up or down a ramp neither gains nor loses speed. Then each update the gap between that target and the current velocity is closed by the update delta divided by a fixed 0.1 s time constant. At 1/30 s per update that is one third of the remaining gap. This gives weighty starts and stops without per-creature tuning. Facing is separate. Only when the squared horizontal target speed is above one, the facing moves toward the target heading by a gain of ten times 0.8 times the update delta times the angle gap. At 1/30 s that is about 27 percent of the gap per update.",
+      "constants": [
+        {
+          "name": "Velocity ease time constant",
+          "value": 0.1,
+          "unit": "seconds; the gap closes by delta over this value per update",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:594"
+        },
+        {
+          "name": "Facing turn gain",
+          "value": 10,
+          "unit": "multiplier on delta times angle gap",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:610"
+        },
+        {
+          "name": "Facing turn damping",
+          "value": 0.8,
+          "unit": "multiplier on the angle gap",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:610"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 545
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 594
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 610
+        }
+      ],
+      "capabilities": [
+        "first order velocity easing",
+        "floor projection",
+        "speed preserving ramps"
+      ],
+      "tags": [
+        "physics",
+        "movement"
+      ]
+    },
+    {
+      "id": "swept-sphere-trace",
+      "node": "map-collision",
+      "name": "Swept sphere terrain tracing",
+      "summary": "Movement is a sphere swept through the level mesh, with velocity reflected off each triangle it touches.",
+      "behavior": "A moving creature is a sphere of its collision radius swept along its velocity for one update. If the distance covered in one step is longer than the radius, the step is halved and retried. The doubling loop keeps going while the step count is 8 or less, so the largest count is 16 sub-steps. This is the tunnelling guard: movement per sub-step stays short compared to the body. Each sub-step moves the sphere, then tests the triangles near it. A triangle with a normal Y at or above the floor threshold is reported as floor. Otherwise a triangle whose absolute normal Y is at or below the wall threshold is reported as wall, and the wall callback fires. The two bands overlap and floor wins. On a hit the velocity loses its part along the normal, scaled by one plus the restitution. The sphere is then pushed out along the normal by the penetration depth. A blocked head-on move therefore turns into a slide.",
+      "constants": [
+        {
+          "name": "Floor normal threshold",
+          "value": 0.6,
+          "unit": "minimum triangle normal Y to count as floor",
+          "source": "include/Game/MoveInfo.h:39"
+        },
+        {
+          "name": "Sub-step doubling limit",
+          "value": 8,
+          "unit": "doubling continues while the step count is at most this value, so the largest count is 16",
+          "source": "src/plugProjectKandoU/mapMgrTraceMove.cpp:36"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "line": 84
+        },
+        {
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "line": 148
+        },
+        {
+          "path": "src/plugProjectKandoU/mapMgrTraceMove.cpp",
+          "line": 164
+        }
+      ],
+      "capabilities": [
+        "swept sphere collision",
+        "tunnelling guard",
+        "floor and wall classification",
+        "frictionless wall sliding",
+        "restitution term"
+      ],
+      "tags": [
+        "physics",
+        "collision"
+      ]
+    },
+    {
+      "id": "camera-framing",
+      "node": "camera",
+      "name": "Camera presets and framing",
+      "summary": "Each zoom stop and tilt preset pairs its own boom distance, pitch, look offset and field of view.",
+      "behavior": "The follow camera has three zoom stops, cycled with a press of the zoom button. A second button toggles between a low tilt and a high tilt. Each of the six combinations has its own authored distance, pitch, field of view, near plane, far plane, look-point height offset and party weight. The high tilt is a steep top-down view at 60 degrees, against 20 to 25 degrees for the low tilt, and its boom is 300 units longer at every stop. Field of view does not widen in every case. It stays at 10 degrees on the near stop, grows from 26 to 30 degrees on the far stop and shrinks from 23 to 20 degrees on the mid stop. Moving between presets blends distance, pitch, field of view and both planes by 0.1 of the gap per update. The look point blends at the same rate. Holding the shoulder button for 1 s switches to a close preset with a 250 unit boom, a 12 degree pitch and a 35 degree field of view. While that preset is held the look point blends at 0.175. Values here are the defaults compiled into the parameter class. The game also reads a camera parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Near stop, low tilt distance",
+          "value": 600,
+          "unit": "game units of boom length",
+          "source": "include/Game/CameraMgr.h:134"
+        },
+        {
+          "name": "Near stop, low tilt pitch",
+          "value": 20,
+          "unit": "degrees above the look point",
+          "source": "include/Game/CameraMgr.h:135"
+        },
+        {
+          "name": "Near stop, low tilt field of view",
+          "value": 10,
+          "unit": "degrees",
+          "source": "include/Game/CameraMgr.h:136"
+        },
+        {
+          "name": "Far stop, low tilt distance",
+          "value": 900,
+          "unit": "game units of boom length",
+          "source": "include/Game/CameraMgr.h:150"
+        },
+        {
+          "name": "Far stop, low tilt pitch",
+          "value": 25,
+          "unit": "degrees above the look point",
+          "source": "include/Game/CameraMgr.h:151"
+        },
+        {
+          "name": "Far stop, low tilt field of view",
+          "value": 26,
+          "unit": "degrees",
+          "source": "include/Game/CameraMgr.h:152"
+        },
+        {
+          "name": "Far stop, high tilt distance",
+          "value": 1200,
+          "unit": "game units of boom length",
+          "source": "include/Game/CameraMgr.h:174"
+        },
+        {
+          "name": "Far stop, high tilt pitch",
+          "value": 60,
+          "unit": "degrees above the look point",
+          "source": "include/Game/CameraMgr.h:175"
+        },
+        {
+          "name": "Far stop, high tilt field of view",
+          "value": 30,
+          "unit": "degrees",
+          "source": "include/Game/CameraMgr.h:176"
+        },
+        {
+          "name": "Close preset boom length",
+          "value": 250,
+          "unit": "game units",
+          "source": "include/Game/CameraMgr.h:182"
+        },
+        {
+          "name": "Close preset pitch",
+          "value": 12,
+          "unit": "degrees",
+          "source": "include/Game/CameraMgr.h:183"
+        },
+        {
+          "name": "Close preset field of view",
+          "value": 35,
+          "unit": "degrees",
+          "source": "include/Game/CameraMgr.h:184"
+        },
+        {
+          "name": "Preset blend fraction",
+          "value": 0.1,
+          "unit": "fraction of the gap per 1/30 s update",
+          "source": "include/Game/CameraMgr.h:189"
+        },
+        {
+          "name": "Shoulder hold time for close preset",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/plugProjectNishimuraU/playCamera.cpp:380"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 457
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 420
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 625
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 380
+        }
+      ],
+      "capabilities": [
+        "three zoom stops",
+        "two tilt presets",
+        "blended preset transitions",
+        "hold to zoom"
+      ],
+      "tags": [
+        "camera"
+      ]
+    },
+    {
+      "id": "camera-orbit",
+      "node": "camera",
+      "name": "Camera orbit rate",
+      "summary": "Camera yaw is a rate that accelerates with the camera stick, is capped, and damps out every update.",
+      "behavior": "Horizontal camera motion does not set a yaw angle directly. It accumulates into a yaw rate. Manual orbit is active while the left shoulder trigger is held lightly, meaning its analog value is above 0.1 and it was not just pressed. Each update the main stick horizontal axis times a gain is added to the rate, and the rate is clamped to the maximum rotation speed times the update delta. The rate is subtracted from the target yaw and then multiplied by the damping factor, so it bleeds away quickly when the stick returns to centre. The visible yaw chases the target yaw by 0.2 of the remaining difference per update, which keeps large flicks smooth. A fresh press of the left shoulder button starts a recentre. For 0.6 s the target yaw is set to the direction from the whistle cursor to the captain. Manual orbit then resumes. Values here are the defaults compiled into the parameter class. The game also reads a camera parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Yaw rate gain per update",
+          "value": 0.005,
+          "unit": "radians/update added at full stick, at 1/30 s per update",
+          "source": "include/Game/CameraMgr.h:192"
+        },
+        {
+          "name": "Maximum yaw rate",
+          "value": 0.9,
+          "unit": "radians/second, applied as 0.9 times the 1/30 s delta per update",
+          "source": "include/Game/CameraMgr.h:193"
+        },
+        {
+          "name": "Yaw rate damping",
+          "value": 0.85,
+          "unit": "fraction of the rate kept per update",
+          "source": "include/Game/CameraMgr.h:194"
+        },
+        {
+          "name": "Yaw chase fraction",
+          "value": 0.2,
+          "unit": "fraction of the remaining yaw error per update",
+          "source": "include/Game/CameraMgr.h:190"
+        },
+        {
+          "name": "Recentre follow time",
+          "value": 0.6,
+          "unit": "seconds, counted down 1/30 s per update",
+          "source": "include/Game/CameraMgr.h:191"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 558
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 563
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 582
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 654
+        }
+      ],
+      "capabilities": [
+        "analog yaw rate",
+        "rate cap",
+        "per-update damping",
+        "held recentre"
+      ],
+      "tags": [
+        "camera",
+        "input"
+      ]
+    },
+    {
+      "id": "camera-terrain-probe",
+      "node": "camera",
+      "name": "Camera terrain probe",
+      "summary": "The boom samples the level along its length and raises the pitch angle until it clears the ground.",
+      "behavior": "Once the low-tilt camera pitch has settled, within 0.1 radians of its goal, the collision probe switches on. A toggle of the tilt switches it off again until the pitch settles. The probe takes 15 samples along the boom at the current yaw and the preset pitch. The sample spacing is the probe radius divided by 15, and the close preset uses its own boom length as the radius. At each sample it asks the map for terrain height at that point, plus a correction that grows by 5 units per step. When that height is above the sample point, the pitch needed to look over it is computed from the look point. The highest needed pitch wins. In caves the probe reads the highest surface height at the sample, and when no triangle exists it uses a fixed margin above the sample point instead. The goal pitch then moves toward the result by at most 0.005 radians per update, so a correction looks like a slow crane up rather than a snap. Values here are the defaults compiled into the parameter class. The game also reads a camera parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Boom probe radius",
+          "value": 300,
+          "unit": "game units",
+          "source": "include/Game/CameraMgr.h:185"
+        },
+        {
+          "name": "Probe sample count",
+          "value": 15,
+          "unit": "samples along the boom",
+          "source": "src/plugProjectNishimuraU/playCamera.cpp:793"
+        },
+        {
+          "name": "Probe height correction per step",
+          "value": 5,
+          "unit": "game units per sample index",
+          "source": "include/Game/CameraMgr.h:187"
+        },
+        {
+          "name": "Cave fallback clearance",
+          "value": 25,
+          "unit": "game units above the sampled point",
+          "source": "include/Game/CameraMgr.h:188"
+        },
+        {
+          "name": "Pitch step per update",
+          "value": 0.005,
+          "unit": "radians per 1/30 s update, maximum change of the goal pitch",
+          "source": "include/Game/CameraMgr.h:186"
+        },
+        {
+          "name": "Settle threshold before probing",
+          "value": 0.1,
+          "unit": "radians between current and goal pitch",
+          "source": "src/plugProjectNishimuraU/playCamera.cpp:770"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 736
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 779
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 808
+        },
+        {
+          "path": "src/plugProjectNishimuraU/playCamera.cpp",
+          "line": 765
+        }
+      ],
+      "capabilities": [
+        "boom terrain avoidance",
+        "cave ceiling handling",
+        "smoothed pitch correction"
+      ],
+      "tags": [
+        "camera",
+        "collision"
+      ]
+    },
+    {
+      "id": "piki-attack-lunge",
+      "node": "piki-ai",
+      "name": "Pikmin attack lunge",
+      "summary": "An ordered pikmin walks to contact or, with a fixed chance, leaps at the target from range.",
+      "behavior": "When a unit is ordered onto a target, it first checks whether it is already stuck to the target. If so it hits at once. Otherwise it picks between two approaches by chance. In 20 percent of orders it uses a jump approach with a 2 s timeout, and in the other 80 percent a plain approach. Both walk toward the attack sphere and stop at a stand-off of the sphere radius plus 10 units. The attack sphere is the target centre and body radius. For three tall enemy kinds it is the nearest collision part instead. The order is only applicable while the vertical gap between the sphere centre and the unit is 20 units or less. After the jump approach arrives, the unit sets its velocity to a unit vector toward the target, scaled by 100 horizontally and 200 vertically as written. It resumes the plain approach after it lands. Targets that are flying or underground put the unit into a search animation, and the order then fails.",
+      "constants": [
+        {
+          "name": "Jump attack chance",
+          "value": 0.2,
+          "unit": "probability per attack order",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:9"
+        },
+        {
+          "name": "Jump velocity scale, horizontal",
+          "value": 100,
+          "unit": "game units/second times the horizontal part of the unit direction",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:151"
+        },
+        {
+          "name": "Jump velocity, vertical",
+          "value": 200,
+          "unit": "game units/second",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:151"
+        },
+        {
+          "name": "Vertical applicability band",
+          "value": 20,
+          "unit": "game units between sphere centre and unit",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:139"
+        },
+        {
+          "name": "Approach stand-off beyond sphere radius",
+          "value": 10,
+          "unit": "game units",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:102"
+        },
+        {
+          "name": "Jump approach timeout",
+          "value": 2,
+          "unit": "seconds",
+          "source": "src/plugProjectKandoU/aiAttack.cpp:120"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "line": 51
+        },
+        {
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "line": 131
+        },
+        {
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "line": 146
+        },
+        {
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "line": 158
+        },
+        {
+          "path": "src/plugProjectKandoU/aiAttack.cpp",
+          "line": 200
+        }
+      ],
+      "capabilities": [
+        "leap attack",
+        "walk-up attack",
+        "height gate",
+        "search state for unreachable targets"
+      ],
+      "tags": [
+        "combat",
+        "pikmin"
+      ]
+    },
+    {
+      "id": "carry-haul-speed",
+      "node": "piki-ai",
+      "name": "Hauling speed from crew size",
+      "summary": "A carried object moves between a slow ceiling and a slower floor depending on how crewed it is.",
+      "behavior": "The carry speed interpolates between a floor and a ceiling. Both come from the run speed: the ceiling is the run speed times the maximum factor, and the floor is the run speed times the minimum factor. The weight is one plus the crew total carry power, minus the object minimum, all divided by the object maximum. This function does not clamp the weight. Carrying a captain, or a versus-mode cherry, skips the formula and returns the full run speed. Each unit adds its colour value: 1 by default, 1.5 for white and 0.5 for purple. Budded units add 0.5. Flowering units add 1, and sprayed units add 1 regardless of their real stage. The haul ends when the load is within 10 units of the goal in the horizontal plane. Values here are the defaults compiled into the parameter class. The game also reads a parameter text file from the disc at start-up, and that file is not in the repository, so shipped values may differ.",
+      "constants": [
+        {
+          "name": "Carry speed ceiling factor",
+          "value": 0.7,
+          "unit": "multiplier on run speed",
+          "source": "include/Game/PikiParms.h:109"
+        },
+        {
+          "name": "Carry speed floor factor",
+          "value": 0.35,
+          "unit": "multiplier on run speed",
+          "source": "include/Game/PikiParms.h:110"
+        },
+        {
+          "name": "Flower carry bonus",
+          "value": 1,
+          "unit": "carry power added per flowering or sprayed unit",
+          "source": "include/Game/PikiParms.h:108"
+        },
+        {
+          "name": "Bud carry bonus",
+          "value": 0.5,
+          "unit": "carry power added per budded unit",
+          "source": "include/Game/PikiParms.h:107"
+        },
+        {
+          "name": "White pikmin carry power",
+          "value": 1.5,
+          "unit": "carry power per unit",
+          "source": "include/Game/PikiParms.h:106"
+        },
+        {
+          "name": "Purple pikmin carry power",
+          "value": 0.5,
+          "unit": "carry power per unit",
+          "source": "include/Game/PikiParms.h:105"
+        },
+        {
+          "name": "Drop distance squared",
+          "value": 100,
+          "unit": "squared game units in the horizontal plane (10 units)",
+          "source": "src/plugProjectKandoU/aiPrimitives.cpp:816"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/aiPrimitives.cpp",
+          "line": 771
+        },
+        {
+          "path": "src/plugProjectKandoU/aiPrimitives.cpp",
+          "line": 798
+        },
+        {
+          "path": "src/plugProjectKandoU/aiPrimitives.cpp",
+          "line": 816
+        },
+        {
+          "path": "src/plugProjectKandoU/piki.cpp",
+          "line": 837
+        }
+      ],
+      "capabilities": [
+        "crew size to speed mapping",
+        "colour carry power",
+        "maturity carry bonus",
+        "goal arrival check"
+      ],
+      "tags": [
+        "hauling",
+        "pikmin"
+      ]
+    },
+    {
+      "id": "enemy-steering",
+      "node": "enemy",
+      "name": "Enemy steering",
+      "summary": "An enemy turns by scaling its angular error and clamping the result to a maximum turn per update.",
+      "behavior": "Steering toward a target has two steps. First the enemy measures the angle error to the target. It multiplies the error by the turn factor and clamps the product to the maximum turn angle in radians. It adds the result to its facing. Because the cap is on the product, a target far off to the side gives a full-rate turn, and a target nearly ahead gives a gentle correction. The enemy cannot spin past the target in one update. Second, with the new facing, the target velocity is rebuilt as the forward vector times the move speed, and the vertical component is kept, so steering does not cancel a fall. The overload that takes a position calls a helper to set the target speed instead. Defaults come from the shared base parameter class. Each enemy kind loads its own settings file from the parameter archive at start-up, and those files are not in the repository, so shipped values differ per kind.",
+      "constants": [
+        {
+          "name": "Turn factor",
+          "value": 0.1,
+          "unit": "fraction of the angle error applied per 1/30 s update",
+          "source": "include/Game/EnemyParmsBase.h:69"
+        },
+        {
+          "name": "Maximum turn per update",
+          "value": 10,
+          "unit": "degrees per 1/30 s update",
+          "source": "include/Game/EnemyParmsBase.h:70"
+        },
+        {
+          "name": "Default enemy move speed",
+          "value": 80,
+          "unit": "game units/second",
+          "source": "include/Game/EnemyParmsBase.h:68"
+        }
+      ],
+      "sources": [
+        {
+          "path": "include/Game/EnemyBase.h",
+          "line": 442
+        },
+        {
+          "path": "include/Game/EnemyBase.h",
+          "line": 445
+        },
+        {
+          "path": "src/plugProjectYamashitaU/enemyAction.cpp",
+          "line": 457
+        },
+        {
+          "path": "src/plugProjectYamashitaU/enemyAction.cpp",
+          "line": 465
+        }
+      ],
+      "capabilities": [
+        "error-scaled turning",
+        "per-update turn clamp",
+        "forward-vector locomotion"
+      ],
+      "tags": [
+        "enemy",
+        "movement",
+        "ai"
+      ]
+    },
+    {
+      "id": "enemy-attack-gate",
+      "node": "enemy",
+      "name": "Enemy attack gate",
+      "summary": "An enemy may strike only when the target is inside both an attack range and an attack angle.",
+      "behavior": "The decision to attack has two tests. The squared separation to the target must be below the squared attack range, and the angle between the enemy facing and the direction to the target must be inside the attack angle on either side. The range and angle are parameters, so each enemy kind can have a short wide reach or a long narrow one without code changes. A separate hit radius and hit angle exist beside the gate. They are used for the damage check, so an enemy can start an attack animation at one distance and connect at another. Defaults come from the shared base parameter class. Each enemy kind loads its own settings file from the parameter archive at start-up, and those files are not in the repository, so shipped values differ per kind.",
+      "constants": [
+        {
+          "name": "Attack range",
+          "value": 70,
+          "unit": "game units",
+          "source": "include/Game/EnemyParmsBase.h:84"
+        },
+        {
+          "name": "Attack angle",
+          "value": 15,
+          "unit": "degrees either side of facing",
+          "source": "include/Game/EnemyParmsBase.h:85"
+        },
+        {
+          "name": "Hit radius",
+          "value": 70,
+          "unit": "game units",
+          "source": "include/Game/EnemyParmsBase.h:86"
+        },
+        {
+          "name": "Hit angle",
+          "value": 15,
+          "unit": "degrees either side of facing",
+          "source": "include/Game/EnemyParmsBase.h:87"
+        },
+        {
+          "name": "Attack damage",
+          "value": 10,
+          "unit": "hit points",
+          "source": "include/Game/EnemyParmsBase.h:88"
+        }
+      ],
+      "sources": [
+        {
+          "path": "include/Game/EnemyBase.h",
+          "line": 500
+        },
+        {
+          "path": "include/trig.h",
+          "line": 203
+        },
+        {
+          "path": "include/trig.h",
+          "line": 208
+        }
+      ],
+      "capabilities": [
+        "range gate",
+        "angle gate",
+        "separate wind-up and hit ranges",
+        "per-enemy tuning"
+      ],
+      "tags": [
+        "enemy",
+        "combat"
+      ]
+    },
+    {
+      "id": "party-formation-radius",
+      "node": "formation",
+      "name": "Party formation radius",
+      "summary": "The loose party spreads over a ring whose radius grows with the square root of its size.",
+      "behavior": "The formation plate re-spaces the party whenever its size changes. A radius factor is the square root of the party size over pi. The outer radius is 2.1 times the plate maximum position size times that factor. A second radius is 1.9 times the maximum position size. While a shrink request is active, for 10 updates, the maximum position size is halved. The movement strength, clamped to 0 to 1, blends between the larger and the smaller of the two radii: at rest the larger is used, and at full movement the smaller. The base radius is then set so that pi times base radius times that radius equals four times the party size times the maximum position size squared, which keeps the area per unit constant. If the base radius is above the length limit, it is clamped, and the other radius is recomputed from it. Both radii feed the slot layout. A zero radius falls back to a base radius of 10. Values here are defaults. The plate parameter set can be changed by data.",
+      "constants": [
+        {
+          "name": "Ring radius variance",
+          "value": 0.1,
+          "unit": "added to and subtracted from the base factor of 2",
+          "source": "src/plugProjectKandoU/gameCPlate.cpp:379"
+        },
+        {
+          "name": "Shrinking party scale",
+          "value": 0.5,
+          "unit": "multiplier on the maximum position size while the shrink timer is active",
+          "source": "src/plugProjectKandoU/gameCPlate.cpp:400"
+        },
+        {
+          "name": "Shrink timer length",
+          "value": 10,
+          "unit": "updates at 1/30 s each",
+          "source": "src/plugProjectKandoU/gameCPlate.cpp:52"
+        },
+        {
+          "name": "Maximum position size",
+          "value": 6,
+          "unit": "game units, default",
+          "source": "include/Game/CPlate.h:37"
+        },
+        {
+          "name": "Length limit for base radius",
+          "value": 130,
+          "unit": "game units, default",
+          "source": "include/Game/CPlate.h:36"
+        },
+        {
+          "name": "Fallback base radius",
+          "value": 10,
+          "unit": "game units when the move radius is zero",
+          "source": "src/plugProjectKandoU/gameCPlate.cpp:422"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "line": 385
+        },
+        {
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "line": 409
+        },
+        {
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "line": 420
+        },
+        {
+          "path": "src/plugProjectKandoU/gameCPlate.cpp",
+          "line": 428
+        }
+      ],
+      "capabilities": [
+        "size-scaled party spread",
+        "compression while shrinking",
+        "outer radius clamp",
+        "move-strength spacing"
+      ],
+      "tags": [
+        "party",
+        "formation"
+      ]
+    },
+    {
+      "id": "out-of-bounds-recovery",
+      "node": "creature-sim",
+      "name": "Out of bounds recovery",
+      "summary": "Falling far enough below the map either kills the creature or drops it back at a safe spawn.",
+      "behavior": "Every simulated creature compares its height against two absolute planes instead of local terrain. Below the deeper plane the check reports death, and the creature is killed when the caller asks for that. A real pikmin lost this way adds to the battle death count. Between the two planes the check reports below-map. The move routine acts only on that result. A pikmin plays its falling voice and nothing else. A captain is teleported to the ship, or to the pod when there is no ship, or to an onion chosen from the captain index when neither exists. The captain is placed 150 units above that point and falls to the ground. A creature below the deeper plane is not handled by this recovery code.",
+      "constants": [
+        {
+          "name": "Death plane height",
+          "value": -500,
+          "unit": "game units below the world origin",
+          "source": "src/plugProjectKandoU/creature.cpp:527"
+        },
+        {
+          "name": "Below-map plane height",
+          "value": -300,
+          "unit": "game units below the world origin",
+          "source": "src/plugProjectKandoU/creature.cpp:539"
+        },
+        {
+          "name": "Respawn drop height",
+          "value": 150,
+          "unit": "game units above the spawn point",
+          "source": "src/plugProjectKandoU/fakePiki.cpp:999"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugProjectKandoU/creature.cpp",
+          "line": 523
+        },
+        {
+          "path": "src/plugProjectKandoU/creature.cpp",
+          "line": 527
+        },
+        {
+          "path": "src/plugProjectKandoU/creature.cpp",
+          "line": 539
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 970
+        },
+        {
+          "path": "src/plugProjectKandoU/fakePiki.cpp",
+          "line": 999
+        }
+      ],
+      "capabilities": [
+        "absolute kill plane",
+        "below-map detection",
+        "respawn above ship or pod"
+      ],
+      "tags": [
+        "physics",
+        "recovery"
+      ]
+    },
+    {
+      "id": "simulation-timestep",
+      "node": "session",
+      "name": "Simulation timestep",
+      "summary": "Gameplay runs with a frame-rate divisor of two, so one update is 1/30 s.",
+      "behavior": "A gameplay section sets a frame-rate divisor when it starts. The system stores it and sets the update delta to the divisor over sixty. Gameplay uses a divisor of two, so one update advances time by 1/30 s. The title screen uses a divisor of one, which is 1/60 s. Parameters written in seconds are advanced against this delta once per update, so a landing time of one second is 30 updates. Parameters written as per-update fractions are applied once per update as written. A fraction of 0.1 per update therefore means 0.1 on each of 30 ticks every second.",
+      "constants": [
+        {
+          "name": "Gameplay frame-rate divisor",
+          "value": 2,
+          "unit": "display ticks per simulation update",
+          "source": "src/plugProjectKandoU/baseGameSection.cpp:257"
+        },
+        {
+          "name": "Delta time denominator",
+          "value": 60,
+          "unit": "ticks per second used to normalize the divisor",
+          "source": "src/sysGCU/system.cpp:1191"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/sysGCU/system.cpp",
+          "line": 1182
+        },
+        {
+          "path": "src/sysGCU/system.cpp",
+          "line": 1191
+        },
+        {
+          "path": "src/plugProjectKandoU/baseGameSection.cpp",
+          "line": 257
+        },
+        {
+          "path": "src/sysGCU/titleSection.cpp",
+          "line": 171
+        }
+      ],
+      "capabilities": [
+        "fixed simulation step",
+        "seconds to update conversion",
+        "per-frame fraction semantics"
+      ],
+      "tags": [
+        "timing",
+        "engine"
+      ]
+    }
+  ]
+}

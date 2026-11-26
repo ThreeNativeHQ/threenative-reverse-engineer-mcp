@@ -1,0 +1,2357 @@
+{
+  "version": 1,
+  "id": "descent-3",
+  "title": "Descent 3",
+  "repo": "https://github.com/DescentDevelopers/Descent3",
+  "sha": "f5ba8c2379dbf955a4d1578a4988e2253221af5e",
+  "nodes": [
+    {
+      "id": "ship-physics",
+      "name": "Six-degrees-of-freedom flight integrator",
+      "purpose": "Per-frame physics step for the player ship, robots and missiles: closed-form thrust and rotational thrust against drag, auto-leveling, banking, gravity and wind, then a swept-sphere collision loop.",
+      "paths": [
+        "physics/physics.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PhysicsApplyConstantForce",
+          "path": "physics/physics.cpp",
+          "lines": [
+            260,
+            293
+          ]
+        },
+        {
+          "name": "PhysicsApplyConstRotForce",
+          "path": "physics/physics.cpp",
+          "lines": [
+            231,
+            257
+          ]
+        },
+        {
+          "name": "set_object_turnroll",
+          "path": "physics/physics.cpp",
+          "lines": [
+            297,
+            337
+          ]
+        },
+        {
+          "name": "PhysicsDoSimRot",
+          "path": "physics/physics.cpp",
+          "lines": [
+            358,
+            651
+          ]
+        },
+        {
+          "name": "PhysicsDoSimLinear",
+          "path": "physics/physics.cpp",
+          "lines": [
+            653,
+            679
+          ]
+        },
+        {
+          "name": "do_physics_sim",
+          "path": "physics/physics.cpp",
+          "lines": [
+            683,
+            1610
+          ]
+        },
+        {
+          "name": "phys_apply_force",
+          "path": "physics/physics.cpp",
+          "lines": [
+            2544,
+            2588
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "flight-controls",
+      "name": "Flight input, thrust vectors and afterburner",
+      "purpose": "Turns keyboard and controller input into per-axis thrust and rotational thrust for the ship, including key ramping, input clamps and the afterburner tank.",
+      "paths": [
+        "Descent3/Controls.cpp",
+        "Descent3/object.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ramp_control_value",
+          "path": "Descent3/Controls.cpp",
+          "lines": [
+            551,
+            560
+          ]
+        },
+        {
+          "name": "DoMovement",
+          "path": "Descent3/Controls.cpp",
+          "lines": [
+            748,
+            799
+          ]
+        },
+        {
+          "name": "DoKeyboardMovement",
+          "path": "Descent3/Controls.cpp",
+          "lines": [
+            801,
+            867
+          ]
+        },
+        {
+          "name": "DoControllerMovement",
+          "path": "Descent3/Controls.cpp",
+          "lines": [
+            873,
+            971
+          ]
+        },
+        {
+          "name": "DoPlayerAfterburnControl",
+          "path": "Descent3/object.cpp",
+          "lines": [
+            2170,
+            2226
+          ]
+        },
+        {
+          "name": "DoFlyingControl",
+          "path": "Descent3/object.cpp",
+          "lines": [
+            2265,
+            2445
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "collision-response",
+      "name": "Tunnel collision response and impact rules",
+      "purpose": "What happens when ships, robots and missiles hit walls, special surfaces and each other: sliding, rebound, impact damage and impulse exchange.",
+      "paths": [
+        "physics/collide.cpp",
+        "physics/findintersection.cpp"
+      ],
+      "functions": [
+        {
+          "name": "collide_player_and_wall",
+          "path": "physics/collide.cpp",
+          "lines": [
+            1282,
+            1397
+          ]
+        },
+        {
+          "name": "collide_generic_and_wall",
+          "path": "physics/collide.cpp",
+          "lines": [
+            1399,
+            1467
+          ]
+        },
+        {
+          "name": "bump_obj_against_fixed",
+          "path": "physics/collide.cpp",
+          "lines": [
+            1615,
+            1705
+          ]
+        },
+        {
+          "name": "bump_two_objects",
+          "path": "physics/collide.cpp",
+          "lines": [
+            1707,
+            2035
+          ]
+        },
+        {
+          "name": "collide_player_and_weapon",
+          "path": "physics/collide.cpp",
+          "lines": [
+            2280,
+            2344
+          ]
+        },
+        {
+          "name": "fvi_FindIntersection",
+          "path": "physics/findintersection.cpp",
+          "lines": [
+            2609,
+            2899
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "weapon-firing",
+      "name": "Weapon firing, energy and projectile launch",
+      "purpose": "Player weapon fire cadence, energy and ammo use, fusion-style charge shots and the launch rules that give a projectile its starting velocity and thrust.",
+      "paths": [
+        "Descent3/WeaponFire.cpp",
+        "Descent3/robotfire.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FireWeaponFromPlayer",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            2830,
+            3019
+          ]
+        },
+        {
+          "name": "DoFusionEffect",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            2219,
+            2268
+          ]
+        },
+        {
+          "name": "CreateAndFireWeapon",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1210,
+            1371
+          ]
+        },
+        {
+          "name": "FireWeaponFromObject",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1809,
+            2009
+          ]
+        },
+        {
+          "name": "WeaponDoFrame",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1621,
+            1721
+          ]
+        },
+        {
+          "name": "WBIsBatteryReady",
+          "path": "Descent3/robotfire.cpp",
+          "lines": [
+            104,
+            123
+          ]
+        },
+        {
+          "name": "WBFireBattery",
+          "path": "Descent3/robotfire.cpp",
+          "lines": [
+            128,
+            304
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "homing-guidance",
+      "name": "Homing and guided missile guidance",
+      "purpose": "Target acquisition, lock maintenance and steering of homing missiles, and the player-steered guided missile.",
+      "paths": [
+        "Descent3/WeaponFire.cpp"
+      ],
+      "functions": [
+        {
+          "name": "HomingTurnTowardObj",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1374,
+            1418
+          ]
+        },
+        {
+          "name": "HomingAquireTarget",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1429,
+            1612
+          ]
+        },
+        {
+          "name": "HomingDoFrame",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            1615,
+            1619
+          ]
+        },
+        {
+          "name": "ReleaseGuidedMissile",
+          "path": "Descent3/WeaponFire.cpp",
+          "lines": [
+            3393,
+            3404
+          ]
+        }
+      ],
+      "dependsOn": [
+        "weapon-firing",
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "damage-and-shields",
+      "name": "Shields, energy, splash damage and death",
+      "purpose": "Shield damage rules, energy economy, concussive splash force, camera shake and the player death sequence.",
+      "paths": [
+        "Descent3/damage.cpp",
+        "Descent3/fireball.cpp",
+        "Descent3/Player.cpp",
+        "Descent3/object.cpp",
+        "Descent3/multisafe.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ApplyDamageToPlayer",
+          "path": "Descent3/damage.cpp",
+          "lines": [
+            807,
+            956
+          ]
+        },
+        {
+          "name": "DecreasePlayerShields",
+          "path": "Descent3/damage.cpp",
+          "lines": [
+            679,
+            693
+          ]
+        },
+        {
+          "name": "ApplyDamageToGeneric",
+          "path": "Descent3/damage.cpp",
+          "lines": [
+            1292,
+            1420
+          ]
+        },
+        {
+          "name": "ShakePlayer",
+          "path": "Descent3/damage.cpp",
+          "lines": [
+            1439,
+            1466
+          ]
+        },
+        {
+          "name": "DoConcussiveForce",
+          "path": "Descent3/fireball.cpp",
+          "lines": [
+            1787,
+            1932
+          ]
+        },
+        {
+          "name": "DoEnergyToShields",
+          "path": "Descent3/Player.cpp",
+          "lines": [
+            3706,
+            3747
+          ]
+        },
+        {
+          "name": "PlayerChooseDeathFate",
+          "path": "Descent3/Player.cpp",
+          "lines": [
+            2074,
+            2106
+          ]
+        },
+        {
+          "name": "StartPlayerDeath",
+          "path": "Descent3/Player.cpp",
+          "lines": [
+            2111,
+            2246
+          ]
+        },
+        {
+          "name": "RefuelPlayer",
+          "path": "Descent3/object.cpp",
+          "lines": [
+            3009,
+            3036
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-response"
+      ]
+    },
+    {
+      "id": "robot-ai",
+      "name": "Robot flight, dodging, aiming and sight",
+      "purpose": "Robot steering with acceleration limits, turning, projectile dodging, wall avoidance, aim lead and the sight and awareness checks that gate attacks.",
+      "paths": [
+        "Descent3/AImain.cpp",
+        "Descent3/difficulty.cpp",
+        "Descent3/ObjInit.cpp"
+      ],
+      "functions": [
+        {
+          "name": "AIMoveTowardsDir",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            1707,
+            1733
+          ]
+        },
+        {
+          "name": "AIMoveTowardsPosition",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            1735,
+            1800
+          ]
+        },
+        {
+          "name": "compute_dodge_dir",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            1870,
+            1929
+          ]
+        },
+        {
+          "name": "goal_do_avoid_walls",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            1952,
+            2104
+          ]
+        },
+        {
+          "name": "AITurnTowardsDir",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            2110,
+            2179
+          ]
+        },
+        {
+          "name": "AIDetermineAimPoint",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            2766,
+            2812
+          ]
+        },
+        {
+          "name": "AICheckTargetVis",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            3868,
+            4026
+          ]
+        },
+        {
+          "name": "AIInit",
+          "path": "Descent3/AImain.cpp",
+          "lines": [
+            3650,
+            3805
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics",
+        "weapon-firing"
+      ]
+    },
+    {
+      "id": "robot-pathing",
+      "name": "Path following and room visibility graph",
+      "purpose": "Scripted and dynamic path following for robots plus the precomputed room graph that answers visibility and path-cost questions.",
+      "paths": [
+        "Descent3/aipath.cpp",
+        "Descent3/BOA.cpp"
+      ],
+      "functions": [
+        {
+          "name": "AIPathMoveTurnTowardsNode",
+          "path": "Descent3/aipath.cpp",
+          "lines": [
+            332,
+            497
+          ]
+        },
+        {
+          "name": "BOA_IsVisible",
+          "path": "Descent3/BOA.cpp",
+          "lines": [
+            529,
+            564
+          ]
+        },
+        {
+          "name": "BOA_ComputeMinDist",
+          "path": "Descent3/BOA.cpp",
+          "lines": [
+            383,
+            466
+          ]
+        }
+      ],
+      "dependsOn": [
+        "robot-ai"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "drag-limited-thrust-flight",
+      "node": "ship-physics",
+      "name": "Thrust against linear drag with exact exponential step",
+      "summary": "Ship and missile translation uses the exact solution of constant force against drag, so top speed along an axis equals thrust divided by drag and the result does not depend on frame length.",
+      "behavior": "Each frame the physics step adds up the constant forces on an object: thrust (only when the object uses thrust and drag is nonzero), gravity as mass times the gravity constant (only when flagged), and wind. It then moves the object with the closed form for velocity under constant force and drag proportional to velocity. New velocity equals (old velocity minus force over drag) times e raised to minus drag over mass times the step, plus force over drag. The position update uses the matching integral. Top speed along a thrust axis is therefore force over drag, and the velocity time constant is mass over drag seconds. With no input the ship coasts to rest on the same curve, so there are no brakes. If mass or drag is near zero the code falls back to plain constant acceleration. The step is the measured duration of the rendered frame in seconds; there is no fixed tick. Thrust, mass and drag for the player ship come from ship data records that this repository does not hold, so tune them from the feel you want.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 260
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 653
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 683
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2424
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent drag flight",
+        "terminal speed equals thrust over drag",
+        "coasting without brakes",
+        "exact exponential velocity step"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "flight",
+        "6dof"
+      ]
+    },
+    {
+      "id": "rotational-damping-spin",
+      "node": "ship-physics",
+      "name": "Rotational thrust with rotational damping",
+      "summary": "Pitch, heading and bank each get a rotational thrust that fights a linear rotational drag, so turn rate eases in toward a ceiling and eases out when input stops.",
+      "behavior": "Turn input sets a rotational thrust on each axis equal to the clamped input times the ship maximum rotational thrust times a turn scalar. Angular velocity then follows the same exponential law as linear motion: new rate equals (old rate minus thrust over rotational drag) times e raised to minus rotational drag over mass times the step, plus thrust over rotational drag. The mass is the ship linear mass. The rate ceiling is rotational thrust over rotational drag, and releasing input lets the spin die out smoothly. Angular velocity is measured in angle units per second where 65536 units make one full turn. Each frame the rate times the step is cast to a 16-bit value and turned into a rotation matrix that is multiplied onto the orientation, which is then re-orthogonalized. The 16-bit cast caps one frame at half a turn. For ships, rotation runs once, on the first sweep of the frame, and is not repeated after a collision. When an object lacks the uses-thrust flag its rotational thrust is zeroed and only drag acts. Robots and other generic objects get a rotational drag of at least 60 when they are created so that they do not spin forever.",
+      "constants": [
+        {
+          "name": "minimum rotational drag for robots",
+          "value": 60,
+          "unit": "rotational drag coefficient, set once at object creation; same units as the data tables",
+          "source": "Descent3/ObjInit.cpp:838"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 231
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 358
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2404
+        },
+        {
+          "path": "Descent3/ObjInit.cpp",
+          "line": 839
+        }
+      ],
+      "capabilities": [
+        "eased turn rate with a ceiling",
+        "spin decays after input stops",
+        "per-axis rotational thrust",
+        "orientation kept orthonormal"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "flight",
+        "6dof",
+        "camera"
+      ]
+    },
+    {
+      "id": "key-ramp-and-input-clamps",
+      "node": "flight-controls",
+      "name": "Keyboard ramp-up and per-axis input clamps",
+      "summary": "Held keys build input from zero to full deflection over a short ramp, analog axes pass straight through, and every axis is clamped to one before it reaches thrust.",
+      "behavior": "Each of the six flight axes reads from the keyboard first and the controller second, and the sums are clamped. A key reports how many seconds it was held during the frame. The ramp adds that time to a stored state, caps the state at the ramp time and divides by the ramp time, so a held key rises from zero to one over the ramp time. Releasing the key resets the state to zero at once, and pressing the opposite key flips the sign of the stored state, so reversal is immediate and full. The live ramp time is the pilot setting. A new pilot record holds 0.35 seconds, an options slider moves it from 0 to 1 second, and 0 turns the ramp off. The file-level default of 0.5 is overwritten from the pilot record when controls start, so it is not the live value. Analog stick axes skip the ramp. Pitch is clamped to 0.75 of full rate while heading, bank, vertical, sideways and forward stay at 1.0. A slide toggle reroutes heading and pitch input to sideways and vertical thrust, and a bank toggle routes heading input to bank. Button presses add plus or minus 1 to the matching axis.",
+      "constants": [
+        {
+          "name": "pilot key ramp time (effective)",
+          "value": 0.35,
+          "unit": "seconds of key hold to reach full deflection; default of a new pilot record, sampled each rendered frame",
+          "source": "Descent3/pilot_class.h:313"
+        },
+        {
+          "name": "file-level ramp default (overwritten at startup)",
+          "value": 0.5,
+          "unit": "seconds; replaced by the pilot value when controls initialize",
+          "source": "Descent3/Controls.cpp:430"
+        },
+        {
+          "name": "pitch input clamp",
+          "value": 0.75,
+          "unit": "fraction of full pitch input per frame",
+          "source": "Descent3/Controls.cpp:435"
+        },
+        {
+          "name": "heading input clamp",
+          "value": 1,
+          "unit": "fraction of full heading input per frame",
+          "source": "Descent3/Controls.cpp:436"
+        },
+        {
+          "name": "forward input clamp",
+          "value": 1,
+          "unit": "fraction of full forward thrust per frame",
+          "source": "Descent3/Controls.cpp:440"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 551
+        },
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 748
+        },
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 801
+        },
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 873
+        },
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 600
+        }
+      ],
+      "capabilities": [
+        "smooth keyboard ramp to full thrust",
+        "instant release to zero input",
+        "slide and bank mode toggles",
+        "per-axis input limits"
+      ],
+      "tags": [
+        "movement",
+        "input",
+        "flight",
+        "6dof"
+      ]
+    },
+    {
+      "id": "six-axis-thrust-vector",
+      "node": "flight-controls",
+      "name": "Six-axis thrust along ship-local directions",
+      "summary": "Forward, vertical and sideways thrust are applied along the ship nose, up and right vectors, and pitch, heading and bank are separate rotational thrusts, giving true six degrees of freedom.",
+      "behavior": "Every frame the flight controller builds the thrust vector from three independent inputs. Forward input scales the ship nose direction, vertical input scales the ship up direction and sideways input scales the ship right direction. Each is multiplied by the ship full thrust, then by a speed scalar and the player movement scalar. The three parts are added with no normalization, so a diagonal burn can exceed single-axis thrust. The speed scalar is 1.0 by default, 1.3 when the ship flies outdoors on terrain, and a freeze effect scales it down while it recovers. A spectating observer moves at twice the normal movement scalar. Rotational thrust for pitch, heading and bank is the clamped input times full rotational thrust times a turn scalar; the turn scalar drops to 0.3 while a zoom weapon is charged past half a second. Because thrust follows ship orientation, strafing and rolling combine freely, and the drag law decides the actual speed.",
+      "constants": [
+        {
+          "name": "outdoor speed scalar",
+          "value": 1.3,
+          "unit": "multiplier on thrust while over terrain; applied every frame",
+          "source": "Descent3/object.cpp:2422"
+        },
+        {
+          "name": "observer movement scalar",
+          "value": 2,
+          "unit": "multiplier on thrust for a spectating player; fixed value, no timestep",
+          "source": "Descent3/Player.cpp:3512"
+        },
+        {
+          "name": "zoom-charge turn scalar",
+          "value": ".3",
+          "unit": "multiplier 0.3 on rotational thrust while a zoom weapon is held past 0.5 seconds",
+          "source": "Descent3/WeaponFire.cpp:2698"
+        },
+        {
+          "name": "default movement scalar",
+          "value": 1,
+          "unit": "multiplier on thrust at ship spawn",
+          "source": "Descent3/Player.cpp:1549"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2265
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2424
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2405
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2688
+        }
+      ],
+      "capabilities": [
+        "six degrees of freedom flight",
+        "strafing along ship axes",
+        "outdoor speed boost",
+        "turn slowdown while zoomed"
+      ],
+      "tags": [
+        "movement",
+        "flight",
+        "6dof",
+        "input"
+      ]
+    },
+    {
+      "id": "afterburner-tank",
+      "node": "flight-controls",
+      "name": "Afterburner tank with punch boost and energy-paid recharge",
+      "summary": "Holding afterburner multiplies forward thrust by 1.6 and drains a 5 second tank, with an extra punch in the first tenth of the tank; the tank refills only while released and spends ship energy to do it.",
+      "behavior": "While the afterburner input is pressed and the tank holds time, forward thrust is set to the afterburner input times 1.6 times a punch scalar. The punch scalar is 1.8 while the tank is above 90 percent full, falls linearly to 1.0 as the tank drains from 90 to 80 percent, and stays 1.0 below that. So the opening burst reaches about 2.9 times normal forward thrust. The tank drains by the frame time, one second per second. A full tank also kicks the camera by half the ship mass at the start. When the tank is empty the boost stops and normal forward input applies. While the key is released the tank refills at one second per second, or two with the afterburner powerup, but only when ship energy is above 5, and the energy drain per real second equals the refill rate, so each refilled second costs one energy unit with or without the powerup. Recharging pauses while the key is held. A cloaked ship that burns becomes partly visible to robots. The demo build value of 5000 seconds for the tank is not the live value.",
+      "constants": [
+        {
+          "name": "afterburner tank",
+          "value": 5,
+          "unit": "seconds of burn; drained by frame time each frame",
+          "source": "Descent3/player.h:394"
+        },
+        {
+          "name": "afterburner thrust multiplier",
+          "value": 1.6,
+          "unit": "multiplier on forward thrust input while burning; fixed value, no timestep",
+          "source": "Descent3/object.cpp:2193"
+        },
+        {
+          "name": "opening punch multiplier",
+          "value": 1.8,
+          "unit": "multiplier on top of 1.6 while the tank is above 90 percent; fixed value, no timestep",
+          "source": "Descent3/object.cpp:2184"
+        },
+        {
+          "name": "punch full threshold",
+          "value": ".90",
+          "unit": "fraction of the tank above which the punch is 1.8; fixed value, no timestep",
+          "source": "Descent3/object.cpp:2183"
+        },
+        {
+          "name": "punch end threshold",
+          "value": ".80",
+          "unit": "fraction of the tank below which the punch is gone; fixed value, no timestep",
+          "source": "Descent3/object.cpp:2185"
+        },
+        {
+          "name": "recharge energy gate",
+          "value": 5,
+          "unit": "energy units the ship must exceed to refill the tank; fixed value, no timestep",
+          "source": "Descent3/object.cpp:2209"
+        },
+        {
+          "name": "powerup recharge multiplier",
+          "value": 2,
+          "unit": "multiplier on refill rate and on energy drain per real second with the powerup",
+          "source": "Descent3/object.cpp:2215"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2170
+        },
+        {
+          "path": "Descent3/player.h",
+          "line": 394
+        },
+        {
+          "path": "Descent3/Controls.cpp",
+          "line": 844
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1654
+        }
+      ],
+      "capabilities": [
+        "timed boost tank",
+        "opening burst of extra thrust",
+        "recharge paid with energy",
+        "afterburner reveals cloaked ship"
+      ],
+      "tags": [
+        "movement",
+        "flight",
+        "energy",
+        "afterburner"
+      ]
+    },
+    {
+      "id": "auto-leveling",
+      "node": "ship-physics",
+      "name": "Player auto-leveling of bank and pitch",
+      "summary": "When the pilot is not banking, the ship slowly rolls back toward level while the nose is near the horizon, and with the default setting also eases the nose back to the horizon after one and a half seconds of no thrust and no fire.",
+      "behavior": "Auto-leveling for the player ship is applied as extra rotational thrust, so the normal drag law shapes it. Bank leveling runs only when no bank input is held and the ship is not already banked by the cosmetic turn roll. The test compares pitch with the vertical pole: leveling is active only when the nose is more than a tilt margin away from straight up or down. The base margin is 11000 angle units (65536 per turn), about 60 degrees, which leaves a band of about 30 degrees around the horizon. The default newbie setting multiplies the margin by 1.25, which narrows the band to about 15 degrees. Inside the band the strength rises from zero at the edge to full at a level nose. It is also weak for small bank angles and strongest near a 90 degree bank, and it is quartered while the player fired within the last 1.5 seconds. The result is twice the full rotational thrust times that strength, pushing bank back toward level. Pitch leveling is the newbie mode: after 1.5 seconds with no translation or turn input and no weapon fired, and when the nose is more than about 4 degrees off the horizon, it adds pitch thrust toward level. Its strength is 1.05 minus the absolute vertical part of the ship up vector, capped at 1, so it is gentle when upright and strong when rolled over. Both leveling settings default to 2 (0 is off, 1 is bank only, 2 adds the newbie mode), and the player can lower them in the options. Other objects flagged to level use a separate path that rolls them upright at up to 30000 angle units per second.",
+      "constants": [
+        {
+          "name": "bank leveling tilt margin",
+          "value": 11000,
+          "unit": "angle units (65536 per turn) away from straight up or down",
+          "source": "physics/physics.cpp:346"
+        },
+        {
+          "name": "newbie tilt margin scalar",
+          "value": 1.25,
+          "unit": "multiplier on the tilt margin at leveling level 2",
+          "source": "physics/physics.cpp:349"
+        },
+        {
+          "name": "newbie pitch leveling delay",
+          "value": 1.5,
+          "unit": "seconds without thrust input or firing before pitch leveling starts",
+          "source": "physics/physics.cpp:352"
+        },
+        {
+          "name": "bank leveling thrust scalar",
+          "value": 2,
+          "unit": "multiplier on full rotational thrust at full strength",
+          "source": "physics/physics.cpp:354"
+        },
+        {
+          "name": "pitch leveling dead zone",
+          "value": 750,
+          "unit": "angle units (65536 per turn) around the horizon with no pitch leveling",
+          "source": "physics/physics.cpp:521"
+        },
+        {
+          "name": "default leveling level",
+          "value": 2,
+          "unit": "setting value; 0 off, 1 bank only, 2 adds newbie pitch mode; fixed value, no timestep",
+          "source": "Descent3/init.cpp:1245"
+        },
+        {
+          "name": "flagged object leveling rate ceiling",
+          "value": 30000,
+          "unit": "angle units per second",
+          "source": "physics/physics.cpp:343"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 358
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 496
+        },
+        {
+          "path": "Descent3/init.cpp",
+          "line": 1244
+        }
+      ],
+      "capabilities": [
+        "roll returns to level when not banking",
+        "optional idle pitch recovery",
+        "leveling weaker while firing",
+        "player-adjustable assist level"
+      ],
+      "tags": [
+        "movement",
+        "flight",
+        "camera",
+        "assist"
+      ]
+    },
+    {
+      "id": "turn-banking-roll",
+      "node": "ship-physics",
+      "name": "Visual bank angle that follows turn rate",
+      "summary": "The ship rolls into a turn by an amount proportional to heading rate, rate-limited and capped, and the bank is removed before each turn and re-applied after it so banking never changes the flight path.",
+      "behavior": "If the ship has the turn-roll flag, the desired bank angle is the negative of the heading rate times a per-ship ratio, limited to 32000 angle units (about 176 degrees). The current bank moves toward that goal at a per-ship maximum rate times the frame time. Each frame the code first rolls the ship back by the stored bank, applies the pilot turn to the unbanked orientation, then rolls forward by the new bank. The pilot therefore steers in an unbanked frame and the bank is a cosmetic lean layered on top. The ratio and the maximum bank rate come from ship data records that this repository does not hold.",
+      "constants": [
+        {
+          "name": "bank angle cap",
+          "value": 32000,
+          "unit": "angle units (65536 per turn)",
+          "source": "physics/physics.cpp:305"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 297
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 358
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 637
+        }
+      ],
+      "capabilities": [
+        "bank into turns",
+        "bank does not alter steering",
+        "rate-limited roll"
+      ],
+      "tags": [
+        "movement",
+        "flight",
+        "camera",
+        "feel"
+      ]
+    },
+    {
+      "id": "gravity-and-wind-forces",
+      "node": "ship-physics",
+      "name": "Gravity constant and wind force",
+      "summary": "Gravity is a per-level constant defaulting to minus 32.2 units per second squared and only acts on flagged objects, and room wind adds a force proportional to drag.",
+      "behavior": "This code never sets the gravity flag on the player ship in normal flight; the flag is set on debris, falling clutter, dying ships and missiles whose thrust has burned out. For a flagged object the force is mass times the gravity constant along the vertical axis, so heavy and light objects fall at the same rate once drag is small. The reverse-gravity flag flips the sign. The level file stores the constant; levels older than version 83 use minus 32.2. Wind is a vector stored per room. On the first sweep of a frame, inside a room, an object with nonzero drag and no movement lock receives an extra force of wind times drag times 16, so its drift speed approaches 16 times the wind vector. Powerups ignore wind when the level asks for it. Outdoor terrain has no room wind.",
+      "constants": [
+        {
+          "name": "gravity default",
+          "value": -32.2,
+          "unit": "world units per second squared along the vertical axis; applied as mass times gravity",
+          "source": "physics/physics.cpp:85"
+        },
+        {
+          "name": "gravity fallback for old levels",
+          "value": -32.2,
+          "unit": "world units per second squared",
+          "source": "Descent3/LoadLevel.cpp:3986"
+        },
+        {
+          "name": "wind force multiplier",
+          "value": 16,
+          "unit": "multiplier on wind vector times drag, first sweep of the frame, rooms only",
+          "source": "physics/physics.cpp:668"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 683
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 653
+        },
+        {
+          "path": "Descent3/LoadLevel.cpp",
+          "line": 3984
+        }
+      ],
+      "capabilities": [
+        "per-level gravity",
+        "gravity only on flagged objects",
+        "room wind drift",
+        "missile drops after burnout"
+      ],
+      "tags": [
+        "physics",
+        "environment",
+        "gravity"
+      ]
+    },
+    {
+      "id": "swept-sphere-slide-loop",
+      "node": "ship-physics",
+      "name": "Swept-sphere movement with wall sliding",
+      "summary": "Each frame the ship sweeps a sphere through the level, slides along walls by removing the normal part of velocity, keeps most of its speed, and gives up after nine collisions.",
+      "behavior": "The object sweeps a sphere from its old position to the predicted end position. The sphere radius is the object size, so size is a radius, not a full width. On a hit the object stops at the contact point and the unspent part of the frame time is simulated again with the changed velocity. The loop allows at most 9 sweeps for the player and 5 for other objects. For a non-bouncing object the response removes the normal part of velocity, scaled by 1.001 so the result points very slightly away from the wall, and removes the normal part of the thrust force for the rest of the frame. For the player the final speed is the average of the post-slide speed and the speed before the hit, so scraping a tunnel wall costs little speed. Players sample several contact points, and when more than one face is hit at once the normals are summed and normalized, which handles corners. If the loop runs out of sweeps the player velocity is set to zero. If a player leaves the terrain bounds the frame is undone to its starting position. When a sweep makes no progress because the object already touches the wall, robots and the player get a one-unit-per-second push along the wall normal to avoid sticking.",
+      "constants": [
+        {
+          "name": "player collision sweeps per frame",
+          "value": 9,
+          "unit": "sweeps per frame",
+          "source": "physics/physics.cpp:47"
+        },
+        {
+          "name": "non-player collision sweeps per frame",
+          "value": 5,
+          "unit": "sweeps per frame",
+          "source": "physics/physics.cpp:48"
+        },
+        {
+          "name": "slide overshoot factor",
+          "value": 1.001,
+          "unit": "multiplier on removed normal velocity so motion is not exactly tangent; fixed value, no timestep",
+          "source": "physics/physics.cpp:1387"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/physics.cpp",
+          "line": 683
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 1401
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 1026
+        },
+        {
+          "path": "physics/findintersection.cpp",
+          "line": 2609
+        }
+      ],
+      "capabilities": [
+        "slide along tunnel walls",
+        "speed kept while scraping",
+        "corner handling with summed normals",
+        "collision count cap"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "tunnels",
+        "movement"
+      ]
+    },
+    {
+      "id": "wall-impact-damage",
+      "node": "collision-response",
+      "name": "Wall impact damage and sound by hit speed",
+      "summary": "A player ship hitting a plain wall faster than 65 units per second loses half a shield point, and the impact sound scales with speed between 40 and 120.",
+      "behavior": "The hit speed is the speed component along the wall normal at contact. Below 40 units per second a wall hit makes no sound. Between 40 and 120 the sound volume rises linearly with speed, and above 120 it is full. Above 65 units per second the player takes a fixed 0.5 damage, but only when shields are at least 5, so a scrape can never be the killing blow. Damage is not scaled by speed beyond that threshold. Sound and damage share one gate, so a new impact can register at most every tenth of a second. Each impact also tells nearby robots that something loud happened, with a hearing radius that scales with the volume, which can wake them. Non-AI objects such as clutter use the same speed thresholds for sound and damage.",
+      "constants": [
+        {
+          "name": "wall damage speed threshold",
+          "value": 65,
+          "unit": "world units per second along the wall normal",
+          "source": "physics/collide.cpp:1278"
+        },
+        {
+          "name": "wall damage",
+          "value": 0.5,
+          "unit": "shield points per impact event",
+          "source": "physics/collide.cpp:1276"
+        },
+        {
+          "name": "minimum shields for wall damage",
+          "value": 5,
+          "unit": "shield points; below it walls do no damage; fixed value, no timestep",
+          "source": "physics/collide.cpp:1277"
+        },
+        {
+          "name": "silent below speed",
+          "value": 40,
+          "unit": "world units per second",
+          "source": "physics/collide.cpp:1273"
+        },
+        {
+          "name": "full volume speed",
+          "value": 120,
+          "unit": "world units per second",
+          "source": "physics/collide.cpp:1274"
+        },
+        {
+          "name": "impact sound spacing",
+          "value": ".1",
+          "unit": "seconds between impact sounds for one player (decimal 0.1)",
+          "source": "physics/collide.cpp:1275"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/collide.cpp",
+          "line": 1282
+        },
+        {
+          "path": "physics/collide.cpp",
+          "line": 1399
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 1269
+        }
+      ],
+      "capabilities": [
+        "minor damage for hard wall hits",
+        "impact sound scaled by speed",
+        "walls never kill by scraping",
+        "collisions make noise that alerts robots"
+      ],
+      "tags": [
+        "collision",
+        "damage",
+        "tunnels",
+        "feel"
+      ]
+    },
+    {
+      "id": "forcefield-lava-volatile-surfaces",
+      "node": "collision-response",
+      "name": "Forcefield, volatile and lava surface response",
+      "summary": "Forcefields bounce the ship hard and zap it for 5, volatile walls hurt for 7 per contact and reflect it, and lava sets it burning.",
+      "behavior": "Surfaces carry texture flags. A forcefield hit applies a fixed 5 damage and reflects the normal part of velocity; for the player the reflection is amplified by a per-texture factor that defaults to 2.0, so the normal speed after the hit is about three times the incoming normal speed, a strong shove away. A volatile surface applies 7 damage per contact event and reflects the ship with no energy loss. A lava surface starts a napalm burn effect on the ship. Each contact adds about 6.7 seconds of burn up to a cap of 10 seconds, and the burn damage per second comes from the napalm blob weapon data. These surfaces also raise a loud noise for robots. Robots avoid such surfaces with a much stronger wall-avoid push. Forcefield and volatile damage is charged per collision event, not per second, so a ship held against such a surface takes damage on every frame it collides.",
+      "constants": [
+        {
+          "name": "forcefield damage per contact",
+          "value": 5,
+          "unit": "shield points per collision event",
+          "source": "physics/collide.cpp:1044"
+        },
+        {
+          "name": "volatile damage per contact",
+          "value": 7,
+          "unit": "shield points per collision event",
+          "source": "physics/collide.cpp:1280"
+        },
+        {
+          "name": "default forcefield bounce factor",
+          "value": 2,
+          "unit": "extra multiplier on the reflected normal velocity of the player; tables can override per texture",
+          "source": "physics/physics.cpp:1224"
+        },
+        {
+          "name": "maximum napalm burn time",
+          "value": 10,
+          "unit": "seconds of burn remaining after any number of contacts",
+          "source": "Descent3/damage.cpp:617"
+        },
+        {
+          "name": "burn added per lava contact divisor",
+          "value": 1.5,
+          "unit": "burn seconds added per contact equal the maximum divided by this, about 6.7 seconds",
+          "source": "Descent3/damage.cpp:626"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/collide.cpp",
+          "line": 1282
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 1224
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 1323
+        },
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 619
+        }
+      ],
+      "capabilities": [
+        "forcefield repulsion",
+        "volatile wall damage",
+        "lava burn effect",
+        "surface flags drive response"
+      ],
+      "tags": [
+        "collision",
+        "damage",
+        "hazard",
+        "tunnels"
+      ]
+    },
+    {
+      "id": "object-bump-restitution",
+      "node": "collision-response",
+      "name": "Ship, robot and missile bump with restitution table",
+      "summary": "When two moving objects touch they exchange impulse using their masses and a restitution value chosen by object pair, and the player is spun only 12 percent as much as other objects.",
+      "behavior": "The pair is solved with the standard impulse formula using relative normal velocity at the contact point, both masses and a sphere inertia of two fifths mass times radius squared. The restitution depends on the pair: 0.015 for player against player (almost no bounce), 1.0 for a weapon against a non-player object, 0.5 for player against clutter, and 0.1 for everything else. Velocity changes by impulse over mass for each object that is allowed to receive force; locked, persistent and zero-mass objects are skipped. The induced spin is the same impulse acting off-center, scaled by 0.12 for a player ship and 1.0 for others, so ramming does not tumble the player. If one object is not a mover it acts as a wall for the other. Burning objects ignite objects they touch. Weapons that hit a ship also bump it, which is the knock-back felt from hits.",
+      "constants": [
+        {
+          "name": "player against player restitution",
+          "value": 0.015,
+          "unit": "unitless; fixed value, no timestep",
+          "source": "physics/collide.cpp:1883"
+        },
+        {
+          "name": "weapon against non-player restitution",
+          "value": 1,
+          "unit": "unitless; fixed value, no timestep",
+          "source": "physics/collide.cpp:1886"
+        },
+        {
+          "name": "player against clutter restitution",
+          "value": 0.5,
+          "unit": "unitless; fixed value, no timestep",
+          "source": "physics/collide.cpp:1889"
+        },
+        {
+          "name": "default restitution",
+          "value": 0.1,
+          "unit": "unitless; fixed value, no timestep",
+          "source": "physics/collide.cpp:1891"
+        },
+        {
+          "name": "player spin from impulse scalar",
+          "value": 0.12,
+          "unit": "multiplier on induced angular velocity; fixed value, no timestep",
+          "source": "physics/collide.cpp:863"
+        }
+      ],
+      "sources": [
+        {
+          "path": "physics/collide.cpp",
+          "line": 1707
+        },
+        {
+          "path": "physics/collide.cpp",
+          "line": 1615
+        },
+        {
+          "path": "physics/collide.cpp",
+          "line": 896
+        }
+      ],
+      "capabilities": [
+        "mass-based knock-back",
+        "soft ship-on-ship contact",
+        "spin damped for the player",
+        "static objects act as walls"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "combat",
+        "feel"
+      ]
+    },
+    {
+      "id": "missile-launch-and-burnout",
+      "node": "weapon-firing",
+      "name": "Missile launch velocity, thrust time and burnout",
+      "summary": "A missile starts with a data-defined speed plus the shooter forward speed, is pushed by thrust for a set time, then loses thrust, gains very low drag and starts to fall.",
+      "behavior": "At launch the projectile faces the aim direction. Its start velocity is the weapon speed from the weapon data along that direction, times a difficulty scalar for robot shooters, times a player weapon speed scalar for player shooters. If the weapon is flagged to use the shooter velocity, it adds the full forward component of the shooter velocity (only when moving forward) and one tenth of the shooter sideways and vertical components. Thrust weapons also get a thrust force along the aim direction. Each frame a timer counts down the thrust time; when it ends the weapon loses thrust and rotational thrust, its drag and rotational drag are set to 0.005, and gravity turns on, so a spent missile drifts and drops. Homing starts only 0.1 seconds after launch. A missile cannot hit its shooter during its first 3 seconds. Fixed-speed weapons that do not curve cast one ray at launch to learn their wall hit point in advance.",
+      "constants": [
+        {
+          "name": "post-burnout drag",
+          "value": 0.005,
+          "unit": "drag coefficient after thrust ends; same units as the data tables",
+          "source": "Descent3/WeaponFire.cpp:1644"
+        },
+        {
+          "name": "homing start delay",
+          "value": 0.1,
+          "unit": "seconds after creation",
+          "source": "Descent3/WeaponFire.cpp:1633"
+        },
+        {
+          "name": "shooter side-velocity inheritance",
+          "value": 0.1,
+          "unit": "fraction of shooter sideways and vertical speed added; fixed value, no timestep",
+          "source": "Descent3/WeaponFire.cpp:1314"
+        },
+        {
+          "name": "parent-hit immunity time",
+          "value": 3,
+          "unit": "seconds after creation during which the shooter cannot be hit",
+          "source": "Descent3/weapon.h:205"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1210
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1621
+        },
+        {
+          "path": "Descent3/ObjInit.cpp",
+          "line": 999
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1305
+        }
+      ],
+      "capabilities": [
+        "inherited shooter velocity",
+        "timed missile thrust",
+        "burnout and fall",
+        "shooter immunity window"
+      ],
+      "tags": [
+        "weapons",
+        "projectile",
+        "physics",
+        "missile"
+      ]
+    },
+    {
+      "id": "homing-steering",
+      "node": "homing-guidance",
+      "name": "Homing missile steering toward a predicted target",
+      "summary": "A homing missile aims at the target position plus a tenth of a second of target velocity and turns with bang-bang rotational thrust, with enemy homing strength scaled by difficulty.",
+      "behavior": "Each frame the steering aims at the target position plus 0.1 times the target velocity, a short fixed lead. If the missile has rotational drag, it uses bang-bang control: it pushes full rotational thrust on heading toward the side that the target lies on (comparing the target direction with the missile right vector) and on pitch toward the side of the up vector, with no bank. The drag law then limits the turn rate, so a missile can overshoot and loop when the target is close and fast. For a missile without rotational drag the code instead turns the nose toward the target at a fixed turn rate and sets velocity directly to nose times thrust over drag. Missiles fired by anything other than a player have their turn authority multiplied by the difficulty homing strength: 0.2, 0.7, 1.0, 1.2 and 1.4 for trainee to insane. Player missiles always use 1.0. A guided missile is a homing missile that ignores this code and takes pitch, heading and bank from the pilot controls instead.",
+      "constants": [
+        {
+          "name": "target velocity lead",
+          "value": 0.1,
+          "unit": "seconds of target velocity added to the aim point",
+          "source": "Descent3/WeaponFire.cpp:1382"
+        },
+        {
+          "name": "enemy homing strength at trainee",
+          "value": 0.2,
+          "unit": "multiplier on turn thrust; levels 0 to 4 are 0.2, 0.7, 1.0, 1.2, 1.4",
+          "source": "Descent3/difficulty.cpp:34"
+        },
+        {
+          "name": "enemy homing strength at insane",
+          "value": 1.4,
+          "unit": "multiplier on turn thrust; fixed value, no timestep",
+          "source": "Descent3/difficulty.cpp:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1374
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1615
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 929
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2398
+        }
+      ],
+      "capabilities": [
+        "lead-aware homing",
+        "overshoot and loop on close targets",
+        "difficulty scaled enemy missiles",
+        "player-steered guided missile"
+      ],
+      "tags": [
+        "weapons",
+        "homing",
+        "missile",
+        "ai"
+      ]
+    },
+    {
+      "id": "homing-target-acquisition",
+      "node": "homing-guidance",
+      "name": "Homing lock acquisition, range and line-of-sight checks",
+      "summary": "A missile scans for the best enemy in its forward cone every 0.2 seconds up to 500 units, locks automatically inside 15, rechecks line of sight every 0.25 seconds and may be fooled by chaff.",
+      "behavior": "A missile with no target scans objects every 0.2 seconds. It considers robots, player ships and armed buildings that are visible through the room graph, are enemies of the shooter, are not cloaked and sit inside the weapon cone. The cone is a dot-product threshold from the weapon data. A target closer than 15 units is taken at once. Otherwise the target with the largest dot product within 500 units is taken if a ray finds nothing blocking. Chaff is picked first with a one in four chance per scan in single player. An existing lock is kept while the target stays inside the cone and either lies within 15 units or within 500 units with a visible room path; the ray test repeats every 0.25 seconds and the lock is lost when it fails. A player who is the target hears a lock tone whose repeat interval shrinks from 1.0 second at 250 units or more to 0.05 seconds as the missile closes, played only when line of sight exists.",
+      "constants": [
+        {
+          "name": "maximum homing range",
+          "value": 500,
+          "unit": "world units; fixed value, no timestep",
+          "source": "Descent3/WeaponFire.cpp:1420"
+        },
+        {
+          "name": "automatic lock range",
+          "value": 15,
+          "unit": "world units; fixed value, no timestep",
+          "source": "Descent3/WeaponFire.cpp:1421"
+        },
+        {
+          "name": "target search interval",
+          "value": 0.2,
+          "unit": "seconds between scans",
+          "source": "Descent3/WeaponFire.cpp:1427"
+        },
+        {
+          "name": "line-of-sight recheck interval",
+          "value": 0.25,
+          "unit": "seconds between ray checks on a held lock",
+          "source": "Descent3/WeaponFire.cpp:1426"
+        },
+        {
+          "name": "lock tone distance scale",
+          "value": 250,
+          "unit": "world units at which the lock tone interval reaches its slowest",
+          "source": "Descent3/WeaponFire.cpp:1423"
+        },
+        {
+          "name": "slowest lock tone interval",
+          "value": 1,
+          "unit": "seconds, at long range",
+          "source": "Descent3/WeaponFire.cpp:1424"
+        },
+        {
+          "name": "fastest lock tone interval",
+          "value": 0.05,
+          "unit": "seconds, at close range",
+          "source": "Descent3/WeaponFire.cpp:1425"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1429
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1570
+        },
+        {
+          "path": "Descent3/BOA.cpp",
+          "line": 529
+        }
+      ],
+      "capabilities": [
+        "forward-cone auto lock",
+        "line-of-sight lock maintenance",
+        "chaff decoys",
+        "lock warning tone for the target"
+      ],
+      "tags": [
+        "weapons",
+        "homing",
+        "missile",
+        "ai",
+        "targeting"
+      ]
+    },
+    {
+      "id": "fusion-charge-shot",
+      "node": "weapon-firing",
+      "name": "Fusion charge shot with ship shake and self damage",
+      "summary": "Holding a fusion-flagged weapon charges it over 3 seconds; the shot fires on release at 4 times damage after a full 3 second charge, while the ship jitters and hurts itself once the charge passes full.",
+      "behavior": "A fire-on-release weapon accumulates held time. On release the damage multiplier is 1 plus the held time over 3 seconds times 3, which gives 4 at 3 seconds; this function sets no cap above that point. While charging, once the charge passes a tenth of the ramp, a random whole-number push from minus 2 to 2 is added to the ship sideways and vertical velocity each frame, scaled by the charge above that point and by 175 units per second squared, so the ship shudders more as the charge builds. After the ramp is full the player also takes 0.125 damage times the size of the random push each frame, with repeats inside half a second using the quiet sound variant. A magenta screen flash grows with the charge. Release spends the normal energy and ammo, and the multiplier is stored on the projectile and multiplies its damage.",
+      "constants": [
+        {
+          "name": "charge ramp time",
+          "value": 3,
+          "unit": "seconds of held fire to reach the full ramp",
+          "source": "Descent3/WeaponFire.cpp:2213"
+        },
+        {
+          "name": "damage multiplier gain",
+          "value": 3,
+          "unit": "added to 1.0 at full ramp, so 4 times",
+          "source": "Descent3/WeaponFire.cpp:2889"
+        },
+        {
+          "name": "shudder acceleration",
+          "value": 175,
+          "unit": "world units per second squared at full charge, random sign and size",
+          "source": "Descent3/WeaponFire.cpp:2238"
+        },
+        {
+          "name": "self damage per push step",
+          "value": ".125",
+          "unit": "shield points per frame per step of the random push, after full charge (decimal 0.125)",
+          "source": "Descent3/WeaponFire.cpp:2250"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2219
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2830
+        },
+        {
+          "path": "Descent3/robotfire.cpp",
+          "line": 167
+        },
+        {
+          "path": "physics/collide.cpp",
+          "line": 2243
+        }
+      ],
+      "capabilities": [
+        "hold to charge heavy shot",
+        "ship shudder while charging",
+        "self damage when overcharged",
+        "damage multiplier on the projectile"
+      ],
+      "tags": [
+        "weapons",
+        "combat",
+        "charge",
+        "feel"
+      ]
+    },
+    {
+      "id": "weapon-cadence-and-energy-cost",
+      "node": "weapon-firing",
+      "name": "Weapon fire delay, energy cost and quad firing",
+      "summary": "Each battery has its own data-defined fire delay, shots spend energy and ammo, a quad upgrade doubles cost and adds 25 percent delay, and streaming weapons are billed per frame against a 20 per second reference.",
+      "behavior": "A battery is ready when the time since its last shot exceeds its fire wait times the player recharge scalar, plus 25 percent of the wait when the quad upgrade is on. Firing subtracts the battery energy cost and ammo cost, doubled for quad, and clamps energy at zero. A stream weapon that fires continuously bills energy as cost times frame time over one twentieth of a second, so the drain per second does not depend on frame rate. Out of energy or ammo shows a message, stops the weapon and auto-selects another. Firing also resets the newbie leveling delay and alerts robots in range about the shot with the highest hostility value. A shot is allowed whenever energy is above zero, even if the cost is higher, and energy then clamps at zero. Fire waits, energy cost and ammo cost live in ship data records, not in this source. Fire order cycles through firing masks or picks at random, which lets one battery alternate guns.",
+      "constants": [
+        {
+          "name": "quad delay penalty",
+          "value": 0.25,
+          "unit": "fraction of the fire wait added when quad is active; fixed value, no timestep",
+          "source": "Descent3/robotfire.cpp:114"
+        },
+        {
+          "name": "stream energy reference rate",
+          "value": 20,
+          "unit": "frames per second for stream weapon energy billing",
+          "source": "Descent3/WeaponFire.cpp:3000"
+        },
+        {
+          "name": "quad cost multiplier",
+          "value": 2,
+          "unit": "multiplier on energy and ammo cost; fixed value, no timestep",
+          "source": "Descent3/WeaponFire.cpp:2848"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2830
+        },
+        {
+          "path": "Descent3/robotfire.cpp",
+          "line": 104
+        },
+        {
+          "path": "Descent3/robotfire.cpp",
+          "line": 128
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2935
+        }
+      ],
+      "capabilities": [
+        "per-gun fire delay",
+        "energy and ammo cost per shot",
+        "quad upgrade tradeoff",
+        "frame-rate independent stream drain"
+      ],
+      "tags": [
+        "weapons",
+        "combat",
+        "energy",
+        "cadence"
+      ]
+    },
+    {
+      "id": "energy-economy",
+      "node": "damage-and-shields",
+      "name": "Energy has no regeneration; converter, fuel centers and pickups",
+      "summary": "Energy does not recharge by itself; it starts at 100, caps at 200, refills from fuel centers at 25 per second, converts to shields at 20 energy per second for 10 shields, and pickups add 12 scaled by difficulty.",
+      "behavior": "Ship energy starts at 100 and powerups can lift it to 200. Nothing in the step refills it over time. A fuel center room refills energy at 25 per second but only up to 100. The converter spends energy above 100 only: it removes up to 20 energy per second, and every 2 energy gives 1 shield point, so shields rise at most 10 per second, up to 200. The in-code comment says 10 units per second for the transfer; that is the shield side, and the energy side is 20. Energy and shield pickups give 12 times a difficulty scalar of 2.25, 1.5, 1.0, 0.75 and 0.5 from trainee to insane, clipped to the caps. Afterburner recharge and every weapon shot also draw on this pool, so spending energy on speed or guns competes with spending it on shields.",
+      "constants": [
+        {
+          "name": "starting energy",
+          "value": 100,
+          "unit": "energy units; fixed value, no timestep",
+          "source": "Descent3/player_external.h:68"
+        },
+        {
+          "name": "maximum energy and shields",
+          "value": 200,
+          "unit": "units; fixed value, no timestep",
+          "source": "Descent3/player_external.h:71"
+        },
+        {
+          "name": "fuel center refill rate",
+          "value": 25,
+          "unit": "energy units per second, up to the starting level",
+          "source": "Descent3/object.cpp:3006"
+        },
+        {
+          "name": "converter energy drain",
+          "value": 20,
+          "unit": "energy units per second",
+          "source": "Descent3/player.h:386"
+        },
+        {
+          "name": "converter exchange rate",
+          "value": 2,
+          "unit": "energy units per shield point",
+          "source": "Descent3/player.h:387"
+        },
+        {
+          "name": "pickup size",
+          "value": 12,
+          "unit": "units before the difficulty scalar",
+          "source": "Descent3/multisafe.cpp:2418"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/Player.cpp",
+          "line": 3706
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 3009
+        },
+        {
+          "path": "Descent3/multisafe.cpp",
+          "line": 2705
+        },
+        {
+          "path": "Descent3/difficulty.cpp",
+          "line": 38
+        }
+      ],
+      "capabilities": [
+        "no passive energy regeneration",
+        "energy to shield converter",
+        "refuel rooms",
+        "difficulty scaled pickups"
+      ],
+      "tags": [
+        "energy",
+        "shields",
+        "economy",
+        "pickups"
+      ]
+    },
+    {
+      "id": "shield-damage-and-death",
+      "node": "damage-and-shields",
+      "name": "Shield damage rules and player death sequence",
+      "summary": "Shields are the only health; damage is scaled by armor, the ship dies when shields drop below zero, and the overkill size picks one of four death styles that last 2 to 4 seconds before a 3 second respawn wait.",
+      "behavior": "The player has 100 shields at spawn and 200 at most. Damage is multiplied by a player armor scalar (1 by default) and a ship armor scalar from the ship data, then subtracted. Taking damage also drops a guided or timed missile the player holds. Invulnerable or dying players take nothing. At below zero the ship starts dying. The death style comes from the overkill, which is the negative shield value: a moving ship outdoors that is killed with overkill up to 40 breaks apart, overkill up to 100 gives a falling death, and more is instant. Random reroll turns many of these into the d2 style. The ship switches to a fixed tumble of half a turn per second on each axis with heavy drag, and the death ends after 3.0, 2.5, 4.0 or 2.0 seconds for fall, instant, breakup and d2 style. Respawn input is ignored until 3 seconds have passed since the death began, and the continue prompt shows once the ship is dead and that time has passed. Robot damage by the player is scaled by difficulty, but this source never uses the defined player damage table, so enemy hits on the player are not scaled by difficulty.",
+      "constants": [
+        {
+          "name": "starting shields",
+          "value": 100,
+          "unit": "shield points; fixed value, no timestep",
+          "source": "Descent3/player_external.h:69"
+        },
+        {
+          "name": "breakup overkill threshold",
+          "value": 40,
+          "unit": "shield points of overkill; fixed value, no timestep",
+          "source": "Descent3/Player.cpp:2008"
+        },
+        {
+          "name": "instant death overkill threshold",
+          "value": 100,
+          "unit": "shield points of overkill above which death is instant; fixed value, no timestep",
+          "source": "Descent3/Player.cpp:2007"
+        },
+        {
+          "name": "fall death duration",
+          "value": 3,
+          "unit": "seconds",
+          "source": "Descent3/Player.cpp:2229"
+        },
+        {
+          "name": "breakup death duration",
+          "value": 4,
+          "unit": "seconds",
+          "source": "Descent3/Player.cpp:2233"
+        },
+        {
+          "name": "respawn wait",
+          "value": 3,
+          "unit": "seconds before the continue prompt",
+          "source": "Descent3/player.h:439"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 807
+        },
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 679
+        },
+        {
+          "path": "Descent3/Player.cpp",
+          "line": 2074
+        },
+        {
+          "path": "Descent3/Player.cpp",
+          "line": 2111
+        },
+        {
+          "path": "Descent3/difficulty.cpp",
+          "line": 32
+        }
+      ],
+      "capabilities": [
+        "single shield pool",
+        "armor scalars",
+        "overkill picks death style",
+        "timed death and respawn wait"
+      ],
+      "tags": [
+        "damage",
+        "shields",
+        "death",
+        "combat"
+      ]
+    },
+    {
+      "id": "concussive-splash-force",
+      "node": "damage-and-shields",
+      "name": "Explosion splash with distance falloff and impulse",
+      "summary": "Explosions hurt and shove everything in range with a linear falloff, a growing shockwave radius and a line-of-sight test, and large hits shake the cockpit.",
+      "behavior": "Each qualifying explosion has an impact size (radius), maximum damage for players, maximum damage for other objects and a maximum force, all from weapon data. A shockwave radius grows linearly over its impact time so the blast front reaches far objects later, and each object is hit only once per shockwave. For a target the distance is center to center minus the target body radius, never below zero. Damage and force fall off linearly from the maximum at zero distance to zero at the impact size. Objects not visible through the room graph, or behind a wall ray, are skipped. The force is applied as velocity change of force over mass along the line from the blast to the target. Clutter gets half the push. The gravity field blast scales player damage by 1 in single player and by one fifth in multiplayer. When the local player takes splash, the cockpit shake strength is damage over 200, capped at 0.75 by the cockpit.",
+      "constants": [
+        {
+          "name": "cockpit shake divisor",
+          "value": 200,
+          "unit": "splash damage divided by this gives cockpit shake strength; fixed value, no timestep",
+          "source": "Descent3/fireball.cpp:1916"
+        },
+        {
+          "name": "clutter push scalar",
+          "value": ".5",
+          "unit": "multiplier on force for clutter objects; fixed value, no timestep (decimal 0.5)",
+          "source": "Descent3/fireball.cpp:1902"
+        },
+        {
+          "name": "multiplayer gravity-field damage divisor",
+          "value": 5,
+          "unit": "player damage is divided by this in multiplayer for the gravity field blast; single player uses 1; fixed value, no timestep",
+          "source": "Descent3/fireball.cpp:1736"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/fireball.cpp",
+          "line": 1787
+        },
+        {
+          "path": "physics/physics.cpp",
+          "line": 2544
+        },
+        {
+          "path": "Descent3/cockpit.cpp",
+          "line": 434
+        }
+      ],
+      "capabilities": [
+        "linear splash falloff",
+        "expanding shockwave front",
+        "impulse knock-back",
+        "line-of-sight blocked blast"
+      ],
+      "tags": [
+        "combat",
+        "explosion",
+        "damage",
+        "physics"
+      ]
+    },
+    {
+      "id": "camera-shake-buildup",
+      "node": "damage-and-shields",
+      "name": "Camera shake with capped magnitude and linear decay",
+      "summary": "A single shake magnitude is added to by events, capped at 120, decays by 40 per second, and adds random orientation offsets to the ship each frame.",
+      "behavior": "Events add to one shake magnitude: starting an afterburner burn on a full tank adds half the ship mass, and releasing a zoom-type weapon adds twice the ship mass. Each frame the magnitude is clamped to 120, then pitch, bank and heading each get an independent random whole-number factor from minus 2 to 2 times the magnitude as an angle offset in angle units (65536 per turn). That rotation is multiplied onto the ship orientation for rendering and then undone, so shake never changes the flight path. The magnitude then falls by one third of the cap per second, so a capped shake lasts 3 seconds. The offsets are random each rendered frame, so the look is noise, not a smooth wave.",
+      "constants": [
+        {
+          "name": "shake magnitude cap",
+          "value": 120,
+          "unit": "angle units per random step of 1",
+          "source": "Descent3/damage.cpp:1436"
+        },
+        {
+          "name": "decay time from cap",
+          "value": 3,
+          "unit": "cap divided by this per second gives the decay rate; seconds to empty a capped shake",
+          "source": "Descent3/damage.cpp:1458"
+        },
+        {
+          "name": "random step range",
+          "value": 2,
+          "unit": "factor range minus 2 to plus 2 per axis per rendered frame",
+          "source": "Descent3/damage.cpp:1445"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 1439
+        },
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 1423
+        },
+        {
+          "path": "Descent3/object.cpp",
+          "line": 2181
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 2910
+        }
+      ],
+      "capabilities": [
+        "event driven camera shake",
+        "shake capped and decaying",
+        "visual shake does not move the ship"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "effects"
+      ]
+    },
+    {
+      "id": "robot-acceleration-limited-steering",
+      "node": "robot-ai",
+      "name": "Robot velocity steering with acceleration limit and stopping distance",
+      "summary": "Robots do not use thrust and drag; they steer velocity straight toward a goal velocity with a data-defined acceleration cap, and brake to stop at path ends using a computed stopping distance.",
+      "behavior": "The goal velocity is the chosen direction times the robot maximum velocity times a speed scale. Each frame the robot velocity moves toward the goal by at most the frame time times its maximum velocity change times the larger of 1 and the speed scale, or snaps to the goal if closer. Maximum velocity, acceleration and turn rate come from object data. The AI setup multiplies maximum velocity and turn rate by a difficulty factor of 0.7, 0.8, 1.0, 1.1 and 1.2, except for walkers. A flag can add up to plus or minus 8 percent random variation per robot. Stopping at a point uses the time to stop equals speed over acceleration and the braking distance from it; inside that distance the commanded speed ramps down in proportion to remaining distance, with a stop radius of 0.2 units.",
+      "constants": [
+        {
+          "name": "robot speed at trainee",
+          "value": 0.7,
+          "unit": "multiplier on max velocity and max turn rate; levels 0 to 4 are 0.7, 0.8, 1.0, 1.1, 1.2",
+          "source": "Descent3/difficulty.cpp:28"
+        },
+        {
+          "name": "robot speed at insane",
+          "value": 1.2,
+          "unit": "multiplier on max velocity; fixed value, no timestep",
+          "source": "Descent3/difficulty.cpp:28"
+        },
+        {
+          "name": "random speed variation",
+          "value": 0.08,
+          "unit": "fraction either way for robots with the fluctuate flag, set at creation",
+          "source": "Descent3/AImain.cpp:3577"
+        },
+        {
+          "name": "path end stop radius",
+          "value": ".2",
+          "unit": "world units; fixed value, no timestep (decimal 0.2)",
+          "source": "Descent3/AImain.cpp:1748"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1707
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1735
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 3786
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 3787
+        }
+      ],
+      "capabilities": [
+        "acceleration limited robot motion",
+        "stop at target with braking ramp",
+        "difficulty scaled robot speed",
+        "per-robot speed variation"
+      ],
+      "tags": [
+        "ai",
+        "movement",
+        "flight",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "robot-turn-rate-limit",
+      "node": "robot-ai",
+      "name": "Robot turning with dead zones",
+      "summary": "Robots rotate their nose toward the goal at a data-defined maximum rate per second, skip turns under 1 degree and under 5 degrees for large objects.",
+      "behavior": "The turn step is the maximum turn rate in angle units per second times the frame time. If the angle to the goal is smaller than that step, the nose snaps to the goal; otherwise it rotates by the step about the axis between nose and goal. A turn is skipped when the nose already points within about 1 degree of the goal. Objects with size above 32 use a wider dead zone of about 5 degrees so large robots do not twitch. Walkers keep their up vector and re-level after turning. The whole orientation is re-orthogonalized after each turn. Homing missiles without rotational drag reuse this routine with their rotational thrust as the rate.",
+      "constants": [
+        {
+          "name": "one degree dead zone",
+          "value": 0.99985,
+          "unit": "cosine of the angle; nose within it counts as aligned; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:2106"
+        },
+        {
+          "name": "five degree dead zone",
+          "value": 0.9962,
+          "unit": "cosine of the angle for large objects; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:2107"
+        },
+        {
+          "name": "large object size",
+          "value": 32,
+          "unit": "size radius in world units above which the wider dead zone applies; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:2122"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 2110
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 2181
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1413
+        }
+      ],
+      "capabilities": [
+        "rate-limited robot turning",
+        "alignment dead zone",
+        "large robots turn less jittery"
+      ],
+      "tags": [
+        "ai",
+        "movement",
+        "turning"
+      ]
+    },
+    {
+      "id": "robot-projectile-dodge",
+      "node": "robot-ai",
+      "name": "Robot dodging of incoming shots",
+      "summary": "When a shot is fired at a robot that can dodge, it may add a sideways push away from the shot path with strength rising as the shot passes closer, held for a random one to four seconds.",
+      "behavior": "When the player fires, each aware robot that is visible through the room graph and is facing its own target within its view cone rolls against its dodge chance. A robot that another robot is shooting at skips the roll and gets the dodge goal at once. The chance is a data value times a difficulty factor of 0.04, 0.10, 1.0, 1.0 and 1.5. A success adds a dodge goal. The dodge computes the point on the shot path closest to the robot and pushes away from it, but only for shots moving toward the robot. The push applies only when the miss distance is under twice the robot radius plus the shot radius, never under 5 units. Strength is 10 times the fraction of that range still unused, never below 2.5, and it is added into the movement direction rather than replacing it. The push is held for at least one second plus a random part of up to three seconds times the robot life-preservation trait. Dodge speed is the data dodge speed times a difficulty factor of 0.2, 0.3, 1.0, 1.25 and 1.5.",
+      "constants": [
+        {
+          "name": "dodge size multiplier",
+          "value": 2,
+          "unit": "times robot radius, plus shot radius, gives the dodge trigger distance; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:1863"
+        },
+        {
+          "name": "minimum dodge distance",
+          "value": 5,
+          "unit": "world units; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:1864"
+        },
+        {
+          "name": "maximum dodge influence",
+          "value": 10,
+          "unit": "steering weight at a direct hit path",
+          "source": "Descent3/AImain.cpp:1866"
+        },
+        {
+          "name": "minimum dodge influence",
+          "value": 2.5,
+          "unit": "steering weight at the edge of the range",
+          "source": "Descent3/AImain.cpp:1867"
+        },
+        {
+          "name": "dodge chance at trainee",
+          "value": 0.04,
+          "unit": "multiplier on the robot dodge chance; levels 0 to 4 are 0.04, 0.10, 1.0, 1.0, 1.5",
+          "source": "Descent3/difficulty.cpp:26"
+        },
+        {
+          "name": "dodge hold minimum",
+          "value": 1,
+          "unit": "seconds added to a random part of up to 3 seconds times life preservation",
+          "source": "Descent3/AImain.cpp:1924"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1870
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1931
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 2877
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 3784
+        }
+      ],
+      "capabilities": [
+        "probabilistic shot dodging",
+        "dodge strength by miss distance",
+        "dodge held for a random time",
+        "difficulty scaled agility"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "dodge",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "robot-wall-avoidance",
+      "node": "robot-ai",
+      "name": "Robot wall and hazard avoidance push",
+      "summary": "Robots sample nearby solid faces inside a radius around their body and add a steering push along the wall normals that grows as they get closer, seven times stronger near hazard surfaces.",
+      "behavior": "The check radius is the model wall size plus 2.2 for small models under 7, or plus 1.0 for larger ones. It looks at solid faces in the current room that face the robot and are within the radius, and sums their normals weighted by how close they are. Outdoors it uses terrain cells with a normal that opposes the movement. The push strength is the closeness fraction times a maximum influence of 0.9, indoors or outdoors, and the result is added into the movement direction. If any face in range is a forcefield, lava or volatile surface, the maximum influence is multiplied by 7.1, so robots stay far away from hazards. The check is skipped for a stationary robot. The push blends with dodge and goal movement, so robots curve along tunnels instead of grinding on walls.",
+      "constants": [
+        {
+          "name": "wall avoid influence",
+          "value": 0.9,
+          "unit": "steering weight at contact",
+          "source": "Descent3/AImain.cpp:1948"
+        },
+        {
+          "name": "hazard influence multiplier",
+          "value": 7.1,
+          "unit": "multiplier when a hazard face is in range; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:2082"
+        },
+        {
+          "name": "small model radius margin",
+          "value": 2.2,
+          "unit": "world units added to model wall size when it is under 7; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:1968"
+        },
+        {
+          "name": "small model limit",
+          "value": 7,
+          "unit": "world units of model wall size; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:1967"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1952
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 4529
+        }
+      ],
+      "capabilities": [
+        "soft wall avoidance",
+        "stronger avoidance of hazard faces",
+        "terrain avoidance outdoors",
+        "blended with dodge and goals"
+      ],
+      "tags": [
+        "ai",
+        "movement",
+        "tunnels",
+        "avoidance"
+      ]
+    },
+    {
+      "id": "robot-aim-lead-and-spread",
+      "node": "robot-ai",
+      "name": "Robot aim lead and fire spread by difficulty",
+      "summary": "Robots lead moving targets using projectile speed and a per-robot accuracy, and their random fire spread is a two-state switch because of integer division: wide at every level except the highest.",
+      "behavior": "At trainee skill non-rebel robots aim at the current target position with no lead. Otherwise the lead time is distance over the projectile speed minus the target velocity along the line of sight, and the aim point is the target position plus its velocity times that time times the robot lead accuracy. If the target is a player, the skill is hotshot or higher (rebel-team robots skip the skill test), the lead accuracy is at least 0.4 and the player is fully visible, the aim point uses the player current thrust with the drag law for a better prediction. No lead is used when the projectile cannot catch the target or when the target is barely visible. Fire spread rotates the shot by random angles on all three axes across a cone of the robot spread trait times a base. The base is meant to move from 16768 to 5000 angle units as difficulty rises, but the scale is computed with integer division, so it is 0 at levels 0 to 3 and 1 at level 4. In effect the base is 16768 on trainee to ace and 5000 only on insane. Non-rebel robots also get a minimum spread of 0.30 of the base at trainee and 0.15 at rookie.",
+      "constants": [
+        {
+          "name": "base fire spread (levels 0 to 3 in effect)",
+          "value": 16768,
+          "unit": "angle units (65536 per turn), total cone before the robot spread trait",
+          "source": "Descent3/WeaponFire.cpp:1806"
+        },
+        {
+          "name": "base fire spread (insane in effect)",
+          "value": 5000,
+          "unit": "angle units (65536 per turn)",
+          "source": "Descent3/WeaponFire.cpp:1805"
+        },
+        {
+          "name": "lead accuracy floor for thrust prediction",
+          "value": 0.4,
+          "unit": "minimum robot lead accuracy for the drag-aware prediction; fixed value, no timestep",
+          "source": "Descent3/AImain.cpp:2806"
+        },
+        {
+          "name": "trainee minimum spread",
+          "value": ".3",
+          "unit": "fraction of the base spread; fixed value, no timestep (decimal 0.3)",
+          "source": "Descent3/difficulty.cpp:40"
+        },
+        {
+          "name": "enemy weapon speed at trainee",
+          "value": 0.5,
+          "unit": "multiplier on projectile speed for non-rebel robots; levels 0 to 4 are 0.5, 0.75, 1.0, 1.2, 1.4",
+          "source": "Descent3/difficulty.cpp:33"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 2766
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1809
+        },
+        {
+          "path": "Descent3/WeaponFire.cpp",
+          "line": 1856
+        },
+        {
+          "path": "Descent3/difficulty.h",
+          "line": 26
+        }
+      ],
+      "capabilities": [
+        "target lead with projectile speed",
+        "drag-aware prediction on higher skill",
+        "random fire cone",
+        "enemy projectile speed by difficulty"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "aim",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "robot-sight-and-awareness",
+      "node": "robot-ai",
+      "name": "Robot sight range, field of view and check intervals",
+      "summary": "Robots see targets inside a view cone, within 500 units across rooms or 800 when tracking, using a ray test every 0.15 seconds, with ranges and cloaked-ship rules scaled by difficulty.",
+      "behavior": "A robot first asks the room graph whether the target room is visible. It then needs the target inside its view cone, a dot-product value from its data. Distances scale by a difficulty factor of 0.8, 0.9, 1.0, 1.1 and 1.2. A target in another room farther than 500 scaled units is not seen when the robot is unaware, and tracking drops beyond 800 when in another room. Dead or dying players and ghosts are never seen. A ray from robot to target must hit nothing but the target; robots with aggression above 0.7 ignore other moving objects on that ray. The ray test runs only when at least 0.35 seconds have passed since the last sighting and a next-check timer is due. That timer is about 0.15 seconds, with a random spread of about 10 percent, while the target is seen, and about 2 seconds after 7 seconds without seeing it. A cloaked target is invisible, except that an active afterburner raises it to barely visible, which allows aiming. Firing stops when the robot has neither seen nor heard the target for 4 seconds.",
+      "constants": [
+        {
+          "name": "see distance",
+          "value": 500,
+          "unit": "world units before difficulty scaling",
+          "source": "Descent3/AImain.cpp:1546"
+        },
+        {
+          "name": "track distance",
+          "value": 800,
+          "unit": "world units before difficulty scaling",
+          "source": "Descent3/AImain.cpp:1547"
+        },
+        {
+          "name": "ray check interval while seeing",
+          "value": 0.15,
+          "unit": "seconds, randomized by about plus or minus 10 percent",
+          "source": "Descent3/AImain.cpp:1549"
+        },
+        {
+          "name": "recent sighting skip time",
+          "value": 0.35,
+          "unit": "seconds",
+          "source": "Descent3/AImain.cpp:1548"
+        },
+        {
+          "name": "infrequent check interval",
+          "value": 2,
+          "unit": "seconds when the target was not seen for the next constant",
+          "source": "Descent3/AImain.cpp:1551"
+        },
+        {
+          "name": "infrequent check trigger",
+          "value": 7,
+          "unit": "seconds without seeing the target",
+          "source": "Descent3/AImain.cpp:1550"
+        },
+        {
+          "name": "vision range at trainee",
+          "value": 0.8,
+          "unit": "multiplier on see and track distance; levels 0 to 4 are 0.8, 0.9, 1.0, 1.1, 1.2",
+          "source": "Descent3/difficulty.cpp:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 3868
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 1645
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 2877
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 5116
+        }
+      ],
+      "capabilities": [
+        "view cone and range sight",
+        "staggered ray tests",
+        "cloak with afterburner exposure",
+        "difficulty scaled vision"
+      ],
+      "tags": [
+        "ai",
+        "perception",
+        "stealth",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "path-following-and-room-graph",
+      "node": "robot-pathing",
+      "name": "Robot path following and precomputed room graph",
+      "summary": "Robots follow node paths and pass a node when they cross its plane, or come within 1.5 units for walkers, while a precomputed room graph answers sight and distance queries for the whole AI.",
+      "behavior": "A path is a list of nodes that the robot steers toward with the movement routines. A flying robot passes a node once its position projected on the segment from the previous node reaches the segment length, so it cuts corners smoothly and never circles a node it overshot. A walker passes a node when it is within 1.5 units after removing the vertical part. At the last node the path ends in one of three ways: reverse and walk back, wrap to the start, or complete the goal; a physics robot with no circle distance first brakes to a stop on the final node. Paths may be static from the level or built at run time, with the run-time pool limited to 50 paths of 50 nodes. A precomputed room graph stores room-to-room visibility and portal costs, and it is the shared gate for robot sight, dodge notices, homing lock and splash damage, so those checks cost a table lookup instead of a ray.",
+      "constants": [
+        {
+          "name": "walker node reach distance",
+          "value": 1.5,
+          "unit": "world units in the horizontal plane; fixed value, no timestep",
+          "source": "Descent3/aipath.cpp:390"
+        },
+        {
+          "name": "dynamic path pool",
+          "value": 50,
+          "unit": "paths; fixed value, no timestep",
+          "source": "Descent3/aipath.cpp:33"
+        },
+        {
+          "name": "nodes per dynamic path",
+          "value": 50,
+          "unit": "nodes; fixed value, no timestep",
+          "source": "Descent3/aipath.cpp:34"
+        },
+        {
+          "name": "room graph data version",
+          "value": 25,
+          "unit": "format version of the precomputed graph",
+          "source": "Descent3/BOA.cpp:142"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/aipath.cpp",
+          "line": 332
+        },
+        {
+          "path": "Descent3/BOA.cpp",
+          "line": 529
+        },
+        {
+          "path": "Descent3/BOA.cpp",
+          "line": 383
+        },
+        {
+          "path": "Descent3/aipath.cpp",
+          "line": 1126
+        }
+      ],
+      "capabilities": [
+        "node path following",
+        "end of path modes",
+        "room visibility table",
+        "cheap room-to-room distance"
+      ],
+      "tags": [
+        "ai",
+        "navigation",
+        "pathfinding",
+        "tunnels"
+      ]
+    },
+    {
+      "id": "difficulty-scaling-table",
+      "node": "robot-ai",
+      "name": "Difficulty table for robot speed, vision, damage and missiles",
+      "summary": "Five difficulty levels scale robot speed, agility, vision, enemy projectile speed, missile homing and robot damage taken, while one defined table for player damage is never read.",
+      "behavior": "The active level is the pilot setting in single player or the game setting in multiplayer. Per-level tables for trainee, rookie, hotshot, ace and insane scale: robot dodge chance, dodge speed, movement speed, turn rate, vision range, enemy projectile speed, enemy homing strength, damage robots take, a general scalar, pickup size and turret speed. Robot scale values are applied once when a robot is created. Damage taken by robots is multiplied by 2.75, 1.5, 1.0, 0.8 and 0.6, except for robots flagged to ignore it, so robots are fragile on easy and tough on hard. Table scaling skips robots flagged as unscaled. The player damage table with values 0.3, 0.6, 1.0, 1.5 and 2.0 is defined but never referenced elsewhere in this source, so incoming damage to the player is not difficulty scaled here; difficulty reaches the player through enemy accuracy, projectile speed and homing instead.",
+      "constants": [
+        {
+          "name": "robot damage taken at trainee",
+          "value": 2.75,
+          "unit": "multiplier on damage dealt to robots; levels 0 to 4 are 2.75, 1.5, 1.0, 0.8, 0.6",
+          "source": "Descent3/difficulty.cpp:35"
+        },
+        {
+          "name": "robot damage taken at insane",
+          "value": 0.6,
+          "unit": "multiplier on damage dealt to robots; fixed value, no timestep",
+          "source": "Descent3/difficulty.cpp:35"
+        },
+        {
+          "name": "turret speed at trainee",
+          "value": 0.6,
+          "unit": "multiplier on turret turn speed; levels 0 to 4 are 0.6, 0.7, 1.0, 1.0, 1.0",
+          "source": "Descent3/difficulty.cpp:39"
+        },
+        {
+          "name": "unused player damage at trainee",
+          "value": 0.3,
+          "unit": "defined multiplier that no code reads",
+          "source": "Descent3/difficulty.cpp:32"
+        }
+      ],
+      "sources": [
+        {
+          "path": "Descent3/difficulty.cpp",
+          "line": 35
+        },
+        {
+          "path": "Descent3/damage.cpp",
+          "line": 1313
+        },
+        {
+          "path": "Descent3/AImain.cpp",
+          "line": 3650
+        },
+        {
+          "path": "Descent3/difficulty.h",
+          "line": 29
+        }
+      ],
+      "capabilities": [
+        "five difficulty tiers",
+        "robot stats scaled at creation",
+        "enemy missile strength by tier",
+        "unused player damage table"
+      ],
+      "tags": [
+        "difficulty",
+        "ai",
+        "combat",
+        "balance"
+      ]
+    }
+  ]
+}

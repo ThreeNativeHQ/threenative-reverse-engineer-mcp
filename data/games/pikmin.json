@@ -1,0 +1,2416 @@
+{
+  "version": 1,
+  "id": "pikmin",
+  "title": "Pikmin",
+  "repo": "https://github.com/projectPiki/pikmin",
+  "sha": "9a2163626a269ae7c699fc195cf91a5ca791044d",
+  "nodes": [
+    {
+      "id": "captain-control",
+      "name": "Captain stick, cursor and motion",
+      "purpose": "Player captain input conditioning, camera-relative walking, the aim cursor and the squad steering stick. Tunable numbers are constructor defaults; the shipped parameter files are not in this repository, so retail values may differ",
+      "paths": [
+        "src/plugPikiKando/navi.cpp",
+        "include/NaviMgr.h",
+        "src/plugPikiKando/creature.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Navi::reviseController",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            1660,
+            1694
+          ]
+        },
+        {
+          "name": "Navi::makeVelocity",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            1701,
+            1820
+          ]
+        },
+        {
+          "name": "Navi::makeCStick",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            1825,
+            1963
+          ]
+        },
+        {
+          "name": "Navi::update",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            801,
+            912
+          ]
+        },
+        {
+          "name": "Creature::moveVelocity",
+          "path": "src/plugPikiKando/creature.cpp",
+          "lines": [
+            1253,
+            1303
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-physics"
+      ]
+    },
+    {
+      "id": "captain-actions",
+      "name": "Captain whistle, throw and pluck",
+      "purpose": "Whistle call, throw preparation and arc, and sprout plucking driven by the action buttons",
+      "paths": [
+        "src/plugPikiKando/naviState.cpp",
+        "src/plugPikiKando/navi.cpp",
+        "include/NaviMgr.h"
+      ],
+      "functions": [
+        {
+          "name": "NaviGatherState::exec",
+          "path": "src/plugPikiKando/naviState.cpp",
+          "lines": [
+            1643,
+            1764
+          ]
+        },
+        {
+          "name": "NaviThrowWaitState::init",
+          "path": "src/plugPikiKando/naviState.cpp",
+          "lines": [
+            1897,
+            1945
+          ]
+        },
+        {
+          "name": "NaviThrowWaitState::exec",
+          "path": "src/plugPikiKando/naviState.cpp",
+          "lines": [
+            1986,
+            2070
+          ]
+        },
+        {
+          "name": "NaviThrowState::procAnimMsg",
+          "path": "src/plugPikiKando/naviState.cpp",
+          "lines": [
+            2134,
+            2160
+          ]
+        },
+        {
+          "name": "Navi::callPikis",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            981,
+            1098
+          ]
+        },
+        {
+          "name": "Navi::throwPiki",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            2529,
+            2557
+          ]
+        },
+        {
+          "name": "Navi::procActionButton",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            1331,
+            1468
+          ]
+        },
+        {
+          "name": "Navi::releasePikis",
+          "path": "src/plugPikiKando/navi.cpp",
+          "lines": [
+            1159,
+            1267
+          ]
+        }
+      ],
+      "dependsOn": [
+        "captain-control",
+        "squad-formation"
+      ]
+    },
+    {
+      "id": "squad-formation",
+      "name": "Squad plate and follower steering",
+      "purpose": "The slot grid that holds followers behind the captain, plus the per-follower seeking, lost and idle logic. Tunable numbers are constructor defaults; the shipped parameter files are not in this repository, so retail values may differ",
+      "paths": [
+        "src/plugPikiKando/cPlate.cpp",
+        "include/CPlate.h",
+        "src/plugPikiKando/aiCrowd.cpp",
+        "src/plugPikiKando/aiFree.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CPlate::setPos",
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "lines": [
+            70,
+            86
+          ]
+        },
+        {
+          "name": "CPlate::refresh",
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "lines": [
+            280,
+            311
+          ]
+        },
+        {
+          "name": "CPlate::refreshSlot",
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "lines": [
+            316,
+            358
+          ]
+        },
+        {
+          "name": "ActCrowd::exec",
+          "path": "src/plugPikiKando/aiCrowd.cpp",
+          "lines": [
+            233,
+            535
+          ]
+        },
+        {
+          "name": "ActFree::exeBoid",
+          "path": "src/plugPikiKando/aiFree.cpp",
+          "lines": [
+            57,
+            77
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-physics"
+      ]
+    },
+    {
+      "id": "piki-behavior",
+      "name": "Piki movement, attack and hazards",
+      "purpose": "Per-piki speed rules, melee and cling attack, contact-triggered jobs, idle target scans and drowning. Tunable numbers are constructor defaults; the shipped parameter files are not in this repository, so retail values may differ",
+      "paths": [
+        "src/plugPikiKando/piki.cpp",
+        "include/PikiMgr.h",
+        "src/plugPikiKando/aiAttack.cpp",
+        "src/plugPikiKando/pikiState.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Piki::getSpeed",
+          "path": "src/plugPikiKando/piki.cpp",
+          "lines": [
+            2252,
+            2265
+          ]
+        },
+        {
+          "name": "Piki::getAttackPower",
+          "path": "src/plugPikiKando/piki.cpp",
+          "lines": [
+            183,
+            194
+          ]
+        },
+        {
+          "name": "Piki::collisionCallback",
+          "path": "src/plugPikiKando/piki.cpp",
+          "lines": [
+            1994,
+            2194
+          ]
+        },
+        {
+          "name": "Piki::realAI",
+          "path": "src/plugPikiKando/piki.cpp",
+          "lines": [
+            2616,
+            2726
+          ]
+        },
+        {
+          "name": "ActJumpAttack::exec",
+          "path": "src/plugPikiKando/aiAttack.cpp",
+          "lines": [
+            516,
+            740
+          ]
+        },
+        {
+          "name": "PikiGoHangState::exec",
+          "path": "src/plugPikiKando/pikiState.cpp",
+          "lines": [
+            1688,
+            1701
+          ]
+        }
+      ],
+      "dependsOn": [
+        "squad-formation",
+        "world-physics"
+      ]
+    },
+    {
+      "id": "carrying",
+      "name": "Cooperative carrying",
+      "purpose": "Pellet and part transport: carrier weighting, speed formula, delivery radius and contest with enemies",
+      "paths": [
+        "src/plugPikiKando/aiTransport.cpp",
+        "src/plugPikiKando/pelletMgr.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ActTransport::getCarriers",
+          "path": "src/plugPikiKando/aiTransport.cpp",
+          "lines": [
+            136,
+            157
+          ]
+        },
+        {
+          "name": "ActTransport::exec",
+          "path": "src/plugPikiKando/aiTransport.cpp",
+          "lines": [
+            700,
+            883
+          ]
+        },
+        {
+          "name": "Pellet::doCarry",
+          "path": "src/plugPikiKando/pelletMgr.cpp",
+          "lines": [
+            434,
+            471
+          ]
+        }
+      ],
+      "dependsOn": [
+        "squad-formation"
+      ]
+    },
+    {
+      "id": "day-cycle",
+      "name": "World clock and sunset",
+      "purpose": "In-game clock, lighting keyframe hours, sunset warning and the end-of-day survival check",
+      "paths": [
+        "src/plugPikiColin/gameflow.cpp",
+        "include/gameflow.h",
+        "src/plugPikiKando/gameCoreSection.cpp"
+      ],
+      "functions": [
+        {
+          "name": "WorldClock::setClockSpd",
+          "path": "src/plugPikiColin/gameflow.cpp",
+          "lines": [
+            141,
+            145
+          ]
+        },
+        {
+          "name": "WorldClock::update",
+          "path": "src/plugPikiColin/gameflow.cpp",
+          "lines": [
+            202,
+            222
+          ]
+        },
+        {
+          "name": "GameCoreSection::cleanupDayEnd",
+          "path": "src/plugPikiKando/gameCoreSection.cpp",
+          "lines": [
+            497,
+            777
+          ]
+        },
+        {
+          "name": "GameCoreSection::enterFreePikmins",
+          "path": "src/plugPikiKando/gameCoreSection.cpp",
+          "lines": [
+            439,
+            492
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-camera",
+      "name": "Follow camera presets and framing",
+      "purpose": "Polar-orbit follow camera with zoom and tilt presets, a swarm-weighted look-at point and an attention snap",
+      "paths": [
+        "src/plugPikiNakata/pcamcamera.cpp",
+        "src/plugPikiNakata/pcamcameraparameters.cpp"
+      ],
+      "functions": [
+        {
+          "name": "PcamCamera::control",
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "lines": [
+            202,
+            219
+          ]
+        },
+        {
+          "name": "PcamCamera::update",
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "lines": [
+            289,
+            316
+          ]
+        },
+        {
+          "name": "PcamCamera::makePosture",
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "lines": [
+            321,
+            373
+          ]
+        },
+        {
+          "name": "PcamCamera::outputFormationWatchpoint",
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "lines": [
+            623,
+            647
+          ]
+        }
+      ],
+      "dependsOn": [
+        "captain-control"
+      ]
+    },
+    {
+      "id": "world-physics",
+      "name": "Shared gravity, easing and frame time",
+      "purpose": "Delta-time source, gravity and the first-order velocity easing every creature shares",
+      "paths": [
+        "src/sysDolphin/system.cpp",
+        "src/plugPikiKando/creature.cpp",
+        "include/AIConstant.h",
+        "include/CreatureProp.h"
+      ],
+      "functions": [
+        {
+          "name": "System::updateSysClock",
+          "path": "src/sysDolphin/system.cpp",
+          "lines": [
+            266,
+            287
+          ]
+        },
+        {
+          "name": "Creature::moveVelocity",
+          "path": "src/plugPikiKando/creature.cpp",
+          "lines": [
+            1253,
+            1303
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "enemy-bulborb",
+      "name": "Ground enemy state machine",
+      "purpose": "Territorial chase, swallow and shake-off logic of the common ground enemy, with data-driven parameters",
+      "paths": [
+        "src/plugPikiNakata/taichappy.cpp",
+        "src/plugPikiNakata/taiattackactions.cpp",
+        "src/plugPikiNakata/tekibteki.cpp",
+        "src/plugPikiNakata/taijudgementactions.cpp",
+        "src/plugPikiNakata/taimoveactions.cpp"
+      ],
+      "functions": [
+        {
+          "name": "TaiChappyParameters::TaiChappyParameters",
+          "path": "src/plugPikiNakata/taichappy.cpp",
+          "lines": [
+            89,
+            154
+          ]
+        },
+        {
+          "name": "TaiChappyStrategy::TaiChappyStrategy",
+          "path": "src/plugPikiNakata/taichappy.cpp",
+          "lines": [
+            310,
+            565
+          ]
+        },
+        {
+          "name": "TaiAnimationSwallowingAction::act",
+          "path": "src/plugPikiNakata/taiattackactions.cpp",
+          "lines": [
+            89,
+            193
+          ]
+        },
+        {
+          "name": "BTeki::getFlickDamageCount",
+          "path": "src/plugPikiNakata/tekibteki.cpp",
+          "lines": [
+            1640,
+            1653
+          ]
+        },
+        {
+          "name": "BTeki::interactDefault",
+          "path": "src/plugPikiNakata/tekibteki.cpp",
+          "lines": [
+            1719,
+            1751
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-physics"
+      ]
+    },
+    {
+      "id": "enemy-boss",
+      "name": "Large boss attack selection",
+      "purpose": "The large tongue-and-jump boss: walk speed, attack reach, knockback blast and health-driven attack choice",
+      "paths": [
+        "src/plugPikiNishimura/KingAi.cpp",
+        "include/King.h"
+      ],
+      "functions": [
+        {
+          "name": "KingAi::setAttackPriority",
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "lines": [
+            681,
+            697
+          ]
+        },
+        {
+          "name": "KingAi::jumpAttackInArea",
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "lines": [
+            768,
+            777
+          ]
+        },
+        {
+          "name": "KingAi::dispelNaviPiki",
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "lines": [
+            580,
+            607
+          ]
+        }
+      ],
+      "dependsOn": [
+        "enemy-bulborb"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "captain-stick-conditioning",
+      "node": "captain-control",
+      "name": "Stick conditioning before movement",
+      "summary": "Raw stick input is snapped to 10 degree angle bins, corrected for a non-circular gate, clamped to full speed near the rim and zeroed in a small dead zone.",
+      "behavior": "Both the walking stick and the squad stick pass through the same filter. The stick angle is rounded to the nearest multiple of a bin width, which removes tiny hand wobble and makes straight lines easy to hold. The magnitude is then multiplied by an angle-dependent factor that is neutral on the four cardinal axes and grows toward the diagonals, consistent with compensating a stick gate shaped like an octagon (the gain peaks at roughly 8 percent between axes by the formula). A magnitude at or above 0.85 snaps to exactly 1.0 so full speed is easy to reach, and a magnitude below 0.1 snaps to 0. The result is rotated about the vertical axis by the camera yaw so the stick is always relative to the screen. The numbers are defaults of the captain parameter set, which a data file read at load can replace, so tune them rather than hard-code them.",
+      "constants": [
+        {
+          "name": "stick angle bin width",
+          "value": 10,
+          "unit": "degrees of stick angle, applied every input update",
+          "source": "include/NaviMgr.h:67"
+        },
+        {
+          "name": "neutral dead zone",
+          "value": 0.1,
+          "unit": "normalized stick magnitude 0 to 1, tested every update",
+          "source": "include/NaviMgr.h:71"
+        },
+        {
+          "name": "snap-to-full threshold",
+          "value": 0.85,
+          "unit": "normalized stick magnitude 0 to 1, tested every update",
+          "source": "include/NaviMgr.h:73"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1660
+        },
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1701
+        }
+      ],
+      "capabilities": [
+        "angle-binned stick input",
+        "octagon gate magnitude correction",
+        "camera-relative stick direction",
+        "snap to full speed near the rim"
+      ],
+      "tags": [
+        "movement",
+        "input",
+        "controller"
+      ]
+    },
+    {
+      "id": "captain-run-speed-and-easing",
+      "node": "captain-control",
+      "name": "Captain run speed with eased velocity",
+      "summary": "The captain always runs at the faster of two stored speeds, loses eight percent of that speed per follower clinging to it, and eases toward the target velocity with a 0.2 second time constant.",
+      "behavior": "The target velocity is the filtered stick vector times a speed times a drag factor. The squad plate always reports that the captain may run fast, so the effective speed is the run value, not the lower walking value; the walking value only drives a few scripted demo moves. Each creature stuck to the captain (for example enemies or pikis clinging on) subtracts a fixed share from the drag factor, which is floored so movement never fully stops. Actual velocity does not jump to the target: every update it moves toward the target by the frame delta divided by an acceleration time, a first-order lag, so the captain starts and stops with a short ease. Followers use the same lag with a shorter time of 0.1 seconds, which is why they feel snappier than the captain. On sloped ground with a slip code, a gravity-along-slope push scales by a weak or strong slip factor. Speeds and times are parameter-file defaults that data can replace.",
+      "constants": [
+        {
+          "name": "run speed (effective)",
+          "value": 210,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:31"
+        },
+        {
+          "name": "walk speed (demo moves only)",
+          "value": 170,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:30"
+        },
+        {
+          "name": "speed lost per clinging creature",
+          "value": 0.08,
+          "unit": "fraction of speed, applied each update to the drag factor",
+          "source": "src/plugPikiKando/navi.cpp:1747"
+        },
+        {
+          "name": "minimum drag factor",
+          "value": 0.1,
+          "unit": "fraction of speed, floor applied each update",
+          "source": "src/plugPikiKando/navi.cpp:1748"
+        },
+        {
+          "name": "captain acceleration time constant",
+          "value": 0.2,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/navi.cpp:307"
+        },
+        {
+          "name": "default creature acceleration time constant (pikis)",
+          "value": 0.1,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/CreatureProp.h:23"
+        },
+        {
+          "name": "weak slip factor",
+          "value": 1,
+          "unit": "multiplier on slope gravity push, applied each update",
+          "source": "include/AIConstant.h:43"
+        },
+        {
+          "name": "strong slip factor",
+          "value": 2.5,
+          "unit": "multiplier on slope gravity push, applied each update",
+          "source": "include/AIConstant.h:44"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1701
+        },
+        {
+          "path": "src/plugPikiKando/creature.cpp",
+          "line": 1253
+        },
+        {
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "line": 55
+        }
+      ],
+      "capabilities": [
+        "first-order velocity easing",
+        "speed penalty from clinging enemies",
+        "slope slip with weak and strong surfaces"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "aim-cursor-steering",
+      "node": "captain-control",
+      "name": "Aim cursor that travels at constant speed",
+      "summary": "A ground cursor orbits the captain within a 300 unit disc at 200 units per second; a light stick tilt aims the captain at it instead of walking.",
+      "behavior": "Every update the stick direction is normalized, so the cursor speed does not depend on how far the stick is tilted. The cursor offset from the captain is clamped to a maximum radius by removing the outward component of the motion, so it slides around the rim instead of sticking. The cursor keeps moving whenever the stick is deflected, including while the captain runs, so it leads the captain in the run direction. When the stick magnitude is above the dead zone but at or below 0.75, or when the stick has been neutral for at least 2 seconds, the captain stops walking, turns toward the cursor by blending 20 percent of the angle gap per update, and takes priority on the facing direction. Above 0.75 the captain simply runs. The cursor is where whistles land and where throws are aimed. Note that the clamp threshold and the cursor delay parameters share one parameter-file id in the source; how the loader treats the clash is unverified.",
+      "constants": [
+        {
+          "name": "cursor speed",
+          "value": 200,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:76"
+        },
+        {
+          "name": "cursor maximum radius from captain",
+          "value": 300,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:75"
+        },
+        {
+          "name": "cursor minimum radius from captain",
+          "value": 50,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:74"
+        },
+        {
+          "name": "aim-mode stick ceiling",
+          "value": 0.75,
+          "unit": "normalized stick magnitude 0 to 1, tested every update",
+          "source": "include/NaviMgr.h:72"
+        },
+        {
+          "name": "neutral time before aim mode",
+          "value": 2,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:69"
+        },
+        {
+          "name": "facing blend toward cursor",
+          "value": 0.2,
+          "unit": "fraction of angle gap per update, rate unverified",
+          "source": "src/plugPikiKando/navi.cpp:1805"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1701
+        },
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 801
+        }
+      ],
+      "capabilities": [
+        "constant-speed cursor",
+        "radius-clamped cursor that slides on the rim",
+        "aim mode on light stick tilt"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "input"
+      ]
+    },
+    {
+      "id": "whistle-call-radius",
+      "node": "captain-actions",
+      "name": "Whistle call circle at the cursor",
+      "summary": "Holding the whistle button grows a call circle at the cursor from 5 to 100 units in 0.2 seconds; every follower-eligible unit inside it joins the squad.",
+      "behavior": "The circle is centered on the cursor, not the captain, and distance is measured on the horizontal plane only. While the button is held the radius grows linearly with time up to the maximum; releasing early fires the call at the radius reached so far, and holding to the end fires at the maximum. After the call the circle stays active for a short hold time, and the call test repeats every update during that hold so units that wander in are still recruited. A pressed again button restarts the call. A called unit is skipped when it is buried, already following another captain, in the middle of eating, being pressed, plucked, absorbed or gazing at the captain. Drowning units get a rescue flag, and flicked or knocked-down units get their get-up timers zeroed so they rejoin sooner. The same call also provokes nearby enemies with a flute interaction and, when the cursor-pluck flag is on, pulls buried sprouts out as new followers. Values are parameter-file defaults.",
+      "constants": [
+        {
+          "name": "whistle maximum radius",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:26"
+        },
+        {
+          "name": "whistle minimum radius",
+          "value": 5,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:27"
+        },
+        {
+          "name": "radius growth time",
+          "value": 0.2,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:28"
+        },
+        {
+          "name": "call hold time after growth",
+          "value": 0.15,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:29"
+        },
+        {
+          "name": "pluck-with-cursor flag default",
+          "value": 1,
+          "unit": "on or off switch read every call",
+          "source": "include/AIConstant.h:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/naviState.cpp",
+          "line": 1643
+        },
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 981
+        }
+      ],
+      "capabilities": [
+        "aim-at-cursor recruit circle",
+        "growing radius while held",
+        "recruit repeats during the hold",
+        "whistle that also provokes enemies"
+      ],
+      "tags": [
+        "swarm",
+        "command",
+        "combat"
+      ]
+    },
+    {
+      "id": "throw-arc-to-cursor",
+      "node": "captain-actions",
+      "name": "Throw arc that lands on the cursor",
+      "summary": "A thrown follower leaves 10 units above the captain and flies a nominal 1 second arc to the cursor, with apex height chosen by a four-step charge level.",
+      "behavior": "The throw does not use the stored distance range of 150 to 600; those values only feed a preview and the follower is aimed straight at the cursor world position. Horizontal speed is the distance to the cursor divided by the full flight time, so the follower covers the gap in about the nominal flight time on flat ground. Vertical speed is half the gravity times half the flight time plus the chosen height divided by half the flight time. The height parameter blends from a minimum to a maximum by the charge level divided by 3, where the charge level rises by one each time the hold animation completes a loop, up to 3. Yellow followers ignore charge and always use a larger fixed height. Derived, assuming gravity 550 and flat ground: the three heights give apex heights of about 80, 104 and 263 units, and the flight lasts about 1.1 seconds, so the follower lands slightly past the cursor. The captain current velocity is added to the throw velocity, so throwing while running adds momentum. Gravity is the shared 550 units per second squared, which a data file can replace.",
+      "constants": [
+        {
+          "name": "nominal flight time",
+          "value": 1,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:44"
+        },
+        {
+          "name": "height parameter at zero charge",
+          "value": 80,
+          "unit": "world units, feeds the launch vertical speed once per throw",
+          "source": "include/NaviMgr.h:42"
+        },
+        {
+          "name": "height parameter at full charge",
+          "value": 100,
+          "unit": "world units, feeds the launch vertical speed once per throw",
+          "source": "include/NaviMgr.h:41"
+        },
+        {
+          "name": "height parameter for yellow followers",
+          "value": 200,
+          "unit": "world units, feeds the launch vertical speed once per throw",
+          "source": "include/NaviMgr.h:43"
+        },
+        {
+          "name": "maximum charge hold time",
+          "value": 2.5,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:38"
+        },
+        {
+          "name": "charge levels",
+          "value": 3,
+          "unit": "steps, one per hold-animation loop",
+          "source": "src/plugPikiKando/naviState.cpp:1961"
+        },
+        {
+          "name": "launch height above captain",
+          "value": 10,
+          "unit": "world units, applied once at release",
+          "source": "src/plugPikiKando/navi.cpp:2534"
+        },
+        {
+          "name": "gravity",
+          "value": 550,
+          "unit": "world units per second squared, applied each update",
+          "source": "include/AIConstant.h:26"
+        },
+        {
+          "name": "unused stored throw distance, minimum",
+          "value": 150,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:40"
+        },
+        {
+          "name": "unused stored throw distance, maximum",
+          "value": 600,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:39"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 2529
+        },
+        {
+          "path": "src/plugPikiKando/naviState.cpp",
+          "line": 2134
+        },
+        {
+          "path": "src/plugPikiKando/naviState.cpp",
+          "line": 1986
+        }
+      ],
+      "capabilities": [
+        "aim-at-cursor lob",
+        "charge-controlled apex height",
+        "inherited carrier momentum",
+        "colour-specific throw height"
+      ],
+      "tags": [
+        "combat",
+        "throwing",
+        "projectile"
+      ]
+    },
+    {
+      "id": "throw-pickup-and-hand",
+      "node": "captain-actions",
+      "name": "Picking the next follower for a throw",
+      "summary": "The nearest ready follower within 80 units is lifted into the hand; a farther one sprints to the hand at up to twice running speed for up to 3 seconds.",
+      "behavior": "On entering the throw-wait state the captain scans the squad for the nearest follower in its normal state that can be thrown. Followers in front of or beside the captain get a 10 unit penalty so followers behind are preferred. If the winner is within the grab range it is attached to the hand at once; otherwise it is sent in a run-to-hand state and a 3 second timeout cancels the wait if it never arrives. A running-to-hand follower moves at the basic stage run speed, doubled when it is farther than twice the grab range from the hand. Between throws the captain picks the next candidate within 200 units, and the squad is re-sorted by colour around the held follower. All values here are defaults of data-readable parameters.",
+      "constants": [
+        {
+          "name": "grab range",
+          "value": 80,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:45"
+        },
+        {
+          "name": "candidate scan radius",
+          "value": 80,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/naviState.cpp:1904"
+        },
+        {
+          "name": "front-side penalty",
+          "value": 10,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/naviState.cpp:1913"
+        },
+        {
+          "name": "arrival timeout",
+          "value": 3,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/naviState.cpp:1943"
+        },
+        {
+          "name": "sprint multiplier when far",
+          "value": 2,
+          "unit": "multiplier on run speed, applied each update",
+          "source": "src/plugPikiKando/pikiState.cpp:1695"
+        },
+        {
+          "name": "between-throws scan radius",
+          "value": 200,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:643"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/naviState.cpp",
+          "line": 1897
+        },
+        {
+          "path": "src/plugPikiKando/pikiState.cpp",
+          "line": 1688
+        },
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 639
+        }
+      ],
+      "capabilities": [
+        "nearest-ready-unit selection",
+        "run to hand with sprint boost",
+        "sort the squad by colour for the next throw"
+      ],
+      "tags": [
+        "combat",
+        "throwing",
+        "swarm"
+      ]
+    },
+    {
+      "id": "pluck-sprout-range",
+      "node": "captain-actions",
+      "name": "Plucking a sprout with context-sized reach",
+      "summary": "The action button plucks the nearest sprout within 120 units near a home base, only 15 units elsewhere, and 200 units during a quick-tap streak.",
+      "behavior": "On the action button the captain first checks for part pickups and the ship, then looks for sprouts. The allowed horizontal reach depends on context: a large radius when standing inside a home-base area, a tiny one outside it so stray sprouts need a deliberate approach, and a wide radius while a quick repeat streak is running so a row of sprouts can be cleared without walking to each. The sprout must also be within 25 units vertically and flagged pluckable. The nearest valid sprout wins. The sprout is turned into a follower, a short stepping motion runs, and the camera stays in its close pluck framing for 100 frames after the captain leaves the pluck states before zooming back out. Values are parameter defaults.",
+      "constants": [
+        {
+          "name": "reach inside home base area",
+          "value": 120,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:23"
+        },
+        {
+          "name": "reach outside home base area",
+          "value": 15,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:25"
+        },
+        {
+          "name": "reach during quick-tap streak",
+          "value": 200,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:24"
+        },
+        {
+          "name": "vertical tolerance",
+          "value": 25,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1412"
+        },
+        {
+          "name": "camera zoom-out delay after plucking",
+          "value": 100,
+          "unit": "update frames, rate unverified",
+          "source": "include/NaviMgr.h:84"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1331
+        },
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 801
+        }
+      ],
+      "capabilities": [
+        "context-sized interaction reach",
+        "quick-tap streak widens the reach",
+        "delayed camera release"
+      ],
+      "tags": [
+        "interaction",
+        "swarm",
+        "camera"
+      ]
+    },
+    {
+      "id": "squad-plate-ellipse",
+      "node": "squad-formation",
+      "name": "Squad slot grid shaped as an ellipse",
+      "summary": "Followers occupy a grid of 24 unit slots packed into an ellipse that sits ahead of the captain; up to 110 slots exist and the length is capped at 150 units.",
+      "behavior": "The formation plate is rebuilt whenever the follower count changes. Slot spacing is twice the slot size. A target inner radius is 2.1 times the slot size times the square root of count over pi; a narrow base size is 1.9 times the slot size. The plate width blends between the larger and the smaller of those two by a steering strength, and the plate length follows from keeping the ellipse area equal to the total slot area, then is clamped to the length limit with the width recomputed. By this formula a weak steering strength gives a wide round blob and full strength a long narrow column. Slot rows are generated from the rear of the plate forward, each row holding an odd count that fits the ellipse chord and alternating the fill direction from row to row. The plate center is placed length plus a start offset ahead of the captain along the steering direction; the start offset is dropped when the captain moves faster than 5 units per second, so the plate hugs a running captain. The first inner-radius assignment in the source is overwritten by the second and has no effect.",
+      "constants": [
+        {
+          "name": "slot size (half pitch)",
+          "value": 12,
+          "unit": "world units, tested every update",
+          "source": "include/CPlate.h:37"
+        },
+        {
+          "name": "plate length limit",
+          "value": 150,
+          "unit": "world units, tested every update",
+          "source": "include/CPlate.h:36"
+        },
+        {
+          "name": "plate start offset ahead of captain",
+          "value": 30,
+          "unit": "world units, tested every update",
+          "source": "include/CPlate.h:35"
+        },
+        {
+          "name": "slot capacity",
+          "value": 110,
+          "unit": "slots, fixed at construction",
+          "source": "src/plugPikiKando/cPlate.cpp:35"
+        },
+        {
+          "name": "inner radius factor (effective)",
+          "value": 2.1,
+          "unit": "multiplier on slot size, recomputed on every refresh",
+          "source": "src/plugPikiKando/cPlate.cpp:288"
+        },
+        {
+          "name": "narrow base size factor",
+          "value": 1.9,
+          "unit": "multiplier on slot size, recomputed on every refresh",
+          "source": "src/plugPikiKando/cPlate.cpp:292"
+        },
+        {
+          "name": "start offset cancel speed",
+          "value": 5,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/cPlate.cpp:73"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "line": 280
+        },
+        {
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "line": 316
+        },
+        {
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "line": 70
+        }
+      ],
+      "capabilities": [
+        "elliptical packing of N followers",
+        "length capped swarm column",
+        "plate that leads a moving captain"
+      ],
+      "tags": [
+        "swarm",
+        "formation",
+        "flocking"
+      ]
+    },
+    {
+      "id": "squad-stick-steering",
+      "node": "captain-control",
+      "name": "Second stick steers and tightens the squad",
+      "summary": "The second stick sets the squad direction and how tight the plate is; with the stick released, the squad regroups behind the captain once its nearest follower is 60 units away.",
+      "behavior": "Input below a 0.05 dead zone counts as neutral. Above it, the squad direction eases toward the stick direction by 40 percent of the angle gap per update when the stick is within 120 degrees of the current direction, and jumps straight to the stick direction when it points more than 120 degrees away. Deflection is mapped to a plate strength: from 0.9 of the usable range upward the strength is 1.0, below it the strength scales to at most 0.6. When the stick is neutral the captain looks at the nearest follower distance in three bands. Under 30 units the plate stays where it is; from 30 to 60 units the plate keeps its center and turns to face the captain; beyond 60 units the plate snaps behind the captain, facing opposite the captain heading, and the slots are re-sorted nearest first. If the captain is slower than 50 units per second and the direction is not locked, the stored squad direction is reused instead of the captain heading.",
+      "constants": [
+        {
+          "name": "stick dead zone",
+          "value": 0.05,
+          "unit": "normalized stick magnitude, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1856"
+        },
+        {
+          "name": "direction ease",
+          "value": 0.4,
+          "unit": "fraction of angle gap per update, rate unverified",
+          "source": "src/plugPikiKando/navi.cpp:1867"
+        },
+        {
+          "name": "ease cone half angle",
+          "value": 2.0943952,
+          "unit": "radians (120 degrees), tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1866"
+        },
+        {
+          "name": "full strength threshold",
+          "value": 0.9,
+          "unit": "fraction of usable stick range, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1876"
+        },
+        {
+          "name": "partial strength ceiling",
+          "value": 0.6,
+          "unit": "plate strength 0 to 1, applied every update",
+          "source": "src/plugPikiKando/navi.cpp:1879"
+        },
+        {
+          "name": "stay-put follower distance",
+          "value": 30,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:47"
+        },
+        {
+          "name": "regroup follower distance",
+          "value": 60,
+          "unit": "world units, tested every update",
+          "source": "include/NaviMgr.h:48"
+        },
+        {
+          "name": "moving-captain speed cutoff for regroup",
+          "value": 50,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/navi.cpp:1893"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1825
+        },
+        {
+          "path": "src/plugPikiKando/cPlate.cpp",
+          "line": 280
+        }
+      ],
+      "capabilities": [
+        "direction-and-tightness squad steering",
+        "auto regroup behind a stopped captain",
+        "hysteresis on formation distance bands"
+      ],
+      "tags": [
+        "swarm",
+        "formation",
+        "input"
+      ]
+    },
+    {
+      "id": "follower-slot-seeking",
+      "node": "squad-formation",
+      "name": "Follower arrival and stopping at its slot",
+      "summary": "Each follower runs at full speed to its slot, brakes in the last 15 units using a stopping-distance estimate, and settles within 7 units.",
+      "behavior": "A follower in the squad aims for the world position of its slot. Farther than 15 units it moves at full speed. Between 7 and 15 units it uses the acceleration lag to estimate the stopping distance from its current speed and from top speed: inside the first estimate it stops, inside the second it sets a speed that would just reach the slot, otherwise it keeps full speed. Within 7 units it is settled, and between 7 and 15 units it still counts as settled for its first 5 consecutive updates there (after the sixth it switches to the braking approach). When settled its target velocity is zero and it turns toward the captain by 30 percent of the angle gap per update. Followers approaching from the far side of the captain add a sideways component of half speed whose sign alternates by slot parity, so the swarm flows around the captain instead of through. A follower that has not yet joined walks to the nearest settled mate and counts as formed once within 40 units. When the squad stick is neutral and the slot is within 60 units, the follower simply holds.",
+      "constants": [
+        {
+          "name": "settle radius",
+          "value": 7,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:395"
+        },
+        {
+          "name": "braking zone radius",
+          "value": 15,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:397"
+        },
+        {
+          "name": "settle hysteresis count",
+          "value": 6,
+          "unit": "consecutive updates, rate unverified",
+          "source": "src/plugPikiKando/aiCrowd.cpp:402"
+        },
+        {
+          "name": "facing blend when settled",
+          "value": 0.3,
+          "unit": "fraction of angle gap per update, rate unverified",
+          "source": "src/plugPikiKando/aiCrowd.cpp:386"
+        },
+        {
+          "name": "hold distance when squad stick is neutral",
+          "value": 60,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:324"
+        },
+        {
+          "name": "join distance for a new follower",
+          "value": 40,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:365"
+        },
+        {
+          "name": "side-step speed ratio",
+          "value": 0.5,
+          "unit": "fraction between walk and run speed, per update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:476"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/aiCrowd.cpp",
+          "line": 233
+        },
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 2252
+        }
+      ],
+      "capabilities": [
+        "braking arrival at a slot",
+        "alternating side-step flow around the leader",
+        "settled followers turn to face the leader"
+      ],
+      "tags": [
+        "swarm",
+        "flocking",
+        "ai"
+      ]
+    },
+    {
+      "id": "follower-lost-and-impatience",
+      "node": "squad-formation",
+      "name": "Strays, lost followers and idle fidgeting",
+      "summary": "A follower more than 600 units from its slot starts a 10 second lost timer; at 1000 units it leaves the squad; after 8 seconds of captain idleness followers fidget.",
+      "behavior": "Distance to the slot is measured on the horizontal plane. Inside 600 units the lost timer is cleared. Between 600 and 1000 units the timer runs and the follower asks for a new slot once; the squad action fails when the timer passes 10 seconds, or at once beyond 1000 units, and the follower leaves the squad action. While the captain stands still, each settled follower compares the captain idle time minus a random jitter of up to 2 or 5 seconds with the impatience time of 8 seconds, and then plays a wait animation such as talking, yawning or a rainbow gesture. Moving the captain ends the fidget. A running follower that has covered 100 units at over 110 units per second has a roughly 0.003 percent chance per check of tripping, based on two random draws of 0.9999 and 0.7; the check repeats about every 100 units run. Bomb carriers never trip.",
+      "constants": [
+        {
+          "name": "lost distance start",
+          "value": 600,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:82"
+        },
+        {
+          "name": "squad break distance",
+          "value": 1000,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:83"
+        },
+        {
+          "name": "lost timeout",
+          "value": 10,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/PikiMgr.h:84"
+        },
+        {
+          "name": "captain idle time before fidgeting",
+          "value": 8,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/NaviMgr.h:70"
+        },
+        {
+          "name": "fidget jitter, settled in range",
+          "value": 5,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/aiCrowd.cpp:423"
+        },
+        {
+          "name": "trip check travel distance",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiCrowd.cpp:306"
+        },
+        {
+          "name": "trip check minimum speed",
+          "value": 110,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/aiCrowd.cpp:306"
+        },
+        {
+          "name": "trip first draw threshold",
+          "value": 0.9999,
+          "unit": "probability draw, per check",
+          "source": "src/plugPikiKando/aiCrowd.cpp:310"
+        },
+        {
+          "name": "trip second draw threshold",
+          "value": 0.7,
+          "unit": "probability draw, per check",
+          "source": "src/plugPikiKando/aiCrowd.cpp:310"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/aiCrowd.cpp",
+          "line": 233
+        },
+        {
+          "path": "include/PikiMgr.h",
+          "line": 82
+        }
+      ],
+      "capabilities": [
+        "lost-follower timer with soft and hard distance limits",
+        "idle fidget animations",
+        "rare stumble for flavor"
+      ],
+      "tags": [
+        "swarm",
+        "ai",
+        "feel"
+      ]
+    },
+    {
+      "id": "piki-speed-by-stage",
+      "node": "piki-behavior",
+      "name": "Follower speed by growth stage",
+      "summary": "Followers move between a 84 unit per second walk and a stage-specific run: 162.5 for the basic stage, 160 for the middle stage and 220 for the top stage.",
+      "behavior": "Every move request carries a speed ratio from 0 to 1 that blends from the walk speed to the stage maximum. A ratio of 1 means full run; side steps and idle wandering use 0.5. The stage maximum depends on growth when the growth-speed flag is on (its default is on): the top stage is much faster than the basic one, and the middle stage is, surprisingly, 2.5 slower than the basic stage by these defaults. With the flag off, all stages share the basic maximum. Other defaults: health 100, melee attack power 10 for blue, 15 for red and 10 for yellow, a ground collision radius of 8 and a mass-inverse of 100 which makes followers easy to push. At most 100 followers exist at once. All of these are parameter defaults that data files can replace.",
+      "constants": [
+        {
+          "name": "walk speed",
+          "value": 84,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/PikiMgr.h:48"
+        },
+        {
+          "name": "basic stage run speed",
+          "value": 162.5,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/PikiMgr.h:49"
+        },
+        {
+          "name": "middle stage run speed",
+          "value": 160,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/PikiMgr.h:51"
+        },
+        {
+          "name": "top stage run speed",
+          "value": 220,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/PikiMgr.h:50"
+        },
+        {
+          "name": "growth speed flag default",
+          "value": 1,
+          "unit": "on or off switch read every call",
+          "source": "include/AIConstant.h:40"
+        },
+        {
+          "name": "health",
+          "value": 100,
+          "unit": "hit points",
+          "source": "include/PikiMgr.h:53"
+        },
+        {
+          "name": "red attack power",
+          "value": 15,
+          "unit": "damage per hit",
+          "source": "include/PikiMgr.h:57"
+        },
+        {
+          "name": "blue attack power",
+          "value": 10,
+          "unit": "damage per hit",
+          "source": "include/PikiMgr.h:56"
+        },
+        {
+          "name": "ground collision radius",
+          "value": 8,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:81"
+        },
+        {
+          "name": "population cap",
+          "value": 100,
+          "unit": "followers on the field at once",
+          "source": "include/GlobalGameOptions.h:10"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 2252
+        },
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 183
+        }
+      ],
+      "capabilities": [
+        "speed ratio blend between walk and run",
+        "growth stage speed bonus",
+        "population cap of 100"
+      ],
+      "tags": [
+        "movement",
+        "swarm",
+        "stats"
+      ]
+    },
+    {
+      "id": "cling-attack-and-damage",
+      "node": "piki-behavior",
+      "name": "Hop, cling and strike attack",
+      "summary": "A follower ordered at an enemy aligns within 18 degrees, hops with 200 vertical speed to stick on, then deals its attack power on each strike frame of the cling animation.",
+      "behavior": "Close to the target the follower first tries a head strike: when it faces the target within 18 degrees and is within 10 units of the target surface it plays the attack animation. Farther or misaligned, it may enter a hop state: it backs off if too close, closes if more than 6 units from the surface, and once aligned within 18 degrees it jumps with horizontal speed of 100 times the direction and vertical speed 200, then sticks to the part it touches. While stuck, damage is dealt only on the animation key marked as the hit frame, once per cycle, as an interaction carrying the follower attack power; a strike that the target rejects selects a bigger hit effect. Ground strikes require the target to be within 10 units of reach and within 45 degrees of facing. Climbable parts switch to a climbing motion instead. Damage is not computed from timers, so the hit rate follows the animation speed.",
+      "constants": [
+        {
+          "name": "alignment limit divisor (pi over this, 18 degrees)",
+          "value": 10,
+          "unit": "divisor of pi radians, tested every update",
+          "source": "src/plugPikiKando/aiAttack.cpp:564"
+        },
+        {
+          "name": "hop vertical speed",
+          "value": 200,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/aiAttack.cpp:565"
+        },
+        {
+          "name": "hop horizontal factor",
+          "value": 100,
+          "unit": "multiplier on unit direction, applied once at takeoff",
+          "source": "src/plugPikiKando/aiAttack.cpp:566"
+        },
+        {
+          "name": "strike reach from surface",
+          "value": 10,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiAttack.cpp:632"
+        },
+        {
+          "name": "ground strike facing divisor (pi over this, 45 degrees)",
+          "value": 4,
+          "unit": "divisor of pi radians, tested every update",
+          "source": "src/plugPikiKando/aiAttack.cpp:632"
+        },
+        {
+          "name": "hop re-approach gap",
+          "value": 6,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiAttack.cpp:558"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/aiAttack.cpp",
+          "line": 516
+        },
+        {
+          "path": "src/plugPikiKando/aiAttack.cpp",
+          "line": 762
+        },
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 183
+        }
+      ],
+      "capabilities": [
+        "hop-and-stick melee",
+        "damage on animation hit frames",
+        "climb on climbable parts"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "swarm"
+      ]
+    },
+    {
+      "id": "contact-triggered-jobs",
+      "node": "piki-behavior",
+      "name": "Formed followers start jobs on contact",
+      "summary": "A follower that is settled in the squad and bumps an enemy attacks it, bumps a gate and breaks it, or bumps a movable rock and pushes it, with no extra command.",
+      "behavior": "On a collision event the follower checks whether it is free to act: not damaged, not being looked at, not held, not in a knocked-back or swallowed state. When the contact-attack flag is on and the collider is an organic enemy or boss, a settled squad member abandons its squad action and starts an attack on that collider. A settled follower that meets a hostile mushroom-possessed follower does the same. Touching a gate part makes it start breaking the wall; touching an unfinished blocking rock starts the push job. The settled condition matters, so followers in transit do not break formation by brushing past. This is how the second stick drives the swarm into an enemy: moving the plate across it triggers attacks.",
+      "constants": [
+        {
+          "name": "contact attack flag default",
+          "value": 1,
+          "unit": "on or off switch read on every collision",
+          "source": "include/AIConstant.h:31"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 1994
+        },
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 2065
+        }
+      ],
+      "capabilities": [
+        "squad-driven attack by pushing the swarm into an enemy",
+        "automatic wall break and rock push on contact",
+        "settled-only gating to keep formation"
+      ],
+      "tags": [
+        "swarm",
+        "combat",
+        "ai"
+      ]
+    },
+    {
+      "id": "dismiss-colour-clusters",
+      "node": "captain-actions",
+      "name": "Dismissing the squad into colour clusters",
+      "summary": "Dismissing sends every follower to a per-colour centre of mass, with clusters spaced at least 18 units apart and kept away from the captain.",
+      "behavior": "On dismissal the squad members are grouped by colour, with bomb-carrying yellows treated as a fourth group. Each group target is the centre of mass of its members and its radius is 2.5 times the follower size times the square root of the member count. Each target is pushed away from the captain until the gap, after subtracting the cluster radius and the captain radius of 15, is at least 18 units, and each pair of clusters is pushed apart the same way. Each follower then enters free behaviour and walks toward its colour target at half speed ratio for at most 3 seconds, stopping once within 0.9 of the cluster radius, then freezes in place for 3 seconds. This gives the familiar tidy colour piles without any per-follower flocking forces.",
+      "constants": [
+        {
+          "name": "cluster radius factor",
+          "value": 2.5,
+          "unit": "multiplier on follower size times root of count, computed once at dismissal",
+          "source": "src/plugPikiKando/navi.cpp:1217"
+        },
+        {
+          "name": "minimum separation",
+          "value": 18,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1221"
+        },
+        {
+          "name": "captain radius used in the gap",
+          "value": 15,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/navi.cpp:1228"
+        },
+        {
+          "name": "walk time limit",
+          "value": 3,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/aiFree.cpp:51"
+        },
+        {
+          "name": "arrival fraction of radius",
+          "value": 0.9,
+          "unit": "fraction of cluster radius, tested every update",
+          "source": "src/plugPikiKando/aiFree.cpp:63"
+        },
+        {
+          "name": "walk speed ratio",
+          "value": 0.5,
+          "unit": "fraction between walk and run speed, per update",
+          "source": "src/plugPikiKando/aiFree.cpp:75"
+        },
+        {
+          "name": "freeze time after arrival",
+          "value": 3,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/aiFree.cpp:65"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/navi.cpp",
+          "line": 1159
+        },
+        {
+          "path": "src/plugPikiKando/aiFree.cpp",
+          "line": 57
+        }
+      ],
+      "capabilities": [
+        "group by colour",
+        "cluster targets that avoid each other and the captain",
+        "timed walk then freeze"
+      ],
+      "tags": [
+        "swarm",
+        "flocking",
+        "command"
+      ]
+    },
+    {
+      "id": "idle-follower-target-scan",
+      "node": "piki-behavior",
+      "name": "Idle followers look for work and enemies",
+      "summary": "Free followers scan within 100 units for enemies to attack and within 100 units for jobs, and blue ones rescue a drowning mate within 100 units.",
+      "behavior": "While standing free, each follower runs a situation check. First it looks for the closest visible, organic, non-flying enemy or boss within the idle attack range plus that target body size. Then, if it has a captain, it checks within 100 units for a drowning follower (only blue ones answer, as rescuers) or a hostile mushroom-type follower. Then it checks map objects such as gates, grass, rocks and sticks within the idle work range. The closest threat wins over work and a rescue overrides a fight only when it is closer. The scan is skipped during sunset and while the follower holds something. Followers also look at the captain when touched and wait to be whistled.",
+      "constants": [
+        {
+          "name": "idle attack search range",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:90"
+        },
+        {
+          "name": "idle work search range",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:91"
+        },
+        {
+          "name": "rescue and mushroom scan range",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/piki.cpp:973"
+        },
+        {
+          "name": "post-work rejoin range",
+          "value": 250,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 901
+        },
+        {
+          "path": "src/plugPikiKando/aiFree.cpp",
+          "line": 157
+        }
+      ],
+      "capabilities": [
+        "autonomous target acquisition",
+        "role-specific rescue behaviour",
+        "closest-first priority"
+      ],
+      "tags": [
+        "ai",
+        "swarm",
+        "perception"
+      ]
+    },
+    {
+      "id": "carry-speed-by-weight",
+      "node": "carrying",
+      "name": "Carry speed from weighted carrier count",
+      "summary": "A pellet moves at 70 percent of leaf run speed scaled by how many weighted carriers are attached beyond the minimum; each carrier weighs more at higher growth stages.",
+      "behavior": "Each follower attached to a pellet counts as 1 plus half its growth stage index, so basic followers weigh 1, middle ones 1.5 and top ones 2. The team leader computes a speed as weighted carriers plus one minus the pellet minimum carry count, divided by the pellet maximum carry count, times the span between a maximum and a minimum speed, plus the minimum. The maximum is 0.7 of the basic run speed and the minimum is half of that. There is no clamp at this call site, so a team heavier than the maximum count can in principle exceed the nominal maximum; whether another system limits it is unverified. The result is a horizontal direction toward the goal times that speed and is written straight into the pellet velocity on the ground with no easing. The minimum and maximum carry counts come from the per-pellet data file; the fallback default is 1 for both. If fewer carriers than the minimum remain attached the team drops the load.",
+      "constants": [
+        {
+          "name": "top speed fraction of basic run speed",
+          "value": 0.7,
+          "unit": "fraction, applied every update",
+          "source": "src/plugPikiKando/aiTransport.cpp:825"
+        },
+        {
+          "name": "minimum speed fraction of top speed",
+          "value": 0.5,
+          "unit": "fraction, applied every update",
+          "source": "src/plugPikiKando/aiTransport.cpp:826"
+        },
+        {
+          "name": "weight per growth stage step",
+          "value": 0.5,
+          "unit": "weight units added per stage index",
+          "source": "src/plugPikiKando/aiTransport.cpp:149"
+        },
+        {
+          "name": "default minimum carriers",
+          "value": 1,
+          "unit": "followers, per pellet data file default",
+          "source": "src/plugPikiKando/pelletMgr.cpp:112"
+        },
+        {
+          "name": "default maximum carriers",
+          "value": 1,
+          "unit": "followers, per pellet data file default",
+          "source": "src/plugPikiKando/pelletMgr.cpp:113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/aiTransport.cpp",
+          "line": 136
+        },
+        {
+          "path": "src/plugPikiKando/aiTransport.cpp",
+          "line": 700
+        },
+        {
+          "path": "src/plugPikiKando/pelletMgr.cpp",
+          "line": 434
+        }
+      ],
+      "capabilities": [
+        "weighted cooperative carrying",
+        "speed that scales with team strength",
+        "drop when the team is too small"
+      ],
+      "tags": [
+        "swarm",
+        "carrying",
+        "physics"
+      ]
+    },
+    {
+      "id": "carry-delivery-and-tug",
+      "node": "carrying",
+      "name": "Delivery radius and contested carrying",
+      "summary": "A carried item is delivered when its leader is within 10 units of the goal; if an enemy and followers both carry it, a 3.5 second transition runs at half speed and the larger team wins.",
+      "behavior": "The team leader steers toward the goal position each update and finishes the delivery when the horizontal distance falls under 10 units: the load stops, all carriers detach, and the item enters its goal sequence. If a different kind of carrier already holds the pellet, the first contact starts a 3.5 second transition during which the carry direction is halved. After that, the side with the larger carrier count keeps the item; a challenger with a larger count takes over and restarts the transition. That count is the unweighted attached number passed into the carry call. The item is moved by writing the direction directly to its ground velocity, so there is no acceleration and no overshoot.",
+      "constants": [
+        {
+          "name": "delivery radius",
+          "value": 10,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/aiTransport.cpp:786"
+        },
+        {
+          "name": "contest transition time",
+          "value": 3.5,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/pelletMgr.cpp:449"
+        },
+        {
+          "name": "direction scale during transition",
+          "value": 0.5,
+          "unit": "multiplier on carry velocity, applied each update",
+          "source": "src/plugPikiKando/pelletMgr.cpp:442"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/aiTransport.cpp",
+          "line": 700
+        },
+        {
+          "path": "src/plugPikiKando/pelletMgr.cpp",
+          "line": 434
+        }
+      ],
+      "capabilities": [
+        "delivery by proximity to goal",
+        "enemy-versus-swarm tug of war",
+        "instant velocity transport"
+      ],
+      "tags": [
+        "carrying",
+        "combat",
+        "physics"
+      ]
+    },
+    {
+      "id": "drowning-and-water",
+      "node": "piki-behavior",
+      "name": "Water drowning for non-blue followers",
+      "summary": "Non-blue followers start drowning after 30 to 39 updates in water and can be steered out by the whistle; blue followers are immune.",
+      "behavior": "Each update a follower in water increments a counter, capped at 1000, and flags itself as panicked. A non-blue follower enters the drowning state when the counter reaches a fixed minimum plus a random extra drawn up to a further limit, so the delay varies between followers. While drowning it cannot act; if the whistle flag is set it accelerates toward the captain at 15 units per second per second (doubled when whistled) and takes the velocity directly. Once it has been out of water for more than one update it hops up 20 units and is launched forward at 80 units per second, then shakes itself dry. Blue followers within 100 units of a drowning mate are drawn to rescue it. The update counts are per AI update, rate unverified.",
+      "constants": [
+        {
+          "name": "minimum frames before drowning",
+          "value": 30,
+          "unit": "per update, rate unverified",
+          "source": "include/PikiMgr.h:114"
+        },
+        {
+          "name": "random extra frames",
+          "value": 10,
+          "unit": "per update, rate unverified",
+          "source": "include/PikiMgr.h:115"
+        },
+        {
+          "name": "water counter cap",
+          "value": 1000,
+          "unit": "per update, rate unverified",
+          "source": "src/plugPikiKando/piki.cpp:2696"
+        },
+        {
+          "name": "whistled escape multiplier",
+          "value": 2,
+          "unit": "multiplier on escape acceleration, applied each update",
+          "source": "src/plugPikiKando/pikiState.cpp:623"
+        },
+        {
+          "name": "base escape acceleration",
+          "value": 15,
+          "unit": "world units per second per second, applied each update",
+          "source": "src/plugPikiKando/pikiState.cpp:621"
+        },
+        {
+          "name": "pop-out hop height",
+          "value": 20,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiKando/pikiState.cpp:588"
+        },
+        {
+          "name": "pop-out launch speed",
+          "value": 80,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiKando/pikiState.cpp:590"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/piki.cpp",
+          "line": 2616
+        },
+        {
+          "path": "src/plugPikiKando/pikiState.cpp",
+          "line": 583
+        }
+      ],
+      "capabilities": [
+        "colour-specific hazard immunity",
+        "randomized hazard delay",
+        "whistle rescue from water"
+      ],
+      "tags": [
+        "hazard",
+        "water",
+        "swarm"
+      ]
+    },
+    {
+      "id": "world-clock-day-length",
+      "node": "day-cycle",
+      "name": "Real-time day clock and daily window",
+      "summary": "The game day runs from 7 to 19 on a clock set by a minutes-per-day value that defaults to 20, with warnings at 16 and a countdown at 18.5.",
+      "behavior": "The clock keeps real seconds into the current game hour and adds the frame delta every update, rolling the hour and day over automatically. Seconds per game hour equal the minutes per day times 60 divided by 24. The default is 20 minutes per game day, giving 50 real seconds per game hour and, derived from the 12 hour window, a 10 minute day; a source comment instead names 27 minutes, so treat the value as a data-file setting that the packaged game overrides. The day starts at 7 and ends at 19, when the end of day sequence begins. Lighting key hours are 7, 8, 9 in the morning and 17.5, 18.5, 19.5 in the evening. A sunset warning triggers once at 16 and the on-screen countdown runs from 18.5 to just under 19.5 in the display window. The game lasts at most 30 days and 30 ship parts. All of this comes from a game-flow parameter file that overwrites the constructor defaults when read.",
+      "constants": [
+        {
+          "name": "start hour",
+          "value": 7,
+          "unit": "game hours, set when a day begins",
+          "source": "include/gameflow.h:599"
+        },
+        {
+          "name": "end hour",
+          "value": 19,
+          "unit": "game hours, tested every update",
+          "source": "include/gameflow.h:600"
+        },
+        {
+          "name": "real minutes per game day (constructor default)",
+          "value": 20,
+          "unit": "real minutes per 24 game hours, read when the clock resets",
+          "source": "include/gameflow.h:601"
+        },
+        {
+          "name": "sunset warning hour",
+          "value": 16,
+          "unit": "game hours, tested every update",
+          "source": "include/gameflow.h:609"
+        },
+        {
+          "name": "countdown start hour",
+          "value": 18.5,
+          "unit": "game hours, tested every update",
+          "source": "include/gameflow.h:610"
+        },
+        {
+          "name": "hours per day",
+          "value": 24,
+          "unit": "game hours",
+          "source": "include/WorldClock.h:7"
+        },
+        {
+          "name": "seconds per minute in clock speed",
+          "value": 60,
+          "unit": "multiplier converting minutes to seconds",
+          "source": "src/plugPikiColin/gameflow.cpp:143"
+        },
+        {
+          "name": "maximum days",
+          "value": 30,
+          "unit": "days",
+          "source": "include/GlobalGameOptions.h:11"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiColin/gameflow.cpp",
+          "line": 141
+        },
+        {
+          "path": "src/plugPikiColin/gameflow.cpp",
+          "line": 202
+        },
+        {
+          "path": "src/plugPikiKando/gameCoreSection.cpp",
+          "line": 1493
+        }
+      ],
+      "capabilities": [
+        "configurable real-time day length",
+        "lighting keyframe hours",
+        "sunset warning and countdown"
+      ],
+      "tags": [
+        "time",
+        "day-cycle",
+        "pacing"
+      ]
+    },
+    {
+      "id": "sunset-survival-range",
+      "node": "day-cycle",
+      "name": "Who survives the end of day",
+      "summary": "At sunset, free followers within 200 units of a home base or the ship are saved; squad members are kept; other followers are lost.",
+      "behavior": "When the day ends, hazard-bound followers (dying, swallowed, drowning, mushroom-possessed) are removed first. Then every free-mode follower is tested against each home base position and the ship goal position on the horizontal plane: those within the safety range are told to enter, those outside are marked left behind and removed, except followers already entering or leaving, looking at the captain, or in the squad. Squad members are kept so that running to the base with the swarm in tow is enough, while followers busy elsewhere (for example away on a job) are lost. A bomb in a follower hand is released and extinguished. The loss pass is skipped in tutorial, challenge and ending modes. Values are defaults of the follower parameter set.",
+      "constants": [
+        {
+          "name": "sunset safety range",
+          "value": 200,
+          "unit": "world units, tested every update",
+          "source": "include/PikiMgr.h:112"
+        },
+        {
+          "name": "end hour",
+          "value": 19,
+          "unit": "game hours, tested every update",
+          "source": "include/gameflow.h:600"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiKando/gameCoreSection.cpp",
+          "line": 497
+        },
+        {
+          "path": "src/plugPikiKando/gameCoreSection.cpp",
+          "line": 439
+        },
+        {
+          "path": "src/plugPikiColin/newPikiGame.cpp",
+          "line": 865
+        }
+      ],
+      "capabilities": [
+        "end-of-day rescue radius",
+        "keep the swarm that follows the leader",
+        "forced removal of stragglers"
+      ],
+      "tags": [
+        "day-cycle",
+        "swarm",
+        "survival"
+      ]
+    },
+    {
+      "id": "camera-zoom-tilt-presets",
+      "node": "player-camera",
+      "name": "Zoom and tilt presets with timed blending",
+      "summary": "The camera cycles through near, middle and far zoom and low or high tilt presets, blending between them over 0.5 seconds.",
+      "behavior": "Six presets define orbit distance, elevation angle, field of view, a vertical look-at lift, the weight of the captain in the look-at average and a blur amount. Defaults: near and middle zoom both sit at 700 units, far at 1200; the low tilt is 20 degrees above the horizon and the high tilt is 50; field of view is 10 degrees near, 25 to 30 middle and far. A zoom toggle button steps near, middle, far and back; a second button toggles tilt low and high. Each change records the previous preset and runs a blend timer of 0.5 seconds; distance, angle and field of view interpolate linearly across the timer. The camera starts at near zoom and low tilt. These are constructor defaults of the camera parameter object, which a file read overwrites for stored versions, so confirm with data when matching feel.",
+      "constants": [
+        {
+          "name": "near zoom distance",
+          "value": 700,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:89"
+        },
+        {
+          "name": "far zoom distance",
+          "value": 1200,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:103"
+        },
+        {
+          "name": "low tilt elevation",
+          "value": 20,
+          "unit": "degrees above the horizon",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:90"
+        },
+        {
+          "name": "high tilt elevation",
+          "value": 50,
+          "unit": "degrees above the horizon",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:111"
+        },
+        {
+          "name": "near field of view",
+          "value": 10,
+          "unit": "degrees",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:91"
+        },
+        {
+          "name": "middle field of view, low tilt",
+          "value": 25,
+          "unit": "degrees",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:98"
+        },
+        {
+          "name": "middle field of view, high tilt",
+          "value": 30,
+          "unit": "degrees",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:119"
+        },
+        {
+          "name": "preset blend time",
+          "value": 0.5,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:144"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "line": 289
+        },
+        {
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "line": 202
+        },
+        {
+          "path": "src/plugPikiNakata/pcamcameraparameters.cpp",
+          "line": 89
+        }
+      ],
+      "capabilities": [
+        "three zoom steps and two tilt steps",
+        "timed blend between presets",
+        "telephoto-style narrow field of view when zoomed in"
+      ],
+      "tags": [
+        "camera",
+        "presets",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-swarm-weighted-lookat",
+      "node": "player-camera",
+      "name": "Look-at point pulled toward the swarm",
+      "summary": "The camera looks at a weighted average of the captain and every follower within 500 units, with the captain weighing 1000 when zoomed in and only 200 when zoomed out.",
+      "behavior": "The look-at point is the captain position times a weight, summed with the position of each squad follower within 500 units of the captain on the horizontal plane (each weighing 1), divided by the total weight. The weight is part of the preset: 1000 near, 500 middle, 200 far, so a near camera sticks to the captain while a far camera drifts toward the crowd. A vertical offset of 40, 70 or 100 units is added to the look-at point per preset. Each update the look-at and the view position move 15 percent of the remaining gap toward their goals, a exponential-style follow whose real speed depends on the frame rate. The rotate input orbits the camera at 2.4 radians per second times the stick when the left trigger is pressed past 10 percent. A press of the attention button swings the camera to look toward the cursor direction for 0.6 seconds, turning at most pi over 8 radians per update. Only in two-captain modes are extra creatures kept in frame.",
+      "constants": [
+        {
+          "name": "near captain weight",
+          "value": 1000,
+          "unit": "weight units against 1 per follower",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:93"
+        },
+        {
+          "name": "middle captain weight",
+          "value": 500,
+          "unit": "weight units against 1 per follower",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:100"
+        },
+        {
+          "name": "far captain weight",
+          "value": 200,
+          "unit": "weight units against 1 per follower",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:107"
+        },
+        {
+          "name": "follower inclusion distance",
+          "value": 500,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:148"
+        },
+        {
+          "name": "follow homing rate",
+          "value": 0.15,
+          "unit": "fraction of remaining gap per update, rate unverified",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:138"
+        },
+        {
+          "name": "orbit rotation speed",
+          "value": 2.4,
+          "unit": "angle units per second (radians assumed) times stick deflection",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:140"
+        },
+        {
+          "name": "rotate trigger threshold",
+          "value": 0.1,
+          "unit": "fraction of trigger travel, tested every update",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:145"
+        },
+        {
+          "name": "attention snap duration",
+          "value": 0.6,
+          "unit": "seconds, accumulated from the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:143"
+        },
+        {
+          "name": "near look-at lift",
+          "value": 40,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/pcamcameraparameters.cpp:92"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "line": 623
+        },
+        {
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "line": 321
+        },
+        {
+          "path": "src/plugPikiNakata/pcamcamera.cpp",
+          "line": 224
+        }
+      ],
+      "capabilities": [
+        "look-at that averages the captain and the swarm",
+        "zoom-dependent leader weight",
+        "exponential-lag follow camera",
+        "attention snap to the cursor direction"
+      ],
+      "tags": [
+        "camera",
+        "swarm",
+        "follow"
+      ]
+    },
+    {
+      "id": "ground-enemy-territory",
+      "node": "enemy-bulborb",
+      "name": "Ground enemy territory chase and return",
+      "summary": "The common ground enemy sees 95 units all around, chases at 50 units per second until it is 500 units from its nest, then runs home until it is within 80.",
+      "behavior": "A state machine drives the enemy: it idles with a random wait animation, turns toward the nest if far from it, and starts a chase the moment a captain or follower is inside its visible range and height. During the chase it moves toward the target at its run speed on the horizontal plane and turns at 1.8 radians per second; it gives up when the distance to its nest exceeds the danger territory radius or the target is lost, then returns at the same run speed until inside the safety radius, after which it resumes idling. Parameters are constructor defaults of the enemy parameter object; the data file read at load replaces them, and tougher variants set larger life and different ranges (the dark variant has 1000 life, 80 sight range and 10 second cry timer).",
+      "constants": [
+        {
+          "name": "walk speed",
+          "value": 10,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiNakata/taichappy.cpp:118"
+        },
+        {
+          "name": "run speed",
+          "value": 50,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "src/plugPikiNakata/taichappy.cpp:119"
+        },
+        {
+          "name": "turn speed",
+          "value": 1.8,
+          "unit": "radians per second",
+          "source": "src/plugPikiNakata/taichappy.cpp:120"
+        },
+        {
+          "name": "visible range",
+          "value": 95,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:121"
+        },
+        {
+          "name": "visible height",
+          "value": 100,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:123"
+        },
+        {
+          "name": "danger territory radius from nest",
+          "value": 500,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:130"
+        },
+        {
+          "name": "safety territory radius from nest",
+          "value": 80,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:131"
+        },
+        {
+          "name": "life",
+          "value": 100,
+          "unit": "hit points",
+          "source": "src/plugPikiNakata/taichappy.cpp:115"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiNakata/taichappy.cpp",
+          "line": 310
+        },
+        {
+          "path": "src/plugPikiNakata/taijudgementactions.cpp",
+          "line": 93
+        },
+        {
+          "path": "src/plugPikiNakata/taimoveactions.cpp",
+          "line": 305
+        }
+      ],
+      "capabilities": [
+        "territorial chase and return",
+        "give-up distance from the nest",
+        "horizontal-plane pursuit"
+      ],
+      "tags": [
+        "ai",
+        "enemy",
+        "pursuit"
+      ]
+    },
+    {
+      "id": "ground-enemy-swallow-and-shake",
+      "node": "enemy-bulborb",
+      "name": "Swallow strike and shake-off threshold",
+      "summary": "The enemy strikes when a target is within 18 units and 40 degrees, swallows up to its swallow count within 10 units of the mouth, and shakes off clingers after 1 or 2 hits depending on how many cling.",
+      "behavior": "The attack starts when a visible target is inside the attackable range and angle. The enemy is invulnerable from the start of the strike until the bite key frame; there it flings everyone clinging to its upper body and then swallows each unit within the hit radius of the mouth, up to a swallow count per bite (1 by default, 2 for the dark variant). The captain is swallowed too if in range. When the mouth has no free slot for a unit, that unit is killed instead. Each hit from a clinging follower adds 1 to a damage counter. A shake-off is triggered when that counter reaches a threshold chosen by how many followers are clinging: 1 hit for one or two clingers, 2 hits for three or more. The shake applies a knockback of 60 to the upper body and 50 to the lower body to all clingers, resets the counter and makes it keep chasing. Counting stops while the shake animation is running. Defaults are constructor values; data can override them.",
+      "constants": [
+        {
+          "name": "attackable range",
+          "value": 18,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:124"
+        },
+        {
+          "name": "attackable angle",
+          "value": 40,
+          "unit": "degrees",
+          "source": "src/plugPikiNakata/taichappy.cpp:125"
+        },
+        {
+          "name": "mouth hit range",
+          "value": 10,
+          "unit": "world units, tested every update",
+          "source": "src/plugPikiNakata/taichappy.cpp:128"
+        },
+        {
+          "name": "swallow count per bite",
+          "value": 1,
+          "unit": "followers, for the base variant",
+          "source": "src/plugPikiNakata/taichappy.cpp:106"
+        },
+        {
+          "name": "shake threshold for 1 clinger (hits)",
+          "value": 1,
+          "unit": "hits, counted per hit",
+          "source": "src/plugPikiNakata/taichappy.cpp:110"
+        },
+        {
+          "name": "shake threshold for 3 clingers (hits)",
+          "value": 2,
+          "unit": "hits, counted per hit",
+          "source": "src/plugPikiNakata/taichappy.cpp:112"
+        },
+        {
+          "name": "upper body shake power",
+          "value": 60,
+          "unit": "knockback strength, applied once per shake",
+          "source": "src/plugPikiNakata/taichappy.cpp:141"
+        },
+        {
+          "name": "lower body shake power",
+          "value": 50,
+          "unit": "knockback strength, applied once per shake",
+          "source": "src/plugPikiNakata/taichappy.cpp:142"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiNakata/taiattackactions.cpp",
+          "line": 89
+        },
+        {
+          "path": "src/plugPikiNakata/tekibteki.cpp",
+          "line": 1640
+        },
+        {
+          "path": "src/plugPikiNakata/tekibteki.cpp",
+          "line": 1719
+        }
+      ],
+      "capabilities": [
+        "swarm-counting shake-off",
+        "swallow with a per-bite limit",
+        "invulnerable strike frame"
+      ],
+      "tags": [
+        "combat",
+        "enemy",
+        "ai"
+      ]
+    },
+    {
+      "id": "boss-attack-selection",
+      "node": "enemy-boss",
+      "name": "Large boss tongue, jump and blast",
+      "summary": "The boss walks at 60 units per second, strikes with its tongue at a point 180 units ahead of it, and below half health may jump-attack within 250 units and 120 degrees of facing.",
+      "behavior": "Attack choice defaults to the tongue, which hits any captain or follower within 40 units horizontally and 25 vertically of a strike point placed 180 units ahead of the boss along its facing. When life drops under half of maximum, a jump attack is chosen with a chance blending 0.5 with 0.9 by how many bombs it has swallowed (each bomb counts 0.1 toward the blend, capped at 1). The jump needs the target inside a territory radius of 275 around its home, within 250 horizontally and within 60 degrees either side of its facing (the parameter is a full 120 degrees and is halved). Up to 3 jump attacks may chain. A knockback blast pushes the captain and followers inside 200 units away, with strength falling linearly with distance from a maximum of 150 at the boss. Values are constructor defaults of the boss parameter object; whether a data file replaces them is unverified for this boss.",
+      "constants": [
+        {
+          "name": "walk speed",
+          "value": 60,
+          "unit": "world units per second, scaled by the per-frame delta time (clamped to at most 1/30 s)",
+          "source": "include/King.h:71"
+        },
+        {
+          "name": "tongue strike point distance ahead",
+          "value": 180,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:74"
+        },
+        {
+          "name": "tongue hit radius, horizontal",
+          "value": 40,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:75"
+        },
+        {
+          "name": "tongue hit tolerance, vertical",
+          "value": 25,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:76"
+        },
+        {
+          "name": "jump attack health threshold",
+          "value": 0.5,
+          "unit": "fraction of maximum health, tested every update",
+          "source": "include/King.h:93"
+        },
+        {
+          "name": "jump chance without swallowed bombs",
+          "value": 0.5,
+          "unit": "probability per attack choice",
+          "source": "include/King.h:94"
+        },
+        {
+          "name": "jump chance with many swallowed bombs",
+          "value": 0.9,
+          "unit": "probability per attack choice",
+          "source": "include/King.h:95"
+        },
+        {
+          "name": "jump attack territory radius",
+          "value": 275,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:97"
+        },
+        {
+          "name": "jump attack range",
+          "value": 250,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:98"
+        },
+        {
+          "name": "jump attack angle (full, halved in use)",
+          "value": 120,
+          "unit": "degrees",
+          "source": "include/King.h:99"
+        },
+        {
+          "name": "consecutive jump attacks",
+          "value": 3,
+          "unit": "attacks",
+          "source": "include/King.h:112"
+        },
+        {
+          "name": "blast radius",
+          "value": 200,
+          "unit": "world units, tested every update",
+          "source": "include/King.h:85"
+        },
+        {
+          "name": "blast power at the centre",
+          "value": 150,
+          "unit": "knockback strength, scaled down linearly with distance",
+          "source": "include/King.h:86"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "line": 681
+        },
+        {
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "line": 768
+        },
+        {
+          "path": "src/plugPikiNishimura/KingAi.cpp",
+          "line": 580
+        }
+      ],
+      "capabilities": [
+        "health-driven attack switching",
+        "angular gate on the jump attack",
+        "knockback blast with distance falloff"
+      ],
+      "tags": [
+        "combat",
+        "boss",
+        "ai"
+      ]
+    },
+    {
+      "id": "shared-frame-time-and-gravity",
+      "node": "world-physics",
+      "name": "Frame delta clamp and shared gravity",
+      "summary": "Every timer and speed uses a frame delta clamped to 1/30 s, and all creatures share a 550 units per second squared gravity.",
+      "behavior": "The system clock turns the tick difference into seconds each frame and caps it at 1/30 s, so a slow frame never advances the simulation by more than one 30 Hz step. Every timed rule in this reference (whistle growth, throw hold, lost timer, day clock) accumulates that delta, while a few counters are plain per-update counts and are marked as such. Gravity subtracts from vertical velocity by the delta each update unless the creature is flying, roped, climbing, or ignoring gravity; an optional air drag term reduces speed in proportion to the delta. Horizontal drag is five times weaker than vertical (0.2 scale).",
+      "constants": [
+        {
+          "name": "frame delta cap divisor (cap is 1 over this, in seconds)",
+          "value": 30,
+          "unit": "divisor of one second, applied every frame",
+          "source": "src/sysDolphin/system.cpp:273"
+        },
+        {
+          "name": "gravity",
+          "value": 550,
+          "unit": "world units per second squared, applied each update",
+          "source": "include/AIConstant.h:26"
+        },
+        {
+          "name": "horizontal air drag scale",
+          "value": 0.2,
+          "unit": "fraction of vertical drag, applied each update when enabled",
+          "source": "src/plugPikiKando/creatureMove.cpp:146"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/sysDolphin/system.cpp",
+          "line": 266
+        },
+        {
+          "path": "src/plugPikiKando/creatureMove.cpp",
+          "line": 141
+        }
+      ],
+      "capabilities": [
+        "clamped variable time step",
+        "shared gravity constant",
+        "optional air drag"
+      ],
+      "tags": [
+        "physics",
+        "timing",
+        "feel"
+      ]
+    }
+  ]
+}

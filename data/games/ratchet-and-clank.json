@@ -1,0 +1,1564 @@
+{
+  "version": 1,
+  "id": "ratchet-and-clank",
+  "title": "Ratchet & Clank",
+  "repo": "https://github.com/OpenRAC/rac1-decomp",
+  "sha": "84bd565ff5d079384f1b673ac8e39ea3e06c68b7",
+  "nodes": [
+    {
+      "id": "hero-motion",
+      "name": "Hero ground motion",
+      "purpose": "Per-update state machine that turns stick input, ground probes and slope readings into planar velocity, heading turn rate and ground snapping for the on-foot character",
+      "paths": [
+        "src/overlays/shared/hero_water_and_ground_motion.c",
+        "src/overlays/shared/hero_steering_and_tilt.c",
+        "include/structs/hero.h",
+        "include/enums/hero_state.h"
+      ],
+      "functions": [
+        {
+          "name": "hero_update_movement",
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "lines": [
+            87,
+            3190
+          ]
+        },
+        {
+          "name": "hero_move_state_velocity",
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "lines": [
+            44,
+            180
+          ]
+        },
+        {
+          "name": "update_hero_planar_movement_velocity",
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "lines": [
+            796,
+            915
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-springs"
+      ]
+    },
+    {
+      "id": "hero-jump",
+      "name": "Jump and airborne control",
+      "purpose": "Jump entry from pad history, the high-jump upgrade window, and the air branch that supplies drift speed, yaw control and gravity easing",
+      "paths": [
+        "src/overlays/shared/hero_move_impulse.c",
+        "src/overlays/shared/hero_vehicle_and_collision.c",
+        "include/enums/hero_state.h"
+      ],
+      "functions": [
+        {
+          "name": "hero_update_hop_movement",
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "lines": [
+            64,
+            190
+          ]
+        },
+        {
+          "name": "try_start_hero_jump",
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "lines": [
+            3470,
+            3491
+          ]
+        },
+        {
+          "name": "get_hero_high_jump_input_window_frames",
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "lines": [
+            327,
+            336
+          ]
+        }
+      ],
+      "dependsOn": [
+        "hero-motion",
+        "physics-springs"
+      ]
+    },
+    {
+      "id": "hero-combat",
+      "name": "Wrench combat",
+      "purpose": "Melee sweep windows, hit selection, thrown-wrench aiming and the damage handler that converts a hit record into a hurt state plus knockback velocity",
+      "paths": [
+        "src/overlays/shared/bolts_and_wrench.c",
+        "src/overlays/shared/hero_knockback_voice.c",
+        "src/overlays/shared/hero_steering_and_tilt.c",
+        "include/structs/hit_message.h"
+      ],
+      "functions": [
+        {
+          "name": "wrench_update",
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "lines": [
+            1942,
+            2292
+          ]
+        },
+        {
+          "name": "scale_wrench_collision_vector_by_heading",
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "lines": [
+            1788,
+            1796
+          ]
+        },
+        {
+          "name": "handle_hero_hit",
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "lines": [
+            30,
+            157
+          ]
+        },
+        {
+          "name": "launch_hero_wrench",
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "lines": [
+            1169,
+            1242
+          ]
+        }
+      ],
+      "dependsOn": [
+        "hero-motion",
+        "physics-springs"
+      ]
+    },
+    {
+      "id": "follow-camera",
+      "name": "Follow camera",
+      "purpose": "Damped-spring tracking of the character, the camera-switch blend used when the active camera record changes, shake channels and the per-update camera assembly",
+      "paths": [
+        "src/game/gameplay/camera.c",
+        "src/overlays/shared/follow_camera.c",
+        "include/structs/camera.h"
+      ],
+      "functions": [
+        {
+          "name": "Cam_InterpValues",
+          "path": "src/game/gameplay/camera.c",
+          "lines": [
+            71,
+            90
+          ]
+        },
+        {
+          "name": "switch_active_camera_record",
+          "path": "src/game/gameplay/camera.c",
+          "lines": [
+            145,
+            240
+          ]
+        },
+        {
+          "name": "apply_camera_shake",
+          "path": "src/game/gameplay/camera.c",
+          "lines": [
+            791,
+            817
+          ]
+        },
+        {
+          "name": "update_camera_tracking_state",
+          "path": "src/game/gameplay/camera.c",
+          "lines": [
+            829,
+            896
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-springs",
+        "hero-motion"
+      ]
+    },
+    {
+      "id": "camera-collision",
+      "name": "Camera collision and view volumes",
+      "purpose": "Grid-backed camera volume lookup, orbital endpoint push-out and the underwater test performed on the assembled view",
+      "paths": [
+        "src/game/gameplay/camera.c",
+        "src/overlays/shared/follow_camera.c",
+        "src/overlays/shared/collision_queries.c"
+      ],
+      "functions": [
+        {
+          "name": "find_camera_collision_volume_for_point",
+          "path": "src/overlays/shared/collision_queries.c",
+          "lines": [
+            58,
+            92
+          ]
+        },
+        {
+          "name": "test_point_in_camera_collision_volume",
+          "path": "src/overlays/shared/collision_queries.c",
+          "lines": [
+            99,
+            174
+          ]
+        },
+        {
+          "name": "resolve_follow_camera_endpoint_collisions",
+          "path": "src/overlays/shared/follow_camera.c",
+          "lines": [
+            2899,
+            2949
+          ]
+        },
+        {
+          "name": "update_follow_camera_orbit_after_collision",
+          "path": "src/overlays/shared/follow_camera.c",
+          "lines": [
+            2830,
+            2863
+          ]
+        },
+        {
+          "name": "update_camera_underwater_flag",
+          "path": "src/game/gameplay/camera.c",
+          "lines": [
+            905,
+            936
+          ]
+        }
+      ],
+      "dependsOn": [
+        "follow-camera"
+      ]
+    },
+    {
+      "id": "physics-springs",
+      "name": "Spring integrators",
+      "purpose": "Shared scalar and angular dampers used by pose, camera and knockback code: clamped velocity easing and wrapped-angle springs that snap when close",
+      "paths": [
+        "src/overlays/shared/moby_ground_collision.c"
+      ],
+      "functions": [
+        {
+          "name": "advance_damped_scalar_velocity",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            1643,
+            1659
+          ]
+        },
+        {
+          "name": "Spring",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            1663,
+            1675
+          ]
+        },
+        {
+          "name": "spring_angle",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            1701,
+            1723
+          ]
+        },
+        {
+          "name": "SteerAngleWithVelocity",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            1728,
+            1760
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "moby-physics",
+      "name": "Moby arc motion",
+      "purpose": "Gravity, first-contact settling and ground-probe integration for moving objects, plus the collision-stepped translation helper those objects use",
+      "paths": [
+        "src/overlays/shared/moby_ground_collision.c",
+        "include/structs/moby.h"
+      ],
+      "functions": [
+        {
+          "name": "step_moby_motion",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            1937,
+            2121
+          ]
+        },
+        {
+          "name": "MoveMobyWithCollision",
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "lines": [
+            278,
+            336
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-springs"
+      ]
+    },
+    {
+      "id": "water",
+      "name": "Swimming and water surface",
+      "purpose": "Swim and surface states: roll spring, steering limits, per-state speed targets, and the vertical spring that holds the character at the water line",
+      "paths": [
+        "src/overlays/shared/hero_water_and_ground_motion.c",
+        "src/overlays/shared/hero_vehicle_and_collision.c"
+      ],
+      "functions": [
+        {
+          "name": "try_transition_hero_water_state",
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "lines": [
+            2916,
+            2970
+          ]
+        },
+        {
+          "name": "try_enter_hero_water_state",
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "lines": [
+            2979,
+            3058
+          ]
+        },
+        {
+          "name": "update_hero_water_height_and_bobbing",
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "lines": [
+            3061,
+            3104
+          ]
+        }
+      ],
+      "dependsOn": [
+        "hero-motion",
+        "physics-springs"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-run-acceleration",
+      "node": "hero-motion",
+      "name": "Ground run acceleration budget",
+      "summary": "Planar speed is rebuilt each update from a run-speed factor and a per-update acceleration budget that depends on requested speed, stick input and whether the character is already above run speed",
+      "behavior": "The stick handler writes a target speed and a move yaw. The integrator builds a planar target vector from that yaw, the target speed and the run speed factor times frame time. The change from the current resolved planar velocity toward that vector is clipped to an acceleration budget. The base budget is 2.45 times the target speed, times frame time squared, plus a braking term of twice frame time squared times a 0 to 1 factor that measures how directly the old velocity opposes the new vector. With no direction input from the pad the budget is replaced by 1.1 frame-time-squared units. During the first 15 ticks of the wrench combo state, while planar speed is still under three frame-time units, the budget is 11 instead. Whenever planar speed is above the run speed times frame time, the budget is 13 and this override wins over the earlier choices, including the no-input case. The combo state also forces the target speed to 0.4 and the crouch-swing state forces it to zero. After steering, planar velocity is shortened by the cosine of the ground pitch only when the stored pitch from the previous update was under one degree and the current pitch is over five degrees, so the shortening applies where a slope is first met. The stored pitch is overwritten with the current one at the end of every update. When the character height is within 0.15 units of the ground height it is snapped onto it, which stops the character floating above rising ground. Every speed and acceleration literal is multiplied by frame time or frame time squared (frame time is 1/60 s on NTSC, 1/50 s on PAL, so values hold per second).",
+      "constants": [
+        {
+          "name": "runSpeedFactor",
+          "value": 5.9,
+          "unit": "units/s, applied as frame time times the factor per update",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:815"
+        },
+        {
+          "name": "accelerationPerRequestedSpeed",
+          "value": 2.45,
+          "unit": "frame-time-squared multiplier per unit of target speed (units/s²)",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:841"
+        },
+        {
+          "name": "accelerationWithoutStick",
+          "value": 1.1,
+          "unit": "frame-time-squared multiplier (units/s²), used when the pad reports no direction",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:844"
+        },
+        {
+          "name": "accelerationAboveRunSpeed",
+          "value": 13,
+          "unit": "frame-time-squared multiplier (units/s²), applies while planar speed exceeds run speed",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:851"
+        },
+        {
+          "name": "previousPitchCeiling",
+          "value": 0.0174532924,
+          "unit": "radians (1 degree), compared with the previous update pitch",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:908"
+        },
+        {
+          "name": "currentPitchFloor",
+          "value": 0.0872664601,
+          "unit": "radians (5 degrees), compared with the current ground pitch",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:908"
+        },
+        {
+          "name": "groundSnapHeight",
+          "value": 0.15,
+          "unit": "units (absolute height difference to the ground), static threshold",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:912"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 796
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 841
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 850
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 908
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 912
+        }
+      ],
+      "capabilities": [
+        "speed-dependent acceleration budget",
+        "separate budget while above run speed",
+        "slope entry velocity shortening",
+        "ground snapping within a small height"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "platformer",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "slope-slip-state",
+      "node": "hero-motion",
+      "name": "Downhill slip state",
+      "summary": "A slip state points the character along the downhill yaw, sets a fixed speed target, steers with a large budget and adds gravity so steep surfaces slide",
+      "behavior": "While the slip state is active the movement yaw is replaced by a stored downhill yaw, so the heading follows the fall line instead of the stick, and the target speed is set to 5.5 times frame time. The shared planar steering routine then runs with a budget of 25 frame-time-squared units, many times the 2.45-per-unit-of-target-speed walking budget, so the character commits to the slide quickly. Gravity of 18 frame-time-squared units is added to the resolved vertical velocity in the same branch. Other code enters the slip state when a slip-ground flag is set and the character has spent no frames off the ground. Leaving the state is handled elsewhere and is not part of this card.",
+      "constants": [
+        {
+          "name": "slipSpeed",
+          "value": 5.5,
+          "unit": "units/s, applied as frame time times 5.5 per update",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2222"
+        },
+        {
+          "name": "slipSteeringAcceleration",
+          "value": 25,
+          "unit": "frame-time-squared multiplier (units/s²)",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2223"
+        },
+        {
+          "name": "slipGravity",
+          "value": 18,
+          "unit": "frame-time-squared multiplier (units/s²)",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2225"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2220
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2221
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2224
+        }
+      ],
+      "capabilities": [
+        "fall-line facing override",
+        "high-commitment slide acceleration",
+        "gravity applied along the slope"
+      ],
+      "tags": [
+        "movement",
+        "slope",
+        "physics",
+        "feel",
+        "terrain"
+      ]
+    },
+    {
+      "id": "ice-surface-friction",
+      "node": "hero-motion",
+      "name": "Ice ground friction",
+      "summary": "Ice ground replaces the normal steering and airborne deceleration budgets with a tiny one, and slopes steeper than 15 degrees on ice force the speed target to zero with a slope-scaled budget",
+      "behavior": "Two ice rules sit in the shared steering routine. The first applies in the airborne control mode when the target speed is below a small fraction of a stored speed band: planar speed eases toward zero with the stored stickless deceleration, but with 0.17 frame-time-squared units when the ice-ground flag is set, so an airborne character over ice sheds almost no speed. The second applies when an unidentified stored flag and the ice-ground flag are both set: the steering budget becomes 0.17 frame-time-squared units, so velocity changes very slowly toward the target. In one numbered state (15) the target speed is instead taken from the stick scaled by 2.5 frame time with a 3 frame-time-squared budget. If the ground slope is above 15 degrees the target speed is forced to zero and the budget becomes the slope in radians times 9 frame-time-squared units divided by 45 degrees in radians, so the budget grows with the slope. The steering routine that consumes this budget is not part of this card, so the direction of any slope drift is unverified.",
+      "constants": [
+        {
+          "name": "iceDeceleration",
+          "value": 0.17,
+          "unit": "frame-time-squared multiplier (units/s²), used for both the airborne rule and the steering budget",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:155"
+        },
+        {
+          "name": "iceSlopeThreshold",
+          "value": 0.2617994,
+          "unit": "radians (15 degrees), ground slope threshold",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:173"
+        },
+        {
+          "name": "iceSlopeGain",
+          "value": 9,
+          "unit": "frame-time-squared multiplier (units/s²) at the reference slope",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:175"
+        },
+        {
+          "name": "iceSlopeReference",
+          "value": 0.7853982,
+          "unit": "radians (45 degrees), divisor of the slope",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:175"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 152
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 154
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 167
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 173
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 178
+        }
+      ],
+      "capabilities": [
+        "surface-dependent steering budget",
+        "small airborne deceleration over ice",
+        "slope-scaled budget on steep ice"
+      ],
+      "tags": [
+        "movement",
+        "grip",
+        "friction",
+        "terrain",
+        "feel"
+      ]
+    },
+    {
+      "id": "high-jump-drift",
+      "node": "hero-jump",
+      "name": "High jump drift and air steering",
+      "summary": "The airborne branch holds the take-off heading, eases a drift speed toward a fixed value, drops it near landing, and rebuilds planar velocity from the drift yaw plus a take-off term",
+      "behavior": "The branch covers the high jump state and one further unnamed airborne state. The movement yaw is reset to the stored take-off yaw and the heading is turned toward it with a turn rate limit of 6.98 radians per second, so mid-air heading changes are gradual. Ground speed becomes the stored air target speed, except when an unidentified mode field equals 3, where it is zero. In the high jump state only, a drift speed eases toward 4.2 units per second at an acceleration of 8 frame-time-squared units. When the character has passed the jump apex and fewer than 12 ticks remain before landing, the drift target flips to zero at the same rate so the character settles where it will land. Planar velocity is then rebuilt from the drift yaw and drift speed. A second component along the take-off direction, equal to the air target speed times the sine of the yaw difference between take-off and drift, is added, which keeps some of the take-off momentum through a turn. Movement momentum is copied from the impulse computed for this update.",
+      "constants": [
+        {
+          "name": "highJumpDriftSpeed",
+          "value": 4.2,
+          "unit": "units/s, applied as frame time times 4.2",
+          "source": "src/overlays/shared/hero_move_impulse.c:120"
+        },
+        {
+          "name": "driftAcceleration",
+          "value": 8,
+          "unit": "frame-time-squared multiplier (units/s²), also used when easing toward 4.2",
+          "source": "src/overlays/shared/hero_move_impulse.c:118"
+        },
+        {
+          "name": "airTurnRate",
+          "value": 6.981317,
+          "unit": "radians/s, applied as frame time times the rate",
+          "source": "src/overlays/shared/hero_move_impulse.c:110"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "line": 104
+        },
+        {
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "line": 106
+        },
+        {
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "line": 116
+        },
+        {
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "line": 123
+        },
+        {
+          "path": "src/overlays/shared/hero_move_impulse.c",
+          "line": 127
+        }
+      ],
+      "capabilities": [
+        "bounded mid-air heading correction",
+        "drift easing with a landing cut-off",
+        "take-off momentum blend"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "air control",
+        "feel",
+        "smoothing"
+      ]
+    },
+    {
+      "id": "jump-press-window",
+      "node": "hero-jump",
+      "name": "Jump press window and high jump upgrade",
+      "summary": "A fresh jump-button press enters the jump state, and a second press inside a short window while one of two held-button bits is set upgrades it to the high jump; the window is zero when the stick points along the facing",
+      "behavior": "Jump entry first asks the pad layer whether the jump button was pressed within the current window. A helper returns the upgrade window length: 12 ticks, rescaled for the video rate, but zero when the stick direction lies within about 45 degrees of the facing direction (the forward quadrant). Backward and sideways stick directions keep the full 12 ticks. When one of two held-button bits (mask 0xA, meaning unverified) is set and the window is above zero, the pad history is checked for a second press of the same button that pairs with the first inside the window, and if so the high jump state is entered directly. Otherwise the ordinary jump state is entered, or the call returns without acting when the caller passed a passive-test flag. How the history check pairs the two presses is not recovered from the source.",
+      "constants": [
+        {
+          "name": "highJumpPressWindow",
+          "value": 12,
+          "unit": "ticks passed through scale_ticks, which rescales a count authored at 60 Hz for the video rate",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:328"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3470
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3477
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3479
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3481
+        }
+      ],
+      "capabilities": [
+        "press-history based upgrade detection",
+        "stick-direction gated window",
+        "passive and active entry modes"
+      ],
+      "tags": [
+        "jump",
+        "input",
+        "timing",
+        "platformer"
+      ]
+    },
+    {
+      "id": "fall-pose-and-terminal-speed",
+      "node": "hero-jump",
+      "name": "Fall pose and terminal velocity",
+      "summary": "Falling adds stored gravity to the vertical velocity and clamps the descent speed; the item-release fall also springs the body into a 25 degree tilt when the ground is far below",
+      "behavior": "The plain fall state and the item-release fall state share one branch. Each update the stored fall gravity is added to the vertical velocity, and the downward component is then limited to 50 times frame time (50 units per second). In the item-release fall state only, the tilt target is 25 degrees while the ground distance is above 4 units and zero otherwise. One tilt axis springs toward that target and the other axis springs toward zero, both with the same two spring gains and a rate limit of 2.62 radians per second, and the body is then rotated about a fixed local pivot. In the same state, while the ground distance is above 1 unit, the state step is set to 1. Target speed keeps following the stick, so air steering stays available during the lean. Which spring gain acts as stiffness and which as damping is not verified.",
+      "constants": [
+        {
+          "name": "fallTiltEngageHeight",
+          "value": 4,
+          "unit": "units of ground distance above which the tilt target applies",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2233"
+        },
+        {
+          "name": "fallTiltAngle",
+          "value": 0.43633232,
+          "unit": "radians (25 degrees), tilt target",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2234"
+        },
+        {
+          "name": "tiltSpringGainA",
+          "value": 0.02,
+          "unit": "multiplier of the squared frame scale (1.0 NTSC, 1.2 PAL), dimensionless",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2237"
+        },
+        {
+          "name": "tiltSpringGainB",
+          "value": 0.3,
+          "unit": "multiplier of the squared frame scale, dimensionless",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2238"
+        },
+        {
+          "name": "fallTiltRateLimit",
+          "value": 2.6179938,
+          "unit": "radians/s, applied as frame time times the rate",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2238"
+        },
+        {
+          "name": "stateStepHeight",
+          "value": 1,
+          "unit": "units of ground distance above which the state step is set to 1",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2243"
+        },
+        {
+          "name": "terminalFallSpeed",
+          "value": 50,
+          "unit": "units/s, applied as frame time times 50 per update",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:2254"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2227
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2233
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2253
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 2254
+        }
+      ],
+      "capabilities": [
+        "gravity added each update",
+        "fixed descent speed limit",
+        "distance-triggered body tilt in the item-release fall",
+        "state step set while higher than one unit"
+      ],
+      "tags": [
+        "gravity",
+        "jump",
+        "falling",
+        "feel",
+        "animation"
+      ]
+    },
+    {
+      "id": "camera-follow-springs",
+      "node": "follow-camera",
+      "name": "Follow camera springs",
+      "summary": "The camera springs its up vector toward the inverse of the character gravity direction, springs its height with a softer pair of gains, and keeps a five-entry yaw history plus the height change of the platform under the character",
+      "behavior": "Each update the tracker takes the inverse of the character gravity direction as the up target and moves its own up vector toward it per axis with a spring (gains 0.015 and 0.2), then renormalises. When the current up vector and the target have a dot product below -0.98, so they are nearly opposite, 0.2 is added to every target component first so the spring does not stall on a degenerate axis. The camera horizontal position copies the character position immediately. The camera height uses a softer spring with gains 0.0075 and 0.175 toward the character height, but only while an unidentified hero field is not 0x50 or the hero state is 0x11. The tracker also splits the character movement per update into parts along and across the up vector. The yaw history holds five entries and shifts by one each update with the newest yaw last. When the character stands on a moby that is not one of two train classes, the tracker stores that moby height change per update, zeroed when it is under 0.001 units, and resets it when the moby changes or there is no ground moby.",
+      "constants": [
+        {
+          "name": "upSpringGainA",
+          "value": 0.015,
+          "unit": "dimensionless gain per update, not rate scaled; which gain is stiffness is unverified",
+          "source": "src/game/gameplay/camera.c:846"
+        },
+        {
+          "name": "upSpringGainB",
+          "value": 0.2,
+          "unit": "dimensionless gain per update, not rate scaled",
+          "source": "src/game/gameplay/camera.c:847"
+        },
+        {
+          "name": "heightSpringGainA",
+          "value": 0.0075,
+          "unit": "dimensionless gain per update, not rate scaled",
+          "source": "src/game/gameplay/camera.c:865"
+        },
+        {
+          "name": "heightSpringGainB",
+          "value": 0.175,
+          "unit": "dimensionless gain per update, not rate scaled",
+          "source": "src/game/gameplay/camera.c:865"
+        },
+        {
+          "name": "upFlipThreshold",
+          "value": -0.98,
+          "unit": "dot product of the current up vector and the target, dimensionless",
+          "source": "src/game/gameplay/camera.c:841"
+        },
+        {
+          "name": "platformHeightDeadZone",
+          "value": 0.001,
+          "unit": "units of moby height change per update",
+          "source": "src/game/gameplay/camera.c:882"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 829
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 838
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 841
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 846
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 865
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 882
+        }
+      ],
+      "capabilities": [
+        "gravity-aware up vector smoothing",
+        "separate immediate horizontal and sprung vertical follow",
+        "yaw history for lagged behaviour",
+        "moving platform height tracking"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "follow",
+        "feel",
+        "physics"
+      ]
+    },
+    {
+      "id": "camera-switch-blend",
+      "node": "follow-camera",
+      "name": "Camera switch blend",
+      "summary": "Switching the active camera picks a blend from the incoming camera blend kind and the outgoing transition state: eased lerp, orbit for a set number of frames, hand-off with a copied pose, or hard cut",
+      "behavior": "The incoming camera blend kind (1 eased, 5 orbit, 3 or 6 hand-off) and the outgoing camera transition state choose the mode. A previous transition state of 4 forces a hard cut. Kind 1 installs a lerp whose position and rotation rates equal the camera blend-time field when it is positive and 0.018 per update otherwise. Kind 5 installs an orbit blend whose frame count is the blend-time field truncated to an integer when it is positive and 40 frames otherwise. The hand-off kinds first copy the previous camera pose onto the incoming camera. Kind 6, or a previous state of 5, then starts a lerp with the same rate rule, except that the first level of the game uses a fallback rate of 0.01 instead of 0.018. Anything else is an immediate cut. Each lerp step advances the position and rotation progress by the rate times frame scale (1.0 NTSC, 1.2 PAL), clamped at 1. A cosine ramp turns progress into the blend factor for both position and rotation, and rotation is a normalised quaternion lerp. The blend reports done when both reach 1.",
+      "constants": [
+        {
+          "name": "defaultBlendRate",
+          "value": 0.018,
+          "unit": "blend progress per update, multiplied by frame scale (1.0 NTSC, 1.2 PAL)",
+          "source": "src/game/gameplay/camera.c:173"
+        },
+        {
+          "name": "orbitBlendFallbackFrames",
+          "value": 40,
+          "unit": "frames, passed through a frame-count rescale for the video rate",
+          "source": "src/game/gameplay/camera.c:182"
+        },
+        {
+          "name": "slowLevelBlendRate",
+          "value": 0.01,
+          "unit": "blend progress per update, multiplied by frame scale; only the hand-off lerp on the first level",
+          "source": "src/game/gameplay/camera.c:206"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 145
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 165
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 176
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 190
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 203
+        }
+      ],
+      "capabilities": [
+        "per-camera blend rates with defaults",
+        "cosine-eased position and normalised quaternion rotation",
+        "fixed-length orbital blend fallback",
+        "hand-off and hard-cut modes"
+      ],
+      "tags": [
+        "camera",
+        "transition",
+        "timing",
+        "smoothing"
+      ]
+    },
+    {
+      "id": "camera-underwater-test",
+      "node": "camera-collision",
+      "name": "Camera underwater test",
+      "summary": "A short vertical probe through the camera position finds the first hit whose material query returns zero and compares the camera height with the resolved surface height plus an offset to set the underwater flag",
+      "behavior": "The test casts a ray from 0.75 units above the camera position to 0.75 units below it and walks up to six hits. A hit whose material query returns a non-zero value is skipped by restarting the ray at that hit, lowered by 0.01 units. The first hit whose material query returns zero resolves a surface height, 0.04 units are added, and the flag is set when the camera is below that height and cleared otherwise. The material helper is not decompiled, and the source header comment describes this hit as the first one that is not a water surface, so which surface class the zero result means is unverified. If no hit qualifies within six hits the flag keeps its previous value. The flag is forced off, without a probe, for one camera id (6) and whenever a game mode value is non-zero.",
+      "constants": [
+        {
+          "name": "probeHalfHeight",
+          "value": 0.75,
+          "unit": "units above and below the camera position (half of a 1.5 unit probe)",
+          "source": "src/game/gameplay/camera.c:917"
+        },
+        {
+          "name": "probeHitLimit",
+          "value": 6,
+          "unit": "hits examined per update",
+          "source": "src/game/gameplay/camera.c:920"
+        },
+        {
+          "name": "surfaceHeightOffset",
+          "value": 0.04,
+          "unit": "units added to the resolved surface height",
+          "source": "src/game/gameplay/camera.c:922"
+        },
+        {
+          "name": "probeRetryDrop",
+          "value": 0.01,
+          "unit": "units the ray restarts below each skipped hit",
+          "source": "src/game/gameplay/camera.c:934"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 905
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 911
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 917
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 920
+        },
+        {
+          "path": "src/game/gameplay/camera.c",
+          "line": 922
+        }
+      ],
+      "capabilities": [
+        "material-filtered vertical probe",
+        "multi-hit skip past other surfaces",
+        "offset surface comparison",
+        "camera id and mode bypass"
+      ],
+      "tags": [
+        "camera",
+        "water",
+        "collision",
+        "world"
+      ]
+    },
+    {
+      "id": "camera-volume-grid",
+      "node": "camera-collision",
+      "name": "Camera collision volume grid",
+      "summary": "A flat grid of 16 unit cells indexes camera volumes, each candidate passes a cheap radius test and then a shape test for a cuboid, cylinder, sphere or capped clip volume",
+      "behavior": "A world point is bucketed by multiplying its two horizontal coordinates by 0.0625, which gives 16 unit cells in a table indexed by row times 64 plus column. Cell indices outside 0 to 64 print a warning and return no volume, and an empty cell returns none. Inside a cell the routine walks records at a 48 byte stride after a 16 byte header and rejects a record unless the horizontal distance to the record centre is under the record radius plus the caller probe radius. A survivor goes to a shape test chosen by the record type. A cuboid is tested in its own local space against a cube from -1 to 1 on each axis. A cylinder passes when the local horizontal radius is under 1 and the local height is within -1 to 1. A sphere passes when the point distance to its centre is under the sphere radius plus the probe radius. A clip volume passes the cylinder test or lies within a stored radius of either end cap centre. Only the sphere test and the broad phase use the probe radius. The follow camera calls the lookup to test whether a point lies in a camera volume and to project a point out to a sphere surface.",
+      "constants": [
+        {
+          "name": "gridCellReciprocal",
+          "value": 0.0625,
+          "unit": "1/units, so cells are 16 units wide",
+          "source": "src/overlays/shared/collision_queries.c:69"
+        },
+        {
+          "name": "gridRows",
+          "value": 64,
+          "unit": "cells per row of the flat table (the bounds check accepts indices 0 to 64)",
+          "source": "src/overlays/shared/collision_queries.c:75"
+        },
+        {
+          "name": "recordStride",
+          "value": "0x30",
+          "unit": "bytes between volume records after a 16 byte header",
+          "source": "src/overlays/shared/collision_queries.c:81"
+        },
+        {
+          "name": "unitShapeExtent",
+          "value": 1,
+          "unit": "half extent of the local cube, on each local axis (full extent 2 in local space)",
+          "source": "src/overlays/shared/collision_queries.c:116"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/collision_queries.c",
+          "line": 58
+        },
+        {
+          "path": "src/overlays/shared/collision_queries.c",
+          "line": 69
+        },
+        {
+          "path": "src/overlays/shared/collision_queries.c",
+          "line": 85
+        },
+        {
+          "path": "src/overlays/shared/collision_queries.c",
+          "line": 99
+        },
+        {
+          "path": "src/overlays/shared/collision_queries.c",
+          "line": 137
+        }
+      ],
+      "capabilities": [
+        "uniform grid broad phase",
+        "radius plus probe-radius rejection",
+        "cuboid, cylinder, sphere and capped clip shapes",
+        "point-in-volume and sphere projection use by the follow camera"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "spatial grid",
+        "engine",
+        "world"
+      ]
+    },
+    {
+      "id": "camera-orbit-collision",
+      "node": "camera-collision",
+      "name": "Orbit endpoint collision resolve",
+      "summary": "The follow camera resolves its endpoint against camera volumes and spheres for at most three passes, classifies each hit as front or back, then shortens or clamps the orbit distance",
+      "behavior": "The endpoint is tested in a loop of at most three passes. Each pass first calls the volume lookup with a margin built from a base constant and three orbit parameters (their meaning is unverified), and if that finds nothing it falls back to a sphere test; a pass that finds neither stops the loop. When a hit is found the direction from the endpoint to the hit point is normalised and its dot product with the camera forward axis is taken. Above 0.75 the hit state is set to 1 (front), below -0.75 it is set to -1 (back), and otherwise to 0. The state starts each call at 2, meaning unclassified, and any value left at 2 after the loop is reset to 0. After the loop a second routine adjusts the orbit distance. It subtracts a stored pull-in speed times frame scale from the distance when the vehicle mode is not 2, the stick magnitude is above 0.05 and a caller flag is set. Unless a caller flag is set or the control mode is fall, it keeps the previous length when that is shorter than the new distance, so the camera does not swing outward. The distance is clamped up to a stored minimum eye distance so the camera never collapses onto the target.",
+      "constants": [
+        {
+          "name": "resolvePasses",
+          "value": 3,
+          "unit": "passes per update",
+          "source": "src/overlays/shared/follow_camera.c:2922"
+        },
+        {
+          "name": "facingThreshold",
+          "value": 0.75,
+          "unit": "dot product of the hit direction and the camera forward axis (cosine of about 41 degrees)",
+          "source": "src/overlays/shared/follow_camera.c:2934"
+        },
+        {
+          "name": "analogPullThreshold",
+          "value": 0.05,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/overlays/shared/follow_camera.c:2844"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/follow_camera.c",
+          "line": 2830
+        },
+        {
+          "path": "src/overlays/shared/follow_camera.c",
+          "line": 2844
+        },
+        {
+          "path": "src/overlays/shared/follow_camera.c",
+          "line": 2899
+        },
+        {
+          "path": "src/overlays/shared/follow_camera.c",
+          "line": 2922
+        },
+        {
+          "path": "src/overlays/shared/follow_camera.c",
+          "line": 2934
+        }
+      ],
+      "capabilities": [
+        "iterated endpoint push-out",
+        "volume lookup with sphere fallback",
+        "front and back hit classification",
+        "minimum eye distance clamp"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "orbital",
+        "feel"
+      ]
+    },
+    {
+      "id": "wrench-melee-sweep",
+      "node": "hero-combat",
+      "name": "Wrench melee sweep",
+      "summary": "A swing only counts inside the attack record frame window and hits come from a segment swept between the previous and current tip positions plus a sphere test near the tip",
+      "behavior": "The wrench update runs the attack logic only in the melee move mode (or one named state), and a swing is live only while the character is not blocked and the animation frame lies between the attack record first and last frame. Each update copies the previous sweep start and end, then reads the new ones from the wrench and the character model points. The vector from the previous tip to the current tip is lengthened by 0.17 units and the tip is rebuilt from it. Outside a few modes, a swing is cancelled when the character yaw differs from the direction toward the sweep end by more than 90 degrees. Separately, outside states 43 and 112, after a 10 tick delay in the state,, and when that same yaw difference is under 70 degrees, a 1.4 unit line probe at half a unit above the position tests for solid surfaces and produces an impact effect and message when it hits. The damage query is a swept-segment test between the previous and current segments, followed by a sphere test around a point 0.085 units behind the tip. The sphere radius is 0.35 units, 0.7 in one move mode (15) and 0.47 in another state (20). A confirmed hit sets a cooldown, plays a sound, spawns an impact effect and can send the character into a recoil state.",
+      "constants": [
+        {
+          "name": "sweepReachExtension",
+          "value": 0.17,
+          "unit": "units added to the previous-to-current tip vector",
+          "source": "src/overlays/shared/bolts_and_wrench.c:2050"
+        },
+        {
+          "name": "swingCancelAngle",
+          "value": 1.5707964,
+          "unit": "radians (90 degrees), wrapped yaw difference above which the swing is cancelled",
+          "source": "src/overlays/shared/bolts_and_wrench.c:2055"
+        },
+        {
+          "name": "wallProbeAngle",
+          "value": 1.2217305,
+          "unit": "radians (70 degrees), wrapped yaw difference below which the wall line probe runs",
+          "source": "src/overlays/shared/bolts_and_wrench.c:2060"
+        },
+        {
+          "name": "sweepRadius",
+          "value": 0.35,
+          "unit": "units (sphere radius, not a diameter)",
+          "source": "src/overlays/shared/bolts_and_wrench.c:2131"
+        },
+        {
+          "name": "wideSweepRadius",
+          "value": 0.7,
+          "unit": "units (sphere radius) in move mode 15",
+          "source": "src/overlays/shared/bolts_and_wrench.c:2133"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "line": 1942
+        },
+        {
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "line": 2011
+        },
+        {
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "line": 2050
+        },
+        {
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "line": 2115
+        },
+        {
+          "path": "src/overlays/shared/bolts_and_wrench.c",
+          "line": 2131
+        }
+      ],
+      "capabilities": [
+        "animation-frame attack window",
+        "previous and current tip sweep",
+        "reach extension of the tip travel",
+        "angle-gated cancel and wall probe",
+        "state-dependent sphere radius"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "collision",
+        "timing",
+        "weapons"
+      ]
+    },
+    {
+      "id": "wrench-throw-aim",
+      "node": "hero-combat",
+      "name": "Thrown wrench aim and speed",
+      "summary": "The equipped wrench is launched along the camera aim, or at a lock point stored on the item, with a fixed flight speed and a wall-reaction flag",
+      "behavior": "The launch only proceeds when item slot zero holds the thrown-weapon moby. The throw counts as aimed when the character is in one of two aim states (1 or 30, names not recovered) for more than 20 ticks. When aimed, the item own data is read first: if it carries a lock-point flag, the aim yaw and pitch come from the vector between that stored point and a local offset of 0.5 units on two axes from the character. Without a lock point the aim yaw is the camera yaw and the pitch is the negated camera pitch plus 7 degrees upward. When not aimed, the item moves along the character forward direction and uses the character own facing as its orientation. When aimed, its direction comes from the aim yaw and pitch and its orientation from the camera basis. If the wall probe distance is under 1.2 units, the wall normal pitch is above 38 degrees and no moby is in the probe class range, a wall flag is set on the item. The flight speed value is 23 times frame time per update.",
+      "constants": [
+        {
+          "name": "throwSpeed",
+          "value": 23,
+          "unit": "units/s, stored as frame time times 23 per update",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:1237"
+        },
+        {
+          "name": "aimPitchBias",
+          "value": 0.12217305,
+          "unit": "radians (7 degrees) added to the negated camera pitch",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:1200"
+        },
+        {
+          "name": "wallProbeDistance",
+          "value": 1.2,
+          "unit": "units; the wall flag needs a probe distance below this value",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:1213"
+        },
+        {
+          "name": "wallNormalPitchGate",
+          "value": 0.6632251,
+          "unit": "radians (38 degrees); the wall flag needs a wall normal pitch above this value",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:1213"
+        },
+        {
+          "name": "localLaunchOffset",
+          "value": 0.5,
+          "unit": "units on each of two local axes from the character",
+          "source": "src/overlays/shared/hero_steering_and_tilt.c:1192"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 1169
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 1200
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 1213
+        },
+        {
+          "path": "src/overlays/shared/hero_steering_and_tilt.c",
+          "line": 1237
+        }
+      ],
+      "capabilities": [
+        "aimed and blind throw directions",
+        "lock-point aiming",
+        "wall reaction flag",
+        "fixed flight speed"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "projectile",
+        "aiming"
+      ]
+    },
+    {
+      "id": "hit-knockback",
+      "node": "hero-combat",
+      "name": "Damage knockback",
+      "summary": "A valid hit record puts the character into a hurt state and applies a planar and vertical knockback whose direction comes from the record, the source position or the character facing",
+      "behavior": "The handler returns early while the character is dying or hurt, in one numbered state (0x32), invulnerable, during a nonzero level game mode flag, or when the stored hit record does not target the character or lacks its valid flag. A grinding character instead sets a flag and returns without being moved. An accepted hit counts against the level hit counter and stores the source moby. A call that asks for no response stops after that bookkeeping. Otherwise the direction is the record vector when the record carries one, the vector from the source position to the character when only a source exists, or straight behind the character otherwise. On foot, several special cases (some source classes, water surface, swimming and ledge modes) enter different hurt states or return before any knockback. The plain on-foot case enters the hurt state and passes a planar speed of 5.7 times frame time and a vertical speed of 2.4 times frame time to the knockback helper. On magnet ground the planar speed is zero and the vertical one is 1.7 times frame time. When the record carries its sentinel range value and a record field equals 4, the vertical component is doubled. Vehicle mode 3 uses its own hurt state with planar 5.0 times frame time and the same vertical speed. The knockback is added to the character velocity.",
+      "constants": [
+        {
+          "name": "planarKnockbackSpeed",
+          "value": 5.7,
+          "unit": "units/s, applied as frame time times 5.7",
+          "source": "src/overlays/shared/hero_knockback_voice.c:138"
+        },
+        {
+          "name": "verticalKnockbackSpeed",
+          "value": 2.4,
+          "unit": "units/s, applied as frame time times 2.4",
+          "source": "src/overlays/shared/hero_knockback_voice.c:139"
+        },
+        {
+          "name": "magnetGroundVerticalSpeed",
+          "value": 1.7,
+          "unit": "units/s, applied as frame time times 1.7 (planar part is zero)",
+          "source": "src/overlays/shared/hero_knockback_voice.c:142"
+        },
+        {
+          "name": "vehicleKnockbackSpeed",
+          "value": 5,
+          "unit": "units/s, applied as frame time times 5.0, vehicle mode 3 only",
+          "source": "src/overlays/shared/hero_knockback_voice.c:151"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "line": 30
+        },
+        {
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "line": 48
+        },
+        {
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "line": 133
+        },
+        {
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "line": 137
+        },
+        {
+          "path": "src/overlays/shared/hero_knockback_voice.c",
+          "line": 144
+        }
+      ],
+      "capabilities": [
+        "hit-record validation before damage",
+        "three-way knockback direction selection",
+        "ground-type dependent knockback",
+        "separate vehicle response"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "knockback",
+        "feel"
+      ]
+    },
+    {
+      "id": "swim-speed-and-steer",
+      "node": "water",
+      "name": "Swim speed and steering",
+      "summary": "Swim states pick a speed target by state, hold-to-turn buttons drive a roll spring whose rate limit blends with an analog shoulder value, and velocity comes from heading plus a per-frame speed table",
+      "behavior": "The swim, swim-idle and one further unnamed swim state (0x35) share one branch. The roll spring rate limit is interpolated between 0.70 and 1.22 radians per second (times frame time) by the larger of two analog channels (shoulder pressure, unverified). Holding one face button turns one way and holding the other turns the opposite way. The turn request ramps from 0.5 to 1.0 over 20 ticks of holding unless a controller marker is 0x79, in which case an analog channel scaled by 1.5 and clamped from 0.2 to 1 is used, and the request is that factor times 78 degrees. The swim-idle state forces the turn request to zero. The speed target is 6 times frame time in the entry step, in state 0x35 it is 7 times frame time while one of two shoulder buttons is held and 2.8 times frame time otherwise, and it is 3 times frame time in the other swim states. State 0x35 steps speed with 13 and 8 frame-time-squared values and the other states with 7 and 4. In state 0x35 velocity is the ground speed along the heading and pitch. In the plain swim state it is the ground speed times a per-frame table value times 5, with a floor of 4.5 times frame time for 15 ticks after leaving state 0x35. In swim-idle the stored momentum decays toward zero at 8 or 4 frame-time-squared units.",
+      "constants": [
+        {
+          "name": "rollRateLimitLow",
+          "value": 0.6981317,
+          "unit": "radians/s, applied as frame time times the rate",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:361"
+        },
+        {
+          "name": "rollRateLimitHigh",
+          "value": 1.2217305,
+          "unit": "radians/s, applied as frame time times the rate",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:367"
+        },
+        {
+          "name": "entryStepSpeed",
+          "value": 6,
+          "unit": "units/s, applied as frame time times 6",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:460"
+        },
+        {
+          "name": "fastSwimBoostedSpeed",
+          "value": 7,
+          "unit": "units/s in state 0x35 with a shoulder button held, applied as frame time times 7",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:463"
+        },
+        {
+          "name": "fastSwimUnboostedScale",
+          "value": 0.4,
+          "unit": "dimensionless multiplier of the 7 units/s target when no shoulder button is held",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:465"
+        },
+        {
+          "name": "regularSwimSpeed",
+          "value": 3,
+          "unit": "units/s in the other swim states, applied as frame time times 3",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:468"
+        },
+        {
+          "name": "fastSwimSpeedStepA",
+          "value": 13,
+          "unit": "frame-time-squared multiplier (units/s²), first argument of the speed step in state 0x35",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:539"
+        },
+        {
+          "name": "fastSwimSpeedStepB",
+          "value": 8,
+          "unit": "frame-time-squared multiplier (units/s²), second argument of the speed step in state 0x35",
+          "source": "src/overlays/shared/hero_water_and_ground_motion.c:539"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 302
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 361
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 460
+        },
+        {
+          "path": "src/overlays/shared/hero_water_and_ground_motion.c",
+          "line": 539
+        }
+      ],
+      "capabilities": [
+        "hold-to-turn accumulation",
+        "analog-blended roll rate limit",
+        "state-tiered speed targets",
+        "animation-table speed scaling"
+      ],
+      "tags": [
+        "water",
+        "movement",
+        "steering",
+        "feel"
+      ]
+    },
+    {
+      "id": "water-surface-bob",
+      "node": "water",
+      "name": "Water surface bob",
+      "summary": "Two springs and a small integrator place the character height at the water line: a sink offset spring, a surface height spring and a bob offset with restoring and drag gains",
+      "behavior": "In the surface-move state, once the state has run for 10 ticks (or the sink offset is negative, or the previous control mode was swimming), a sink offset springs toward zero with gains 0.03 and 0.3 and a rate limit of 1.5 times frame time, and the bob offset is zeroed. In other states past that gate, the bob offset integrates toward zero: it loses 0.005 times the sink offset plus 0.045 times itself per update, and snaps to zero when both are tiny. In the surface-move state a positive sink offset also zeroes a positive bob offset and eases to zero at 0.7 times frame time. A separate surface height spring with gains 0.027 and 0.3 and no rate limit chases the water surface height, or a board floor height in one control mode (0x16), except in the sink state. The final character height is the sprung surface height minus 0.12 plus the sink offset.",
+      "constants": [
+        {
+          "name": "sinkSpringGainA",
+          "value": 0.03,
+          "unit": "multiplier of the squared frame scale (1.0 NTSC, 1.2 PAL), dimensionless",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3067"
+        },
+        {
+          "name": "sinkSpringGainB",
+          "value": 0.3,
+          "unit": "multiplier of the squared frame scale, dimensionless",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3068"
+        },
+        {
+          "name": "sinkSpringRateLimit",
+          "value": 1.5,
+          "unit": "units/s, applied as frame time times 1.5",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3068"
+        },
+        {
+          "name": "bobRestoringGain",
+          "value": 0.005,
+          "unit": "multiplier of the squared frame scale per update, dimensionless",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3071"
+        },
+        {
+          "name": "bobDragGain",
+          "value": 0.045,
+          "unit": "multiplier of frame scale per update, dimensionless",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3071"
+        },
+        {
+          "name": "surfaceSinkEaseRate",
+          "value": 0.7,
+          "unit": "units/s, applied as frame time times 0.7",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3085"
+        },
+        {
+          "name": "surfaceSpringGainA",
+          "value": 0.027,
+          "unit": "multiplier of the squared frame scale, dimensionless",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3096"
+        },
+        {
+          "name": "surfaceHeightOffset",
+          "value": -0.12,
+          "unit": "units added to the character height (negative lowers it below the sprung surface height)",
+          "source": "src/overlays/shared/hero_vehicle_and_collision.c:3102"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3061
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3067
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3071
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3096
+        },
+        {
+          "path": "src/overlays/shared/hero_vehicle_and_collision.c",
+          "line": 3102
+        }
+      ],
+      "capabilities": [
+        "two-stage surface spring",
+        "bob offset with restoring and drag",
+        "rate-limited surfacing",
+        "fixed offset from the water line"
+      ],
+      "tags": [
+        "water",
+        "physics",
+        "smoothing",
+        "feel"
+      ]
+    },
+    {
+      "id": "moby-fall-and-bounce",
+      "node": "moby-physics",
+      "name": "Dropped object fall and first-contact settling",
+      "summary": "Airborne objects subtract stored gravity from vertical velocity, cap it from above, ease horizontal speed, then damp horizontal speed and gravity for the first few updates after touching the ground",
+      "behavior": "Each step subtracts the stored gravity from the vertical velocity, eases the horizontal speed toward a stored target (zero for one mode) at a stored rate, and limits the vertical velocity from above to a stored maximum, which caps upward speed rather than falling speed. A ground probe at the body position plus a stored height offset decides whether the object crosses the floor: on the first crossing in an update where the next vertical step would take it below the floor, the position is lifted to the floor, a burst effect spawns and a counter is set to 1. No velocity reversal appears in this step. While the counter is set, horizontal velocity is multiplied by 0.7 for counter values 1 to 3 and the gravity value is multiplied by 0.75 for counter values 1 to 6, so the object settles over about six updates after contact. Any coordinate below 2 or above 1021 sets an out-of-world flag for the caller. Unless a flag bit is set, a spring with gains 0.02 and 0.3 turns the body toward a stored heading.",
+      "constants": [
+        {
+          "name": "groundProbeOffset",
+          "value": 0.5,
+          "unit": "third argument of the ground probe call (meaning unverified)",
+          "source": "src/overlays/shared/moby_ground_collision.c:1970"
+        },
+        {
+          "name": "postContactHorizontalDamping",
+          "value": 0.7,
+          "unit": "multiplier per update for counter values 1 to 3",
+          "source": "src/overlays/shared/moby_ground_collision.c:1989"
+        },
+        {
+          "name": "postContactGravityDecay",
+          "value": 0.75,
+          "unit": "multiplier per update for counter values 1 to 6",
+          "source": "src/overlays/shared/moby_ground_collision.c:1993"
+        },
+        {
+          "name": "worldBoundMinimum",
+          "value": 2,
+          "unit": "units on each axis (a coordinate below this raises the flag)",
+          "source": "src/overlays/shared/moby_ground_collision.c:1996"
+        },
+        {
+          "name": "worldBoundMaximum",
+          "value": 1021,
+          "unit": "units on each axis (a coordinate above this raises the flag)",
+          "source": "src/overlays/shared/moby_ground_collision.c:1996"
+        },
+        {
+          "name": "turnSpringGainA",
+          "value": 0.02,
+          "unit": "dimensionless gain per update",
+          "source": "src/overlays/shared/moby_ground_collision.c:2049"
+        },
+        {
+          "name": "turnSpringGainB",
+          "value": 0.3,
+          "unit": "dimensionless gain per update",
+          "source": "src/overlays/shared/moby_ground_collision.c:2049"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "line": 1937
+        },
+        {
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "line": 1972
+        },
+        {
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "line": 1989
+        },
+        {
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "line": 1999
+        },
+        {
+          "path": "src/overlays/shared/moby_ground_collision.c",
+          "line": 2049
+        }
+      ],
+      "capabilities": [
+        "gravity and horizontal easing",
+        "first-contact snap with effect",
+        "short post-contact damping",
+        "world bounds flag"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "collision",
+        "feel",
+        "world"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2259 @@
+{
+  "version": 1,
+  "id": "homeworld",
+  "title": "Homeworld",
+  "repo": "https://github.com/HomeworldSDL/HomeworldSDL",
+  "sha": "1bed4939385acff7f35403940fceb891fecd8acd",
+  "nodes": [
+    {
+      "id": "universe-sim-loop",
+      "name": "Fixed-step universe clock",
+      "purpose": "Owns the simulation beat. Each game update advances the universe by one fixed period and walks the ship, missile, derelict, bullet and resource lists through their own physics and command updates. The original sixteen updates per second are multiplied by a power of two so the default build runs faster while decimation macros keep older cadences at their original wall-clock timing.",
+      "paths": [
+        "src/Game/Universe.h",
+        "src/Game/Universe.c",
+        "src/Game/UnivUpdate.c"
+      ],
+      "functions": [
+        {
+          "name": "univUpdate",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            7292,
+            7360
+          ]
+        },
+        {
+          "name": "univupdateReset",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            6222,
+            6260
+          ]
+        },
+        {
+          "name": "physUpdateObjPosVelBasic",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            1111,
+            1230
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ship-physics",
+      "name": "Space physics integrator",
+      "purpose": "Turns accumulated forces and torques into velocity and spin through mass and the moment of inertia, caps both against hull limits, then advances position and orientation by one step. Separate entry points exist for ships, missiles, derelicts and generic objects, and bullets are moved or re-anchored separately so beams stay welded to their turrets.",
+      "paths": [
+        "src/Game/Physics.c",
+        "src/Game/Tweak.c",
+        "src/Game/Tactics.c"
+      ],
+      "functions": [
+        {
+          "name": "physApplyForceToObj",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            42,
+            87
+          ]
+        },
+        {
+          "name": "physApplyRotToObj",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            97,
+            131
+          ]
+        },
+        {
+          "name": "physUpdateBulletPosVel",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            140,
+            221
+          ]
+        },
+        {
+          "name": "physUpdateObjPosVelShip",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            549,
+            779
+          ]
+        },
+        {
+          "name": "physUpdateObjPosVelMissile",
+          "path": "src/Game/Physics.c",
+          "lines": [
+            956,
+            1099
+          ]
+        },
+        {
+          "name": "tacticsGetShipsMaxVelocity",
+          "path": "src/Game/Tactics.c",
+          "lines": [
+            2169,
+            2280
+          ]
+        }
+      ],
+      "dependsOn": [
+        "universe-sim-loop"
+      ]
+    },
+    {
+      "id": "steering-autopilot",
+      "name": "Heading and velocity autopilots",
+      "purpose": "Two servo loops that let a hull fly itself: one drives orientation until the forward axis matches a wanted heading within a cosine tolerance, the other drives translation by firing whatever thrusters close the gap to a wanted velocity. On top of them sits a repulsion pass that bends the wanted velocity around nearby hulls and rocks.",
+      "paths": [
+        "src/Game/AITrack.c",
+        "src/Game/AIShip.c"
+      ],
+      "functions": [
+        {
+          "name": "aitrackHeadingFunc",
+          "path": "src/Game/AITrack.c",
+          "lines": [
+            460,
+            637
+          ]
+        },
+        {
+          "name": "aitrackHeadingWithBankPitchFunc",
+          "path": "src/Game/AITrack.c",
+          "lines": [
+            639,
+            758
+          ]
+        },
+        {
+          "name": "aitrackVelocityVectorGuidance",
+          "path": "src/Game/AITrack.c",
+          "lines": [
+            939,
+            1019
+          ]
+        },
+        {
+          "name": "aishipFlyToPointAvoidingObjsFunc",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            866,
+            1772
+          ]
+        },
+        {
+          "name": "getPitchToDescend",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            336,
+            387
+          ]
+        },
+        {
+          "name": "MoveReachedDestinationVariable",
+          "path": "src/Game/AITrack.c",
+          "lines": [
+            1347,
+            1371
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "collision-response",
+      "name": "Bump collision and impact response",
+      "purpose": "Broadphase blobs hold every impactable object; swept overlap tests find bumping pairs and then do two things at once, applying contact damage from closing speed and exchanging momentum as an impulse so the lighter hull is thrown clear. Repeated contacts skip the impulse and push the pair apart with an overlap repulsion instead.",
+      "paths": [
+        "src/Game/Collision.c",
+        "src/Game/UnivUpdate.c",
+        "src/Game/Blobs.c",
+        "src/Game/Tweak.c"
+      ],
+      "functions": [
+        {
+          "name": "collCheckRectBumpCollision",
+          "path": "src/Game/Collision.c",
+          "lines": [
+            444,
+            489
+          ]
+        },
+        {
+          "name": "collCheckShipShipColl",
+          "path": "src/Game/Collision.c",
+          "lines": [
+            684,
+            977
+          ]
+        },
+        {
+          "name": "collCheckAllBumpCollisions",
+          "path": "src/Game/Collision.c",
+          "lines": [
+            2861,
+            2911
+          ]
+        },
+        {
+          "name": "ApplyDamageToCollidingObjects",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            2323,
+            2435
+          ]
+        },
+        {
+          "name": "ObjectsHaveCollidedLately",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            2436,
+            2478
+          ]
+        },
+        {
+          "name": "ObjectsCollided",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            2479,
+            2612
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "formations",
+      "name": "Formation geometry and travel speed",
+      "purpose": "Every move order builds a formation: per-ship offsets are generated in the leader frame from each hull collision radius and a padding curve, then rewritten every update in the leader coordinate system. The group travel speed is the slowest member current top speed scaled by a formation percentage, so a mixed group moves at the pace of its heaviest ship.",
+      "paths": [
+        "src/Game/Formation.c",
+        "src/Game/FormationDefs.h",
+        "src/Game/Tactics.c"
+      ],
+      "functions": [
+        {
+          "name": "FormationCalculateOffsets",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            1403,
+            1939
+          ]
+        },
+        {
+          "name": "processFormationToDo",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            972,
+            1218
+          ]
+        },
+        {
+          "name": "formationSpecificsSphere",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            488,
+            815
+          ]
+        },
+        {
+          "name": "setFormationToDo",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            897,
+            971
+          ]
+        },
+        {
+          "name": "GetShipsTravelVel",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            1277,
+            1304
+          ]
+        },
+        {
+          "name": "setFormationTravelVelocity",
+          "path": "src/Game/Formation.c",
+          "lines": [
+            1305,
+            1321
+          ]
+        }
+      ],
+      "dependsOn": [
+        "steering-autopilot"
+      ]
+    },
+    {
+      "id": "move-command",
+      "name": "Move, destination picking and hyperspace orders",
+      "purpose": "Builds and runs player move orders. The destination is picked on a horizontal disc under the cursor with a separate vertical stalk, then the order is broadcast, the leader flies the point and the rest hold their formation offsets. The same layer runs the multiplayer hyperspace order as a four-state machine.",
+      "paths": [
+        "src/Game/CommandLayer.c",
+        "src/Game/CommandWrap.c",
+        "src/Game/PiePlate.c"
+      ],
+      "functions": [
+        {
+          "name": "clWrapMove",
+          "path": "src/Game/CommandWrap.c",
+          "lines": [
+            89,
+            125
+          ]
+        },
+        {
+          "name": "clWrapMpHyperspace",
+          "path": "src/Game/CommandWrap.c",
+          "lines": [
+            126,
+            166
+          ]
+        },
+        {
+          "name": "processMoveToDo",
+          "path": "src/Game/CommandLayer.c",
+          "lines": [
+            2711,
+            2837
+          ]
+        },
+        {
+          "name": "processMpHyperspaceingToDo",
+          "path": "src/Game/CommandLayer.c",
+          "lines": [
+            2452,
+            2673
+          ]
+        },
+        {
+          "name": "hyperspaceCost",
+          "path": "src/Game/CommandLayer.c",
+          "lines": [
+            2675,
+            2700
+          ]
+        },
+        {
+          "name": "piePointSpecDraw",
+          "path": "src/Game/PiePlate.c",
+          "lines": [
+            997,
+            1288
+          ]
+        }
+      ],
+      "dependsOn": [
+        "formations"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Orbit camera and focus transitions",
+      "purpose": "The battlefield camera is an orbit rig: azimuth, declination and boom length around a focus point, with the eye rebuilt from those three values. A second layer blends between remembered camera states for focus changes and chases moving hulls with velocity feed-forward and cubic smoothing.",
+      "paths": [
+        "src/Game/Camera.c",
+        "src/Game/CameraCommand.c"
+      ],
+      "functions": [
+        {
+          "name": "cameraSetEyePosition",
+          "path": "src/Game/Camera.c",
+          "lines": [
+            146,
+            167
+          ]
+        },
+        {
+          "name": "cameraMinimumZoom",
+          "path": "src/Game/Camera.c",
+          "lines": [
+            254,
+            302
+          ]
+        },
+        {
+          "name": "cameraZoom",
+          "path": "src/Game/Camera.c",
+          "lines": [
+            303,
+            338
+          ]
+        },
+        {
+          "name": "cameraControl",
+          "path": "src/Game/Camera.c",
+          "lines": [
+            339,
+            368
+          ]
+        },
+        {
+          "name": "cameraRayCast",
+          "path": "src/Game/Camera.c",
+          "lines": [
+            462,
+            516
+          ]
+        },
+        {
+          "name": "CloseOn",
+          "path": "src/Game/CameraCommand.c",
+          "lines": [
+            453,
+            482
+          ]
+        },
+        {
+          "name": "EvalCubic",
+          "path": "src/Game/CameraCommand.c",
+          "lines": [
+            528,
+            557
+          ]
+        },
+        {
+          "name": "CameraChase",
+          "path": "src/Game/CameraCommand.c",
+          "lines": [
+            640,
+            738
+          ]
+        },
+        {
+          "name": "FocusOnNewEntry",
+          "path": "src/Game/CameraCommand.c",
+          "lines": [
+            760,
+            803
+          ]
+        }
+      ],
+      "dependsOn": [
+        "universe-sim-loop"
+      ]
+    },
+    {
+      "id": "weapons",
+      "name": "Guns, gimbals and fire control",
+      "purpose": "Decides when a gun may shoot and where it points. Fixed guns fire only inside a cosine cone about the hull forward axis, gimballed and slaved turrets slew toward a lead-predicted intercept and commit when the target falls inside their deflection limits, and every mount then obeys range bonuses, burst or single-shot cooldowns, stance modifiers and a procedural recoil curve.",
+      "paths": [
+        "src/Game/Gun.c",
+        "src/Game/Gun.h",
+        "src/Game/Tactics.c",
+        "src/Game/SpaceObj.h"
+      ],
+      "functions": [
+        {
+          "name": "gunCanShoot",
+          "path": "src/Game/Gun.c",
+          "lines": [
+            66,
+            119
+          ]
+        },
+        {
+          "name": "gunOrientGimbleGun",
+          "path": "src/Game/Gun.c",
+          "lines": [
+            257,
+            462
+          ]
+        },
+        {
+          "name": "gunRecoilTableCompute",
+          "path": "src/Game/Gun.c",
+          "lines": [
+            770,
+            788
+          ]
+        },
+        {
+          "name": "gunRecoilVectorCompute",
+          "path": "src/Game/Gun.c",
+          "lines": [
+            801,
+            819
+          ]
+        },
+        {
+          "name": "gunShootGunsAtTarget",
+          "path": "src/Game/Gun.c",
+          "lines": [
+            1234,
+            1376
+          ]
+        },
+        {
+          "name": "aishipGetTrajectoryWithVelPrediction",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            388,
+            415
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "missiles",
+      "name": "Missile and mine guidance",
+      "purpose": "Guided ordnance flies through the ship velocity servo but rebuilds its wanted velocity every update toward a lead-predicted target point, then snaps its orientation onto the velocity vector. Target retention is a probability check that ignores capital hulls and can be beaten by dodging or by running a scripted evasion.",
+      "paths": [
+        "src/Game/AIShip.c",
+        "src/Game/Tweak.c",
+        "src/Game/Gun.c"
+      ],
+      "functions": [
+        {
+          "name": "aishipFlyMissileToTarget",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            1775,
+            1826
+          ]
+        },
+        {
+          "name": "shouldMissileLoseTarget",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            1827,
+            1874
+          ]
+        },
+        {
+          "name": "aishipGuideMissile",
+          "path": "src/Game/AIShip.c",
+          "lines": [
+            1891,
+            1945
+          ]
+        }
+      ],
+      "dependsOn": [
+        "ship-physics",
+        "steering-autopilot"
+      ]
+    },
+    {
+      "id": "damage-and-blast",
+      "name": "Damage bookkeeping, explosions and damage visuals",
+      "purpose": "One entry point takes all hit points away and owns death, blast falloff, damage statistics and crew chatter thresholds. A separate module reads remaining health as a fraction and switches visible damage on in tiers, attaching fire, smoke and sparks to the hull damage markers.",
+      "paths": [
+        "src/Game/UnivUpdate.c",
+        "src/Game/Damage.c",
+        "src/Game/Tweak.c",
+        "src/Game/Battle.h"
+      ],
+      "functions": [
+        {
+          "name": "MakeExplosionRockBumpables",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            2818,
+            2909
+          ]
+        },
+        {
+          "name": "ApplyDamageToTarget",
+          "path": "src/Game/UnivUpdate.c",
+          "lines": [
+            2923,
+            3036
+          ]
+        },
+        {
+          "name": "dmgRandomDamageLocation",
+          "path": "src/Game/Damage.c",
+          "lines": [
+            116,
+            158
+          ]
+        },
+        {
+          "name": "dmgShipThink",
+          "path": "src/Game/Damage.c",
+          "lines": [
+            462,
+            566
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-response"
+      ]
+    },
+    {
+      "id": "docking",
+      "name": "Docking approach cones",
+      "purpose": "A docking ship is walked through a fixed sequence of approach targets: come to the cone origin at the dock mouth at a minimum closing speed, latch when close, then fly inside the cone and align to the dock frame. Each phase has its own distance tolerance and its own minimum fly speed so the approach reads as a controlled manoeuvre rather than a ram.",
+      "paths": [
+        "src/Game/Dock.c",
+        "src/Game/AIUtilities.c"
+      ],
+      "functions": [
+        {
+          "name": "FindNearestShipToDockAt",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            638,
+            737
+          ]
+        },
+        {
+          "name": "clDock",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            885,
+            1073
+          ]
+        },
+        {
+          "name": "dockFlyToConeInsideAndAlign",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            1368,
+            1412
+          ]
+        },
+        {
+          "name": "dockFlyToConeOrigin",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            1413,
+            1470
+          ]
+        },
+        {
+          "name": "dockFlyToConeOriginLatchIfWithin",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            1471,
+            1541
+          ]
+        },
+        {
+          "name": "dockFlyToConeOriginLatch",
+          "path": "src/Game/Dock.c",
+          "lines": [
+            1542,
+            1594
+          ]
+        }
+      ],
+      "dependsOn": [
+        "steering-autopilot"
+      ]
+    },
+    {
+      "id": "flight-maneuvers",
+      "name": "Scripted flight manoeuvres",
+      "purpose": "Canned aerobatic evasions for strike craft. Each manoeuvre is a small state machine that rotates the hull through exact angles at a limited rate with reduced angular acceleration, adds thrust at chosen phases, and is picked by a per-stance lottery so aggressive, neutral and evasive pilots dodge differently.",
+      "paths": [
+        "src/Game/FlightMan.c",
+        "src/Game/FlightMan.h"
+      ],
+      "functions": [
+        {
+          "name": "flightmanSplitSInit",
+          "path": "src/Game/FlightMan.c",
+          "lines": [
+            791,
+            810
+          ]
+        },
+        {
+          "name": "flightmanSplitSExecute",
+          "path": "src/Game/FlightMan.c",
+          "lines": [
+            811,
+            879
+          ]
+        },
+        {
+          "name": "flightmanPitchUp",
+          "path": "src/Game/FlightMan.c",
+          "lines": [
+            383,
+            401
+          ]
+        },
+        {
+          "name": "flightmanRollLeft",
+          "path": "src/Game/FlightMan.c",
+          "lines": [
+            421,
+            439
+          ]
+        },
+        {
+          "name": "flightmanEndoverExecute",
+          "path": "src/Game/FlightMan.c",
+          "lines": [
+            1418,
+            1445
+          ]
+        }
+      ],
+      "dependsOn": [
+        "steering-autopilot",
+        "ship-physics"
+      ]
+    },
+    {
+      "id": "sensors-view",
+      "name": "Sensor-manager view and resource fog",
+      "purpose": "The sensor view redraws contacts as blob icons and decides which enemy sub-blobs are visible. Visibility is a density test: asteroids and dust in the same cell are weighed against the ships in it, so a lone fighter hides in a rich field while a fleet does not, and the clouds are rebuilt on a fixed timer.",
+      "paths": [
+        "src/Game/Sensors.c",
+        "src/Game/Sensors.h"
+      ],
+      "functions": [
+        {
+          "name": "smEnemyFogOfWarBlobCallback",
+          "path": "src/Game/Sensors.c",
+          "lines": [
+            1376,
+            1418
+          ]
+        },
+        {
+          "name": "smBlobDrawCloudy",
+          "path": "src/Game/Sensors.c",
+          "lines": [
+            1419,
+            1659
+          ]
+        },
+        {
+          "name": "smBlobsDraw",
+          "path": "src/Game/Sensors.c",
+          "lines": [
+            1735,
+            2087
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "fixed-step-space-physics",
+      "node": "ship-physics",
+      "name": "Fixed-step force integration with velocity and spin caps",
+      "summary": "One fixed step converts summed forces to acceleration through inverse mass and summed torque to angular acceleration through inverse moment of inertia, clamps speed and spin against hull limits, then advances position and orientation. A healthy ship has no drag, so coasting is free and stopping is autopilot work.",
+      "behavior": "Each update the engine adds up every force applied to a hull this step and multiplies the sum by inverse mass. It multiplies that acceleration by the step and adds it to velocity. It then clamps the length of the velocity vector to the current allowed top speed of that hull, multiplies the clamped velocity by the step again and adds the result to position. The rotation half is identical. Torque times inverse moment of inertia per axis gives angular acceleration, the angular velocity is clamped to the hull maximum, and the orientation matrix is rebuilt from three small rotations about the body axes. Force and torque are cleared at the end of the step, so every thrust request must be repeated each update. A healthy ship has no drag. Only a disabled or out-of-control hull is slowed. When such a hull is moving and has no acceleration this step, it keeps 95 percent of its velocity each update, and it is set to a full stop once every axis is inside a band of plus or minus 5 units per second. Both values are defaults that a tweak script can override. Fuel is consumed per distance travelled, not per second: the burn rate of the hull times the length of this update displacement, only in single-player or when the multiplayer fuel option is on, and not while clamped to a host. At zero fuel the allowed top speed is replaced by one eighth of its normal value. The default step is one sixty-fourth of a second. A command-line vanilla switch restores the original sixteen updates per second, which makes the step one sixteenth of a second.",
+      "constants": [
+        {
+          "name": "Tick rate power-of-two shift",
+          "value": 2,
+          "unit": "power-of-two multiplier on the 16 Hz base rate, giving 64 updates per second and a 1/64 s step; the vanilla switch sets it to 0",
+          "source": "src/Game/Universe.c:75"
+        },
+        {
+          "name": "Original base update rate",
+          "value": 16,
+          "unit": "updates per second before the shift; the vanilla switch runs at exactly this rate",
+          "source": "src/Game/Universe.h:44"
+        },
+        {
+          "name": "Velocity band treated as stopped",
+          "value": 5,
+          "unit": "world units per second per axis (default, script-overridable); tested every 1/64 s update on a disabled or out-of-control hull that has no acceleration",
+          "source": "src/Game/Tweak.c:103"
+        },
+        {
+          "name": "Uncontrolled hull drag",
+          "value": 0.95,
+          "unit": "fraction of velocity kept per 1/64 s update (default, script-overridable) while a hull is disabled or out of control and not accelerating",
+          "source": "src/Game/Tweak.c:100"
+        },
+        {
+          "name": "Out-of-fuel speed factor",
+          "value": 0.125,
+          "unit": "multiplier that replaces the speed-burst multiplier in the top-speed lookup once fuel is zero; evaluated every 1/64 s update",
+          "source": "src/Game/Tactics.c:64"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Physics.c",
+          "line": 571
+        },
+        {
+          "path": "src/Game/Physics.c",
+          "line": 585
+        },
+        {
+          "path": "src/Game/Physics.c",
+          "line": 588
+        },
+        {
+          "path": "src/Game/Physics.c",
+          "line": 705
+        },
+        {
+          "path": "src/Game/Physics.c",
+          "line": 729
+        },
+        {
+          "path": "src/Game/Physics.c",
+          "line": 785
+        },
+        {
+          "path": "src/Game/Tactics.c",
+          "line": 2211
+        }
+      ],
+      "capabilities": [
+        "fixed timestep integration",
+        "mass and moment of inertia from data",
+        "per-axis velocity and spin caps",
+        "free coasting without drag",
+        "distance-based fuel burn"
+      ],
+      "tags": [
+        "physics",
+        "movement",
+        "feel",
+        "fuel"
+      ]
+    },
+    {
+      "id": "simulation-tick-and-decimation",
+      "node": "universe-sim-loop",
+      "name": "Simulation tick and the decimation that preserves older cadences",
+      "summary": "The game is stepped on a fixed clock whose rate is the original sixteen updates per second times a power of two. Routines written for the original rate keep their wall-clock period through a counter test instead of being retimed by hand.",
+      "behavior": "The simulation period is one over sixteen times two to the shift. With the default shift of 2 the game steps 64 times a second. The command-line vanilla switch sets the shift to 0 and returns to sixteen updates per second. The main loop passes the same period to every universe update, so forces, torques, fuel burn and timers do not depend on how fast the machine renders. A routine that was written for the original rate runs only when the update counter is a multiple of the shift factor, and then tests the counter shifted back down, masked, against a frame number. It therefore runs once per group of shifted updates and keeps its period in seconds. The debug autosave is one example. It is masked to 32 original ticks, which is 2 seconds, and a second mask of 256 original ticks, which is 16 seconds, gates the single-player debug save. Both run only when the debug autosave flag is on. Code that samples at the same rate for many objects picks the frame from the object number, for example a ship number masked with the rate mask, so a fleet does not all run its check on the same update.",
+      "constants": [
+        {
+          "name": "Original base update rate",
+          "value": 16,
+          "unit": "updates per second before the shift, the rate every legacy cadence is expressed in",
+          "source": "src/Game/Universe.h:44"
+        },
+        {
+          "name": "Tick rate power-of-two shift",
+          "value": 2,
+          "unit": "power-of-two multiplier on the base rate, giving 64 updates per second and a 1/64 s step; 0 under the vanilla switch",
+          "source": "src/Game/Universe.c:75"
+        },
+        {
+          "name": "Autosave decimation mask",
+          "value": 31,
+          "unit": "mask over original 16 Hz ticks, so 32 ticks or 2 s of simulated time between debug-flag autosaves",
+          "source": "src/Game/UnivUpdate.c:7300"
+        },
+        {
+          "name": "Debug resave decimation mask",
+          "value": 255,
+          "unit": "mask over original 16 Hz ticks, so 256 ticks or 16 s of simulated time between single-player debug saves",
+          "source": "src/Game/UnivUpdate.c:7313"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Universe.h",
+          "line": 53
+        },
+        {
+          "path": "src/Game/Universe.c",
+          "line": 75
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 7300
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 7348
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 6224
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 5974
+        },
+        {
+          "path": "src/SDL/main.c",
+          "line": 2168
+        }
+      ],
+      "capabilities": [
+        "fixed simulation step",
+        "power-of-two rate multiplier",
+        "counter decimation preserving old cadences",
+        "staggered per-ship check offsets"
+      ],
+      "tags": [
+        "engine",
+        "timing",
+        "simulation",
+        "determinism"
+      ]
+    },
+    {
+      "id": "heading-servo-and-descent",
+      "node": "steering-autopilot",
+      "name": "Cosine-gated heading servo with capital-ship descent pitch",
+      "summary": "Orientation is driven by a dot-product test against the wanted heading, a proportional wanted angular velocity per body axis, and a torque request capped by the hull rated rotation strength. Large hulls add a piecewise-linear pitch schedule for vertical moves and a nose dip while turning.",
+      "behavior": "The heading servo first tests whether the forward axis already points at the wanted direction. If the cosine of the angle is at or above the accuracy threshold, and the up axis is upright enough unless the caller ignores roll, the spin is zeroed and the ship reports aligned. A heading exactly behind the ship would give a zero error, so it is broken by applying the full rotation strength about one body axis in one fixed direction. Otherwise the wanted heading is expressed in the ship frame and the residual components become wanted angular velocities scaled by the hull turn speed. One body axis follows the sideways residual. When the target is behind the ship, the wanted spin on that axis is the full turn speed toward the side where the target lies, so the turn does not stall near the point exactly behind. Another axis follows the vertical residual. Roll is driven by the up-axis error, offset by a bank term (the sideways residual times a per-class bank factor), unless the caller disables roll. For each axis the requested torque is the difference between wanted and current angular velocity, times that axis moment of inertia, divided by the step. It is then clamped against the rated rotation strength of that direction, so heavy hulls turn slowly. A hull that cannot pitch has the vertical part of the wanted heading removed first. Frigates and larger add a pitch schedule. Pitch while turning is the horizontal heading error, measured as one minus the absolute cosine, times a per-class turn-pitch angle. For vertical moves the schedule is a normalized-distance profile. It holds one signed pitch while more than three quarters of the drop remains, ramps to zero at the half, ramps to the opposite sign over the next quarter, and fades back to zero over the last quarter. Climbs mirror the signs. Whichever of the turn pitch and the descent pitch has the larger magnitude in the move direction wins, and it becomes the vertical component of the wanted heading. The accuracy, bank, pitch and break-point values are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Heading acceptance cosine",
+          "value": 0.999,
+          "unit": "cosine of the largest heading error still called aligned, about 2.6 degrees (default, script-overridable); tested every 1/64 s update",
+          "source": "src/Game/AIShip.c:86"
+        },
+        {
+          "name": "Frigate turn pitch",
+          "value": 30,
+          "unit": "degrees (stored as radians at load) of nose pitch that a frigate adds while its heading error is largest; destroyers use 25 and the biggest hulls 20; scaled per 1/64 s update by the heading error",
+          "source": "src/Game/AIShip.c:94"
+        },
+        {
+          "name": "Frigate descend pitch",
+          "value": 20,
+          "unit": "degrees (stored as radians at load), the peak pitch of the vertical-move schedule for frigates; evaluated every 1/64 s update",
+          "source": "src/Game/AIShip.c:98"
+        },
+        {
+          "name": "Descent profile first break",
+          "value": 0.25,
+          "unit": "fraction of the normalized vertical distance left; the schedule peaks here and returns to zero by the end; compared on every 1/64 s update",
+          "source": "src/Game/AIShip.c:107"
+        },
+        {
+          "name": "Descent profile middle break",
+          "value": 0.5,
+          "unit": "fraction of the normalized vertical distance left where the schedule crosses zero; compared on every 1/64 s update",
+          "source": "src/Game/AIShip.c:108"
+        },
+        {
+          "name": "Descent profile outer break",
+          "value": 0.75,
+          "unit": "fraction of the normalized vertical distance left above which the schedule holds its full opposite pitch; compared on every 1/64 s update",
+          "source": "src/Game/AIShip.c:109"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 342
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 356
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 394
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 401
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 621
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 352
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 713
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1742
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 478
+        }
+      ],
+      "capabilities": [
+        "cosine heading tolerance",
+        "proportional wanted turn rate",
+        "torque capped by hull rating",
+        "bank into turns",
+        "scheduled vertical descent for capitals"
+      ],
+      "tags": [
+        "steering",
+        "movement",
+        "turning",
+        "capital-ships"
+      ]
+    },
+    {
+      "id": "thrust-vector-matching",
+      "node": "steering-autopilot",
+      "name": "Thrust matching instead of nose pointing",
+      "summary": "A ship never has to face its destination. Translation is a per-axis thrust request computed from the velocity error in hull space, so hulls crab, brake and strafe, and stop when the error is small. The wanted velocity is a fraction of the remaining distance, then capped.",
+      "behavior": "The wanted velocity for a plain move is one tenth of the vector from the ship to its destination, in units per second, so the approach slows as the gap closes. A caller can pass a negative speed limit. The sign means that the wanted speed is raised to at least that magnitude, and the ship still cannot exceed its top speed. An urgent flag skips the one tenth scaling. A positive limit caps the wanted speed instead, and with no limit the cap is the hull top speed. A formation leader takes the formation travel speed as its limit when it has none. The velocity guidance compares wanted and actual velocity. If the squared error is under a small threshold, no thrust is applied, which stops a station-keeping hull from jittering. Otherwise both vectors are rotated into the hull frame and each of the three body axes is handled alone. When the actual component is short of the wanted one, the difference times mass divided by the step is applied as a force along that facing. When it is over, the same force is applied along the opposite facing. Each force is clamped against the rated thrust strength of that facing, so a heavy hull approaches its wanted velocity but never exceeds what its engines give in one step. A non-capital hull that is swinging onto a new heading in car-turn mode also keeps a fraction of its forward thrust applied so it does not stall. All three tuning values are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Cruise approach factor",
+          "value": 0.1,
+          "unit": "fraction of the vector to the destination used as wanted velocity, in world units per second per unit of distance (1/s); recomputed every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AIShip.c:65"
+        },
+        {
+          "name": "Velocity error dead zone",
+          "value": 0.05,
+          "unit": "squared world units per second; below this error magnitude no thrust is applied, tested every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AITrack.c:25"
+        },
+        {
+          "name": "Car-turn forward thrust share",
+          "value": 0.1,
+          "unit": "fraction of rated forward thrust kept on while a non-capital hull swings onto a new heading, per 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AIShip.c:85"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 960
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 977
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 981
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 992
+        },
+        {
+          "path": "src/Game/AITrack.c",
+          "line": 1003
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1075
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1030
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1079
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1092
+        }
+      ],
+      "capabilities": [
+        "six-facing thrust allocation",
+        "velocity dead zone",
+        "thrust clamped by rating",
+        "crabbing and sidestepping",
+        "leader speed limiting"
+      ],
+      "tags": [
+        "steering",
+        "movement",
+        "thrust",
+        "feel"
+      ]
+    },
+    {
+      "id": "repulsion-avoidance",
+      "node": "steering-autopilot",
+      "name": "Inverse-distance repulsion with a pass-on-the-right rule",
+      "summary": "Nearby hulls and rocks push the wanted velocity away through a padded collision sphere. When the push points straight back at the wanted heading, a sideways nudge is added so two ships sidestep the same way instead of oscillating.",
+      "behavior": "Avoidance runs over the spatial blob of the ship in two passes, small collision spheres first and big ones second. The rejection distance for a candidate is the sum of both padded radii. A radius is the avoid sphere times a padding factor, a larger factor for very big targets, and a smaller formation factor for ships that share a command. A ship with any right of way uses a larger pad for the quick distance test. A ship that outranks the candidate normally skips it, and asks an allied ship in its path to move aside. Against an enemy candidate it still avoids when the do-not-plow-through-enemies flag is set, and an allied candidate can answer that the ship must still avoid it. The repulsion is the unit vector from the neighbour collision centre to the ship collision centre divided by the gap between the two collision shapes. The gap has a floor of 20 world units and is multiplied by a small scale factor. At a hundred units of clearance the default scale gives a push of about a hundred units per second, and the floor caps it near five hundred. A strike craft on an attack order, and a probe that has already moved, use a scale ten times smaller, which makes their push ten times stronger. When the repulsion is nearly opposite to the wanted velocity and the wanted speed is at least 20 units per second, a vector perpendicular to the wanted velocity in the horizontal plane is added. Its length is the centre distance to the neighbour, so both ships choose the same side. When the caller refuses to fly to obscured points, a destination inside a padded sphere is reported as obscured. Each further candidate considered inflates that test sphere by another hundred units, which spreads a crowd out instead of stacking ships on one point. The pad factors and the cosine threshold are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Avoidance pad factor",
+          "value": 1.6,
+          "unit": "multiplier on a hull avoid sphere for ordinary spacing, evaluated every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AIShip.c:75"
+        },
+        {
+          "name": "Right-of-way pad factor",
+          "value": 3,
+          "unit": "multiplier on the own avoid sphere for the quick rejection test when the ship has right of way, evaluated every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AIShip.c:77"
+        },
+        {
+          "name": "Same-formation pad factor",
+          "value": 2.55,
+          "unit": "multiplier on both avoid spheres when two hulls share a command, evaluated every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/AIShip.c:78"
+        },
+        {
+          "name": "Pass-on-right squared cosine threshold",
+          "value": 0.97,
+          "unit": "squared cosine of the angle between repulsion and wanted velocity at which the sidestep is added, evaluated every 1/64 s update (default; a script sets it as an angle)",
+          "source": "src/Game/AIShip.c:123"
+        },
+        {
+          "name": "Obscured-point spread per candidate",
+          "value": 100,
+          "unit": "world units added to the obscuring sphere radius for each candidate already considered in this update",
+          "source": "src/Game/AIShip.c:84"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1359
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1230
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1544
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1547
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1563
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1653
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1599
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1562
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1662
+        }
+      ],
+      "capabilities": [
+        "blob broadphase avoidance",
+        "inverse-distance repulsion",
+        "right-of-way rules",
+        "shared formation padding",
+        "pass-on-the-right sidestep",
+        "obscured destination detection"
+      ],
+      "tags": [
+        "steering",
+        "collision",
+        "crowd",
+        "feel"
+      ]
+    },
+    {
+      "id": "bump-momentum-and-collision-damage",
+      "node": "collision-response",
+      "name": "Momentum exchange, glancing deflection and contact damage",
+      "summary": "A bump between hostile hulls costs hit points in proportion to the closing speed and throws both hulls apart with a mass-weighted impulse. Fast hulls that clip a slow one are deflected sideways so they scrape past, and a repeat contact swaps the impulse for a soft push-apart.",
+      "behavior": "Overlapping bumpable hulls first pay a toll in hit points, unless they have the same owner, either one is disabled, or a salvage vessel holds the other as its current work target. The smaller of the two health totals is multiplied by the closing speed along the line of centres divided by the tangent scale, then clamped between the smaller of the two minimum contact damages and the smaller of the two maximum contact damages. A floating city never takes or deals contact damage, and one mothership class takes a third. A ramming hull with the killer-collision attribute takes damage equal to the smaller health total and deals a fixed large damage to the target. Momentum comes next as an impulse. It is each hull velocity times its mass, differenced and divided by the step, and it is added to the faster body and subtracted from the slower one as a force. Immobile hulls and killer-collision hulls ignore it. If the squared speed of the faster body is at least four times that of the slower, which is a speed ratio of two, or the two approach head-on, and neither is a kamikaze, the impulse is replaced by a vector of the same length, perpendicular to it in the horizontal plane. Its sign depends on the side on which the fast hull passes, so the fast hull slides past instead of stopping. A contact counts as a repeat when both hulls have registered a contact within the last 5 seconds. A repeat skips the impulse and pushes the pair apart with a force equal to the overlap times 500 over the separation. The damage tangent scale, repeat window, repulsion factor and glance ratio are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Collision tangent scale",
+          "value": 1000,
+          "unit": "world units per second of closing speed that equal 100 percent of the smaller health total as contact damage (default, script-overridable)",
+          "source": "src/Game/Tweak.c:162"
+        },
+        {
+          "name": "Repeat contact window",
+          "value": 5,
+          "unit": "seconds of simulated time during which two hulls count as already in contact (default, script-overridable)",
+          "source": "src/Game/Tweak.c:292"
+        },
+        {
+          "name": "Overlap repulsion",
+          "value": 500,
+          "unit": "force per overlap divided by separation, applied once per 1/64 s update while a repeat contact persists (default, script-overridable)",
+          "source": "src/Game/Tweak.c:294"
+        },
+        {
+          "name": "Glancing speed ratio",
+          "value": 2,
+          "unit": "ratio of fast to slow speed above which the impulse turns sideways; the code compares the squared speeds against its square (default, script-overridable)",
+          "source": "src/Game/Tweak.c:293"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2352
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2356
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2362
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2529
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2546
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2486
+        },
+        {
+          "path": "src/Game/Collision.c",
+          "line": 908
+        },
+        {
+          "path": "src/Game/Collision.c",
+          "line": 921
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2459
+        }
+      ],
+      "capabilities": [
+        "closing-speed contact damage",
+        "mass-weighted impulse exchange",
+        "glancing tangential deflection",
+        "separate overlap repulsion",
+        "friendly fire exemption on contact"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "damage",
+        "feel"
+      ]
+    },
+    {
+      "id": "formation-offsets",
+      "node": "formations",
+      "name": "Formation slots sized from hull collision radii",
+      "summary": "Formation slots are built in the leader frame from each hull collision radius times its formation padding, so a mixed group spaces itself by real size. A sphere formation held at weapon range takes its radius from the shortest gun range in the group. Travel speed falls as the group falls behind.",
+      "behavior": "The delta formation walks the selection outwards from the leader. Each hull collision sphere size is multiplied by the hull padding modifier and a tactical padding factor to give a separation. The slots alternate right and left. Each slot steps back and to the side by the sum of its own separation and the previous slot separation on that side, times 1.5, which makes a V shape. Broad, claw and three-dimensional delta formations have their own padding constants with the same default of 1.5. A wall is a square grid. Its side is the square root of the ship count rounded up, and the spacing is the leader sphere size times the padding factors times 2, plus a fixed 20 units. A sphere formation puts the first ship at the top pole and the second at the bottom pole, then fills rings by declination. Its centre is the protected ship, the attack target when the formation is flagged to hold at weapon range, or the leader. The radius is normally the centre hull collision radius times the sphere padding of 4 times the ring count for that many ships, with a floor of two rings. A centre hull wider than the ignore threshold always uses two rings. When the formation holds at weapon range the radius is 90 percent of the shortest bullet range among the members other than the first. That parks a fleet at the edge of its own reach. The radius is then clamped between a minimum and a maximum. The travel speed of the group is the slowest member current top speed times a percentage. The percentage is recomputed from the mean distance of the ships from their slots. It is the maximum scale when that error is under 100 units, the minimum scale when it is over 10000 units, and a linear blend in between. A slow hull therefore slows the whole order, and a straggling group slows further. All of these values are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Delta formation padding scale",
+          "value": 1.5,
+          "unit": "multiplier applied to each running slot separation when delta offsets are rebuilt, per order change (default, script-overridable)",
+          "source": "src/Game/Formation.c:37"
+        },
+        {
+          "name": "Wall formation padding scale",
+          "value": 2,
+          "unit": "multiplier on the leader padded sphere size for wall slot spacing, per order change (default, script-overridable)",
+          "source": "src/Game/Formation.c:41"
+        },
+        {
+          "name": "Wall formation fixed padding",
+          "value": 20,
+          "unit": "world units added to wall slot spacing, per order change (default, script-overridable)",
+          "source": "src/Game/Formation.c:42"
+        },
+        {
+          "name": "Sphere formation padding scale",
+          "value": 4,
+          "unit": "multiplier on centre hull radius per ring when the sphere radius is computed; evaluated on each formation rebuild (default, script-overridable)",
+          "source": "src/Game/Formation.c:43"
+        },
+        {
+          "name": "Sphere formation minimum radius",
+          "value": 500,
+          "unit": "world units, the floor on a sphere formation radius, evaluated on each formation rebuild",
+          "source": "src/Game/Formation.c:45"
+        },
+        {
+          "name": "Sphere formation maximum radius",
+          "value": 3500,
+          "unit": "world units, the ceiling on a sphere formation radius, evaluated on each formation rebuild",
+          "source": "src/Game/Formation.c:46"
+        },
+        {
+          "name": "Attack sphere range fraction",
+          "value": 0.9,
+          "unit": "fraction of the shortest member bullet range used as the sphere radius when holding at weapon range, computed once per formation rebuild",
+          "source": "src/Game/Formation.c:605"
+        },
+        {
+          "name": "Single-ring hull width threshold",
+          "value": 600,
+          "unit": "world units of centre hull radius above which the ring count is ignored, compared once per formation rebuild",
+          "source": "src/Game/Formation.c:47"
+        },
+        {
+          "name": "Formation speed floor",
+          "value": 0.7,
+          "unit": "fraction of the slowest member top speed used as group travel speed when the mean slot error is large, recomputed each time the formation error is measured",
+          "source": "src/Game/Formation.c:52"
+        },
+        {
+          "name": "Formation speed ceiling",
+          "value": 1,
+          "unit": "fraction of the slowest member top speed used as group travel speed when the mean slot error is small, recomputed each time the formation error is measured",
+          "source": "src/Game/Formation.c:51"
+        },
+        {
+          "name": "Formation error negligible",
+          "value": 100,
+          "unit": "world units of mean slot error below which the ceiling speed scale applies",
+          "source": "src/Game/Formation.c:54"
+        },
+        {
+          "name": "Formation error big",
+          "value": 10000,
+          "unit": "world units of mean slot error above which the floor speed scale applies",
+          "source": "src/Game/Formation.c:53"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1461
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1482
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1476
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 945
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 605
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 609
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1300
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1211
+        },
+        {
+          "path": "src/Game/Formation.c",
+          "line": 1846
+        }
+      ],
+      "capabilities": [
+        "radius-derived slot spacing",
+        "loose and tight padding",
+        "attack sphere sized to weapon range",
+        "slowest-ship travel speed",
+        "single-ring wide hulls"
+      ],
+      "tags": [
+        "formations",
+        "movement",
+        "rts",
+        "spacing"
+      ]
+    },
+    {
+      "id": "pie-plate-destination",
+      "node": "move-command",
+      "name": "Pie-plate destination: a disc on the plane plus a vertical stalk",
+      "summary": "Move orders are placed on a horizontal disc through the selection centre with a separate vertical handle, so height is chosen explicitly. The destination is clamped to a reachable box before it becomes an order.",
+      "behavior": "In plane mode the cursor ray is intersected with the horizontal plane through the selection centre to get the lateral point. In height mode the cursor ray is intersected with a vertical plane through that lateral point, and the height is the difference between that point and the plane point. The selection centre is recomputed every drawn frame and its drift is added to the stored points, so the destination does not slide while the selected fleet moves. While the sensor manager is closed the lateral offset from the selection centre is clamped to 15000 units and the vertical offset to 15000 units. With the sensor view open only the hard universe limits apply. The final point is always clipped into the universe extents. The readout shows one straight-line distance from the centre to the point, in metres rounded to hundreds below 10000 and in kilometres above that. In multiplayer hyperspace mode it adds the resource cost. The disc is drawn with a radius of 0.75 times the distance from the camera eye to the selection centre, so it keeps the same apparent size at every zoom level. When all selected ships hold attack orders the disc and the connecting line use other colours, and the line colour shows whether the point is inside gun range of at least one target for every ship. The two clamp values are compile-time defaults.",
+      "constants": [
+        {
+          "name": "Lateral move clamp",
+          "value": 15000,
+          "unit": "world units of horizontal offset from the selection centre, re-clamped every drawn frame while the sensor manager is closed",
+          "source": "src/Game/PiePlate.h:57"
+        },
+        {
+          "name": "Vertical move clamp",
+          "value": 15000,
+          "unit": "world units of vertical offset from the plane point, re-clamped every drawn frame while the sensor manager is closed",
+          "source": "src/Game/PiePlate.h:58"
+        },
+        {
+          "name": "Dish radius as eye-distance fraction",
+          "value": 0.75,
+          "unit": "fraction of the eye-to-selection-centre distance, giving the disc a constant on-screen size, per drawn frame",
+          "source": "src/Game/PiePlate.h:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/PiePlate.c",
+          "line": 1093
+        },
+        {
+          "path": "src/Game/PiePlate.c",
+          "line": 1190
+        },
+        {
+          "path": "src/Game/PiePlate.c",
+          "line": 1220
+        },
+        {
+          "path": "src/Game/PiePlate.c",
+          "line": 1225
+        },
+        {
+          "path": "src/Game/PiePlate.c",
+          "line": 843
+        },
+        {
+          "path": "src/Game/CommandWrap.c",
+          "line": 118
+        }
+      ],
+      "capabilities": [
+        "plane plus stalk destination picking",
+        "separate vertical handle",
+        "move range clamps",
+        "drift-corrected destination",
+        "in-range feedback for attack moves"
+      ],
+      "tags": [
+        "ui",
+        "movement",
+        "rts",
+        "3d-space"
+      ]
+    },
+    {
+      "id": "orbit-camera",
+      "node": "camera",
+      "name": "Orbit camera: azimuth, elevation and boom",
+      "summary": "The camera is rebuilt every frame from an azimuth, an elevation and a boom length around the focus point, with the elevation clamped short of the poles and the boom clamped between a floor and a ceiling that a focused capital hull can raise.",
+      "behavior": "The eye is the look-at point plus a boom vector. The boom is tilted out of the horizontal plane by the elevation and then spun around the world up axis by the azimuth, so the camera always looks at the focus and can never roll. The elevation is clamped to 85 degrees either side of level, which keeps the horizon usable and prevents the view from flipping over a pole. Zoom multiplies the boom by a wheel step of 0.85 in and 1.15 out, scaled by the mouse sensitivity, or by 0.9 and 1.1 for keys, then clamps the result. The starting limits are 10 and 10000 units, and other views such as the sensor manager and ship view set their own limits. When the caller asks for ship distances, the floor is the largest minimum zoom distance among the focused hulls instead, so the player cannot push the camera inside a mothership. The field of view is 90 degrees measured vertically. The screen-to-world picking routine uses the same value. It builds a right-handed basis from the look vector and the up vector, scales the right and down offsets by the tangent of half the field of view and by the normalized cursor position, with the horizontal offset also scaled by the aspect ratio. The view frustum is clipped at 1 unit near and 35000 units far in ordinary space, and at 455000 far in planet space. Every value is a default that a tweak script can override.",
+      "constants": [
+        {
+          "name": "Elevation clamp",
+          "value": 85,
+          "unit": "degrees either side of level, converted to radians at load and enforced on every camera update",
+          "source": "src/Game/Camera.c:44"
+        },
+        {
+          "name": "Vertical field of view",
+          "value": 90,
+          "unit": "degrees, the height dimension of the frustum, read on every rendered frame for both drawing and picking",
+          "source": "src/Game/Camera.c:55"
+        },
+        {
+          "name": "Boom ceiling",
+          "value": 10000,
+          "unit": "world units of camera distance, the starting farthest-zoom limit, clamped on every zoom",
+          "source": "src/Game/Camera.c:59"
+        },
+        {
+          "name": "Boom floor",
+          "value": 10,
+          "unit": "world units of camera distance, the starting closest-zoom limit, used when focused hull minimums do not apply",
+          "source": "src/Game/Camera.c:60"
+        },
+        {
+          "name": "Wheel zoom step",
+          "value": 0.85,
+          "unit": "multiplier on the boom per wheel notch in, with 1.15 for a notch out, per input event at neutral mouse sensitivity",
+          "source": "src/Game/Camera.c:56"
+        },
+        {
+          "name": "Far clip plane",
+          "value": 35000,
+          "unit": "world units of view distance in a normal mission sphere, applied on every drawn frame",
+          "source": "src/Game/Camera.c:53"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Camera.c",
+          "line": 159
+        },
+        {
+          "path": "src/Game/Camera.c",
+          "line": 307
+        },
+        {
+          "path": "src/Game/Camera.c",
+          "line": 318
+        },
+        {
+          "path": "src/Game/Camera.c",
+          "line": 476
+        },
+        {
+          "path": "src/Game/Camera.c",
+          "line": 488
+        },
+        {
+          "path": "src/Game/Camera.c",
+          "line": 130
+        }
+      ],
+      "capabilities": [
+        "azimuth and elevation orbit",
+        "pole-safe pitch clamp",
+        "zoom clamped per hull minimum",
+        "matched picking ray",
+        "perspective frustum limits"
+      ],
+      "tags": [
+        "camera",
+        "orbit",
+        "zoom",
+        "picking"
+      ]
+    },
+    {
+      "id": "elastic-camera-focus",
+      "node": "camera",
+      "name": "Elastic focus hand-off with velocity feed-forward",
+      "summary": "A focus change is not a cut: the desired camera state is remembered and the live camera is integrated toward it frame by frame with a cubic spline on the two angles and a logarithmic damping on position and eye, plus the focus point displacement added up front so a moving hull cannot outrun the boom.",
+      "behavior": "When the focus changes, a remembered camera holds the target angle, elevation, distance and look-at point, and the live camera is stepped toward it instead of cutting. Each rendered frame the chase loop runs once per elapsed frame tick, capped at 64 sub-steps, so the settle time stays bounded. The two angles use a cubic curve that carries the previous speed forward, which avoids the stall that plain interpolation shows while the target is still circling. The look-at point and the eye use a logarithmic damping applied per axis, with a threshold, a speed and a base. Each sub-step the eye target is rebuilt along the current view direction at the wanted distance, which keeps the boom length converging while the look-at point slides. The angle step is one twentieth when idle and one tenth while the player is rotating the camera. Before the loop, the displacement of the focus point since the previous update is added to both the live look-at point and the live eye, unless the caller turned that off for this update. That is velocity feed-forward, so the camera rides along with a moving target and only the residual error is left for the damped terms. Many focus modes start from a camera distance of 6000 units. Every tracking value is a default that a tweak script can override.",
+      "constants": [
+        {
+          "name": "Idle angle tracking step",
+          "value": 20,
+          "unit": "reciprocal of the cubic step for angle and elevation per sub-step, so one twentieth per frame tick while idle; ten while the player moves the camera",
+          "source": "src/Game/CameraCommand.c:74"
+        },
+        {
+          "name": "Position tracking speed",
+          "value": 50,
+          "unit": "reciprocal of the cubic step for the damped look-at and eye axes per sub-step",
+          "source": "src/Game/CameraCommand.c:78"
+        },
+        {
+          "name": "Position tracking threshold",
+          "value": 50,
+          "unit": "reciprocal of the dead-band offset used in the logarithmic damping of each position axis, per sub-step",
+          "source": "src/Game/CameraCommand.c:79"
+        },
+        {
+          "name": "Position tracking base",
+          "value": 3,
+          "unit": "logarithm base for the position damping, per sub-step",
+          "source": "src/Game/CameraCommand.c:80"
+        },
+        {
+          "name": "Default far camera distance",
+          "value": 6000,
+          "unit": "world units of camera boom used at camera start and in many focus entries, applied once per focus change",
+          "source": "src/Game/CameraCommand.c:46"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 677
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 687
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 694
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 710
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 605
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 427
+        },
+        {
+          "path": "src/Game/CameraCommand.c",
+          "line": 592
+        }
+      ],
+      "capabilities": [
+        "non-cut focus transitions",
+        "cubic angle smoothing with momentum",
+        "logarithmic position damping",
+        "velocity feed-forward chase",
+        "separate moving and idle tracking rates"
+      ],
+      "tags": [
+        "camera",
+        "smoothing",
+        "focus",
+        "feel"
+      ]
+    },
+    {
+      "id": "turret-tracking-and-fire-gate",
+      "node": "weapons",
+      "name": "Turret deflection cone, lead prediction and firing gate",
+      "summary": "Each mount has to pass an aim test that depends on its type, a range gate, a fuel check and a cooldown or burst state machine before a shot leaves. Aim leads the target by its velocity, and fighters and corvettes get stance bonuses on bullet speed and range.",
+      "behavior": "The aim point is the target collision centre advanced by the target velocity times the estimated travel time, which is distance over bullet speed. Fighters and corvettes multiply the bullet speed by a stance bonus, so an aggressive fighter shot arrives sooner. Fixed guns and missile or mine launchers compare the cosine between the aim direction and the hull forward axis with a trigger threshold and fire when the hull points well enough. A simple gimballed mount expresses the aim point in hull space, subtracts the mount position and tests the cosine against the mount rest normal against two limits. It fires only when the direction is inside the outer cone and outside the inner one, so a turret cannot fire through its own hull. A newer gimbal mount slews. Its desired angular speed is proportional to the lateral error in the gun frame and is clamped at a maximum speed, and it moves only inside its turn and declination limits. It fires when the aim cosine reaches the trigger threshold. A slaved mount first copies the aim of its driver mount, so a bank of guns moves as one assembly. Beam cannons use a narrower cone, a different trigger threshold and the same slew limit when the target is a fighter or a corvette. Any gun also needs the target inside its bullet range times a stance range bonus. A hull with a fuel tank cannot fire at zero fuel, except for one mine-laying class. The mount then needs either the single-shot cooldown to have passed or the burst state machine to be ready. Burst fire time and burst wait time are multiplied by stance modifiers and by extra modifiers in a sphere formation attack or for a wingman. Ships that attack passively get an extra random delay before each shot, which is why a surprised fleet answers slowly. The recoil curve is a table of 255 samples over one shot cycle. The first 5 percent of the cycle is a parabolic kick. The rest is an arctangent decay, scaled by the mount recoil length. The beam cone, slew speed and bonus values come from tweak data.",
+      "constants": [
+        {
+          "name": "Recoil table window",
+          "value": 0.05,
+          "unit": "fraction of one shot cycle covered by the parabolic recoil kick (the table is indexed by normalized time in the cycle), evaluated per rendered frame",
+          "source": "src/Game/Gun.h:32"
+        },
+        {
+          "name": "Recoil table length",
+          "value": 255,
+          "unit": "samples in the precomputed recoil curve, indexed by normalized time in the shot cycle",
+          "source": "src/Game/Gun.h:31"
+        },
+        {
+          "name": "Ion cannon cone against fighters",
+          "value": 0.99939,
+          "unit": "cosine of the allowed deflection, about 2 degrees (default, script-overridable), tested on every aiming update",
+          "source": "src/Game/Tactics.c:66"
+        },
+        {
+          "name": "Ion cannon slew speed against fighters",
+          "value": 3,
+          "unit": "radians per second of beam mount slew limit while tracking a fighter (default, script-overridable); integrated each 1/64 s update",
+          "source": "src/Game/Tactics.c:72"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gun.c",
+          "line": 318
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 332
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 1301
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 435
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 785
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 814
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 71
+        },
+        {
+          "path": "src/Game/Gun.c",
+          "line": 1303
+        }
+      ],
+      "capabilities": [
+        "deflection cone gating",
+        "dual inner and outer angle limits",
+        "velocity-predicted intercept",
+        "per-class bullet speed and range bonus",
+        "burst fire state machine",
+        "table-driven recoil"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "turrets",
+        "recoil"
+      ]
+    },
+    {
+      "id": "missile-intercept-and-loss",
+      "node": "missiles",
+      "name": "Missile intercept with a dice roll for target loss",
+      "summary": "Missiles steer by velocity matching rather than nose pointing. They rebuild a wanted velocity toward the predicted target point at exactly their own top speed and snap their orientation onto the velocity. Losing lock is a dice roll, not a distance.",
+      "behavior": "Each update the missile compares the target collision centre with its own position. Beyond the lead radius, or while it is moving slower than 200 units per second, it aims at where the target is now. Inside the radius and above that speed it adds the target velocity times the estimated flight time, which is the distance over the current missile speed, so the intercept leads a turning target. The wanted velocity is then set to exactly the missile top speed in that direction, not merely capped, and is handed to the shared thrust matcher, which fires lateral and forward thrusters as needed. A missile can therefore curve hard without rotating its thrust axis first. After steering, the orientation is rebuilt from the normalized velocity and all spin and torque are cleared, so missiles always fly nose-first and never tumble. Lock retention is a lottery that runs only on staggered updates and only for a limited number of checks per missile. Capital hulls are never lost. A ship target inside a tweakable box around the missile gets a probability from its stance, raised while it is dodging or running a scripted manoeuvre. A random draw below that probability drops the lock. Dust and gas clouds are dropped as soon as the missile is inside a 200 unit box around the cloud centre. A cloaked target is dropped at once. The probabilities, box size and check limits have no defaults in source and come from data files. The missile also dies when its lifetime runs out.",
+      "constants": [
+        {
+          "name": "Lead-prediction radius",
+          "value": 250,
+          "unit": "world units of range inside which a missile leads its target; stored squared and compared every 1/64 s update",
+          "source": "src/Game/AIShip.c:69"
+        },
+        {
+          "name": "Minimum speed for lead prediction",
+          "value": 200,
+          "unit": "world units per second of missile speed below which the missile aims at the current target position; compared every 1/64 s update",
+          "source": "src/Game/AIShip.c:1796"
+        },
+        {
+          "name": "Dust and gas loss box",
+          "value": 200,
+          "unit": "world units per axis around a cloud centre inside which a missile loses lock, checked on its staggered 1/64 s update",
+          "source": "src/Game/AIShip.c:1874"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1789
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1805
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1812
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1837
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1863
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1929
+        }
+      ],
+      "capabilities": [
+        "velocity-predicted intercept",
+        "velocity matching rather than pointing",
+        "orientation snapped to velocity",
+        "probabilistic target retention",
+        "cloak breaks lock"
+      ],
+      "tags": [
+        "combat",
+        "missiles",
+        "guidance",
+        "lock-on"
+      ]
+    },
+    {
+      "id": "blast-radius-and-falloff",
+      "node": "damage-and-blast",
+      "name": "Explosion radius, displacement and linear damage falloff",
+      "summary": "A dying hull turns its own collision radius and a per-hull shock wave multiplier into a blast sphere. It pushes every bumpable object inside with a linear falloff and damages targetable ones by the same fraction of the dead hull health.",
+      "behavior": "The blast radius is the dead hull collision sphere times its shock wave multiplier, and times a bonus when the ship is scuttled on purpose. The multiplier comes from the hull data, and the code falls back to a default of 1.5 when the data leaves it at zero. Every impactable, bumpable, non-immobile object other than the dead ship is first tested with a cheap box rejection and then with the squared distance. It is pushed away from the dead hull by a force whose length is the blast constant times one minus the distance over the radius. The push is strongest at the centre and falls to zero at the rim. The same falloff scales a random tumble torque on all three axes, so nearby hulls start spinning at different rates. Targetable objects also take damage. The damage is the blast damage value of the dead hull, or its maximum health when that value is zero, times the maximum damage share times the falloff. A target at the rim takes nothing, and one at the centre takes half of that health value, or three quarters when the ship was scuttled. A scuttled ship also uses a larger blast constant. The values are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Blast displacement constant",
+          "value": 100000,
+          "unit": "force at the blast centre applied as one push at the moment of death, scaled by the linear falloff (default, script-overridable)",
+          "source": "src/Game/Tweak.c:36"
+        },
+        {
+          "name": "Scuttle blast displacement constant",
+          "value": 150000,
+          "unit": "force at the blast centre for a scuttled ship, applied once per explosion (default, script-overridable)",
+          "source": "src/Game/Tweak.c:40"
+        },
+        {
+          "name": "Maximum blast damage share",
+          "value": 0.5,
+          "unit": "fraction of the dead hull blast health dealt at the blast centre before falloff, applied once per explosion (default, script-overridable)",
+          "source": "src/Game/Tweak.c:38"
+        },
+        {
+          "name": "Scuttle blast damage share",
+          "value": 0.75,
+          "unit": "fraction of the dead hull blast health dealt at the blast centre when the ship is scuttled, applied once per explosion (default, script-overridable)",
+          "source": "src/Game/Tweak.c:42"
+        },
+        {
+          "name": "Scuttle radius bonus",
+          "value": 1.33,
+          "unit": "multiplier on the blast radius when a ship is scuttled instead of destroyed, applied once per explosion (default, script-overridable)",
+          "source": "src/Game/Tweak.c:41"
+        },
+        {
+          "name": "Default shock wave multiplier",
+          "value": 1.5,
+          "unit": "multiplier on the collision sphere radius used when hull data gives no value, applied once at load (default, script-overridable)",
+          "source": "src/Game/Tweak.c:37"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2826
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2882
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2883
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2893
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2894
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2927
+        },
+        {
+          "path": "src/Game/Universe.c",
+          "line": 2154
+        }
+      ],
+      "capabilities": [
+        "radius from collision sphere times hull multiplier",
+        "linear distance falloff",
+        "radial push plus random tumble",
+        "damage scaled by the same falloff",
+        "scuttle bonus"
+      ],
+      "tags": [
+        "damage",
+        "explosions",
+        "physics",
+        "combat"
+      ]
+    },
+    {
+      "id": "progressive-damage-visuals",
+      "node": "damage-and-blast",
+      "name": "Tiered damage visuals read from the health fraction",
+      "summary": "Damage effects switch on in tiers as the health fraction falls. Strike craft get two tiers and larger hulls get four, and each effect is attached to a damage marker on the mesh instead of the hull origin.",
+      "behavior": "When damage display is enabled, a ship is inside the render list and it is not hyperspacing in single player, the think function divides health by maximum health each update and compares it with a tier table. Strike craft and corvettes get a short version. At or below the trail limit the engine trail turns wobbly, and at or below the light limit a light damage effect starts and stays alive. Every other class walks the full list. At or below the trail limit the trail wobbles, at or below the light limit a first effect starts, at or below the heavy limit a second one starts, and at or below the dying limit a third starts. The effect for each tier comes from a table indexed by hull class and tier, so the look is data. Each tier stops its own effect again when the hull is repaired above that threshold. Effect placement is not at the hull centre. The mesh carries named damage lights, one is chosen at random, and its position and normal become a coordinate system in hull space. The effect is spawned there, so it sits on the model and turns with the ship. A per-tier table caps how many effects can run at once. The thresholds are defaults that a tweak script can override. This is presentation, not a rule: it does not change speed, damage or targeting.",
+      "constants": [
+        {
+          "name": "Trail wobble threshold",
+          "value": 0.6,
+          "unit": "fraction of maximum health at or below which the engine trail becomes wobbly (default, script-overridable), tested every update of the ship think function",
+          "source": "src/Game/Damage.c:35"
+        },
+        {
+          "name": "Light damage threshold",
+          "value": 0.4,
+          "unit": "fraction of maximum health at or below which the first damage effect starts (default, script-overridable), tested every update of the ship think function",
+          "source": "src/Game/Damage.c:36"
+        },
+        {
+          "name": "Heavy damage threshold",
+          "value": 0.2,
+          "unit": "fraction of maximum health at or below which the second damage effect starts (default, script-overridable), tested every update of the ship think function",
+          "source": "src/Game/Damage.c:37"
+        },
+        {
+          "name": "Dying threshold",
+          "value": 0.075,
+          "unit": "fraction of maximum health at or below which the third damage effect starts (default, script-overridable), tested every update of the ship think function",
+          "source": "src/Game/Damage.c:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Damage.c",
+          "line": 499
+        },
+        {
+          "path": "src/Game/Damage.c",
+          "line": 508
+        },
+        {
+          "path": "src/Game/Damage.c",
+          "line": 521
+        },
+        {
+          "path": "src/Game/Damage.c",
+          "line": 539
+        },
+        {
+          "path": "src/Game/Damage.c",
+          "line": 548
+        },
+        {
+          "path": "src/Game/Damage.c",
+          "line": 116
+        }
+      ],
+      "capabilities": [
+        "health-fraction effect tiers",
+        "separate strike craft and capital ladders",
+        "random damage marker placement",
+        "effects parented to hull space",
+        "per-tier effect counts"
+      ],
+      "tags": [
+        "damage",
+        "visuals",
+        "feedback",
+        "health"
+      ]
+    },
+    {
+      "id": "hyperspace-jump",
+      "node": "move-command",
+      "name": "Hyperspace as a four-state hold, depart and arrive sequence",
+      "summary": "A multiplayer hyperspace order is a four-state sequence: hold until every hull is still, depart with a ping effect, wait out an ether delay, then arrive at the destination with the heading packed into the placement vector. A distance-based resource cost is charged for the jump.",
+      "behavior": "The first state refuses to proceed until every selected hull reports zero rotation and zero velocity. It then zeros both explicitly. A hull that needs the order to wait, such as one waiting for a dock slot or a service platform, also blocks the order. The depart state creates a ping on each hull. The number of hulls pinged is the whole number of elapsed dispersal windows times the ship count, with a minimum of one, because the integer cast is applied before the multiplication. In practice the first hull pings alone for one window and then all hulls ping together. The order moves on only when the lead hull carries the hyperspace flag. It then waits out a fixed ether delay. The arrive state places every hull at the destination, and the heading is packed as the fourth component of the placement vector. That heading is the angle between the lead hull forward axis and the world x axis. It is reflected as 360 minus the angle when the forward axis points to negative y. The arrive state creates its own sliced pings. It finishes when every hull has left the hyperspace state, and it makes the hulls selectable again. A hull that arrives and collides while it is still hyperspacing in has its collision damage and the damage it deals scaled by two separate multipliers. The resource cost is summed per ship type. It is a minimum price up to a minimum distance, then a linear slope per unit of distance, capped at a maximum price. The running distance is reduced by each type minimum distance as the list is walked, so later ships see a shorter distance. The price table and the ether delay come from data files.",
+      "constants": [
+        {
+          "name": "Ping duration numerator",
+          "value": 1,
+          "unit": "seconds divided by the ping rate, giving the on-screen life of a hyperspace ping effect, set once per ping",
+          "source": "src/Game/CommandLayer.c:2538"
+        },
+        {
+          "name": "Pause after each ping",
+          "value": 0.25,
+          "unit": "seconds of simulated time between successive ping pulses on one hull, set once per ping",
+          "source": "src/Game/CommandLayer.c:2539"
+        },
+        {
+          "name": "Arrival heading wrap",
+          "value": 360,
+          "unit": "degrees used to reflect the arrival heading when the forward axis points to negative y, evaluated once per jump arrival",
+          "source": "src/Game/CommandLayer.c:2587"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2464
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2510
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2513
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2562
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2581
+        },
+        {
+          "path": "src/Game/UnivUpdate.c",
+          "line": 2394
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2691
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 2655
+        }
+      ],
+      "capabilities": [
+        "hold until at rest",
+        "staggered departure pings",
+        "ether transit delay",
+        "arrival orientation encoded in the destination",
+        "reduced collision damage while materialising"
+      ],
+      "tags": [
+        "movement",
+        "teleport",
+        "rts",
+        "settings"
+      ]
+    },
+    {
+      "id": "docking-approach-cones",
+      "node": "docking",
+      "name": "Docking approach: origin, latch, inside cone, align",
+      "summary": "Docking is a sequence of flight phases. Each phase has its own arrival tolerance and its own minimum approach speed, so a hull noses into the dock mouth, latches, slides inside and lines up with the dock frame before it disappears into the bay.",
+      "behavior": "The approach target is the cone origin at the mouth of the dock. The ship flies to it with a minimum approach speed of 40 units per second and accepts arrival inside a tolerance of 50 units, or 25 units for a drone. Every phase passes its speed as a negative number. The flight routine reads that sign as a minimum wanted speed, so the proportional slowdown near a target cannot make the ship creep. It does not allow backward drift. Latch points then use a separate test. A latch can fire at once, or after the ship is within a given distance, and it succeeds inside 25 units of the latch point, where the ship takes the velocity of the host. From the latch the ship flies to a point along the cone vector, within 100 units of it, with a minimum speed of 80 units per second. There it aligns its axes to the dock heading, within an angular tolerance, so the geometry does not cut into the bay. One mothership class uses its own forward axis for that heading. Backing out uses a minimum speed of 80 units per second and the fly-out cone uses 120, so a launch reads as a shot and not as a taxi. Dock selection is a nearest-dock search. A dock that is full adds a distance penalty for each ship over its capacity, 2000 units normally and 5000 units when the ship comes to deposit resources, so ships queue at separate bays instead of all choosing the same one. Every value is a default that a tweak script can override.",
+      "constants": [
+        {
+          "name": "Latch distance",
+          "value": 25,
+          "unit": "world units from the latch point inside which the ship counts as latched and takes the host velocity, checked every 1/64 s update",
+          "source": "src/Game/Dock.c:73"
+        },
+        {
+          "name": "Cone origin tolerance",
+          "value": 50,
+          "unit": "world units of accepted distance from the cone origin, checked every 1/64 s update",
+          "source": "src/Game/Dock.c:76"
+        },
+        {
+          "name": "Cone origin minimum approach speed",
+          "value": -40,
+          "unit": "world units per second; the sign marks a floor on the wanted speed, not backward motion; applied every 1/64 s update during the approach",
+          "source": "src/Game/Dock.c:75"
+        },
+        {
+          "name": "Inside-cone minimum approach speed",
+          "value": -80,
+          "unit": "world units per second; the sign marks a floor on the wanted speed, not backward motion; applied every 1/64 s update while sliding inside the cone",
+          "source": "src/Game/Dock.c:87"
+        },
+        {
+          "name": "Fly-out cone minimum speed",
+          "value": -120,
+          "unit": "world units per second; the sign marks a floor on the wanted speed, applied every 1/64 s update during launch",
+          "source": "src/Game/Dock.c:84"
+        },
+        {
+          "name": "Busy dock distance penalty",
+          "value": 2000,
+          "unit": "world units added to a dock selection distance for each ship over its capacity, evaluated once per dock selection",
+          "source": "src/Game/Dock.c:93"
+        },
+        {
+          "name": "Busy resource dock distance penalty",
+          "value": 5000,
+          "unit": "world units added per ship over capacity when the ship comes to deposit resources, evaluated once per dock selection",
+          "source": "src/Game/Dock.c:94"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Dock.c",
+          "line": 1383
+        },
+        {
+          "path": "src/Game/Dock.c",
+          "line": 1433
+        },
+        {
+          "path": "src/Game/Dock.c",
+          "line": 1518
+        },
+        {
+          "path": "src/Game/Dock.c",
+          "line": 1439
+        },
+        {
+          "path": "src/Game/Dock.c",
+          "line": 689
+        },
+        {
+          "path": "src/Game/AIUtilities.c",
+          "line": 4066
+        },
+        {
+          "path": "src/Game/AIShip.c",
+          "line": 1079
+        },
+        {
+          "path": "src/Game/Dock.c",
+          "line": 699
+        }
+      ],
+      "capabilities": [
+        "phased approach with per-phase tolerances",
+        "negative closing speed at the mouth",
+        "latch snap",
+        "heading alignment inside the bay",
+        "busy dock queueing"
+      ],
+      "tags": [
+        "docking",
+        "movement",
+        "rts",
+        "approach"
+      ]
+    },
+    {
+      "id": "scripted-evasive-maneuvers",
+      "node": "flight-maneuvers",
+      "name": "Scripted evasive manoeuvres picked by a per-stance lottery",
+      "summary": "Strike craft dodge with canned manoeuvres built from exact rotation phases and thrust bursts. A byte-sized dice roll decides whether a threatened craft chains pure evasions, and a data table picks which manoeuvre.",
+      "behavior": "A manoeuvre is a small state machine with its own state record. Each phase rotates a fixed angle about one axis. It pushes the angular velocity toward a capped speed in radians per second, using a fraction of the rated rotation strength, and then continues to the next phase or reports done. The split-S rolls 180 degrees to a random side, stabilises roll, then pitches 180 degrees up or down, chosen at random, while holding full forward thrust. This reverses the ship course. The flip turn pitches 180 degrees, holds the new attitude with forward thrust for about one second, then rolls 180 degrees with half forward thrust and half the roll acceleration. The end-over runs at a much higher rotation cap of 8 radians per second, so it reads as a snap. The barrel roll rolls 360 degrees, a swarmer barrel roll rolls 720 degrees at twice the speed cap, and the 180 degree roll has its own caps. Selection has two layers. When a strike craft senses a new threatening target, it draws a number from 0 to 255. A draw below the stance weight starts a run of pure evasions, and a counter limits how many pure evasions it chains. Otherwise it picks a manoeuvre from the behind or the front list, depending on where the enemy is. Inside a list the pick is a cumulative-weight draw over per-class weights loaded from data files. Evasive stance craft that are under threat also make a token check once per 64 original ticks, which is 4 seconds, with the same weight. All of these values are defaults that tweak scripts can override.",
+      "constants": [
+        {
+          "name": "Pure evasive weight",
+          "value": 50,
+          "unit": "weight out of 256 per stance, compared with a random byte, for starting a run of pure evasions when a threat is sensed; drawn once per threat decision (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:167"
+        },
+        {
+          "name": "Pure evasions per run",
+          "value": 2,
+          "unit": "number of pure manoeuvres a craft chains once the weight draw succeeds, per stance (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:171"
+        },
+        {
+          "name": "Token evasion check mask",
+          "value": 63,
+          "unit": "mask over original ticks, so the token check for an evasive stance runs once per 64 original ticks, 4 s of simulated time (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:163"
+        },
+        {
+          "name": "Pause after a flip turn",
+          "value": 1,
+          "unit": "seconds of simulated time of held attitude with forward thrust after the flip phase, checked every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:36"
+        },
+        {
+          "name": "Flip turn roll thrust share",
+          "value": 0.5,
+          "unit": "fraction of rated forward thrust applied during the flip turn roll phase, every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:39"
+        },
+        {
+          "name": "Split-S pitch rotation cap",
+          "value": 1,
+          "unit": "radians per second of angular speed cap for the split-S pitch phase, applied every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:52"
+        },
+        {
+          "name": "End-over rotation cap",
+          "value": 8,
+          "unit": "radians per second of angular speed cap for the end-over manoeuvre, applied every 1/64 s update (default, script-overridable)",
+          "source": "src/Game/FlightMan.c:57"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 167
+        },
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 171
+        },
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 590
+        },
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 826
+        },
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 857
+        },
+        {
+          "path": "src/Game/FlightMan.c",
+          "line": 2166
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 1242
+        },
+        {
+          "path": "src/Game/CommandLayer.c",
+          "line": 1279
+        }
+      ],
+      "capabilities": [
+        "phased canned manoeuvres",
+        "per-axis rotation caps with reduced acceleration",
+        "thrust bursts inside phases",
+        "per-stance weighted selection",
+        "chain limit on pure evasions"
+      ],
+      "tags": [
+        "combat",
+        "evasion",
+        "flight",
+        "ai"
+      ]
+    },
+    {
+      "id": "sensor-fog-by-density",
+      "node": "sensors-view",
+      "name": "Sensor fog hides contacts behind resource density",
+      "summary": "In the sensor view a foggy enemy contact cloud is shown only when the ships in it outweigh the rocks and dust around them. Visibility is a ratio test against resource density and ship mass, refreshed on a short timer.",
+      "behavior": "Sub-blobs are built the first time a foggy contact blob is drawn. They are rebuilt from scratch on a timer, so the cloud follows the fleet as it flies. Only enemy ships that are visible and not allied, plus asteroids, dust and gas, go into the sub-blobs. For each sub-blob that holds ships, the code takes a weighted sum of the rock count and the resource units in the rocks and divides it by a weighted sum of the ship count and the total ship mass. A ratio above one hides the contact, and its ships are counted as hidden and not drawn. A second test does the same for dust and gas resource units with three coefficients. A contact can therefore be swallowed by a nebula with no rocks nearby. A visible contact is drawn as a point in the hostile color, and as a larger dot at the projected sub-blob radius when big points are on. Because the test compares resources with mass, a lone light craft in a rich field can disappear while a heavy group in the same field stays visible. All coefficients have no defaults in source and come from data files. The rebuild interval is a default that a script can override.",
+      "constants": [
+        {
+          "name": "Fog rebuild interval",
+          "value": 0.75,
+          "unit": "seconds of simulated time between rebuilds of a contact sub-blob cloud (default, script-overridable)",
+          "source": "src/Game/Sensors.h:169"
+        },
+        {
+          "name": "Hidden contact ratio threshold",
+          "value": 1,
+          "unit": "ratio of weighted resource load to weighted ship load above which a contact sub-blob is hidden, tested each drawn frame",
+          "source": "src/Game/Sensors.c:1471"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Sensors.c",
+          "line": 1451
+        },
+        {
+          "path": "src/Game/Sensors.c",
+          "line": 1470
+        },
+        {
+          "path": "src/Game/Sensors.c",
+          "line": 1480
+        },
+        {
+          "path": "src/Game/Sensors.c",
+          "line": 1376
+        },
+        {
+          "path": "src/Game/Sensors.c",
+          "line": 1454
+        }
+      ],
+      "capabilities": [
+        "density-based contact hiding",
+        "separate asteroid and dust tests",
+        "timed cloud rebuilds",
+        "mass and count weighted denominator",
+        "hidden ship accounting"
+      ],
+      "tags": [
+        "sensors",
+        "fog-of-war",
+        "rts",
+        "ui"
+      ]
+    }
+  ]
+}
