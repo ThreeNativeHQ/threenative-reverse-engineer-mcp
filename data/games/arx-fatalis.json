@@ -1,0 +1,2072 @@
+{
+  "version": 1,
+  "id": "arx-fatalis",
+  "title": "Arx Fatalis",
+  "repo": "https://github.com/arx/ArxLibertatis",
+  "sha": "5b95e4c5ca9d583f1b11c085326979772645e0f3",
+  "nodes": [
+    {
+      "id": "player-movement",
+      "name": "Player locomotion and vertical states",
+      "purpose": "Animation-driven ground speed, scripted jump arc, fall damage, crouch and levitate capsule heights",
+      "paths": [
+        "src/game/Player.cpp",
+        "src/game/Player.h"
+      ],
+      "functions": [
+        {
+          "name": "PlayerMovementIterate",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            1787,
+            2231
+          ]
+        },
+        {
+          "name": "ARX_PLAYER_Manage_Movement",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            2233,
+            2275
+          ]
+        },
+        {
+          "name": "Valid_Jump_Pos",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            1735,
+            1771
+          ]
+        },
+        {
+          "name": "ARX_PLAYER_MakeStepNoise",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            1701,
+            1724
+          ]
+        },
+        {
+          "name": "GetPlayerStealth",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            2299,
+            2301
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-collision",
+      "name": "Capsule sweep and wall sliding",
+      "purpose": "Stepped cylinder movement against level geometry, angular slide search, climbing budget and line-of-sight rays",
+      "paths": [
+        "src/physics/Collisions.cpp",
+        "src/physics/Collisions.h"
+      ],
+      "functions": [
+        {
+          "name": "ARX_COLLISION_Move_Cylinder",
+          "path": "src/physics/Collisions.cpp",
+          "lines": [
+            1130,
+            1278
+          ]
+        },
+        {
+          "name": "AttemptValidCylinderPos",
+          "path": "src/physics/Collisions.cpp",
+          "lines": [
+            1010,
+            1127
+          ]
+        },
+        {
+          "name": "IO_Visible",
+          "path": "src/physics/Collisions.cpp",
+          "lines": [
+            1280,
+            1387
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "First-person camera",
+      "purpose": "Projection setup, field of view and clip depth, head-attached eye position, bow zoom and scripted camera blend",
+      "paths": [
+        "src/game/Camera.cpp",
+        "src/game/Camera.h",
+        "src/core/ArxGame.cpp",
+        "src/core/Config.cpp",
+        "src/core/Core.h"
+      ],
+      "functions": [
+        {
+          "name": "PrepareCamera",
+          "path": "src/game/Camera.cpp",
+          "lines": [
+            78,
+            109
+          ]
+        },
+        {
+          "name": "Camera::getLookAtAngle",
+          "path": "src/game/Camera.cpp",
+          "lines": [
+            34,
+            46
+          ]
+        },
+        {
+          "name": "ArxGame::updateFirstPersonCamera",
+          "path": "src/core/ArxGame.cpp",
+          "lines": [
+            1220,
+            1311
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "melee-combat",
+      "name": "Melee strikes and damage",
+      "purpose": "Charge-and-release swing timing, hit spheres taken from weapon action points, hit chance, absorption and knockback",
+      "paths": [
+        "src/game/Equipment.cpp",
+        "src/core/Core.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ARX_EQUIPMENT_Strike_Check",
+          "path": "src/game/Equipment.cpp",
+          "lines": [
+            597,
+            815
+          ]
+        },
+        {
+          "name": "ARX_EQUIPMENT_ComputeDamages",
+          "path": "src/game/Equipment.cpp",
+          "lines": [
+            427,
+            580
+          ]
+        },
+        {
+          "name": "GetHitValue",
+          "path": "src/game/Equipment.cpp",
+          "lines": [
+            1117,
+            1125
+          ]
+        },
+        {
+          "name": "StrikeAimtime",
+          "path": "src/core/Core.cpp",
+          "lines": [
+            472,
+            479
+          ]
+        },
+        {
+          "name": "ManageCombatModeAnimations",
+          "path": "src/core/Core.cpp",
+          "lines": [
+            496,
+            947
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement",
+        "player-collision"
+      ]
+    },
+    {
+      "id": "projectiles",
+      "name": "Arrows and thrown objects",
+      "purpose": "Ballistic flight of thrown items, per-frame gravity ramp, swept hit probes and flight-distance damage modifier",
+      "paths": [
+        "src/physics/Projectile.cpp",
+        "src/core/Core.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ARX_THROWN_OBJECT_Throw",
+          "path": "src/physics/Projectile.cpp",
+          "lines": [
+            112,
+            146
+          ]
+        },
+        {
+          "name": "ARX_THROWN_ComputeDamages",
+          "path": "src/physics/Projectile.cpp",
+          "lines": [
+            148,
+            212
+          ]
+        },
+        {
+          "name": "ARX_THROWN_OBJECT_ManageProjectile",
+          "path": "src/physics/Projectile.cpp",
+          "lines": [
+            262,
+            472
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "rune-casting",
+      "name": "Gesture spellcasting",
+      "purpose": "Mouse-drawn rune recognition from resampled stroke directions, rune-to-spell lookup and the precast queue",
+      "paths": [
+        "src/game/magic/SpellRecognition.cpp",
+        "src/game/magic/Precast.cpp",
+        "src/game/magic/RuneDraw.cpp"
+      ],
+      "functions": [
+        {
+          "name": "RuneRecognitionAlt::analyze",
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "lines": [
+            415,
+            446
+          ]
+        },
+        {
+          "name": "ARX_SPELLS_Analyse_Alt",
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "lines": [
+            450,
+            452
+          ]
+        },
+        {
+          "name": "ARX_SPELLS_Precast_Add",
+          "path": "src/game/magic/Precast.cpp",
+          "lines": [
+            45,
+            62
+          ]
+        },
+        {
+          "name": "ARX_SPELLS_Precast_Launch",
+          "path": "src/game/magic/Precast.cpp",
+          "lines": [
+            64,
+            98
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "spell-projectiles",
+      "name": "Projectile spells",
+      "purpose": "Magic missile volley formation and fireball flight with proximity detonation and level-scaled blast",
+      "paths": [
+        "src/game/magic/spells/SpellsLvl01.cpp",
+        "src/game/magic/spells/SpellsLvl03.cpp",
+        "src/game/Damage.cpp"
+      ],
+      "functions": [
+        {
+          "name": "MagicMissileSpell::Launch",
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "lines": [
+            123,
+            231
+          ]
+        },
+        {
+          "name": "MagicMissileSpell::Update",
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "lines": [
+            245,
+            319
+          ]
+        },
+        {
+          "name": "FireballSpell::Launch",
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "lines": [
+            165,
+            208
+          ]
+        },
+        {
+          "name": "FireballSpell::Update",
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "lines": [
+            218,
+            303
+          ]
+        },
+        {
+          "name": "doSphericDamage",
+          "path": "src/game/Damage.cpp",
+          "lines": [
+            1269,
+            1364
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rune-casting",
+        "projectiles"
+      ]
+    },
+    {
+      "id": "npc-perception",
+      "name": "NPC sight and hearing",
+      "purpose": "Vision cone with light and stealth gating, room-distance occlusion, and footstep or item noise routed to nearby NPCs",
+      "paths": [
+        "src/game/NPC.cpp",
+        "src/game/NPC.h"
+      ],
+      "functions": [
+        {
+          "name": "CheckNPCEx",
+          "path": "src/game/NPC.cpp",
+          "lines": [
+            2538,
+            2605
+          ]
+        },
+        {
+          "name": "getFirstNpcInSight",
+          "path": "src/game/NPC.cpp",
+          "lines": [
+            2446,
+            2519
+          ]
+        },
+        {
+          "name": "spawnAudibleSound",
+          "path": "src/game/NPC.cpp",
+          "lines": [
+            2640,
+            2684
+          ]
+        },
+        {
+          "name": "ARX_NPC_NeedStepSound",
+          "path": "src/game/NPC.cpp",
+          "lines": [
+            2607,
+            2634
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "npc-navigation",
+      "name": "Anchor-graph pathfinding",
+      "purpose": "A-star over level anchors with radius and height filters, plus an illumination surcharge for sneaking NPCs",
+      "paths": [
+        "src/ai/PathFinder.cpp",
+        "src/ai/PathFinder.h"
+      ],
+      "functions": [
+        {
+          "name": "PathFinder::move",
+          "path": "src/ai/PathFinder.cpp",
+          "lines": [
+            191,
+            247
+          ]
+        },
+        {
+          "name": "PathFinder::flee",
+          "path": "src/ai/PathFinder.cpp",
+          "lines": [
+            249,
+            310
+          ]
+        },
+        {
+          "name": "PathFinder::getIlluminationCost",
+          "path": "src/ai/PathFinder.cpp",
+          "lines": [
+            428,
+            459
+          ]
+        }
+      ],
+      "dependsOn": [
+        "npc-perception"
+      ]
+    },
+    {
+      "id": "prop-physics",
+      "name": "Loose prop simulation",
+      "purpose": "Particle-box ragdoll for dropped and knocked items, Runge-Kutta integration, ground bounce and sleep detection",
+      "paths": [
+        "src/physics/Physics.cpp"
+      ],
+      "functions": [
+        {
+          "name": "EERIE_PHYSICS_BOX_Launch",
+          "path": "src/physics/Physics.cpp",
+          "lines": [
+            258,
+            286
+          ]
+        },
+        {
+          "name": "ComputeForces",
+          "path": "src/physics/Physics.cpp",
+          "lines": [
+            292,
+            320
+          ]
+        },
+        {
+          "name": "RK4Integrate",
+          "path": "src/physics/Physics.cpp",
+          "lines": [
+            325,
+            380
+          ]
+        },
+        {
+          "name": "ARX_EERIE_PHYSICS_BOX_Compute",
+          "path": "src/physics/Physics.cpp",
+          "lines": [
+            538,
+            594
+          ]
+        },
+        {
+          "name": "ARX_PHYSICS_BOX_ApplyModel",
+          "path": "src/physics/Physics.cpp",
+          "lines": [
+            596,
+            631
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-collision"
+      ]
+    },
+    {
+      "id": "torch-light",
+      "name": "Torch and dynamic player light",
+      "purpose": "Held torch as a flickering point light with a fixed falloff band, plus the burn-down of torch durability",
+      "paths": [
+        "src/graphics/particle/ParticleEffects.cpp",
+        "src/game/Player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "ManageTorch",
+          "path": "src/graphics/particle/ParticleEffects.cpp",
+          "lines": [
+            405,
+            456
+          ]
+        },
+        {
+          "name": "ARX_PLAYER_ManageTorch",
+          "path": "src/game/Player.cpp",
+          "lines": [
+            301,
+            317
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera",
+        "npc-perception"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "animation-driven-ground-speed",
+      "node": "player-movement",
+      "name": "Ground speed taken from the walk cycle",
+      "summary": "Horizontal speed is not a fixed number: each frame the current leg animation's root translation is measured and turned into a speed, so animation edits change movement.",
+      "behavior": "While the player is on foot the game reads the total root translation of the active leg animation and divides it by that animation's own duration, then multiplies by a tuning constant. The result is applied to a force accumulator that is converted to velocity and damped every frame, so a heavier character animation really does walk more slowly and a fast one really does cover ground faster. Airborne branches use hard-coded scales instead of reading the animation: a forward jump uses 7.9, sideways jumps 2.6, a backward jump 0.8 and a jump from standing 0.2, all divided by 1000, while levitating without grip uses 0.875. Horizontal velocity is damped by a per-millisecond factor taken from frame time, and speeds below one thousandth of a unit per millisecond are snapped to zero so the player settles instead of creeping. A speed multiplier from buffs and gear scales the integrated frame time rather than the target speed, and the whole movement step is subdivided so a slow frame runs several sub-steps while a jump is in flight.",
+      "constants": [
+        {
+          "name": "default impulse scale",
+          "value": 1.25,
+          "unit": "impulse magnitude numerator, divided by 1000 to give world units per millisecond of frame time",
+          "source": "src/game/Player.cpp:1963"
+        },
+        {
+          "name": "animation-derived speed factor",
+          "value": 0.0125,
+          "unit": "world units per millisecond of frame time, per unit of animation translation divided by animation duration",
+          "source": "src/game/Player.cpp:1982"
+        },
+        {
+          "name": "forward jump impulse scale",
+          "value": 7.9,
+          "unit": "impulse numerator divided by 1000, used while the jump animation plays and forward is held",
+          "source": "src/game/Player.cpp:1969"
+        },
+        {
+          "name": "horizontal damping",
+          "value": 0.009,
+          "unit": "fraction of horizontal speed removed per millisecond of frame time (about 30 % lost on a 33.3 ms step)",
+          "source": "src/game/Player.cpp:2037"
+        },
+        {
+          "name": "target movement step",
+          "value": 30,
+          "unit": "sub-steps per second of reference frame time (reference step is 1000 divided by 30 milliseconds)",
+          "source": "src/game/Player.cpp:142"
+        },
+        {
+          "name": "fixed movement sub-step",
+          "value": 25,
+          "unit": "milliseconds per movement sub-step while jumping",
+          "source": "src/game/Player.cpp:2248"
+        },
+        {
+          "name": "maximum frame time",
+          "value": 200,
+          "unit": "milliseconds of frame time accepted before it is clamped",
+          "source": "src/game/Player.cpp:2249"
+        },
+        {
+          "name": "resting speed threshold",
+          "value": 0.001,
+          "unit": "world units per millisecond, below which horizontal velocity is zeroed",
+          "source": "src/game/Player.cpp:2043"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1963
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1982
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2037
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1992
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2242
+        }
+      ],
+      "capabilities": [
+        "animation-authored locomotion speed",
+        "velocity damping with a settling threshold",
+        "frame time clamping and sub-stepping"
+      ],
+      "tags": [
+        "movement",
+        "locomotion",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "jump-arc-and-buffer",
+      "node": "player-movement",
+      "name": "Scripted jump arc with input buffer",
+      "summary": "The rise of a jump is a timed vertical ramp of a fixed height, and a jump press is remembered briefly so it fires as soon as the player is eligible.",
+      "behavior": "A jump press is stamped with the current time and only honoured if the movement code reaches it within 350 milliseconds, which is the input buffer. Before the jump is accepted the game briefly restores the full standing capsule and probes the space above the head; if that probe is blocked the press is dropped and the crouch state is kept, so the player cannot jump out from under a low ceiling. The ascent is not physics at all: over 200 milliseconds the vertical target is moved upward by a cumulative 130 world units, with vertical velocity forced to zero during the rise so no impulse carries over. Once the ramp reaches its end the jump switches to a descending phase, gravity is allowed to act again and the fall timer starts. A hop chained straight after a landing only gets half of the forward impulse, recovering linearly to full over the following 300 to 600 milliseconds, which stops bunny-hopping from being the fastest way across a room.",
+      "constants": [
+        {
+          "name": "jump input buffer",
+          "value": 350,
+          "unit": "milliseconds between the stored jump press and the movement step that honours it",
+          "source": "src/game/Player.cpp:1817"
+        },
+        {
+          "name": "jump rise duration",
+          "value": 200,
+          "unit": "milliseconds of the scripted upward ramp",
+          "source": "src/game/Player.cpp:2114"
+        },
+        {
+          "name": "jump rise height",
+          "value": 130,
+          "unit": "world units climbed over the whole rise ramp (standing player capsule is 170 units tall)",
+          "source": "src/game/Player.cpp:2115"
+        },
+        {
+          "name": "chained jump impulse penalty",
+          "value": 0.5,
+          "unit": "fraction of normal jump impulse for the first 300 ms after a jump ends",
+          "source": "src/game/Player.cpp:1950"
+        },
+        {
+          "name": "jump penalty recovery window",
+          "value": 600,
+          "unit": "milliseconds after a jump ends before the impulse multiplier is fully restored",
+          "source": "src/game/Player.cpp:1949"
+        },
+        {
+          "name": "head clearance sample offset",
+          "value": 20,
+          "unit": "world units of forward offset per probe ring when testing whether a jump fits",
+          "source": "src/game/Player.cpp:1752"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1817
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2114
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1950
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1735
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1536
+        }
+      ],
+      "capabilities": [
+        "buffered jump input",
+        "fixed-height timed jump arc",
+        "dropout penalty against chained hops",
+        "ceiling clearance rejection"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "fall-damage",
+      "node": "player-movement",
+      "name": "Fall damage above a drop threshold",
+      "summary": "A fall only hurts once it passes 400 world units, and damage grows linearly beyond that at one point per 15 units of extra drop.",
+      "behavior": "When the player leaves firm ground the game records the height at the start of the fall and starts a falling flag once downward speed passes a threshold, so walking down a slope is not treated as a fall. On the frame the player lands, the drop height is the current position minus the recorded start height. Anything at or below 400 world units costs nothing; the portion above 400 is divided by 15 and applied to the player and separately to carried equipment. The same threshold and divisor appear again in the branch that ends a fall early because the capsule could not move, and that path re-averages the recorded height so a series of small blocked drops does not compound into one large hit. An unsupported move terminates the fall immediately and zeroes horizontal velocity, so sliding off a ledge stops the player rather than launching them.",
+      "constants": [
+        {
+          "name": "free fall drop",
+          "value": 400,
+          "unit": "world units of drop that cause no damage (standing capsule is 170 units tall)",
+          "source": "src/game/Player.cpp:1927"
+        },
+        {
+          "name": "fall damage divisor",
+          "value": 15,
+          "unit": "world units of drop per point of damage beyond the free fall drop",
+          "source": "src/game/Player.cpp:1928"
+        },
+        {
+          "name": "falling trigger speed",
+          "value": 15,
+          "unit": "world units per millisecond of downward velocity, divided by the 33.3 ms reference step, before a fall is armed",
+          "source": "src/game/Player.cpp:1900"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1927
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1900
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2143
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1139
+        }
+      ],
+      "capabilities": [
+        "drop-height threshold before damage",
+        "linear damage beyond the threshold",
+        "separate equipment wear from the same fall"
+      ],
+      "tags": [
+        "movement",
+        "damage",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "capsule-stance-heights",
+      "node": "player-movement",
+      "name": "Crouch and levitate capsule heights",
+      "summary": "One capsule with three height offsets: standing, crouching and levitating, each switched only after the space has been re-probed.",
+      "behavior": "The player is a single vertical cylinder with a radius of 52 world units whose height offset is measured downward from the eye position. Standing uses 170 units, crouching 120 and levitation 220, so crouching shortens the body and levitation stretches it. Entering a crouch does not shorten the capsule immediately: the crouch-start animation plays first and only when it reports its end does the capsule shrink, which prevents the player from snapping under a ledge in one frame. Standing back up plays the reverse animation and blocks movement input until it finishes. Levitation works the other way: the taller capsule is tested before it is applied, and if the taller body would intersect geometry the spell is cancelled instead of leaving the player embedded. A forced stand, such as a levitation ending while crouched, is suppressed while crouched and the crouch state is preserved.",
+      "constants": [
+        {
+          "name": "player capsule radius",
+          "value": 52,
+          "unit": "world units",
+          "source": "src/game/Player.h:385"
+        },
+        {
+          "name": "standing height offset",
+          "value": -170,
+          "unit": "world units measured downward from the eye position",
+          "source": "src/game/Player.h:386"
+        },
+        {
+          "name": "crouching height offset",
+          "value": -120,
+          "unit": "world units measured downward from the eye position",
+          "source": "src/game/Player.h:387"
+        },
+        {
+          "name": "levitating height offset",
+          "value": -220,
+          "unit": "world units measured downward from the eye position",
+          "source": "src/game/Player.h:388"
+        },
+        {
+          "name": "crouch auto-stand ceiling check",
+          "value": -150,
+          "unit": "world units of capsule height below which the game looks for room to stand up",
+          "source": "src/game/Player.cpp:1263"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Player.h",
+          "line": 385
+        },
+        {
+          "path": "src/game/Player.h",
+          "line": 388
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1473
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1853
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1263
+        }
+      ],
+      "capabilities": [
+        "one capsule with three stance heights",
+        "animation-gated crouch transition",
+        "levitation cancelled when the taller body does not fit"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "stance"
+      ]
+    },
+    {
+      "id": "stepped-sweep-and-slide",
+      "node": "player-collision",
+      "name": "Stepped capsule sweep with angular slide",
+      "summary": "Movement is advanced in 40-unit steps; when a step is blocked, the mover sweeps the intended direction left and right in fixed angular increments until it finds a direction that clears.",
+      "behavior": "A move from the current position to the desired position is split into segments no longer than 40 world units, with a hard cap of 100 segments so a single huge displacement cannot hang the frame. Each segment is applied to a copy of the capsule and validated; the copy is kept when it is free. If validation fails and the move has a vertical component the raw vertical slide is tried first, which is what lets a climbing player inch up a wall while pressing into it. Otherwise the code searches for a slide: at each increment it rotates the intended horizontal direction by that much to the right and by the same amount to the left, tests both, and stops at the first increment where either side validates, preferring the smaller deflection when both do. It steps 10 degrees at a time out to 70 degrees for the player's easy-sliding path (finer, smoother wall sliding) and 30 degrees at a time out to 90 degrees for other movers. A global flag records whether the direct path succeeded, so callers can tell a clean move from a deflected one.",
+      "constants": [
+        {
+          "name": "player sweep step",
+          "value": 40,
+          "unit": "world units of movement per validated sub-step",
+          "source": "src/game/Player.cpp:2127"
+        },
+        {
+          "name": "segment cap",
+          "value": 100,
+          "unit": "sub-steps per move before the loop gives up",
+          "source": "src/physics/Collisions.cpp:1151"
+        },
+        {
+          "name": "easy slide angular increment",
+          "value": 10,
+          "unit": "degrees per slide attempt when the mover is flagged for easy sliding",
+          "source": "src/physics/Collisions.cpp:1200"
+        },
+        {
+          "name": "default slide angular increment",
+          "value": 30,
+          "unit": "degrees per slide attempt for movers without the easy-sliding flag",
+          "source": "src/physics/Collisions.cpp:1203"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1130
+        },
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1155
+        },
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1200
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2127
+        },
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1270
+        }
+      ],
+      "capabilities": [
+        "fixed-length swept capsule segments",
+        "angular slide search on blocked moves",
+        "coarse and fine slide granularity"
+      ],
+      "tags": [
+        "physics-feel",
+        "collision",
+        "movement"
+      ]
+    },
+    {
+      "id": "climbing-budget",
+      "node": "player-collision",
+      "name": "Climbing budget and ledge rejection",
+      "summary": "Ledges are climbable only within a per-second climbing budget and only up to a fixed penetration depth; deeper steps stop the climb outright.",
+      "behavior": "When a blocked capsule would have to rise over geometry, the game measures the vertical penetration it would have to swallow and converts it into a climbing cost scaled by the horizontal distance travelled, so shallow slopes are cheap and vertical faces are expensive. That cost is charged against a climbing budget capped at 12 units per second and decaying in real time. If the requested penetration is deeper than 55 world units the budget is immediately set to its maximum and the move is refused, which turns a wall into a hard stop while a low step is still free. Both slide directions are walked at each angular increment and every failed attempt restores the budget it spent, so only the direction that is finally accepted is charged. The budget therefore lets a player angle into a low ledge and ratchet over it while starving a straight-on push against a tall face.",
+      "constants": [
+        {
+          "name": "climbing budget ceiling",
+          "value": 12,
+          "unit": "climbing cost units per second",
+          "source": "src/physics/Collisions.h:58"
+        },
+        {
+          "name": "easy slide sweep limit",
+          "value": 70,
+          "unit": "degrees either side of the intended direction searched when sliding the player",
+          "source": "src/physics/Collisions.cpp:1201"
+        },
+        {
+          "name": "ledge rejection depth",
+          "value": -55,
+          "unit": "world units of vertical penetration that aborts a climb",
+          "source": "src/physics/Collisions.cpp:1086"
+        },
+        {
+          "name": "climb cost scale",
+          "value": 0.5,
+          "unit": "multiplier converting vertical penetration divided by horizontal distance into climbing cost",
+          "source": "src/physics/Collisions.cpp:1079"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1074
+        },
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1086
+        },
+        {
+          "path": "src/physics/Collisions.cpp",
+          "line": 1220
+        },
+        {
+          "path": "src/physics/Collisions.h",
+          "line": 58
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1828
+        }
+      ],
+      "capabilities": [
+        "rate-limited ledge climbing",
+        "hard rejection of tall vertical faces",
+        "climb cost proportional to step steepness"
+      ],
+      "tags": [
+        "collision",
+        "movement",
+        "traversal"
+      ]
+    },
+    {
+      "id": "first-person-camera",
+      "node": "camera",
+      "name": "First-person camera and head attachment",
+      "summary": "A 75-degree vertical field of view, 2100 units of clip depth and a one-unit near plane, with the eye bolted to a head vertex that is clamped close to the body axis.",
+      "behavior": "The camera stores a focal length rather than an angle; the vertical field of view is derived from a fixed 480-unit image plane, so the default 75-degree view and a one-unit near plane give an extremely deep frustum that is clipped at 2100 world units. Users cannot drive the field of view below 10 degrees. In first person the camera position is copied from the head attachment vertex of the animated player mesh, and the horizontal offset from the body centre is clamped to 46 units so a head-bob animation cannot swing the view through a wall. Turning off view bobbing collapses the camera onto a stable cached head position instead. Looking out from a scripted camera blends position and orientation back toward the player at a fixed fraction per frame, and the external third-person fallback pulls the eye back up to 250 world units behind the player in 10-unit increments, adding a fixed 30 degrees to its pitch and stopping at the last increment that is still inside level geometry.",
+      "constants": [
+        {
+          "name": "default vertical field of view",
+          "value": 75,
+          "unit": "degrees, vertical",
+          "source": "src/core/Config.cpp:127"
+        },
+        {
+          "name": "minimum field of view",
+          "value": 10,
+          "unit": "degrees, vertical, enforced when a config value is loaded",
+          "source": "src/core/Config.cpp:609"
+        },
+        {
+          "name": "far clip depth",
+          "value": 2100,
+          "unit": "world units",
+          "source": "src/core/ArxGame.cpp:784"
+        },
+        {
+          "name": "near plane distance",
+          "value": 1,
+          "unit": "world units",
+          "source": "src/game/Camera.cpp:52"
+        },
+        {
+          "name": "projection image plane height",
+          "value": 480,
+          "unit": "world units of virtual image plane used to convert focal length to field of view",
+          "source": "src/game/Camera.h:33"
+        },
+        {
+          "name": "eye offset clamp",
+          "value": 46,
+          "unit": "world units of horizontal distance between the body axis and the head vertex",
+          "source": "src/core/ArxGame.cpp:1294"
+        },
+        {
+          "name": "third-person pullback step",
+          "value": 10,
+          "unit": "world units per increment, up to 250 world units behind the player",
+          "source": "src/core/ArxGame.cpp:1249"
+        },
+        {
+          "name": "third-person pitch offset",
+          "value": 30,
+          "unit": "degrees added to pitch while in external view",
+          "source": "src/core/ArxGame.cpp:1261"
+        },
+        {
+          "name": "camera blend fraction",
+          "value": 0.1,
+          "unit": "fraction of the remaining angle closed per frame while blending back from a scripted camera",
+          "source": "src/core/ArxGame.cpp:1308"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/ArxGame.cpp",
+          "line": 783
+        },
+        {
+          "path": "src/core/ArxGame.cpp",
+          "line": 1294
+        },
+        {
+          "path": "src/game/Camera.cpp",
+          "line": 50
+        },
+        {
+          "path": "src/game/Camera.h",
+          "line": 63
+        },
+        {
+          "path": "src/core/ArxGame.cpp",
+          "line": 1261
+        }
+      ],
+      "capabilities": [
+        "focal-length camera with derived field of view",
+        "head-vertex eye attachment with a lateral clamp",
+        "optional view bobbing",
+        "third-person fallback that stops at geometry"
+      ],
+      "tags": [
+        "camera",
+        "view",
+        "presentation"
+      ]
+    },
+    {
+      "id": "bow-zoom",
+      "node": "camera",
+      "name": "Bow draw zoom",
+      "summary": "Drawing a bow narrows the camera continuously over about 0.7 seconds by adding focal length, and the same ratio later scales arrow launch speed.",
+      "behavior": "While the bow's strike-cycle animation is playing the aim ratio grows with frame time divided by 710, clamped to one, which makes a full draw take about seven tenths of a second. The camera's focal length is increased by 177.5 times that ratio, so the picture tightens steadily rather than snapping to a zoom level, and the zoom decays the same way when the cycle ends. The ratio is also read at release: arrow speed is the larger of the ratio plus 0.3 and 0.9, and the downward gravity term is 0.0002 scaled by one minus the ratio, so a half-drawn arrow leaves slower and drops noticeably while a full draw flies nearly flat.",
+      "constants": [
+        {
+          "name": "full draw time",
+          "value": 710,
+          "unit": "milliseconds of animation cycle per unit of aim ratio",
+          "source": "src/core/Core.h:93"
+        },
+        {
+          "name": "zoom focal gain",
+          "value": 177.5,
+          "unit": "world units of focal length added at a full draw",
+          "source": "src/core/ArxGame.cpp:1775"
+        },
+        {
+          "name": "maximum aim ratio",
+          "value": 1,
+          "unit": "clamp applied to the accumulated aim ratio per update",
+          "source": "src/core/Core.cpp:745"
+        },
+        {
+          "name": "minimum arrow speed",
+          "value": 0.9,
+          "unit": "world units per millisecond of frame time at release",
+          "source": "src/core/Core.cpp:902"
+        },
+        {
+          "name": "partial draw gravity",
+          "value": 0.0002,
+          "unit": "world units per millisecond squared, scaled by one minus the aim ratio",
+          "source": "src/core/Core.cpp:907"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/Core.h",
+          "line": 92
+        },
+        {
+          "path": "src/core/ArxGame.cpp",
+          "line": 1775
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 743
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 902
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 907
+        }
+      ],
+      "capabilities": [
+        "continuous draw-driven camera zoom",
+        "aim ratio shared between camera and projectile",
+        "unfinished draws fly slower and drop"
+      ],
+      "tags": [
+        "camera",
+        "ranged",
+        "combat"
+      ]
+    },
+    {
+      "id": "melee-charge-window",
+      "node": "melee-combat",
+      "name": "Melee charge and release",
+      "summary": "Holding attack winds the swing up; the fraction of the weapon's aim time that has elapsed becomes both the damage multiplier and the gate on the audible strike grunt.",
+      "behavior": "Attack is a two-stage gesture. Pressing attack starts the wind-up animation and sets the aim timer running; holding keeps the swing in its loop animation and the timer keeps accumulating frame time. Releasing the button fires the strike and stops the timer. The elapsed aim time is divided by the weapon's full aim time and clamped between 0.1 and 1.0, so even a tap produces a tenth of the damage rather than nothing. The full aim time is taken from the weapon's aim-time modifier in milliseconds, floored at 1500, then reduced by 20 milliseconds per point of dexterity above 10 and floored again, so a clumsy character cannot be slower than 1.5 seconds and a nimble one still cannot beat that floor. Any ratio above 0.8 also unlocks the strike shout and the backstab opportunity check.",
+      "constants": [
+        {
+          "name": "minimum full aim time",
+          "value": 1500,
+          "unit": "milliseconds of hold for a full charge",
+          "source": "src/game/Player.cpp:421"
+        },
+        {
+          "name": "dexterity aim handicap",
+          "value": 20,
+          "unit": "milliseconds of aim time removed per point of dexterity above 10",
+          "source": "src/game/Player.cpp:417"
+        },
+        {
+          "name": "minimum charge ratio",
+          "value": 0.1,
+          "unit": "fraction of full damage retained by a released tap",
+          "source": "src/core/Core.cpp:476"
+        },
+        {
+          "name": "committed strike threshold",
+          "value": 0.8,
+          "unit": "fraction of the full aim time needed before the strike is treated as committed",
+          "source": "src/core/Core.cpp:478"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/core/Core.cpp",
+          "line": 472
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 476
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 417
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 421
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 532
+        }
+      ],
+      "capabilities": [
+        "hold-to-charge melee attack",
+        "charge ratio as damage multiplier",
+        "weapon and dexterity derived charge time"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "timing"
+      ]
+    },
+    {
+      "id": "melee-damage-resolution",
+      "node": "melee-combat",
+      "name": "Melee hit chance, absorption and knockback",
+      "summary": "Damage is attack power times charge ratio, reduced by a percentage absorb, then checked against a hit chance built from armour class minus attack power, with backstab and critical multipliers applied last.",
+      "behavior": "The attacker's melee damage value is multiplied by the charge ratio to give raw damage. Armour reduces it by an absorb percentage, which for the player is half of the defence skill and for creatures comes from their own absorb stat; a curse spell scales both armour class and absorb downward per level. Hit chance is 100 minus armour class minus attack power, and a random roll above that chance means a clean miss with no damage and no sound of impact. A target flagged as backstabbable, combined with a stealth roll, multiplies damage by 1.5; a successful critical roll multiplies it by another 1.5. The final damage pushes the target along the source-to-target axis, and the player receives that push through a dedicated force accumulator with separate horizontal and vertical divisors, so a heavy hit staggers the camera without sliding the player across the floor.",
+      "constants": [
+        {
+          "name": "player damage absorb",
+          "value": 0.5,
+          "unit": "percentage points of absorb per point of defence skill",
+          "source": "src/game/Equipment.cpp:508"
+        },
+        {
+          "name": "hit chance base",
+          "value": 100,
+          "unit": "percentage points; chance equals this minus armour class minus attack power",
+          "source": "src/game/Equipment.cpp:541"
+        },
+        {
+          "name": "backstab multiplier",
+          "value": 1.5,
+          "unit": "damage factor applied once when the target is caught from behind",
+          "source": "src/game/Equipment.cpp:472"
+        },
+        {
+          "name": "critical multiplier",
+          "value": 1.5,
+          "unit": "damage factor applied to a successful critical roll",
+          "source": "src/game/Equipment.cpp:551"
+        },
+        {
+          "name": "player push divisor on the attack axis",
+          "value": 11,
+          "unit": "divisor applied to damage before adding to the player push force, per 33.3 ms reference step",
+          "source": "src/game/Equipment.cpp:561"
+        },
+        {
+          "name": "player push divisor on the vertical axis",
+          "value": 30,
+          "unit": "divisor applied to damage for the vertical push component, per 33.3 ms reference step",
+          "source": "src/game/Equipment.cpp:561"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 460
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 541
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 551
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 561
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 572
+        }
+      ],
+      "capabilities": [
+        "armour class versus attack power hit chance",
+        "percentage absorption of incoming damage",
+        "backstab and critical multipliers",
+        "directional knockback with per-axis divisors"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "damage"
+      ]
+    },
+    {
+      "id": "weapon-hit-spheres",
+      "node": "melee-combat",
+      "name": "Hit spheres from weapon action points",
+      "summary": "A swing hits whatever overlaps the spheres authored on the weapon mesh, so reach and arc come from animation data rather than from a fixed range cone.",
+      "behavior": "Each frame a swing is active the game walks the weapon model's action points and takes only the ones named as hit points with a numeric suffix; the suffix is parsed as the sphere radius. Every hit point becomes a sphere at the animated world position of that vertex and is tested against the world. Creatures attacking the player get 15 extra world units of radius, which compensates for their coarser animation without changing the player's own reach. Anything overlapping is damaged using the closest non-hidden vertex of the target as the impact point, so sparks and blood spray appear where the weapon actually touched rather than at the target's origin. Because the spheres ride on the animated mesh, a long weapon genuinely reaches further on the frames where it is extended.",
+      "constants": [
+        {
+          "name": "hit point name prefix",
+          "value": "hit_",
+          "unit": "naming convention on weapon action points; the numeric suffix is the sphere radius in world units",
+          "source": "src/game/Equipment.cpp:1119"
+        },
+        {
+          "name": "creature hit sphere bonus",
+          "value": 15,
+          "unit": "world units of extra hit sphere radius for attackers that are not the player",
+          "source": "src/game/Equipment.cpp:627"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 1117
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 617
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 627
+        },
+        {
+          "path": "src/game/Equipment.cpp",
+          "line": 628
+        }
+      ],
+      "capabilities": [
+        "mesh-authored weapon reach and swing arc",
+        "per-action-point hit sphere radii",
+        "impact point taken from the nearest target vertex"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "hit-detection"
+      ]
+    },
+    {
+      "id": "arrow-ballistics",
+      "node": "projectiles",
+      "name": "Arrow flight and swept hit probes",
+      "summary": "Arrows travel as a straight velocity with a per-frame gravity ramp, and each frame sweeps a short chain of expanding spheres along the flight direction so fast arrows cannot tunnel.",
+      "behavior": "A released arrow is spawned at the hand position with a direction vector scaled by its launch speed and a gravity value; the projectile stores both plus the source, the mesh, the attach vertex and a damage figure. Every update advances the position by velocity times frame time and, if gravity is non-zero, adds gravity times frame time to the vertical velocity, re-orienting the arrow mesh to the new direction so a dropping arrow visibly noses down. Collision is not a single ray: the update tests 12 spheres spaced along the arrow's local forward axis in half-unit increments of a precision value, each with the hit radius plus a small margin, and the first overlap that is not the shooter resolves the hit. A parallel ray cast against level geometry produces sparks and a surface-appropriate impact sound, and the arrow sticks where it landed instead of vanishing.",
+      "constants": [
+        {
+          "name": "swept probe count",
+          "value": 12,
+          "unit": "spheres tested along the flight direction per update",
+          "source": "src/physics/Projectile.cpp:372"
+        },
+        {
+          "name": "probe precision step",
+          "value": 0.5,
+          "unit": "increments of the precision factor, each probe offset by 4.5 times that factor along the flight vector",
+          "source": "src/physics/Projectile.cpp:373"
+        },
+        {
+          "name": "arrow damage skill scale",
+          "value": 0.02,
+          "unit": "fraction of base weapon damage added per point of projectile skill plus dexterity",
+          "source": "src/core/Core.cpp:912"
+        },
+        {
+          "name": "launch speed bonus over aim ratio",
+          "value": 0.3,
+          "unit": "world units per millisecond added to the aim ratio before the speed floor is applied",
+          "source": "src/core/Core.cpp:902"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 309
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 311
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 372
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 355
+        },
+        {
+          "path": "src/core/Core.cpp",
+          "line": 904
+        }
+      ],
+      "capabilities": [
+        "linear flight with a per-frame gravity ramp",
+        "multi-sphere swept hit detection",
+        "arrows that stick in geometry"
+      ],
+      "tags": [
+        "ranged",
+        "projectile",
+        "physics-feel"
+      ]
+    },
+    {
+      "id": "flight-distance-damage",
+      "node": "projectiles",
+      "name": "Flight distance damage modifier",
+      "summary": "A projectile's damage is scaled by how far it has flown: half damage point-blank, full damage at 1000 units, and double beyond 2000.",
+      "behavior": "When a projectile connects, the game measures the straight-line distance from where it was spawned to where it currently is and turns that into a modifier. Under 2000 world units the modifier is the flight distance divided by 1000, floored at 0.5, so a shot fired from touching range does half damage and one that has covered 1000 units does full damage. Past 2000 units the modifier is simply 2, so damage keeps scaling with range instead of tapering off, which rewards leading a target across a room. The modifier multiplies the projectile's base damage along with critical and backstab terms and the target's absorb reduction, then a separate roll against armour class versus projectile damage can still cancel the hit entirely. A carried quiver's poison charge is applied on the same hit.",
+      "constants": [
+        {
+          "name": "reference flight distance",
+          "value": 1000,
+          "unit": "world units of travel that give a damage multiplier of exactly one",
+          "source": "src/physics/Projectile.cpp:154"
+        },
+        {
+          "name": "minimum distance modifier",
+          "value": 0.5,
+          "unit": "damage multiplier floor at point-blank range",
+          "source": "src/physics/Projectile.cpp:158"
+        },
+        {
+          "name": "long range modifier",
+          "value": 2,
+          "unit": "damage multiplier applied beyond twice the reference distance",
+          "source": "src/physics/Projectile.cpp:160"
+        },
+        {
+          "name": "backstab multiplier on projectiles",
+          "value": 1.5,
+          "unit": "damage factor applied once when the target is caught from behind",
+          "source": "src/physics/Projectile.cpp:175"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 148
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 154
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 160
+        },
+        {
+          "path": "src/physics/Projectile.cpp",
+          "line": 205
+        }
+      ],
+      "capabilities": [
+        "range-scaled projectile damage",
+        "separate armour chance check after the range modifier",
+        "poison transfer from the carried quiver"
+      ],
+      "tags": [
+        "ranged",
+        "damage",
+        "projectile"
+      ]
+    },
+    {
+      "id": "rune-gesture-recognition",
+      "node": "rune-casting",
+      "name": "Mouse-drawn rune recognition",
+      "summary": "A drawn stroke is resampled to 20 points, reduced to 19 compass directions, and matched against authored direction strings with a small tolerance.",
+      "behavior": "While the cast button is held the game collects raw mouse positions, capped at 200 samples so a long scribble cannot grow without bound. On release the stroke first has its corners picked out as key points, then is resampled into a fixed set of 20 positions spread across those segments by arc length, and each consecutive pair becomes one of eight compass directions derived from the screen-space angle of the segment. That gives 19 direction codes per stroke, which are compared against a table of hand-authored direction strings, one string per rune; several runes accept two alternative strings so a rounded or angular handwriting both register. Matching allows up to two direction codes to differ, which absorbs jitter and a sloppy corner without letting distinct runes collide. A recognised rune is pushed into the current spell symbol list and resets the stroke buffer; an unrecognised one clears the buffer and records the failed sequence.",
+      "constants": [
+        {
+          "name": "resampled stroke length",
+          "value": 20,
+          "unit": "points the raw stroke is resampled to before direction analysis",
+          "source": "src/game/magic/SpellRecognition.cpp:101"
+        },
+        {
+          "name": "matching tolerance",
+          "value": 2,
+          "unit": "direction codes that may differ between a drawn stroke and a stored rune pattern",
+          "source": "src/game/magic/SpellRecognition.cpp:104"
+        },
+        {
+          "name": "raw stroke sample cap",
+          "value": 200,
+          "unit": "mouse positions retained per stroke before the buffer is reset",
+          "source": "src/game/magic/SpellRecognition.cpp:454"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "line": 60
+        },
+        {
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "line": 104
+        },
+        {
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "line": 415
+        },
+        {
+          "path": "src/game/magic/SpellRecognition.cpp",
+          "line": 360
+        }
+      ],
+      "capabilities": [
+        "freehand mouse gesture input",
+        "resampled direction-string matching with tolerance",
+        "multiple accepted strokes per rune"
+      ],
+      "tags": [
+        "magic",
+        "input",
+        "spellcasting"
+      ]
+    },
+    {
+      "id": "spell-precast-queue",
+      "node": "rune-casting",
+      "name": "Precast spell queue",
+      "summary": "Completed rune sequences wait in a short first-in-first-out queue; pressing cast launches the oldest entry, and no two launches can happen within one second.",
+      "behavior": "Recognising a full rune sequence does not cast immediately. The spell is pushed onto a small queue with its level and duration, and if the queue is already full the oldest entry is discarded to make room, so the buffer holds the three most recent invocations. Launching is a separate player action: it reads the oldest queued spell, computes the mana cost from the player's effective spell level, and only spends mana if the cost is affordable or the spell is flagged as free. A global timestamp guards the whole system so a second launch inside one second is silently ignored, which stops a player from emptying the queue in a single frame and makes each cast a deliberate beat. If the player is in combat stance when the launch fires, the stance is dropped and the casting animation restarted so the two animation layers do not fight.",
+      "constants": [
+        {
+          "name": "precast queue depth",
+          "value": 3,
+          "unit": "queued spells retained; the oldest is dropped when a fourth is added",
+          "source": "src/game/magic/Precast.cpp:34"
+        },
+        {
+          "name": "minimum interval between launches",
+          "value": 1,
+          "unit": "seconds of game time between two launched spells",
+          "source": "src/game/magic/Precast.cpp:71"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/magic/Precast.cpp",
+          "line": 45
+        },
+        {
+          "path": "src/game/magic/Precast.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/game/magic/Precast.cpp",
+          "line": 71
+        },
+        {
+          "path": "src/game/magic/Precast.cpp",
+          "line": 69
+        },
+        {
+          "path": "src/game/magic/Precast.cpp",
+          "line": 100
+        }
+      ],
+      "capabilities": [
+        "bounded queue of recognised spells",
+        "global cast cooldown",
+        "mana charged at launch rather than at recognition"
+      ],
+      "tags": [
+        "magic",
+        "spellcasting",
+        "timing"
+      ]
+    },
+    {
+      "id": "magic-missile-volley",
+      "node": "spell-projectiles",
+      "name": "Magic missile volley",
+      "summary": "Missile count grows with spell level up to five, each extra missile is fanned out by a small random angle, and every missile detonates in an 80-unit sphere.",
+      "behavior": "Casting magic missile computes the number of projectiles as half of the spell level plus one, clamped between one and five, then spawns each missile from the caster's hand with the camera pitch and yaw. The first missile flies exactly where the player aims; every additional missile is jittered by up to four degrees of pitch and six degrees of yaw, giving a ragged fan rather than a tight cluster. Each missile has a six-second life with up to a second of random variation, never less than one second, and carries its own coloured light. Every frame each missile tests a ten-unit sphere against the world; on contact it explodes, dealing damage in an 80-unit radius with a base of four plus a fifth of a point per level, scaled by 0.8, typed as magical and flagged as a single-hit area effect that cannot hurt the caster. Once every missile has stopped moving the spell ends itself.",
+      "constants": [
+        {
+          "name": "missile count clamp",
+          "value": 5,
+          "unit": "upper clamp on the projectile count, reached at spell level 9 and above",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:173"
+        },
+        {
+          "name": "missile pitch jitter",
+          "value": 4,
+          "unit": "degrees of random pitch spread applied to every missile after the first",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:212"
+        },
+        {
+          "name": "missile yaw jitter",
+          "value": 6,
+          "unit": "degrees of random yaw spread applied to every missile after the first",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:213"
+        },
+        {
+          "name": "missile life",
+          "value": 6,
+          "unit": "seconds of flight before the missile expires",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:125"
+        },
+        {
+          "name": "missile contact radius",
+          "value": 10,
+          "unit": "world units of the collision sphere tested each update",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:253"
+        },
+        {
+          "name": "explosion damage radius",
+          "value": 80,
+          "unit": "world units",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:269"
+        },
+        {
+          "name": "explosion damage scale",
+          "value": 0.8,
+          "unit": "multiplier applied to base damage of four plus a fifth of a point per spell level",
+          "source": "src/game/magic/spells/SpellsLvl01.cpp:270"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "line": 171
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "line": 212
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "line": 253
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "line": 269
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl01.cpp",
+          "line": 125
+        }
+      ],
+      "capabilities": [
+        "level-scaled multi-projectile spell",
+        "random spread for extra missiles",
+        "proximity detonation with area damage"
+      ],
+      "tags": [
+        "magic",
+        "projectile",
+        "combat"
+      ]
+    },
+    {
+      "id": "fireball-flight",
+      "node": "spell-projectiles",
+      "name": "Fireball flight and blast",
+      "summary": "A fireball spends two seconds gathering in the caster's hands, then flies at a fixed speed and detonates the first thing it touches with a blast that scales with level.",
+      "behavior": "On launch the spell sets a six-second duration and starts a two-second creation window. During creation the ball is re-aimed at the caster's current view every frame and its speed is set for the gathering phase; once the window elapses the speed is re-fixed at the higher flight value and the ball stops following the aim, so a caster who turns after release cannot steer it. Motion uses a per-frame multiplier on the velocity rather than raw frame time, which keeps the flight visually consistent across frame rates. The contact sphere radius is twice the spell level, floored at 12 world units, so a high-level fireball is much easier to land. On contact the velocity is halved, a scorch decal and a boom are spawned, and spherical damage is applied over a radius of 30 units per level with 3 damage per level, typed fire and magical; fire protection scales the damage and everything in the blast is ignited.",
+      "constants": [
+        {
+          "name": "fireball duration",
+          "value": 6,
+          "unit": "seconds of life after launch",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:167"
+        },
+        {
+          "name": "gathering window",
+          "value": 2,
+          "unit": "seconds during which the ball tracks the caster and cannot be steered away from",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:162"
+        },
+        {
+          "name": "launch speed scale",
+          "value": 80,
+          "unit": "velocity magnitude at launch, multiplied per frame by 0.0045 of frame time in milliseconds",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:204"
+        },
+        {
+          "name": "flight speed scale",
+          "value": 100,
+          "unit": "velocity magnitude after the gathering window, multiplied per frame by 0.0045 of frame time in milliseconds",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:259"
+        },
+        {
+          "name": "per-frame flight multiplier",
+          "value": 0.0045,
+          "unit": "world units travelled per millisecond of frame time per unit of velocity scale",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:262"
+        },
+        {
+          "name": "minimum contact radius",
+          "value": 12,
+          "unit": "world units of the detonation sphere, or twice the spell level if larger",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:273"
+        },
+        {
+          "name": "blast radius per level",
+          "value": 30,
+          "unit": "world units of damage radius per spell level",
+          "source": "src/game/magic/spells/SpellsLvl03.cpp:293"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "line": 165
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "line": 204
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "line": 259
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "line": 273
+        },
+        {
+          "path": "src/game/magic/spells/SpellsLvl03.cpp",
+          "line": 293
+        }
+      ],
+      "capabilities": [
+        "charge-up window before a spell is released",
+        "fixed-speed projectile with scripted impact",
+        "level-scaled blast radius and damage",
+        "ignition of everything in the blast"
+      ],
+      "tags": [
+        "magic",
+        "projectile",
+        "area-damage"
+      ]
+    },
+    {
+      "id": "npc-vision-cone",
+      "node": "npc-perception",
+      "name": "NPC vision cone with light gating",
+      "summary": "A creature sees the player only inside a 110-degree half-angle within 2000 units, and only if the player is lit above the stealth threshold, carrying a torch, or standing close.",
+      "behavior": "Detection measures the ground-plane angle between the creature's facing and the direction toward a point 90 world units above the player's position. Three gates must pass. First the distance must be under 2000 squared units and the player must not be invisible or dead. Second the angle between the creature's facing and the direction to the player must be within 110 degrees, measured on the ground plane. Third the player must be visible by one of three routes: the light sampled at the player's feet must exceed a stealth threshold that rises with the stealth skill, the player must be carrying a lit torch, or the player must be within 200 units where proximity overrides darkness. Touching at body radii plus 15 units with less than 200 units of vertical separation always counts, bypassing the angle test entirely. A ray against level geometry must then actually reach the player, and a hit within 25 units of the target is treated as clear. Entering and leaving visibility raise distinct events so scripts can react.",
+      "constants": [
+        {
+          "name": "vision half-angle",
+          "value": 110,
+          "unit": "degrees of yaw difference around the creature's facing",
+          "source": "src/game/NPC.cpp:2576"
+        },
+        {
+          "name": "sight range",
+          "value": 2000,
+          "unit": "world units of distance beyond which the player is ignored",
+          "source": "src/game/NPC.cpp:2549"
+        },
+        {
+          "name": "proximity override range",
+          "value": 200,
+          "unit": "world units inside which darkness does not hide the player",
+          "source": "src/game/NPC.cpp:2580"
+        },
+        {
+          "name": "contact radius slack",
+          "value": 15,
+          "unit": "world units added to both body radii for forced detection on touch",
+          "source": "src/game/NPC.cpp:2563"
+        },
+        {
+          "name": "contact vertical tolerance",
+          "value": 200,
+          "unit": "world units of height difference allowed for forced detection on touch",
+          "source": "src/game/NPC.cpp:2564"
+        },
+        {
+          "name": "line-of-sight near miss",
+          "value": 25,
+          "unit": "world units by which a geometry hit may fall short of the target and still count as visible",
+          "source": "src/game/NPC.cpp:2584"
+        },
+        {
+          "name": "stealth threshold base",
+          "value": 15,
+          "unit": "light level at zero stealth skill before any skill bonus is added",
+          "source": "src/game/Player.cpp:2300"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 2538
+        },
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 2549
+        },
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 2576
+        },
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 2563
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2299
+        }
+      ],
+      "capabilities": [
+        "angle-gated vision cone",
+        "light level compared against a stealth skill threshold",
+        "torch and proximity overrides for darkness",
+        "geometry ray confirmation with a near-miss tolerance"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "detection"
+      ]
+    },
+    {
+      "id": "footstep-audibility",
+      "node": "npc-perception",
+      "name": "Footstep noise and hearing range",
+      "summary": "Steps are emitted every 120 units travelled; stealth mode both quiets the step and shrinks the radius at which creatures hear it, and crouching effectively doubles the distance counted per step.",
+      "behavior": "Player movement accumulates travelled distance, and once that accumulator passes 120 world units a step noise is emitted and the accumulator is reduced. While crouching the travelled distance is doubled before it is added, so a crouched player produces a step roughly every 60 units of real movement, while levitation suppresses steps entirely. The emitted noise carries a volume and a falloff factor: stealth mode lowers the volume from 1.0 toward 0.94 and raises the falloff factor from 1.0 toward 4.5 in proportion to stealth skill, so a skilled sneak is barely audible past a few metres. Playing a collision sound also raises a hear event on every living creature in a trigger zone within range, carrying the distance to the noise. That range is 600 world units for anything sourced by the player and 800 for an item, multiplied by the presence value baked into the played sample and divided by the stealth-driven falloff factor, so a skilled sneak is heard from a fraction of the normal radius. When source and listener sit in different rooms the straight distance is replaced by the portal-graph room distance, so a shout through a doorway carries further than the geometry suggests. Jumps, weapon impacts, arrow hits and spell detonations all raise the same kind of event, which is why a quiet approach has to avoid combat as well as footsteps.",
+      "constants": [
+        {
+          "name": "step distance",
+          "value": 120,
+          "unit": "world units of travel per footstep noise event",
+          "source": "src/game/Player.cpp:141"
+        },
+        {
+          "name": "crouch step distance multiplier",
+          "value": 2,
+          "unit": "factor applied to travelled distance per step while crouched",
+          "source": "src/game/Player.cpp:2218"
+        },
+        {
+          "name": "maximum stealth skill",
+          "value": 100,
+          "unit": "stealth skill points used to normalise the noise reduction",
+          "source": "src/game/Player.cpp:147"
+        },
+        {
+          "name": "quietest step volume",
+          "value": 0.94,
+          "unit": "sample volume at maximum stealth skill, down from a default of 1.0",
+          "source": "src/game/NPC.h:227"
+        },
+        {
+          "name": "harshest step falloff factor",
+          "value": 4.5,
+          "unit": "hearing-range divisor at maximum stealth skill, up from a default of 1.0",
+          "source": "src/game/NPC.h:232"
+        },
+        {
+          "name": "step hearing range",
+          "value": 600,
+          "unit": "world units before presence and falloff modifiers",
+          "source": "src/game/NPC.cpp:125"
+        },
+        {
+          "name": "item hearing range",
+          "value": 800,
+          "unit": "world units for a dropped item, before presence and falloff modifiers",
+          "source": "src/game/NPC.cpp:126"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/Player.cpp",
+          "line": 1701
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 2218
+        },
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 2640
+        },
+        {
+          "path": "src/game/NPC.h",
+          "line": 227
+        },
+        {
+          "path": "src/game/NPC.cpp",
+          "line": 125
+        }
+      ],
+      "capabilities": [
+        "distance-accumulated footstep noise",
+        "stealth skill reducing volume and range",
+        "portal-aware hearing distance",
+        "separate hear ranges for steps and dropped items"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "audio"
+      ]
+    },
+    {
+      "id": "light-aware-pathfinding",
+      "node": "npc-navigation",
+      "name": "Pathfinding that prefers darkness",
+      "summary": "The anchor-graph search is ordinary A-star, but a sneaking creature adds a large surcharge for every anchor inside a lit radius, so its path drifts toward shadow.",
+      "behavior": "The search expands anchors from a level-built graph, skipping nodes that are flagged blocked or whose radius or height cannot fit the mover's cylinder. Edge cost is the straight distance between anchors; when the caller asks for a stealth path, the illumination cost of the destination anchor is added on top. That illumination cost sums, over every active light whose falloff reaches the anchor, a base charge multiplied by the light's intensity and average colour, and scaled down for anchors between the light's falloff start and falloff end so the edge of a pool of light is cheaper than its centre. The resulting cost can easily exceed the geometric distance, which is what bends the path around braziers instead of through them. A separate flee search inverts the goal: it walks away from a danger point until it reaches a safe radius, weighting the remaining estimate so it clears the immediate area quickly. Wandering picks a handful of random linked anchors to produce a patrol route.",
+      "constants": [
+        {
+          "name": "minimum anchor radius",
+          "value": 110,
+          "unit": "world units of wander radius below which the search collapses to the current anchor instead of picking a route",
+          "source": "src/ai/PathFinder.cpp:62"
+        },
+        {
+          "name": "illumination cost base",
+          "value": 300,
+          "unit": "path cost added by a fully lit anchor, scaled by light intensity and colour",
+          "source": "src/ai/PathFinder.cpp:430"
+        },
+        {
+          "name": "flee distance cost",
+          "value": 130,
+          "unit": "path cost per world unit of remaining distance from the danger point while fleeing",
+          "source": "src/ai/PathFinder.cpp:252"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 191
+        },
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 428
+        },
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 430
+        },
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 254
+        },
+        {
+          "path": "src/ai/PathFinder.cpp",
+          "line": 312
+        }
+      ],
+      "capabilities": [
+        "A-star over a prebuilt anchor graph",
+        "shadows preferred by stealth-aware creatures",
+        "dedicated flee search with a safe radius"
+      ],
+      "tags": [
+        "ai",
+        "navigation",
+        "stealth"
+      ]
+    },
+    {
+      "id": "prop-tumble-solver",
+      "node": "prop-physics",
+      "name": "Loose prop tumbling and settling",
+      "summary": "Dropped and knocked items are simulated as a cloud of mass-carrying particles under Runge-Kutta integration, bouncing off geometry with a fixed restitution and going to sleep after enough contacts.",
+      "behavior": "Every dynamic item carries a physics box built from its own vertices: an oriented set of particles with positions, velocities, masses and a radius derived from the mesh bounds. Launching the box rotates every particle by the throw orientation, offsets it to the launch position, and gives it a velocity proportional to the object's surface area so a big crate tumbles less wildly than a small pot, with mass rising slightly with that same surface ratio. Integration is fourth-order Runge-Kutta over a fixed small step: a constant gravity of 65 is divided by particle mass, and a damping term of 0.5 times velocity acts as drag so nothing accelerates forever. After integration the solver casts rays from each particle's old position to its new one; on a hit it reflects the velocity about the surface normal and multiplies it by separate restitution factors per axis, then restores the old position. Contacts increment a stop counter while free flight decrements it, and once the counter reaches 16 the object is put to sleep until something disturbs it, which keeps a room full of debris from costing anything.",
+      "constants": [
+        {
+          "name": "prop gravity",
+          "value": 65,
+          "unit": "world units of acceleration per solver time unit, divided by particle mass before each integration step",
+          "source": "src/physics/Physics.cpp:294"
+        },
+        {
+          "name": "prop damping",
+          "value": 0.5,
+          "unit": "velocity-proportional drag per solver time unit, applied by the force solver",
+          "source": "src/physics/Physics.cpp:295"
+        },
+        {
+          "name": "launch velocity scale",
+          "value": 250,
+          "unit": "velocity multiplier per solver time unit, scaled by the object's surface-area ratio",
+          "source": "src/physics/Physics.cpp:277"
+        },
+        {
+          "name": "base particle mass",
+          "value": 0.4,
+          "unit": "mass units, plus 0.1 per unit of surface-area ratio",
+          "source": "src/physics/Physics.cpp:278"
+        },
+        {
+          "name": "velocity clamp",
+          "value": 400,
+          "unit": "velocity per solver time unit per axis, clamped before every integration step",
+          "source": "src/physics/Physics.cpp:289"
+        },
+        {
+          "name": "integration threshold",
+          "value": 0.18,
+          "unit": "accumulator threshold per frame; frame time in milliseconds times 0.0055 is added each step, and a step runs only when the accumulator passes it",
+          "source": "src/physics/Physics.cpp:607"
+        },
+        {
+          "name": "sleep contact count",
+          "value": 16,
+          "unit": "accumulated contacts before the prop is put to sleep",
+          "source": "src/physics/Physics.cpp:622"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 277
+        },
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 294
+        },
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 325
+        },
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 578
+        },
+        {
+          "path": "src/physics/Physics.cpp",
+          "line": 622
+        }
+      ],
+      "capabilities": [
+        "Runge-Kutta particle-box props",
+        "mass-scaled gravity and velocity drag",
+        "per-axis restitution on bounce",
+        "contact-counted sleep state"
+      ],
+      "tags": [
+        "physics-feel",
+        "physics",
+        "props"
+      ]
+    },
+    {
+      "id": "torch-light",
+      "node": "torch-light",
+      "name": "Carried torch light and burn-down",
+      "summary": "A held torch is one dynamic point light with a 1.6 intensity, a falloff band around 280 units that flickers per frame, and a durability that drains while it is held.",
+      "behavior": "Equipping a torch does not add a light per torch: it fills one reserved dynamic light slot owned by the player. Every frame, while a torch is held, that light is moved to the player position, given an intensity of 1.6, a falloff start of about 280 units with a small per-frame random flicker and a falloff end another 280 units further out, and coloured from the player's torch tint with a small random darkening so the pool of light breathes rather than sitting still. The light is marked as existing with no countdown, so it lasts as long as the torch does. Durability is drained per millisecond of frame time, and when it reaches zero the torch is destroyed, the light handle is cleared and the looping sound stops. With no torch the same slot falls back to a dim flare-driven light when magic flares are active, which is why carried spells light the player's surroundings without a torch.",
+      "constants": [
+        {
+          "name": "torch light intensity",
+          "value": 1.6,
+          "unit": "light intensity units, refreshed every frame",
+          "source": "src/graphics/particle/ParticleEffects.cpp:415"
+        },
+        {
+          "name": "torch falloff start",
+          "value": 280,
+          "unit": "world units from the light centre where falloff begins, plus up to 20 units of per-frame flicker",
+          "source": "src/graphics/particle/ParticleEffects.cpp:416"
+        },
+        {
+          "name": "torch falloff width",
+          "value": 280,
+          "unit": "world units between the start and the end of the falloff band",
+          "source": "src/graphics/particle/ParticleEffects.cpp:417"
+        },
+        {
+          "name": "torch burn rate",
+          "value": 0.0001,
+          "unit": "durability points lost per millisecond of frame time while held",
+          "source": "src/game/Player.cpp:306"
+        },
+        {
+          "name": "fallback flare light intensity",
+          "value": 1.6,
+          "unit": "light intensity units used when magic flares supply the player's light instead of a torch",
+          "source": "src/graphics/particle/ParticleEffects.cpp:443"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/graphics/particle/ParticleEffects.cpp",
+          "line": 405
+        },
+        {
+          "path": "src/graphics/particle/ParticleEffects.cpp",
+          "line": 416
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 306
+        },
+        {
+          "path": "src/game/Player.cpp",
+          "line": 301
+        },
+        {
+          "path": "src/core/ArxGame.cpp",
+          "line": 1763
+        }
+      ],
+      "capabilities": [
+        "single reusable dynamic light slot for the held torch",
+        "per-frame flicker on intensity colour and falloff",
+        "durability burn-down that destroys the torch",
+        "magic flare fallback lighting"
+      ],
+      "tags": [
+        "lighting",
+        "stealth",
+        "inventory"
+      ]
+    }
+  ]
+}

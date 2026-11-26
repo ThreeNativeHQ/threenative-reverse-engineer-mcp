@@ -1,0 +1,2083 @@
+{
+  "version": 1,
+  "id": "snowboard-kids-2",
+  "title": "Snowboard Kids 2",
+  "repo": "https://github.com/cdlewis/snowboardkids2-decomp",
+  "sha": "15bbeac7a2a6472aaff25e6536c70c5f15105165",
+  "nodes": [
+    {
+      "id": "rider-motion",
+      "name": "Rider steering and lean",
+      "purpose": "Turns analog input into a steering angle, the angle into a heading rate and a board lean, and filters the resulting velocity through a surface-relative deadzone",
+      "paths": [
+        "src/race/race_main.c",
+        "src/race/track_height.c"
+      ],
+      "functions": [
+        {
+          "name": "updatePlayerNormalDriving",
+          "path": "src/race/race_main.c",
+          "lines": [
+            1271,
+            1544
+          ]
+        },
+        {
+          "name": "updatePlayerGroundedSliding",
+          "path": "src/race/race_main.c",
+          "lines": [
+            1546,
+            1614
+          ]
+        },
+        {
+          "name": "decayPlayerSteeringAngles",
+          "path": "src/race/race_main.c",
+          "lines": [
+            2992,
+            3039
+          ]
+        },
+        {
+          "name": "decayPlayerAirborneAngles",
+          "path": "src/race/race_main.c",
+          "lines": [
+            3041,
+            3110
+          ]
+        },
+        {
+          "name": "applyVelocityDeadzone",
+          "path": "src/race/race_main.c",
+          "lines": [
+            3112,
+            3208
+          ]
+        },
+        {
+          "name": "clampPlayerVelocityToMaxSpeed",
+          "path": "src/race/track_height.c",
+          "lines": [
+            46,
+            67
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "speed-budget",
+      "name": "Speed cap budget",
+      "purpose": "Assembles the maximum speed a rider may reach each update from board stats, catch-up, boost, slowdown and wings, then slews the value that is actually enforced",
+      "paths": [
+        "src/race/race_main.c",
+        "src/race/character_stats.c"
+      ],
+      "functions": [
+        {
+          "name": "updateRacePlayer",
+          "path": "src/race/race_main.c",
+          "lines": [
+            723,
+            1032
+          ]
+        },
+        {
+          "name": "applyCharacterSnowboardStats",
+          "path": "src/race/character_stats.c",
+          "lines": [
+            249,
+            276
+          ]
+        },
+        {
+          "name": "getCharacterSnowboardMaxSpeed",
+          "path": "src/race/character_stats.c",
+          "lines": [
+            278,
+            297
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rider-motion"
+      ]
+    },
+    {
+      "id": "trick-choreography",
+      "name": "Trick charge, launch and spin",
+      "purpose": "The trick chain: charge accumulation, the ramp launch impulse, spin and flip rotation rates, trick selection from the stick and the score award at landing",
+      "paths": [
+        "src/race/race_main.c",
+        "src/race/track_height.c"
+      ],
+      "functions": [
+        {
+          "name": "updatePostTrickChargingStep",
+          "path": "src/race/race_main.c",
+          "lines": [
+            1856,
+            1906
+          ]
+        },
+        {
+          "name": "beginPostTrickLaunchStep",
+          "path": "src/race/race_main.c",
+          "lines": [
+            1908,
+            1947
+          ]
+        },
+        {
+          "name": "addTrickScore",
+          "path": "src/race/race_main.c",
+          "lines": [
+            1958,
+            1991
+          ]
+        },
+        {
+          "name": "tryFinalizeTrickLanding",
+          "path": "src/race/race_main.c",
+          "lines": [
+            2099,
+            2195
+          ]
+        },
+        {
+          "name": "beginSpinTrick",
+          "path": "src/race/race_main.c",
+          "lines": [
+            2215,
+            2225
+          ]
+        },
+        {
+          "name": "updateRightSpinTrick",
+          "path": "src/race/race_main.c",
+          "lines": [
+            2248,
+            2281
+          ]
+        },
+        {
+          "name": "getTrickType",
+          "path": "src/race/track_height.c",
+          "lines": [
+            307,
+            352
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rider-motion"
+      ]
+    },
+    {
+      "id": "stun-recovery",
+      "name": "Hit stun and knockback recovery",
+      "purpose": "The airborne, bounce and slide phases after a hit, including knockback launch speed, stun gravity and drag, and the ladder back to normal driving",
+      "paths": [
+        "src/race/race_main.c",
+        "src/race/hit_reactions.c"
+      ],
+      "functions": [
+        {
+          "name": "setPlayerCollisionKnockbackState",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            50,
+            63
+          ]
+        },
+        {
+          "name": "initStunnedAirborneBehavior",
+          "path": "src/race/race_main.c",
+          "lines": [
+            3214,
+            3225
+          ]
+        },
+        {
+          "name": "updateStunnedAirbornePhase",
+          "path": "src/race/race_main.c",
+          "lines": [
+            3226,
+            3277
+          ]
+        },
+        {
+          "name": "updateStunnedLandingBouncePhase",
+          "path": "src/race/race_main.c",
+          "lines": [
+            3352,
+            3402
+          ]
+        },
+        {
+          "name": "updateKnockbackAirbornePhase",
+          "path": "src/race/race_main.c",
+          "lines": [
+            4081,
+            4122
+          ]
+        },
+        {
+          "name": "updateKnockbackBounceLaunchPhase",
+          "path": "src/race/race_main.c",
+          "lines": [
+            4124,
+            4169
+          ]
+        },
+        {
+          "name": "initKnockbackBehavior",
+          "path": "src/race/race_main.c",
+          "lines": [
+            4306,
+            4311
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rider-motion"
+      ]
+    },
+    {
+      "id": "track-surface",
+      "name": "Track height and surface normal",
+      "purpose": "Ground height under a point and the three-sample surface frame that pitches and rolls the board onto the slope",
+      "paths": [
+        "src/race/track_collision.c",
+        "src/race/track_height.c"
+      ],
+      "functions": [
+        {
+          "name": "computePlayerTerrainAlignment",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            1394,
+            1498
+          ]
+        },
+        {
+          "name": "getTrackHeightInSector",
+          "path": "src/race/track_height.c",
+          "lines": [
+            30,
+            32
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "track-barriers",
+      "name": "Walls, rider contact and the lift gate",
+      "purpose": "Pushes a rider out of track walls and other riders, and decides when the course-bottom lift accepts a rider",
+      "paths": [
+        "src/race/track_collision.c"
+      ],
+      "functions": [
+        {
+          "name": "handlePlayerTrackWallCollision",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            65,
+            183
+          ]
+        },
+        {
+          "name": "alignPlayerToTrackSurface",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            185,
+            345
+          ]
+        },
+        {
+          "name": "tryEnterLift",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            382,
+            423
+          ]
+        },
+        {
+          "name": "isPlayerNearLiftEntry",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            432,
+            453
+          ]
+        },
+        {
+          "name": "handlePlayerToPlayerCollision",
+          "path": "src/race/track_collision.c",
+          "lines": [
+            461,
+            555
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-surface"
+      ]
+    },
+    {
+      "id": "chase-camera",
+      "name": "Follow camera and projection",
+      "purpose": "The behind-the-rider chase rig with its rest distance, eased aim height and ground clearance, plus the world-to-screen projection used by overlays",
+      "paths": [
+        "src/text/text_elements.c",
+        "src/graphics/camera_transform.c"
+      ],
+      "functions": [
+        {
+          "name": "initChaseCameraPosition",
+          "path": "src/text/text_elements.c",
+          "lines": [
+            174,
+            209
+          ]
+        },
+        {
+          "name": "updateChaseCamera",
+          "path": "src/text/text_elements.c",
+          "lines": [
+            211,
+            409
+          ]
+        },
+        {
+          "name": "worldToScreenCoords",
+          "path": "src/graphics/camera_transform.c",
+          "lines": [
+            28,
+            81
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "hit-and-items",
+      "name": "Hit states and item usage",
+      "purpose": "Rider hit state priority, item activation with its update counters, and the CPU rules that decide when a primary or secondary item is spent",
+      "paths": [
+        "src/race/hit_reactions.c"
+      ],
+      "functions": [
+        {
+          "name": "tryActivateRocketBoost",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            155,
+            168
+          ]
+        },
+        {
+          "name": "tryActivateWings",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            170,
+            179
+          ]
+        },
+        {
+          "name": "tryActivateSpeedFanBoost",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            181,
+            194
+          ]
+        },
+        {
+          "name": "grantInvincibilityWithSound",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            196,
+            203
+          ]
+        },
+        {
+          "name": "processPlayerItemUsage",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            205,
+            436
+          ]
+        },
+        {
+          "name": "findPrimaryItemTarget",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            438,
+            538
+          ]
+        },
+        {
+          "name": "shouldUseSecondaryItem",
+          "path": "src/race/hit_reactions.c",
+          "lines": [
+            540,
+            621
+          ]
+        }
+      ],
+      "dependsOn": [
+        "rider-motion"
+      ]
+    },
+    {
+      "id": "ai-opponents",
+      "name": "CPU racer targeting",
+      "purpose": "Builds the point a CPU rider steers at by walking sector links with lane offsets, a capped look-ahead and a shortcut decision",
+      "paths": [
+        "src/race/ai_pathfinding.c"
+      ],
+      "functions": [
+        {
+          "name": "calculateAITargetPosition",
+          "path": "src/race/ai_pathfinding.c",
+          "lines": [
+            62,
+            142
+          ]
+        },
+        {
+          "name": "computeAIWaypointPosition",
+          "path": "src/race/ai_pathfinding.c",
+          "lines": [
+            144,
+            343
+          ]
+        },
+        {
+          "name": "determineAIPathChoice",
+          "path": "src/race/ai_pathfinding.c",
+          "lines": [
+            408,
+            490
+          ]
+        }
+      ],
+      "dependsOn": [
+        "track-surface"
+      ]
+    },
+    {
+      "id": "snow-spray",
+      "name": "Snow spray billboards",
+      "purpose": "Short-lived spray and trail billboards with a fixed lifetime and a per-update alpha fade",
+      "paths": [
+        "src/race/spray_particles.c"
+      ],
+      "functions": [
+        {
+          "name": "updateSprayEffect",
+          "path": "src/race/spray_particles.c",
+          "lines": [
+            152,
+            178
+          ]
+        },
+        {
+          "name": "spawnSprayEffect",
+          "path": "src/race/spray_particles.c",
+          "lines": [
+            184,
+            193
+          ]
+        },
+        {
+          "name": "updateDualSnowSprayParticles",
+          "path": "src/race/spray_particles.c",
+          "lines": [
+            207,
+            238
+          ]
+        },
+        {
+          "name": "spawnDualSnowSprayEffect",
+          "path": "src/race/spray_particles.c",
+          "lines": [
+            244,
+            287
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "rider-turn-rate",
+      "node": "rider-motion",
+      "name": "Steering angle to heading rate",
+      "summary": "Stick input ramps a steering angle, and above a speed floor that angle becomes a heading rate that is limited to a small increment per update",
+      "behavior": "Each update the stick is scaled into a steering target measured in angle counts, with an extra twist when the stick is pinned sideways and also pushed downward. The gap between target and current steering angle is divided by eight, except inside a narrow band where it is nudged by one so the angle still settles. Once the speed magnitude passes a floor, half the steering angle is multiplied by the board handling byte and divided by a constant to give a turn rate; the magnitude of the sideways speed left after the deadzone, biased and shifted down by seven, is squared and multiplied by the board cornering byte and then divided by that turn rate, producing a curvature that is pushed away from zero when it comes out too small and finally turned into a heading increment limited to a fixed cap per update. Below the floor the heading follows the stick directly, which is what lets an almost stopped rider pivot on the spot.",
+      "constants": [
+        {
+          "name": "steerCountsPerStickUnit",
+          "value": "0x32",
+          "unit": "steering angle counts, 8192 counts per turn per analog-stick unit, per update, rate unverified",
+          "source": "src/race/race_main.c:1343"
+        },
+        {
+          "name": "steerSettleBand",
+          "value": 7,
+          "unit": "steering angle counts, 8192 counts per turn, static",
+          "source": "src/race/race_main.c:1374"
+        },
+        {
+          "name": "steerApproachShift",
+          "value": 3,
+          "unit": "bit shift, divisor 8, per update, rate unverified",
+          "source": "src/race/race_main.c:1387"
+        },
+        {
+          "name": "turnSpeedFloor",
+          "value": "0x10000",
+          "unit": "world units per update in 16.16 fixed point, per update, rate unverified",
+          "source": "src/race/race_main.c:1394"
+        },
+        {
+          "name": "turnRateDivisor",
+          "value": 125,
+          "unit": "handling counts per turn-rate count, static",
+          "source": "src/race/race_main.c:1395"
+        },
+        {
+          "name": "sideSpeedBias",
+          "value": "0x1FF",
+          "unit": "world units per update in 16.16 fixed point, per update, rate unverified",
+          "source": "src/race/race_main.c:1401"
+        },
+        {
+          "name": "sideSpeedShift",
+          "value": 7,
+          "unit": "bit shift, divisor 128, per update, rate unverified",
+          "source": "src/race/race_main.c:1402"
+        },
+        {
+          "name": "headingStepCap",
+          "value": "0x100",
+          "unit": "heading angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:1453"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 1343
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1373
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1394
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1395
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1449
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1453
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1373
+        }
+      ],
+      "capabilities": [
+        "speed-dependent turn rate",
+        "stick-to-angle ramping with a settle band",
+        "per-update heading increment cap"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "turn rate",
+        "handling"
+      ]
+    },
+    {
+      "id": "rider-lean-roll",
+      "node": "rider-motion",
+      "name": "Board lean and roll",
+      "summary": "The steering angle drives a lateral model sway while the roll angle chases a value built from speed and turn direction",
+      "behavior": "A lean target is built from the sine and cosine of the steering angle scaled by a constant, mirrored when the rider is travelling backwards, then the gap between that target and the current lateral model offset is clamped and added to the transform so the board sways rather than snapping. The roll then chases a step derived from the speed magnitude: the speed is capped, negated when the rider is reversed, multiplied by the steering angle, divided by a fixed divisor and shifted down nine more bits. That step is clamped, reduced by the current roll, clamped again and accumulated, and when the result falls inside a small deadband the roll is zeroed and a neutral animation plays. Otherwise the absolute roll selects one of two mirrored lean animations played at half the roll magnitude, so the visible lean saturates long before the roll value does.",
+      "constants": [
+        {
+          "name": "leanBasisScale",
+          "value": "0x60",
+          "unit": "model translation counts per unit of sine, static",
+          "source": "src/race/race_main.c:1466"
+        },
+        {
+          "name": "leanOffsetClamp",
+          "value": "0x6000",
+          "unit": "model translation counts per update, per update, rate unverified",
+          "source": "src/race/race_main.c:1476"
+        },
+        {
+          "name": "rollSpeedCeiling",
+          "value": "0x80000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:1490"
+        },
+        {
+          "name": "rollDivisor",
+          "value": 350,
+          "unit": "steering angle counts, 8192 counts per turn per roll count, static",
+          "source": "src/race/race_main.c:1497"
+        },
+        {
+          "name": "rollStepShift",
+          "value": 9,
+          "unit": "bit shift, divisor 512, per update, rate unverified",
+          "source": "src/race/race_main.c:1498"
+        },
+        {
+          "name": "rollStepCap",
+          "value": "0x400",
+          "unit": "roll angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:1500"
+        },
+        {
+          "name": "rollIncrementCap",
+          "value": "0x50",
+          "unit": "roll angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:1507"
+        },
+        {
+          "name": "rollDeadbandEdge",
+          "value": "0x401",
+          "unit": "roll angle counts, 8192 counts per turn, static",
+          "source": "src/race/race_main.c:1525"
+        },
+        {
+          "name": "leanAnimationHalving",
+          "value": 2,
+          "unit": "divisor applied to the roll, static",
+          "source": "src/race/race_main.c:1529"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 1466
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1476
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1490
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1497
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1500
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1514
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1525
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1529
+        }
+      ],
+      "capabilities": [
+        "lateral model sway from steering",
+        "roll chasing with a clamped step",
+        "mirrored lean animations"
+      ],
+      "tags": [
+        "movement",
+        "lean",
+        "roll",
+        "animation"
+      ]
+    },
+    {
+      "id": "steering-angle-decay",
+      "node": "rider-motion",
+      "name": "Angle relaxation per update",
+      "summary": "Roll, pitch and steering angles wrap into the signed range and relax toward zero with a different cap on the ground than in the air",
+      "behavior": "The routine first folds each stored angle into the signed half-turn window and then subtracts a portion of the current value, capped so that no update moves more than the cap. On the ground the roll and steering angles share a large cap and the lateral model offset relaxes by up to a larger clamp; airborne the three angles relax by a much smaller cap and the offset by an intermediate clamp. Because the relaxation runs after gravity and before position integration, a rider who releases the stick drifts back into a straight line instead of stopping abruptly, and a rider in the air keeps only a slow residual spin.",
+      "constants": [
+        {
+          "name": "groundedAngleDecay",
+          "value": "0x80",
+          "unit": "angle angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:3009"
+        },
+        {
+          "name": "groundedTiltRelax",
+          "value": "0x8000",
+          "unit": "model translation counts per update, per update, rate unverified",
+          "source": "src/race/race_main.c:3033"
+        },
+        {
+          "name": "airborneAngleDecay",
+          "value": "0x28",
+          "unit": "angle angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:3059"
+        },
+        {
+          "name": "airborneTiltRelax",
+          "value": "0x6000",
+          "unit": "model translation counts per update, per update, rate unverified",
+          "source": "src/race/race_main.c:3104"
+        },
+        {
+          "name": "signedWindowEdge",
+          "value": "0x1001",
+          "unit": "angle angle counts, 8192 counts per turn, static",
+          "source": "src/race/race_main.c:3003"
+        },
+        {
+          "name": "halfTurnCount",
+          "value": "0x2000",
+          "unit": "angle angle counts, 8192 counts per turn removed when past the window edge, static",
+          "source": "src/race/race_main.c:3004"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 3001
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3009
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3033
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3059
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3062
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3104
+        }
+      ],
+      "capabilities": [
+        "signed angle wrapping",
+        "capped per-update relaxation",
+        "separate ground and air decay rates"
+      ],
+      "tags": [
+        "physics feel",
+        "damping",
+        "angles",
+        "airborne"
+      ]
+    },
+    {
+      "id": "velocity-deadzone",
+      "node": "rider-motion",
+      "name": "Surface-relative velocity deadzone",
+      "summary": "Speed is rotated into the surface frame, each local axis loses its deadzone or is zeroed, then the result is rotated back",
+      "behavior": "The velocity is transformed by a matrix pair built from the surface normal so that forward lies along the slope, and any downward component of the local velocity is dropped. A second matrix aligns the local frame with the rider heading, and after that each horizontal component either has its deadzone subtracted or, when it does not exceed the deadzone, is set to zero. The deadzones come from the caller: the driving, sliding and trick-slide passes pass a fixed forward and backward value plus the board-dependent lateral value from the stat table, while the bounce pass passes a much larger value on all three axes so a rider settles quickly after a fall. The local forward component is returned so the caller can compare it with speed thresholds, and the filtered velocity is rotated back into world space.",
+      "constants": [
+        {
+          "name": "forwardDeadzone",
+          "value": "0x200",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:1392"
+        },
+        {
+          "name": "backwardDeadzone",
+          "value": "0x200",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:1392"
+        },
+        {
+          "name": "slopeMatrixShift",
+          "value": 13,
+          "unit": "bit shift, scale 8192, static",
+          "source": "src/race/race_main.c:3139"
+        },
+        {
+          "name": "lateralDeadzoneShift",
+          "value": 15,
+          "unit": "bit shift applied to the board stat, static",
+          "source": "src/race/character_stats.c:268"
+        },
+        {
+          "name": "lateralDeadzoneBias",
+          "value": "0x1000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:268"
+        },
+        {
+          "name": "bounceDeadzone",
+          "value": "0x8000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:3378"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 3112
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3133
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3153
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3173
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3187
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3201
+        }
+      ],
+      "capabilities": [
+        "slope-aligned velocity decomposition",
+        "per-axis deadzone removal",
+        "downward component clamping"
+      ],
+      "tags": [
+        "physics feel",
+        "velocity",
+        "friction",
+        "slope"
+      ]
+    },
+    {
+      "id": "speed-cap-assembly",
+      "node": "speed-budget",
+      "name": "Speed cap and catch-up",
+      "summary": "Base speed, catch-up, boost bonus, slowdown and wings pass through clamps and a smoothed slew before the cap is enforced on velocity",
+      "behavior": "The cap starts at the value derived from board and character stats, and a CPU rider has a per-difficulty penalty subtracted. A catch-up term starts at a per-finish-position table value minus the stored adjustment, and a large bonus is added when the rider leads the leader by a fixed amount of lap progress. The term is clamped in both directions with different limits and accumulates into a stored adjustment that is then added to the cap. Wings replace the board gravity with a small fixed value, a boost state adds a flat bonus that is roughly eight times larger for the rocket than for the fan, and the sum is capped absolutely and then reduced by a quarter for each active slowdown level. The cap that is actually enforced is a separate smoothed value that slews toward the target with a much larger rise cap than fall cap, except during a rocket impulse which snaps it straight to the target. A flag on the rider halves the cap before the boost bonus is added, so a rider carrying that flag gets the boost bonus on top of half their normal ceiling.",
+      "constants": [
+        {
+          "name": "cpuSpeedPenaltyUnit",
+          "value": "0x202",
+          "unit": "world units per update in 16.16 fixed point per difficulty count, static",
+          "source": "src/race/race_main.c:806"
+        },
+        {
+          "name": "catchUpProgressGap",
+          "value": "0x3A9",
+          "unit": "lap progress counts, static",
+          "source": "src/race/race_main.c:814"
+        },
+        {
+          "name": "catchUpStepBonus",
+          "value": "0x8000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:815"
+        },
+        {
+          "name": "catchUpRiseClamp",
+          "value": "0x100",
+          "unit": "adjustment counts per update, static",
+          "source": "src/race/race_main.c:829"
+        },
+        {
+          "name": "catchUpFallClamp",
+          "value": "-0x80",
+          "unit": "adjustment counts per update, static",
+          "source": "src/race/race_main.c:832"
+        },
+        {
+          "name": "speedFanBonus",
+          "value": "0x20000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:845"
+        },
+        {
+          "name": "rocketBonus",
+          "value": "0x100000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:851"
+        },
+        {
+          "name": "speedCapCeiling",
+          "value": "0x180000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:856"
+        },
+        {
+          "name": "slowdownShift",
+          "value": 2,
+          "unit": "bit shift, a quarter removed per slowdown level, static",
+          "source": "src/race/race_main.c:864"
+        },
+        {
+          "name": "capRiseSlew",
+          "value": "0x1000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:869"
+        },
+        {
+          "name": "capFallSlew",
+          "value": "-0x600",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:872"
+        },
+        {
+          "name": "wingsGravity",
+          "value": "0x3000",
+          "unit": "world units per update squared in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:801"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 799
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 804
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 809
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 836
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 841
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 856
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 867
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 875
+        }
+      ],
+      "capabilities": [
+        "layered speed cap assembly",
+        "rubber-band catch-up accumulator",
+        "asymmetric cap slew"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "rubber band",
+        "boost"
+      ]
+    },
+    {
+      "id": "stat-to-physics",
+      "node": "speed-budget",
+      "name": "Board stat to physics conversion",
+      "summary": "Six small stat bytes per board and character pair are shifted, scaled and biased into the six physics values the rider uses",
+      "behavior": "Every board and character pair carries six unsigned bytes. The max speed byte is multiplied by a large constant, divided by a hundred and biased to give the base cap in world units; the handling and cornering bytes become turn-rate values with fixed biases; the lateral deadzone byte is shifted, scaled and biased into the velocity deadzone; and the gravity and acceleration bytes are shifted by different amounts, scaled and biased into the per-update gravity and the launch acceleration. A boss racer replaces the lateral deadzone with one large fixed value. Because the three shifts differ, one point of stat weight counts for very different amounts in speed, gravity and acceleration.",
+      "constants": [
+        {
+          "name": "maxSpeedNumerator",
+          "value": 353894,
+          "unit": "world units per update in 16.16 fixed point per stat count, static",
+          "source": "src/race/character_stats.c:265"
+        },
+        {
+          "name": "maxSpeedPercentDivisor",
+          "value": 100,
+          "unit": "percent divisor, static",
+          "source": "src/race/character_stats.c:265"
+        },
+        {
+          "name": "maxSpeedBias",
+          "value": "0xEB333",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:265"
+        },
+        {
+          "name": "handlingBias",
+          "value": "0x19",
+          "unit": "handling counts, static",
+          "source": "src/race/character_stats.c:266"
+        },
+        {
+          "name": "corneringBias",
+          "value": 1,
+          "unit": "cornering counts, static",
+          "source": "src/race/character_stats.c:267"
+        },
+        {
+          "name": "lateralDeadzoneShift",
+          "value": 15,
+          "unit": "bit shift, static",
+          "source": "src/race/character_stats.c:268"
+        },
+        {
+          "name": "lateralDeadzoneBias",
+          "value": "0x1000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:268"
+        },
+        {
+          "name": "bossLateralDeadzone",
+          "value": "0xC000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:271"
+        },
+        {
+          "name": "gravityShift",
+          "value": 14,
+          "unit": "bit shift, static",
+          "source": "src/race/character_stats.c:274"
+        },
+        {
+          "name": "gravityBias",
+          "value": "0x3000",
+          "unit": "world units per update squared in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:274"
+        },
+        {
+          "name": "accelerationShift",
+          "value": 17,
+          "unit": "bit shift, static",
+          "source": "src/race/character_stats.c:275"
+        },
+        {
+          "name": "accelerationBias",
+          "value": "0x28000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/character_stats.c:275"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/character_stats.c",
+          "line": 249
+        },
+        {
+          "path": "src/race/character_stats.c",
+          "line": 265
+        },
+        {
+          "path": "src/race/character_stats.c",
+          "line": 266
+        },
+        {
+          "path": "src/race/character_stats.c",
+          "line": 268
+        },
+        {
+          "path": "src/race/character_stats.c",
+          "line": 274
+        },
+        {
+          "path": "src/race/character_stats.c",
+          "line": 275
+        }
+      ],
+      "capabilities": [
+        "stat byte to physics conversion",
+        "per-board handling and cornering",
+        "boss stat override"
+      ],
+      "tags": [
+        "tuning",
+        "stats",
+        "speed",
+        "gravity"
+      ]
+    },
+    {
+      "id": "ramp-launch-charge",
+      "node": "trick-choreography",
+      "name": "Trick charge and ramp launch",
+      "summary": "Holding the trick input charges a counter, and the release turns charge plus board acceleration into a launch along the board plane",
+      "behavior": "While the jump input is held the charge counter grows by a fixed step until it reaches a ceiling. Releasing the input sets the phase flag and, when the charge is above the ceiling, queues the trick type read from the stick. The launch phase then stores two magnitudes: a horizontal one built from the charge plus the board acceleration, and a vertical rise that is negated when the rider is facing backwards and doubled when the stick is pinned fully to one side. It rotates a shared launch vector through the rider orientation and tilt matrices and adds the result to velocity, with the already-applied gravity added back to the vertical component so the launch height does not depend on the order in which gravity and the launch ran. At this revision the two magnitudes and the launch vector are still single stand-alone words rather than the original tables, so the horizontal impulse magnitude is not fully recovered.",
+      "constants": [
+        {
+          "name": "chargeStep",
+          "value": "0x4000",
+          "unit": "charge counts per update, per update, rate unverified",
+          "source": "src/race/race_main.c:1890"
+        },
+        {
+          "name": "chargeCeiling",
+          "value": "0xFFFF",
+          "unit": "charge counts, static",
+          "source": "src/race/race_main.c:1889"
+        },
+        {
+          "name": "launchRise",
+          "value": "0x20000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:1921"
+        },
+        {
+          "name": "reversedLaunchRise",
+          "value": "0xFFFE0000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:1919"
+        },
+        {
+          "name": "fullStickMultiplier",
+          "value": 2,
+          "unit": "scale factor on the launch magnitudes, static",
+          "source": "src/race/race_main.c:1934"
+        },
+        {
+          "name": "postLaunchCounter",
+          "value": 3,
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/race_main.c:1914"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 1856
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1879
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1884
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1908
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1940
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1943
+        }
+      ],
+      "capabilities": [
+        "held-input charge accumulation",
+        "stick-sensitive launch magnitude",
+        "board-plane launch direction"
+      ],
+      "tags": [
+        "jump",
+        "launch",
+        "charge",
+        "tricks"
+      ]
+    },
+    {
+      "id": "spin-trick-rotation",
+      "node": "trick-choreography",
+      "name": "Spin rotation sweep",
+      "summary": "A spin advances the trick rotation at a starting rate that decays past the half-turn mark and stops at one full turn",
+      "behavior": "Starting a spin trick resets both trick rotation axes and seeds a per-update rotation rate. Each update that rate is added to the spin axis, and once the rotation has passed the half-turn mark with no queued follow-up its magnitude is reduced by a fixed step, so the spin opens fast and eases into its end. The sweep stops at one full turn, where the rate is cleared and either the trick-rotation flag is dropped or the behavior continues straight into the queued trick. Flips reuse the same curve on the other rotation axis, so one rotation profile covers every trick in the chain, and the composed transform is rebuilt from both axes each update.",
+      "constants": [
+        {
+          "name": "spinStartRate",
+          "value": "0x200",
+          "unit": "rotation angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:2216"
+        },
+        {
+          "name": "spinDecayStart",
+          "value": "0x1001",
+          "unit": "rotation angle counts, 8192 counts per turn, static",
+          "source": "src/race/race_main.c:2257"
+        },
+        {
+          "name": "spinDecayStep",
+          "value": "0x22",
+          "unit": "rotation angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:2259"
+        },
+        {
+          "name": "spinSweepEnd",
+          "value": "0x2000",
+          "unit": "rotation angle counts, 8192 counts per turn, one full turn at 8192 counts per turn",
+          "source": "src/race/race_main.c:2265"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 2215
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2216
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2257
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2263
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2270
+        }
+      ],
+      "capabilities": [
+        "decaying spin rate",
+        "full-turn rotation sweep",
+        "shared curve for spins and flips"
+      ],
+      "tags": [
+        "tricks",
+        "rotation",
+        "airborne",
+        "animation"
+      ]
+    },
+    {
+      "id": "trick-landing-award",
+      "node": "trick-choreography",
+      "name": "Trick score award tiers",
+      "summary": "Landing converts the accumulated trick chain into race gold and picks a reward sound from fixed score thresholds",
+      "behavior": "On landing the accumulated trick chain is added to the rider race gold, and a score display is raised for human riders. A reward sound is then chosen by comparing the chain total against a ladder of fixed thresholds, so a single small trick and a long chain are audibly different, and in one of the alternate race types a separate points total is awarded as skill points through its own ladder. Each new trick in a chain adds a per-slot base value plus a per-slot bonus, a repeat of a trick already in the chain is worth less than a fresh one, and completing the whole set of eight pays a large lump sum. Both running totals saturate at a maximum instead of overflowing, and the mask is cleared so the next chain starts fresh.",
+      "constants": [
+        {
+          "name": "awardTierOne",
+          "value": "0x96",
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:2135"
+        },
+        {
+          "name": "awardTierTwo",
+          "value": "0x12C",
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:2141"
+        },
+        {
+          "name": "awardTierThree",
+          "value": "0x190",
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:2144"
+        },
+        {
+          "name": "awardTierFour",
+          "value": "0x1F4",
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:2147"
+        },
+        {
+          "name": "awardTierFive",
+          "value": "0xBB8",
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:2150"
+        },
+        {
+          "name": "freshTrickBonus",
+          "value": 100,
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:1966"
+        },
+        {
+          "name": "scoreCeiling",
+          "value": 10000,
+          "unit": "score points, static",
+          "source": "src/race/race_main.c:1984"
+        },
+        {
+          "name": "pointsCeiling",
+          "value": 1000,
+          "unit": "skill points, static",
+          "source": "src/race/race_main.c:1988"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 2099
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2130
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2135
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2141
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 2150
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 1958
+        }
+      ],
+      "capabilities": [
+        "chain score to race gold",
+        "thresholded reward feedback",
+        "saturating score counters"
+      ],
+      "tags": [
+        "tricks",
+        "score",
+        "reward",
+        "combat"
+      ]
+    },
+    {
+      "id": "knockback-launch",
+      "node": "stun-recovery",
+      "name": "Knockback impulse and drag",
+      "summary": "A hit clamps the shove, lifts the rider at a fixed rise and bleeds the horizontal speed by a constant fraction",
+      "behavior": "A collision knockback stores an impact angle and a strength, and the strength is clamped at a ceiling before it is written into the knockback velocity. The airborne phase copies that velocity into the rider speed, rescales the horizontal part to the same ceiling, and sets a fixed upward rise so the rider always leaves the ground. Gravity then pulls the rise down while the horizontal speed is reduced by a fixed fraction of itself every update, which is a constant-fraction drag rather than a linear deceleration, so a fast shove fades quickly and a slow one lingers. The rider turns toward the track direction while airborne and drops into a bounce chain once the ground is reached, with a per-instance heat timer that the player can shorten by working the stick.",
+      "constants": [
+        {
+          "name": "knockbackStrengthCap",
+          "value": "0x60000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/hit_reactions.c:57"
+        },
+        {
+          "name": "knockbackHorizontalCap",
+          "value": "0x60000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:4093"
+        },
+        {
+          "name": "knockbackRise",
+          "value": "0x90000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:4097"
+        },
+        {
+          "name": "knockbackGravity",
+          "value": "0xFFFF7000",
+          "unit": "world units per update squared in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:4103"
+        },
+        {
+          "name": "knockbackDragShift",
+          "value": 6,
+          "unit": "bit shift, divisor 64, per update, rate unverified",
+          "source": "src/race/race_main.c:4104"
+        },
+        {
+          "name": "bounceHeatCounter",
+          "value": "0x1E",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/race_main.c:4128"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 50
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 57
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 4081
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 4093
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 4097
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 4103
+        }
+      ],
+      "capabilities": [
+        "capped knockback impulse",
+        "fixed vertical rise on hit",
+        "constant-fraction horizontal drag"
+      ],
+      "tags": [
+        "combat",
+        "knockback",
+        "physics feel",
+        "hit reaction"
+      ]
+    },
+    {
+      "id": "stun-airborne-drag",
+      "node": "stun-recovery",
+      "name": "Stun gravity and bounce settle",
+      "summary": "Being stunned uses its own gravity and a stronger drag, and the following bounce removes the last of the speed",
+      "behavior": "While stunned the rider falls under a stun gravity that is smaller than the board gravity, turns toward the track centre line by a clamped increment each update, and loses horizontal speed by a fixed fraction of itself. On landing a short counter holds the rider in a bounce phase with the same stun gravity and a coarse deadzone on all three velocity axes, so the rider settles instead of skating away. When the bounce animation finishes and the remaining horizontal speed is under a small threshold the rider resumes normal driving; otherwise the counter keeps the bounce going. The recovery also halves the smoothed speed cap once, which is why a stunned rider stays slow for a moment after standing up.",
+      "constants": [
+        {
+          "name": "stunGravity",
+          "value": "0x6000",
+          "unit": "world units per update squared in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:3264"
+        },
+        {
+          "name": "stunDragShift",
+          "value": 4,
+          "unit": "bit shift, divisor 16, per update, rate unverified",
+          "source": "src/race/race_main.c:3266"
+        },
+        {
+          "name": "stunTurnCap",
+          "value": "0x100",
+          "unit": "heading angle counts, 8192 counts per turn per update, per update, rate unverified",
+          "source": "src/race/race_main.c:3258"
+        },
+        {
+          "name": "recoverySpeedHalving",
+          "value": 2,
+          "unit": "divisor on the smoothed speed cap, static",
+          "source": "src/race/race_main.c:3272"
+        },
+        {
+          "name": "bounceHoldCounter",
+          "value": "0x14",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/race_main.c:3357"
+        },
+        {
+          "name": "bounceDeadzone",
+          "value": "0x8000",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:3378"
+        },
+        {
+          "name": "settleSpeed",
+          "value": "0x1FFFF",
+          "unit": "world units per update in 16.16 fixed point, static",
+          "source": "src/race/race_main.c:3390"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/race_main.c",
+          "line": 3214
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3264
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3266
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3352
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3362
+        },
+        {
+          "path": "src/race/race_main.c",
+          "line": 3390
+        }
+      ],
+      "capabilities": [
+        "stun-specific gravity and drag",
+        "bounce settle with a coarse deadzone",
+        "post-hit speed cap penalty"
+      ],
+      "tags": [
+        "combat",
+        "stun",
+        "recovery",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "wall-push-out",
+      "node": "track-barriers",
+      "name": "Track wall push-out",
+      "summary": "Three sample points around the board are resolved against wall geometry, with a growing radius while the rider is stunned",
+      "behavior": "Three points in the rider frame, one at the centre and one on each side, are tested against the track wall geometry, and a hit returns a push offset that is applied to the rider position and to the remaining sample points so the following tests do not start inside the wall. The centre point is tested at a larger radius than the two side points, which treats the nose of the board as wider than its edges. While the rider carries the stunned flag the tested radius grows by a fixed count per update up to a limit, which lets a rider being knocked around slip through geometry instead of getting pinned, and the flag is cleared once the test has run. A hit is also reported back to the caller so the behavior can abandon the current phase, and the second failure code reports that a sample sits below the local track surface, which is also treated as a hit.",
+      "constants": [
+        {
+          "name": "bodyWallRadius",
+          "value": "0x00060000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/track_collision.c:33"
+        },
+        {
+          "name": "sideWallRadius",
+          "value": "0x00050000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/track_collision.c:34"
+        },
+        {
+          "name": "sideSampleOffset",
+          "value": 11,
+          "unit": "world units, static",
+          "source": "src/race/track_collision.c:34"
+        },
+        {
+          "name": "stunRadiusSteps",
+          "value": 10,
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/track_collision.c:96"
+        },
+        {
+          "name": "stunRadiusBase",
+          "value": 6,
+          "unit": "world units added to the tested radius while stunned, static",
+          "source": "src/race/track_collision.c:103"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/track_collision.c",
+          "line": 32
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 65
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 96
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 103
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 117
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 146
+        }
+      ],
+      "capabilities": [
+        "multi-point wall sampling",
+        "push offset propagated to later samples",
+        "stun pass-through radius growth"
+      ],
+      "tags": [
+        "collision",
+        "walls",
+        "physics feel",
+        "stun"
+      ]
+    },
+    {
+      "id": "terrain-alignment",
+      "node": "track-surface",
+      "name": "Three-point terrain alignment",
+      "summary": "Three points dropped onto the track give two edge vectors, whose cross product becomes the surface normal behind pitch and roll",
+      "behavior": "The rider position is first raised to the track height under it, and the airborne flag is cleared when contact is found. Three sample points taken from a pattern chosen by the rider attack state are each dropped onto the track and lifted to the sampled height whenever they would otherwise sit below it, then reduced to two edge vectors and normalised to a fixed scale. Their cross product gives a surface normal, normalised to the same scale and rotated into the rider heading frame. Pitch and roll come from fixed-point arctangents of the normal components, masked into the signed angle window, and a rotation about the pitch is written straight into the orientation transform, so the board planes onto the slope instead of hovering at a fixed angle.",
+      "constants": [
+        {
+          "name": "sampleCount",
+          "value": 3,
+          "unit": "sample points, static",
+          "source": "src/race/track_collision.c:1442"
+        },
+        {
+          "name": "normalUnitScale",
+          "value": "0x2000",
+          "unit": "fixed-point scale 8192 per unit vector, static",
+          "source": "src/race/track_collision.c:1463"
+        },
+        {
+          "name": "heightQueryLift",
+          "value": "0x100000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/track_collision.c:1414"
+        },
+        {
+          "name": "angleWindowMask",
+          "value": "0x1FFF",
+          "unit": "angle angle counts, 8192 counts per turn mask, static",
+          "source": "src/race/track_collision.c:1490"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1394
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1414
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1442
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1478
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1490
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 1495
+        }
+      ],
+      "capabilities": [
+        "ground snapping",
+        "three-sample surface normal",
+        "pitch and roll from a rotated normal"
+      ],
+      "tags": [
+        "physics",
+        "terrain",
+        "alignment",
+        "slope"
+      ]
+    },
+    {
+      "id": "chase-camera-follow",
+      "node": "chase-camera",
+      "name": "Chase camera rig",
+      "summary": "A rest distance behind the rider, an eased aim height and a ground clearance keep the chase view stable through jumps and landings",
+      "behavior": "The rig starts behind the rider along a fixed offset rotated by the rider heading, with a rest distance, a closest distance, an aim height and a rig height. Each update it copies the rider vertical movement with a clamp and eases the distance and the aim height toward their rest values by dividing the difference by a fixed factor, so a jump or a landing is absorbed rather than followed rigidly. The horizontal distance is pushed out to the rig height, the full distance is clamped into a band between the rest distance and the rest distance plus a slack, and the look-at point is lifted along the camera up axis by the aim height scaled to the matrix unit. A terrain query under that look-at point lifts the whole rig when the track would otherwise cut through it, and a look-back input mirrors the view so the rider sees behind.",
+      "constants": [
+        {
+          "name": "restDistance",
+          "value": "0x600000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:201"
+        },
+        {
+          "name": "closestDistance",
+          "value": "0x20000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:202"
+        },
+        {
+          "name": "aimHeight",
+          "value": "0x2C0000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:203"
+        },
+        {
+          "name": "rigHeight",
+          "value": "0x1E0000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:206"
+        },
+        {
+          "name": "verticalFollowClamp",
+          "value": "0x4000",
+          "unit": "world units in 16.16 fixed point per update, per update, rate unverified",
+          "source": "src/text/text_elements.c:252"
+        },
+        {
+          "name": "easeDivisor",
+          "value": "0x20",
+          "unit": "updates per easing step, per update, rate unverified",
+          "source": "src/text/text_elements.c:264"
+        },
+        {
+          "name": "distanceSlack",
+          "value": "0x10000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:323"
+        },
+        {
+          "name": "matrixUnit",
+          "value": "0x2000",
+          "unit": "fixed-point scale 8192 per unit vector, static",
+          "source": "src/text/text_elements.c:346"
+        },
+        {
+          "name": "terrainQueryLift",
+          "value": "0x100000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:362"
+        },
+        {
+          "name": "groundClearance",
+          "value": "0xA0000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/text/text_elements.c:363"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/text/text_elements.c",
+          "line": 174
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 201
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 250
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 276
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 323
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 346
+        },
+        {
+          "path": "src/text/text_elements.c",
+          "line": 362
+        }
+      ],
+      "capabilities": [
+        "eased distance and aim height",
+        "distance clamp band",
+        "terrain clearance for the look-at point"
+      ],
+      "tags": [
+        "camera",
+        "chase",
+        "smoothing",
+        "ground clearance"
+      ]
+    },
+    {
+      "id": "item-boost-timers",
+      "node": "hit-and-items",
+      "name": "Boost and shield durations",
+      "summary": "Each boost and shield arms a state and runs on a fixed update counter that a hit clears",
+      "behavior": "Item activation is gated on the rider having no boost in progress. The rocket boost sets a start state chosen by the rider facing and writes a countdown; the speed fan sets its own forward or reverse state with a countdown twice as long; wings use a separate active flag with an even longer countdown, and invincibility uses its own timer with a sound cue. The boost counters are cleared whenever a hit reaction begins, so a hit cancels a boost instead of leaving it running underneath the stun. The rocket start state advances to a sustain state once the impulse has been applied, which is how the short launch push and the longer sustained push share one counter.",
+      "constants": [
+        {
+          "name": "rocketBoostUpdates",
+          "value": "0x5A",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/hit_reactions.c:163"
+        },
+        {
+          "name": "speedFanUpdates",
+          "value": "0xB4",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/hit_reactions.c:189"
+        },
+        {
+          "name": "wingsUpdates",
+          "value": 300,
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/hit_reactions.c:174"
+        },
+        {
+          "name": "invincibilityUpdates",
+          "value": "0x96",
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/hit_reactions.c:198"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 155
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 163
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 170
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 181
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 189
+        },
+        {
+          "path": "src/race/hit_reactions.c",
+          "line": 196
+        }
+      ],
+      "capabilities": [
+        "one boost at a time",
+        "per-item countdown lengths",
+        "hit cancels boost timers"
+      ],
+      "tags": [
+        "items",
+        "boost",
+        "timers",
+        "combat"
+      ]
+    },
+    {
+      "id": "ai-waypoint-lookahead",
+      "node": "ai-opponents",
+      "name": "CPU look-ahead target",
+      "summary": "A CPU rider aims at a point found by walking sector links with lane offsets and a capped look-ahead distance",
+      "behavior": "The CPU first projects its own position onto the current sector centre line, then walks the sector links forward, choosing the left or right link when the stored path preference says so, until the waypoint ahead is further away than a fixed look-ahead limit. If a step overshoots, the offset is shortened to the limit, which keeps the aim point inside the visible track instead of jumping past a corner. Lane position on a sector comes from a lateral factor scaled by a fixed amount and from a lane width multiplier, and the blend between a sector start and end centre point uses a fixed number of interpolation steps. A separate random threshold out of 256 decides how often the CPU takes a shortcut branch, and the whole walk collapses to the lift entry point on the last sector of a lap.",
+      "constants": [
+        {
+          "name": "lookAheadLimit",
+          "value": "0xA00000",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/ai_pathfinding.c:25"
+        },
+        {
+          "name": "lateralOffsetScale",
+          "value": "0x2000",
+          "unit": "fixed-point scale 8192 per lane unit, static",
+          "source": "src/race/ai_pathfinding.c:28"
+        },
+        {
+          "name": "laneWidthMultiplier",
+          "value": 6,
+          "unit": "lane units, static",
+          "source": "src/race/ai_pathfinding.c:29"
+        },
+        {
+          "name": "interpolationSteps",
+          "value": 32,
+          "unit": "sector fractions per centre-line blend, static",
+          "source": "src/race/ai_pathfinding.c:32"
+        },
+        {
+          "name": "shortcutChance",
+          "value": "0xC0",
+          "unit": "parts out of 256, static",
+          "source": "src/race/ai_pathfinding.c:22"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 62
+        },
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 86
+        },
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 103
+        },
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 117
+        },
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 144
+        },
+        {
+          "path": "src/race/ai_pathfinding.c",
+          "line": 408
+        }
+      ],
+      "capabilities": [
+        "sector-link look-ahead walk",
+        "lane offset blending",
+        "shortcut branch choice"
+      ],
+      "tags": [
+        "ai",
+        "racing line",
+        "look ahead",
+        "opponents"
+      ]
+    },
+    {
+      "id": "lift-entry-gate",
+      "node": "track-barriers",
+      "name": "Course lift entry gate",
+      "summary": "The lift at the bottom of a lap accepts one rider inside an activation radius and hands out boarding order",
+      "behavior": "The gate accepts a rider only when its shared state is ready, the rider is not on the final lap, and the rider has reached the finish zone of the current lap. Ground distance to the course lift entry point is compared with an activation radius; inside that radius the gate moves to active, the rider receives the next boarding order and a shared order counter is decremented, so riders board in the order they arrive rather than all at once. A second proximity test with a smaller radius reports whether a rider is merely near the lift without touching the gate state, and the driving code consults it before handing a CPU rider over to the lift-approach phase.",
+      "constants": [
+        {
+          "name": "liftActivationRadius",
+          "value": "0x2FFFFF",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/track_collision.c:414"
+        },
+        {
+          "name": "liftProximityRadius",
+          "value": "0x1FFFFF",
+          "unit": "world units in 16.16 fixed point, static",
+          "source": "src/race/track_collision.c:448"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/track_collision.c",
+          "line": 382
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 388
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 411
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 414
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 432
+        },
+        {
+          "path": "src/race/track_collision.c",
+          "line": 448
+        }
+      ],
+      "capabilities": [
+        "single-rider gate ownership",
+        "boarding order assignment",
+        "separate AI proximity test"
+      ],
+      "tags": [
+        "race flow",
+        "lift",
+        "gate",
+        "ai"
+      ]
+    },
+    {
+      "id": "snow-spray-puff",
+      "node": "snow-spray",
+      "name": "Snow spray billboard lifetime",
+      "summary": "A spray puff is a few billboards with a fixed frame count, a fixed alpha fade per update and a halved velocity",
+      "behavior": "A spray puff is scheduled as a task that draws the same billboard on several viewports. Its starting alpha is fixed, and every unpaused update advances the asset frame, subtracts a fixed amount from alpha and moves the billboard by a velocity the spawner halved, so the puff slows and fades as it drifts. The task terminates itself after a fixed number of updates instead of waiting on a condition. The two-sided spray used under a turning board starts at an alpha jittered inside a small random band, moves both billboards together and lives one update longer than the single puff, which keeps paired puffs from looking perfectly synchronised.",
+      "constants": [
+        {
+          "name": "sprayStartAlpha",
+          "value": "0xE0",
+          "unit": "8-bit alpha counts, static",
+          "source": "src/race/spray_particles.c:146"
+        },
+        {
+          "name": "sprayAlphaFade",
+          "value": "0x30",
+          "unit": "8-bit alpha counts per update, per update, rate unverified",
+          "source": "src/race/spray_particles.c:169"
+        },
+        {
+          "name": "sprayFrames",
+          "value": 4,
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/spray_particles.c:165"
+        },
+        {
+          "name": "sprayAlphaJitterMask",
+          "value": "0x1F",
+          "unit": "8-bit alpha counts, static",
+          "source": "src/race/spray_particles.c:199"
+        },
+        {
+          "name": "sprayAlphaJitterBase",
+          "value": "0x70",
+          "unit": "8-bit alpha counts, static",
+          "source": "src/race/spray_particles.c:199"
+        },
+        {
+          "name": "dualSprayFrames",
+          "value": 5,
+          "unit": "updates, per update, rate unverified",
+          "source": "src/race/spray_particles.c:234"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 146
+        },
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 165
+        },
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 169
+        },
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 184
+        },
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 199
+        },
+        {
+          "path": "src/race/spray_particles.c",
+          "line": 234
+        }
+      ],
+      "capabilities": [
+        "finite billboard lifetime",
+        "per-update alpha fade",
+        "velocity halving at spawn"
+      ],
+      "tags": [
+        "effects",
+        "particles",
+        "snow spray",
+        "feedback"
+      ]
+    }
+  ]
+}

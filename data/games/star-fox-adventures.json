@@ -1,0 +1,2067 @@
+{
+  "version": 1,
+  "id": "star-fox-adventures",
+  "title": "Star Fox Adventures",
+  "repo": "https://github.com/zcanann/SFA-Decomp",
+  "sha": "ccd4d9aa413fbb4d715aaf5715764012cb4d93c1",
+  "nodes": [
+    {
+      "id": "player-actor",
+      "name": "Player actor and update order",
+      "purpose": "Owns the player object and drives the per-update order of messages, target selection, controls, pose, surface response, velocity integration and the final position step",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerUpdate",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            15496,
+            15716
+          ]
+        },
+        {
+          "name": "playerUpdateMotionState",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            13492,
+            13719
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-state-machine",
+      "name": "Control mode dispatcher",
+      "purpose": "Shared control-mode dispatcher for the player rig: resolves mode numbers from handler return values, runs exit and entry callbacks, advances the current move and drains the rotation left on the pose",
+      "paths": [
+        "src/dlls/engine/15/15.c"
+      ],
+      "functions": [
+        {
+          "name": "playerRunStateMachine",
+          "path": "src/dlls/engine/15/15.c",
+          "lines": [
+            533,
+            635
+          ]
+        },
+        {
+          "name": "player_setState",
+          "path": "src/dlls/engine/15/15.c",
+          "lines": [
+            637,
+            661
+          ]
+        },
+        {
+          "name": "player_updateVel",
+          "path": "src/dlls/engine/15/15.c",
+          "lines": [
+            667,
+            693
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-actor"
+      ]
+    },
+    {
+      "id": "player-locomotion",
+      "name": "Ground locomotion",
+      "purpose": "Ground gait choice, analog input shaping, the ramp that walks speed toward its target, gait animation tiering and the 180 degree quick turn",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerStateMoving",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            8821,
+            9284
+          ]
+        },
+        {
+          "name": "playerStateIdle",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            9286,
+            9532
+          ]
+        },
+        {
+          "name": "playerUpdateQuickTurn",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            12375,
+            12408
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-actor",
+        "player-state-machine"
+      ]
+    },
+    {
+      "id": "player-motion",
+      "name": "Velocity integration and world response",
+      "purpose": "Velocity integration and the world rules applied to it: gravity, damping, horizontal and vertical clamps, and the per-surface modifiers that change friction, sink depth and periodic damage",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerAnimate",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            15017,
+            15049
+          ]
+        },
+        {
+          "name": "playerClampVelocityAndMove",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            13772,
+            13792
+          ]
+        },
+        {
+          "name": "playerUpdateVelocityFromMotion",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            13794,
+            13831
+          ]
+        },
+        {
+          "name": "playerUpdateSurfaceResponse",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            13833,
+            13984
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "player-air-water",
+      "name": "Air and water modes",
+      "purpose": "Airborne and swimming motion: the jump and fall control mode, terminal-fall bookkeeping, buoyancy near the water surface, water current drift and the staff boost lift",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerState41",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            2831,
+            2889
+          ]
+        },
+        {
+          "name": "playerStateStaffBoost",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            3668,
+            3836
+          ]
+        },
+        {
+          "name": "playerUpdateFallingMotion",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            12207,
+            12272
+          ]
+        },
+        {
+          "name": "playerUpdateWaterMotion",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            12274,
+            12373
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-motion",
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "player-combat",
+      "name": "Staff combat",
+      "purpose": "Staff attack selection and chaining, the guard stance, incoming hit response, knockback bookkeeping and the health pool that ends the run",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerAddHealth",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            2520,
+            2533
+          ]
+        },
+        {
+          "name": "playerStateAttack",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            4720,
+            5017
+          ]
+        },
+        {
+          "name": "playerCanGuard",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            8810,
+            8819
+          ]
+        },
+        {
+          "name": "playerDie",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            11086,
+            11125
+          ]
+        },
+        {
+          "name": "playerStartStaffAttack",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            12594,
+            12657
+          ]
+        },
+        {
+          "name": "playerProcessHitResponse",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            12988,
+            13332
+          ]
+        },
+        {
+          "name": "playerUpdateKnockbackTimers",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            13334,
+            13364
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-actor",
+        "animation",
+        "hits"
+      ]
+    },
+    {
+      "id": "player-magic",
+      "name": "Magic meter and spells",
+      "purpose": "Magic meter and its caps, the availability gates for each staff spell, charge accumulation and the scarab wallet that funds the bag upgrades",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerAddMoney",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            2427,
+            2452
+          ]
+        },
+        {
+          "name": "playerAddRemoveMagic",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            2477,
+            2491
+          ]
+        },
+        {
+          "name": "playerAddMaxMagic",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            2498,
+            2508
+          ]
+        },
+        {
+          "name": "playerCanCastPortalOpenSpell",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            10684,
+            10705
+          ]
+        },
+        {
+          "name": "playerCanCastQuakeSpell",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            10707,
+            10728
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-combat"
+      ]
+    },
+    {
+      "id": "player-climb",
+      "name": "Wall, ladder and ledge traversal",
+      "purpose": "Wall climb, ladder and ledge traversal: wall probes, climb speed from stick magnitude, ledge grab and the accelerating ladder slide",
+      "paths": [
+        "src/dlls/objects/195_Player/player.c"
+      ],
+      "functions": [
+        {
+          "name": "playerStateClimbWall",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            6591,
+            6931
+          ]
+        },
+        {
+          "name": "playerStateSlideDownLadder",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            7106,
+            7264
+          ]
+        },
+        {
+          "name": "playerStateOnLadder",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            7266,
+            7630
+          ]
+        },
+        {
+          "name": "playerStateGrabLedge",
+          "path": "src/dlls/objects/195_Player/player.c",
+          "lines": [
+            8114,
+            8225
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-locomotion"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "Camera",
+      "purpose": "Camera state, projection setup, per-update shake and far-plane fades, plus the reticle target scan and the mode blend that decides what the player is aiming at",
+      "paths": [
+        "src/main/camera.c",
+        "src/dlls/engine/1_camcontrol/camcontrol.c"
+      ],
+      "functions": [
+        {
+          "name": "Camera_InitState",
+          "path": "src/main/camera.c",
+          "lines": [
+            95,
+            131
+          ]
+        },
+        {
+          "name": "Camera_UpdateShakeAndFarPlane",
+          "path": "src/main/camera.c",
+          "lines": [
+            754,
+            793
+          ]
+        },
+        {
+          "name": "camcontrol_findBestTarget",
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "lines": [
+            441,
+            562
+          ]
+        },
+        {
+          "name": "camcontrol_applyState",
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "lines": [
+            705,
+            810
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "animation",
+      "name": "Animation playback",
+      "purpose": "Move playback: turns a per-update step scale into animation frames, emits animation events, and drives the root curve that supplies world travel",
+      "paths": [
+        "src/main/objanim.c"
+      ],
+      "functions": [
+        {
+          "name": "ObjAnim_AdvanceCurrentMove",
+          "path": "src/main/objanim.c",
+          "lines": [
+            530,
+            814
+          ]
+        },
+        {
+          "name": "ObjAnim_AdvanceLayeredMove",
+          "path": "src/main/objanim.c",
+          "lines": [
+            84,
+            224
+          ]
+        },
+        {
+          "name": "ObjAnim_SetCurrentEventStepFrames",
+          "path": "src/main/objanim.c",
+          "lines": [
+            335,
+            344
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "frame-timing",
+      "name": "Frame clock and loop order",
+      "purpose": "Frame clock and loop order: normalises elapsed milliseconds into a 60 Hz delta, clamps long frames, then updates input, objects, camera, audio and render",
+      "paths": [
+        "src/main/gameloop.c",
+        "src/main/pi_videoinit.c",
+        "src/main/pad.c"
+      ],
+      "functions": [
+        {
+          "name": "waitNextFrame",
+          "path": "src/main/pi_videoinit.c",
+          "lines": [
+            377,
+            413
+          ]
+        },
+        {
+          "name": "gameUpdate",
+          "path": "src/main/gameloop.c",
+          "lines": [
+            1011,
+            1103
+          ]
+        },
+        {
+          "name": "gameLoop",
+          "path": "src/main/gameloop.c",
+          "lines": [
+            1110,
+            1151
+          ]
+        },
+        {
+          "name": "padUpdate",
+          "path": "src/main/pad.c",
+          "lines": [
+            82,
+            219
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "hits",
+      "name": "Hit volume sweep",
+      "purpose": "Hit-volume sweep: per-object hit shapes, pair tests, contact cooldowns and the fixed work buffers that bound how many contacts one update can record",
+      "paths": [
+        "src/main/objhits.c",
+        "include/main/objhits.h"
+      ],
+      "functions": [
+        {
+          "name": "ObjHits_TickPriorityHitCooldowns",
+          "path": "src/main/objhits.c",
+          "lines": [
+            879,
+            898
+          ]
+        },
+        {
+          "name": "ObjHits_CheckHitVolumes",
+          "path": "src/main/objhits.c",
+          "lines": [
+            953,
+            1372
+          ]
+        },
+        {
+          "name": "ObjHits_Update",
+          "path": "src/main/objhits.c",
+          "lines": [
+            1992,
+            2187
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-speed-tiers",
+      "node": "player-locomotion",
+      "name": "Ground speed tiers",
+      "summary": "Every locomotion mode ends at one capped speed, and the cap drops for aiming, air control and water",
+      "behavior": "The control code writes a single speed cap before it starts moving, and the whole gait chooses itself around that cap. On dry ground with the stick free the cap is 2.3993998 speed units per update. While the character is descending or airborne the cap drops to 1.9, which is the entire difference between ground control and air control in this game; there is no separate air acceleration model. Holding the look overlay, the mode that pins the camera behind the shoulders, turns the cap into 2.0 on land and 0.8 in water, and plain swimming uses 1.1996999. The wanted speed is the cap minus a 0.05 trim, multiplied by the shaped stick magnitude and by a per-move speed scale, so an animation set can bias one move faster or slower without touching the cap. The number is a normalized locomotion speed: the root-motion sampler consumes it to advance the character's root curve, and on the branch that has no root motion it becomes horizontal velocity directly.",
+      "constants": [
+        {
+          "name": "groundSpeedCap",
+          "value": 2.3993998,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8876"
+        },
+        {
+          "name": "airborneSpeedCap",
+          "value": 1.9,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8871"
+        },
+        {
+          "name": "aimSpeedCapOnLand",
+          "value": 2,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8867"
+        },
+        {
+          "name": "aimSpeedCapInWater",
+          "value": 0.8,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8859"
+        },
+        {
+          "name": "swimSpeedCap",
+          "value": 1.1996999,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8861"
+        },
+        {
+          "name": "speedCapTrim",
+          "value": 0.05,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:8893"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8821
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8871
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8893
+        }
+      ],
+      "capabilities": [
+        "one speed cap per mode",
+        "water and air speed tiers",
+        "aim overlay speed penalty"
+      ],
+      "tags": [
+        "movement",
+        "speed",
+        "locomotion",
+        "water",
+        "air control"
+      ]
+    },
+    {
+      "id": "input-shaping",
+      "node": "player-locomotion",
+      "name": "Stick shaping and move gate",
+      "summary": "Stick magnitude loses a dead zone, is rescaled onto the cap, and must clear its own gate before walking starts",
+      "behavior": "The analog magnitude is never used raw. A 0.2 dead zone is subtracted and the remainder is divided by 0.8, then clamped to the zero to one range, so the top four fifths of travel carries all of the speed and small accidental tilts do nothing. That shaped value multiplies the speed cap together with the per-move speed scale to produce the wanted speed, which means a move with a soft scale still reaches its own cap at full stick rather than at ninety percent. Starting to move has a second gate on top: the tracked magnitude and the live magnitude must both sit at or above 0.22 and the current speed must already exceed the move's entry threshold before the idle mode hands over to the moving mode. That double gate is what keeps a shaking or drifting stick from flickering the character between idle and walk poses on consecutive updates.",
+      "constants": [
+        {
+          "name": "stickDeadZone",
+          "value": 0.2,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/dlls/objects/195_Player/player.c:8887"
+        },
+        {
+          "name": "stickRescaleSpan",
+          "value": 0.8,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/dlls/objects/195_Player/player.c:8887"
+        },
+        {
+          "name": "moveStartMagnitudeGate",
+          "value": 0.22,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/dlls/objects/195_Player/player.c:9330"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8887
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 9330
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 9410
+        }
+      ],
+      "capabilities": [
+        "analog dead zone",
+        "rescaled stick travel",
+        "move entry gate"
+      ],
+      "tags": [
+        "movement",
+        "analog input",
+        "dead zone",
+        "input"
+      ]
+    },
+    {
+      "id": "velocity-ramp",
+      "node": "player-locomotion",
+      "name": "Velocity ramp and gait tiers",
+      "summary": "Wanted speed is approached at a bounded rate, and a tier counter swaps the gait animation as speed changes",
+      "behavior": "Speed is never assigned. Each update the controller takes the difference between the wanted speed and the current speed, scales it by the move's smoothing rate, and then clamps the change for that update to 0.1 speed units, so the worst-case acceleration is fixed no matter how aggressive the smoothing rate is. The current speed is then clamped into the move's floor and cap. A separate tier counter climbs by four every time the current speed passes the next value in the move's threshold table and falls by four when it drops below the previous one, and the animation move is looked up from that tier index. This is why the walk, jog and run cycles swap at speed thresholds rather than on a timer. Entering movement resets the smoothing time to 8 updates before the first ramp applies.",
+      "constants": [
+        {
+          "name": "speedChangeCapPerUpdate",
+          "value": 0.1,
+          "unit": "speed units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:9126"
+        },
+        {
+          "name": "gaitTierStep",
+          "value": 4,
+          "unit": "tier counter units",
+          "source": "src/dlls/objects/195_Player/player.c:9231"
+        },
+        {
+          "name": "moveStartSmoothingTime",
+          "value": 8,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:9440"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 9126
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 9231
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 9440
+        }
+      ],
+      "capabilities": [
+        "bounded acceleration",
+        "speed threshold gait swap",
+        "gait tier counter"
+      ],
+      "tags": [
+        "movement",
+        "acceleration",
+        "gait",
+        "animation"
+      ]
+    },
+    {
+      "id": "quick-turn",
+      "node": "player-locomotion",
+      "name": "Quick turn",
+      "summary": "A hard reversal at speed plays a dedicated spin that flips the heading half a turn and keeps the momentum",
+      "behavior": "The quick turn only fires inside a narrow window of the current gait cycle, between ten and twenty-five percent of the way through the move, and it needs the stick past 0.8 magnitude with an existing turn rate at or above the hard-turn threshold of 150 binary angle units per update. When those hold, the heading is flipped by half a turn, the current and forward animation speeds are negated so the character carries momentum into the spin instead of stopping, the event ticker is compressed to 16-step spacing, and the animation rate is rebuilt from the entry speed and the move's own threshold table divided by 30. The move runs with heading locked, so the camera and stick cannot fight the spin, and it releases back to normal control only once the current speed falls to the move's exit threshold.",
+      "constants": [
+        {
+          "name": "quickTurnInputGate",
+          "value": 0.8,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/dlls/objects/195_Player/player.c:12383"
+        },
+        {
+          "name": "quickTurnRateGate",
+          "value": "0x96",
+          "unit": "binary angle units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12383"
+        },
+        {
+          "name": "quickTurnEventSpacing",
+          "value": "0x10",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12389"
+        },
+        {
+          "name": "quickTurnRateDivisor",
+          "value": 30,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12391"
+        },
+        {
+          "name": "quickTurnHeadingFlip",
+          "value": "0x8000",
+          "unit": "binary angle units, 65536 per turn",
+          "source": "src/dlls/objects/195_Player/player.c:12393"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12375
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12383
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12393
+        }
+      ],
+      "capabilities": [
+        "180 degree reversal",
+        "momentum retaining spin",
+        "heading lock during turn"
+      ],
+      "tags": [
+        "movement",
+        "turn",
+        "momentum",
+        "facing"
+      ]
+    },
+    {
+      "id": "jump-and-airborne",
+      "node": "player-air-water",
+      "name": "Jump and airborne pose",
+      "summary": "The airborne mode steers a ballistic arc and maps vertical velocity onto a single jump animation",
+      "behavior": "Airborne control is one control mode rather than a physics state. It writes vertical velocity straight from the stored launch velocity scaled by the frame delta, which means the launch value itself is supplied from outside the mode, so scripted jumps and item-driven jumps share the same flight code. Instead of blending separate rise and fall poses, the mode folds the vertical velocity into the jump animation: one plus the velocity is halved and clamped to zero and one, and the move position is set to one minus that fraction, so a rising body sits at the start of the jump move and a falling body sits at its end, with the pose sliding across as the velocity crosses zero. Horizontal steering is applied as a yaw nudge with the stick magnitude scaled down by 32 and converted at 182.044 binary angle units per degree, so air steering is a small fraction of what the same stick does on the ground. The mode keeps its own hit probe budget of 10 units and a loose 16-update velocity smoothing time.",
+      "constants": [
+        {
+          "name": "airborneProbeDistance",
+          "value": 10,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:2833"
+        },
+        {
+          "name": "airborneSmoothingTime",
+          "value": 16,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:2879"
+        },
+        {
+          "name": "airbornePoseDivisor",
+          "value": 2,
+          "unit": "divisor applied to one plus vertical velocity",
+          "source": "src/dlls/objects/195_Player/player.c:2873"
+        },
+        {
+          "name": "binaryAnglePerDegree",
+          "value": 182.044,
+          "unit": "binary angle units per degree",
+          "source": "src/dlls/objects/195_Player/player.c:2884"
+        },
+        {
+          "name": "airborneSteerDivisor",
+          "value": 32,
+          "unit": "divisor applied to the stick yaw rate",
+          "source": "src/dlls/objects/195_Player/player.c:2884"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2831
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2873
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2881
+        }
+      ],
+      "capabilities": [
+        "ballistic jump arc",
+        "reversed fall pose",
+        "air steering"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "air control",
+        "animation"
+      ]
+    },
+    {
+      "id": "gravity-and-fall",
+      "node": "player-motion",
+      "name": "Gravity, damping and landing",
+      "summary": "Gravity is a fixed per-update pull applied after an air damping multiply, with a grace window before landing reads as a fall",
+      "behavior": "Gravity is written fresh every update as 0.15 speed units, and it is applied only after the vertical velocity has been multiplied by a 0.97 damping factor. That order matters: the arc is not a clean parabola, it bleeds energy every update and converges toward a terminal rate instead of accelerating without bound, which is what keeps long falls readable at a fixed camera distance. The fall mode adds its own handling: a 40-unit facing smoothing rate and a 0.9 turn-rate limit, so the character turns slowly in the air compared with the ground. Fall frames accumulate and saturate at ten, and the landing sound and fall pose only switch after five frames, the grace window that stops a single-frame ground clip from reading as a fall. The mode ends when the body passes the recorded fall threshold, the ground flags report contact, or surface flags say the feet are standing.",
+      "constants": [
+        {
+          "name": "gravityPerUpdate",
+          "value": 0.15,
+          "unit": "speed units subtracted from vertical velocity per update, per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:15020"
+        },
+        {
+          "name": "airDampingPerUpdate",
+          "value": 0.97,
+          "unit": "velocity multiplier per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13828"
+        },
+        {
+          "name": "fallFrameSaturation",
+          "value": "0xa",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12253"
+        },
+        {
+          "name": "landingSoundWindow",
+          "value": 5,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12209"
+        },
+        {
+          "name": "fallTurnRateLimit",
+          "value": 0.9,
+          "unit": "binary angle units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12261"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 15020
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13828
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12207
+        }
+      ],
+      "capabilities": [
+        "damped ballistic fall",
+        "landing grace window",
+        "air turn limit"
+      ],
+      "tags": [
+        "physics",
+        "gravity",
+        "fall",
+        "jump"
+      ]
+    },
+    {
+      "id": "velocity-clamps",
+      "node": "player-motion",
+      "name": "Velocity box and step cap",
+      "summary": "Final velocity is box-clamped and the vertical step of one update is capped before the body is moved",
+      "behavior": "Immediately before the body is moved the integrator clamps horizontal velocity to plus or minus 5 and vertical velocity to plus or minus 4 speed units, then multiplies each by the frame delta. The resulting vertical step is then capped a second time at 10 world units, which is the only thing that keeps a stacked boost or a scripted lift from tunnelling through a floor in a single update. Horizontal steps are left alone because the velocity clamp already bounds them at 5 units per update. Everything upstream, including the root-motion sampler and the spell lifts, can therefore overshoot freely and still land inside the same envelope, and a low frame rate widens the step only up to the vertical cap rather than indefinitely.",
+      "constants": [
+        {
+          "name": "horizontalSpeedClamp",
+          "value": 5,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:13777"
+        },
+        {
+          "name": "verticalSpeedClamp",
+          "value": 4,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:13780"
+        },
+        {
+          "name": "verticalStepCap",
+          "value": 10,
+          "unit": "world units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13786"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13772
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13783
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13786
+        }
+      ],
+      "capabilities": [
+        "velocity box clamp",
+        "per-update step cap",
+        "anti-tunnelling"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "velocity",
+        "clamp"
+      ]
+    },
+    {
+      "id": "water-buoyancy",
+      "node": "player-air-water",
+      "name": "Buoyancy and water current",
+      "summary": "Depth below the surface pushes the body up, a sink and damping fight it, and the swim envelope is asymmetric",
+      "behavior": "In deep water the height relative to the surface becomes a buoyancy input. The gap below the surface is capped at 25 units, divided by that same 25 so it reads as a fraction from zero to one, scaled by 0.13, and added to vertical velocity. A constant 0.1 sink then pulls down and a 0.96 damping multiply removes the bounce, so a character dropped into water rises toward the surface and settles there instead of bobbing forever. Vertical velocity is clamped between minus 4 and plus 1.4, which makes diving faster than rising and stops buoyancy alone from launching the body out of the water. Surface current is rotated into the character's own frame and smoothed at 0.1 per update, so drifting on a current always lags the current itself, and a movement ripple is spawned once the water is deeper than 17 units and the body is moving faster than 0.4.",
+      "constants": [
+        {
+          "name": "buoyancyDepthReference",
+          "value": 25,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:12300"
+        },
+        {
+          "name": "buoyancyGain",
+          "value": 0.13,
+          "unit": "world units per update, added to vertical velocity per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12301"
+        },
+        {
+          "name": "waterSinkPerUpdate",
+          "value": 0.1,
+          "unit": "speed units subtracted from vertical velocity per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12304"
+        },
+        {
+          "name": "waterDampingPerUpdate",
+          "value": 0.96,
+          "unit": "velocity multiplier per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12305"
+        },
+        {
+          "name": "waterRiseClamp",
+          "value": 1.4,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step)",
+          "source": "src/dlls/objects/195_Player/player.c:12308"
+        },
+        {
+          "name": "waterSinkClamp",
+          "value": -4,
+          "unit": "speed units per update at 60 Hz (delta-time scaled, 1.0 = one 1/60 s step) (negative is downward)",
+          "source": "src/dlls/objects/195_Player/player.c:12308"
+        },
+        {
+          "name": "waterCurrentSmoothing",
+          "value": 0.1,
+          "unit": "fraction of remaining current error per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12315"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12274
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12297
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12308
+        }
+      ],
+      "capabilities": [
+        "depth-based buoyancy",
+        "asymmetric swim clamps",
+        "current drift"
+      ],
+      "tags": [
+        "water",
+        "physics",
+        "swim",
+        "buoyancy"
+      ]
+    },
+    {
+      "id": "surface-response",
+      "node": "player-motion",
+      "name": "Ground surface response",
+      "summary": "Ground material rewrites smoothing, pose speed and turn width, and some surfaces add damage or a conveyor push",
+      "behavior": "Ground contact carries a palette slot that the response code maps onto behaviour rather than onto a single friction number. Ice sets the pose speed scale to 0.055, widens facing smoothing by 1.75 and slows the velocity smoothing base to 0.13, which is what produces the skid. Snow keeps the pose speed at full and sets the velocity smoothing base to 0.05. Lava and one unnamed hazard record a damage hit every 0x3c updates, one hit per second at the 60 Hz step. A quicksand-like slot sinks the character 0.04 units per update and drains one health point per update once the measured sink depth passes 25 units. Conveyor ground searches within 500 units for a conveyor object and feeds its scroll vector into a push velocity smoothed at 0.02, decaying by 0.9 when the conveyor is gone, with push values under 0.01 snapped to zero so nothing creeps after the ride ends.",
+      "constants": [
+        {
+          "name": "icePoseSpeedScale",
+          "value": 0.055,
+          "unit": "fraction of the normal pose speed",
+          "source": "src/dlls/objects/195_Player/player.c:13874"
+        },
+        {
+          "name": "iceFacingWidth",
+          "value": 1.75,
+          "unit": "multiplier on the facing smoothing width",
+          "source": "src/dlls/objects/195_Player/player.c:13875"
+        },
+        {
+          "name": "iceVelocitySmoothing",
+          "value": 0.13,
+          "unit": "fraction of remaining error per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13876"
+        },
+        {
+          "name": "snowVelocitySmoothing",
+          "value": 0.05,
+          "unit": "fraction of remaining error per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13881"
+        },
+        {
+          "name": "lavaHitInterval",
+          "value": "0x3c",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13885"
+        },
+        {
+          "name": "conveyorSearchRadius",
+          "value": 500,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:13890"
+        },
+        {
+          "name": "quicksandSink",
+          "value": 0.04,
+          "unit": "world units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13921"
+        },
+        {
+          "name": "quicksandDamageDepth",
+          "value": 25,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:13931"
+        },
+        {
+          "name": "pushSmoothing",
+          "value": 0.02,
+          "unit": "fraction of remaining push error per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13970"
+        },
+        {
+          "name": "pushDecay",
+          "value": 0.9,
+          "unit": "multiplier per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13975"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13833
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13874
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13921
+        }
+      ],
+      "capabilities": [
+        "ice skid",
+        "damaging ground",
+        "conveyor push",
+        "quicksand sink"
+      ],
+      "tags": [
+        "physics",
+        "surface",
+        "friction",
+        "hazard"
+      ]
+    },
+    {
+      "id": "staff-boost-lift",
+      "node": "player-air-water",
+      "name": "Staff boost lift",
+      "summary": "A charged staff move ramps upward, caps, then coasts down with drag while the meter drains in fixed chunks",
+      "behavior": "The staff boost is a scripted vertical ride rather than a physics jump. Its first segment adds 0.05 speed units per update to vertical velocity. The second segment adds 0.1 per update and hard-caps the result at 5, lifting until the body passes the target height the downward line probe reported less 30 units, or a fixed 100 units above the start height when the probe hits nothing. The descent segment subtracts 0.1 per update and multiplies the remainder by a 0.98 per-update damping factor, so the ride settles instead of snapping, and the mode hands control back when its animation finishes. Charging the move accumulates 0.8333 charge points per update and spends 10 magic each time the accumulator passes 10, which is why the meter drains in fixed chunks while the button is held rather than continuously.",
+      "constants": [
+        {
+          "name": "boostInitialRise",
+          "value": 0.05,
+          "unit": "speed units added to vertical velocity per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:3751"
+        },
+        {
+          "name": "boostSustainedRise",
+          "value": 0.1,
+          "unit": "speed units added to vertical velocity per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:3762"
+        },
+        {
+          "name": "boostRiseCap",
+          "value": 5,
+          "unit": "speed units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:3763"
+        },
+        {
+          "name": "boostDescentDrag",
+          "value": 0.98,
+          "unit": "velocity multiplier per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:3774"
+        },
+        {
+          "name": "boostFallbackTargetHeight",
+          "value": 100,
+          "unit": "world units above the start height",
+          "source": "src/dlls/objects/195_Player/player.c:3815"
+        },
+        {
+          "name": "boostChargePerUpdate",
+          "value": 0.33333334,
+          "unit": "charge points per update at 60 Hz (added twice per update)",
+          "source": "src/dlls/objects/195_Player/player.c:3707"
+        },
+        {
+          "name": "boostSpendThreshold",
+          "value": 10,
+          "unit": "charge points",
+          "source": "src/dlls/objects/195_Player/player.c:3709"
+        },
+        {
+          "name": "boostMagicCost",
+          "value": "0xa",
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:3714"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 3668
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 3751
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 3815
+        }
+      ],
+      "capabilities": [
+        "scripted vertical ride",
+        "probe-derived target height",
+        "chunked magic drain"
+      ],
+      "tags": [
+        "traversal",
+        "magic",
+        "vertical movement",
+        "staff"
+      ]
+    },
+    {
+      "id": "staff-combo",
+      "node": "player-combat",
+      "name": "Staff combo chaining",
+      "summary": "Swing slots expose chain windows, and pressing attack inside one selects the next slot and tracks the locked target",
+      "behavior": "The staff attack reads its swing from a table of move slots rather than from a fixed sequence. Each slot carries the animation progress at which the chain flag opens, the progress at which it closes, and a separate mark used for follow-up logic. Pressing attack while the chain flag is set records the input sector, forces the follow-up flag and consumes the button press so one press cannot chain twice. When both the follow-up and the window flags are set on the same update, the next slot is chosen from the target's freeze recovery: if recovery has already elapsed the variant slot is used, otherwise the normal follow-up. While a target is locked, the swing yaw is corrected toward the target bearing every update: for the five slots between index five and index nine the full bearing is applied, and for every other slot the correction is divided by twelve, so the heavier swings track loosely while the quick ones stay glued. A blocked reaction rumbles at 10 and each of the two swing contact events rumbles at 5. The attack entry speed is 0.025 per update, which is also its playback rate.",
+      "constants": [
+        {
+          "name": "fastSlotFirstIndex",
+          "value": 5,
+          "unit": "move slot index",
+          "source": "src/dlls/objects/195_Player/player.c:4825"
+        },
+        {
+          "name": "fastSlotLastIndex",
+          "value": 9,
+          "unit": "move slot index",
+          "source": "src/dlls/objects/195_Player/player.c:4825"
+        },
+        {
+          "name": "slowSwingBearingDivisor",
+          "value": 12,
+          "unit": "divisor applied to the target bearing",
+          "source": "src/dlls/objects/195_Player/player.c:4828"
+        },
+        {
+          "name": "attackEntryMoveRate",
+          "value": 0.025,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12603"
+        },
+        {
+          "name": "hitRumbleTime",
+          "value": 10,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:4736"
+        },
+        {
+          "name": "swingRumbleTime",
+          "value": 5,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:4743"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 4720
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 4825
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12594
+        }
+      ],
+      "capabilities": [
+        "windowed combo chaining",
+        "locked target tracking",
+        "variant follow-up slot"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "combo",
+        "targeting"
+      ]
+    },
+    {
+      "id": "guard-stance",
+      "node": "player-combat",
+      "name": "Guard stance",
+      "summary": "Holding the shield trigger plants the character in a hold pose that cannot rotate under the shield",
+      "behavior": "Guard is read from a trigger bit rather than from a face button, and it only engages when the character is not already attacking, not climbing, not carrying anything, not swimming and not already locked onto a target. Entering the stance switches the staff model into shield mode, starts a dedicated hold move on eight-step event spacing, zeroes all three animation speeds together with horizontal velocity, and slows the wanted-facing follow rate to 20. Releasing the trigger, or failing the guard check on a later update, leaves the stance on the same update it was detected, so the shield never lingers after the button is up. While guarding the turn-rate limits are set to zero, which is why the character can be pushed but cannot be turned by the stick: the shield faces where it was raised.",
+      "constants": [
+        {
+          "name": "guardTriggerBit",
+          "value": "0x20",
+          "unit": "trigger mask bit",
+          "source": "src/dlls/objects/195_Player/player.c:11884"
+        },
+        {
+          "name": "guardHoldMoveId",
+          "value": "0x4f",
+          "unit": "move id",
+          "source": "src/dlls/objects/195_Player/player.c:11888"
+        },
+        {
+          "name": "guardEventSpacing",
+          "value": 8,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:11889"
+        },
+        {
+          "name": "guardEntryMoveRate",
+          "value": 0.01,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:11894"
+        },
+        {
+          "name": "guardFacingFollowRate",
+          "value": 20,
+          "unit": "facing units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:8944"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 11884
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8810
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 8944
+        }
+      ],
+      "capabilities": [
+        "trigger-based guard",
+        "movement lock while guarding",
+        "shield model swap"
+      ],
+      "tags": [
+        "combat",
+        "defence",
+        "shield",
+        "stance"
+      ]
+    },
+    {
+      "id": "hit-response",
+      "node": "player-combat",
+      "name": "Hit response and knockback clock",
+      "summary": "The highest priority contact picks a reaction, sets a knockback clock that drains with speed, and subtracts from one health pool",
+      "behavior": "Incoming hits are ranked by a priority number and only the highest priority contact of the update is applied. A contact that arrives while the guarding flag is set is converted into a push: damage is forced to zero, the body is nudged along the contact normal with a short sound and particle step, and the rest of the response returns early. Otherwise the hit picks a counter pose when the character is in a normal control mode with a live target, and a plain reaction when it is not, then sets knockback to 300 updates and the follow-up hit clock to 200. The knockback clock drains at the current speed clamped between 1 and 3 per update, so a body that is still moving recovers its footing sooner than one that has stopped. Damage is subtracted and clamped into zero and the maximum, and reaching zero starts the death sequence. A health value that arrives at or below zero is raised to one before the reaction runs, so a scripted hit can never leave the pool negative.",
+      "constants": [
+        {
+          "name": "knockbackDuration",
+          "value": 300,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13155"
+        },
+        {
+          "name": "knockbackHitClock",
+          "value": 200,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13156"
+        },
+        {
+          "name": "knockbackDrainFloor",
+          "value": 1,
+          "unit": "knockback units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13347"
+        },
+        {
+          "name": "knockbackDrainCeiling",
+          "value": 3,
+          "unit": "knockback units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:13347"
+        },
+        {
+          "name": "healthFloorBeforeReaction",
+          "value": 1,
+          "unit": "health points",
+          "source": "src/dlls/objects/195_Player/player.c:13017"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 12988
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13155
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 13334
+        }
+      ],
+      "capabilities": [
+        "priority hit selection",
+        "guarded hits become pushes",
+        "speed-scaled knockback"
+      ],
+      "tags": [
+        "combat",
+        "damage",
+        "knockback",
+        "health"
+      ]
+    },
+    {
+      "id": "magic-gates",
+      "node": "player-magic",
+      "name": "Spell magic gates",
+      "summary": "Each staff spell has a magic floor and a list of movement states that refuse it, and the meter itself is capped",
+      "behavior": "Spell availability is a pure check, so the interface can grey out a spell before the player presses anything. The freeze blast needs at least one magic point and the fire blaster needs two, and both are refused while the character is climbing, swimming, carrying, aiming or inside a scripted sequence. The portal spell needs at least twenty points and additionally needs a portal target under the reticle, which is why the gate reads the camera target rather than the player. Quake needs ten points, or twenty once the upgraded version is owned, so the same input becomes a stronger spell after the upgrade instead of unlocking a second slot. Every add and remove clamps the meter into zero and the maximum, and the maximum itself is capped at 100, so an imported save that overflows is repaired the first time anything grants magic.",
+      "constants": [
+        {
+          "name": "freezeBlastMagicFloor",
+          "value": 1,
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:10743"
+        },
+        {
+          "name": "fireBlasterMagicFloor",
+          "value": 2,
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:10739"
+        },
+        {
+          "name": "portalMagicFloor",
+          "value": "0x14",
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:10698"
+        },
+        {
+          "name": "quakeMagicFloor",
+          "value": "0xa",
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:10713"
+        },
+        {
+          "name": "superQuakeMagicFloor",
+          "value": "0x14",
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:10711"
+        },
+        {
+          "name": "magicMaximumCap",
+          "value": "0x64",
+          "unit": "magic points",
+          "source": "src/dlls/objects/195_Player/player.c:2504"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 10707
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 10739
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2498
+        }
+      ],
+      "capabilities": [
+        "per-spell magic floors",
+        "state based spell refusal",
+        "capped magic maximum"
+      ],
+      "tags": [
+        "magic",
+        "combat",
+        "resource",
+        "gating"
+      ]
+    },
+    {
+      "id": "scarab-wallet",
+      "node": "player-magic",
+      "name": "Scarab wallet capacity",
+      "summary": "Money is capped by which bag upgrade has been bought, and every grant clamps into that cap",
+      "behavior": "The wallet has no free capacity. Each grant clamps the running total into a ceiling chosen by the best scarab bag the save has bought: ten before any bag, fifty with the small bag, one hundred with the medium bag and two hundred with the large bag. Buying a bigger bag therefore never adds money, it only raises the ceiling, and a save that arrives with more than its ceiling keeps the excess out of the counter on the next grant. The grant call also records the largest single amount ever added, which the pickup counter reads. Negative grants are clamped to zero rather than allowed to borrow, so spending and refunds share one safe path.",
+      "constants": [
+        {
+          "name": "walletBaseCapacity",
+          "value": "0xa",
+          "unit": "scarabs",
+          "source": "src/dlls/objects/195_Player/player.c:2438"
+        },
+        {
+          "name": "walletSmallBagCapacity",
+          "value": "0x32",
+          "unit": "scarabs",
+          "source": "src/dlls/objects/195_Player/player.c:2436"
+        },
+        {
+          "name": "walletMediumBagCapacity",
+          "value": "0x64",
+          "unit": "scarabs",
+          "source": "src/dlls/objects/195_Player/player.c:2434"
+        },
+        {
+          "name": "walletLargeBagCapacity",
+          "value": "0xc8",
+          "unit": "scarabs",
+          "source": "src/dlls/objects/195_Player/player.c:2432"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2427
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 2432
+        }
+      ],
+      "capabilities": [
+        "upgrade gated money cap",
+        "clamped grants",
+        "largest pickup record"
+      ],
+      "tags": [
+        "economy",
+        "progression",
+        "pickups",
+        "inventory"
+      ]
+    },
+    {
+      "id": "wall-climb",
+      "node": "player-climb",
+      "name": "Wall climb",
+      "summary": "Wall climbing is its own mode with a repeating wall probe, a tangent from the surface normal and a stick-driven speed",
+      "behavior": "Wall climbing is entered only when the wall probe reports a surface the character can climb, and the mode keeps its own gait table instead of reusing the ground one. Each update it fires a 30-unit probe back into the wall along the stored surface normal and refreshes the wall plane, the top and bottom of the climbable span, and the tangent used for lateral movement, so a curved or stepped wall is re-measured continuously rather than sampled once on entry. Vertical speed is a base of 0.034 plus 0.003999997 per unit of stick magnitude, applied with the sign of the requested direction, which puts the top of the climb near 0.038 units per update. A stick magnitude at or below 0.1 parks the gait in its idle pose. Position is not integrated by the normal path while climbing: the mode overrides the camera position and refreshes collision state from the saved position every update.",
+      "constants": [
+        {
+          "name": "wallProbeDistance",
+          "value": 30,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:6662"
+        },
+        {
+          "name": "climbBaseSpeed",
+          "value": 0.034,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:6908"
+        },
+        {
+          "name": "climbSpeedPerStickUnit",
+          "value": 0.003999997,
+          "unit": "move lengths per update at 60 Hz, per unit of stick magnitude",
+          "source": "src/dlls/objects/195_Player/player.c:6908"
+        },
+        {
+          "name": "climbIdleMagnitude",
+          "value": 0.1,
+          "unit": "stick magnitude, 0 to 1",
+          "source": "src/dlls/objects/195_Player/player.c:6655"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 6591
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 6662
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 6908
+        }
+      ],
+      "capabilities": [
+        "repeated wall probe",
+        "stick-driven climb speed",
+        "camera override while climbing"
+      ],
+      "tags": [
+        "traversal",
+        "climb",
+        "wall",
+        "movement"
+      ]
+    },
+    {
+      "id": "ladder-slide",
+      "node": "player-climb",
+      "name": "Ladder slide",
+      "summary": "Ladder descents accelerate on a square-root profile and snap to the base height as the velocity passes zero",
+      "behavior": "A ladder slide saves the base height on entry and plays a short transitional move before the character commits to the descent. The descent is not a constant speed. The remaining rise above the base is used to build a square-root profile anchored on the slide speed at entry, so the drop starts slowly, gains quickly through the middle and flattens as the body approaches the base. Once the remaining rise is positive but smaller than ten times the slide speed, the character snaps to the saved base height at the moment the downward velocity passes minus 0.01, which is what makes the feet land on the floor rather than through it. Entering deep water during a slide cancels it and hands the body to the swim mode. The slide move plays at 0.025 per update, the same rate as the transitional move that precedes it.",
+      "constants": [
+        {
+          "name": "slideProfileFactor",
+          "value": 10,
+          "unit": "multiplier on the entry slide speed",
+          "source": "src/dlls/objects/195_Player/player.c:7133"
+        },
+        {
+          "name": "slideBaseOffset",
+          "value": 32,
+          "unit": "world units above the climb base",
+          "source": "src/dlls/objects/195_Player/player.c:7138"
+        },
+        {
+          "name": "slideTerminalVelocity",
+          "value": -0.01,
+          "unit": "world units per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:7146"
+        },
+        {
+          "name": "slideMoveRate",
+          "value": 0.025,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:7112"
+        },
+        {
+          "name": "deepWaterDepth",
+          "value": 25,
+          "unit": "world units",
+          "source": "src/dlls/objects/195_Player/player.c:7117"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 7106
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 7133
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 7146
+        }
+      ],
+      "capabilities": [
+        "square-root descent profile",
+        "snap landing",
+        "water cancel"
+      ],
+      "tags": [
+        "traversal",
+        "ladder",
+        "climb",
+        "water"
+      ]
+    },
+    {
+      "id": "camera-framing",
+      "node": "camera",
+      "name": "Camera framing and far plane fade",
+      "summary": "A fixed 60 degree perspective with a short near plane and a long far plane that transitions over one second",
+      "behavior": "The game renders through a perspective camera with a 60 degree vertical field of view, an aspect ratio of 1.3333334 that matches the 4:3 output, a near plane at 2.5 world units and a far plane at 10000. The far plane is never switched instantly when a new area needs more or less depth: the request stores a frame count and the value is interpolated from the outgoing to the incoming distance across that count, with the default request using 60 frames, so the far plane takes exactly one second to settle at the 60 Hz step. Every viewport variant, including the decal, transparent and effect passes, rebuilds from the same projection values, which keeps the shadow and reflection passes aligned with the main pass when the field of view is changed by a cutscene or a zoom.",
+      "constants": [
+        {
+          "name": "verticalFieldOfView",
+          "value": 60,
+          "unit": "degrees",
+          "source": "src/main/camera.c:92"
+        },
+        {
+          "name": "aspectRatio",
+          "value": 1.3333334,
+          "unit": "ratio, width divided by height",
+          "source": "src/main/camera.c:20"
+        },
+        {
+          "name": "nearPlane",
+          "value": 2.5,
+          "unit": "world units",
+          "source": "src/main/camera.c:18"
+        },
+        {
+          "name": "farPlane",
+          "value": 10000,
+          "unit": "world units",
+          "source": "src/main/camera.c:19"
+        },
+        {
+          "name": "farPlaneTransition",
+          "value": 60,
+          "unit": "updates at 60 Hz",
+          "source": "src/main/camera.c:158"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/camera.c",
+          "line": 95
+        },
+        {
+          "path": "src/main/camera.c",
+          "line": 161
+        },
+        {
+          "path": "src/main/camera.c",
+          "line": 19
+        }
+      ],
+      "capabilities": [
+        "fixed field of view",
+        "animated far plane",
+        "shared projection for effect passes"
+      ],
+      "tags": [
+        "camera",
+        "projection",
+        "rendering",
+        "field of view"
+      ]
+    },
+    {
+      "id": "camera-lock-on",
+      "node": "camera",
+      "name": "Reticle target acquisition",
+      "summary": "Targets are scanned inside a vertical band and their own range, then ranked by priority and squared distance",
+      "behavior": "Acquisition walks every live object and rejects on three tests before distance is considered. The vertical gap between the focus point and the candidate's hit-volume centre must sit strictly between minus 100 and plus 20 world units, which accepts a target up to a hundred units above the character but refuses one more than twenty units below, so high ledges and flyers stay targetable while a target underneath the floor cannot steal the lock. The horizontal distance must fall inside a range taken from the candidate's own hit-volume bounds shifted down by two bits, so each object carries its own acquisition radius instead of sharing a global one. Survivors are ranked by hit-volume priority descending and then by squared distance ascending, and only the first 8 are kept for the update. The winner is dropped if its hit volume asks for a line-of-sight test and the voxel trace from a point 20 units above the focus to the hit joint is blocked, which is what lets the camera lock past a low wall but not through a pillar.",
+      "constants": [
+        {
+          "name": "minVerticalGap",
+          "value": -100,
+          "unit": "world units",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:144"
+        },
+        {
+          "name": "maxVerticalGap",
+          "value": 20,
+          "unit": "world units",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:145"
+        },
+        {
+          "name": "lineOfSightTraceHeight",
+          "value": 20,
+          "unit": "world units above the focus point",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:146"
+        },
+        {
+          "name": "targetCandidateCount",
+          "value": 8,
+          "unit": "candidates per update",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:138"
+        },
+        {
+          "name": "rangeBoundsShift",
+          "value": 2,
+          "unit": "bits",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:139"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "line": 441
+        },
+        {
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "line": 144
+        },
+        {
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "line": 146
+        }
+      ],
+      "capabilities": [
+        "priority and distance ranking",
+        "per-object acquisition radius",
+        "line-of-sight rejection"
+      ],
+      "tags": [
+        "camera",
+        "targeting",
+        "lock-on",
+        "reticle"
+      ]
+    },
+    {
+      "id": "camera-shake",
+      "node": "camera",
+      "name": "Camera shake",
+      "summary": "Shake is a decaying oscillation converted from updates into seconds, with a hard bounce mode for blunt impacts",
+      "behavior": "The camera owns one vertical shake offset. In bounce mode the offset is replaced each update by minus 0.9 times its previous value, so it alternates sign and shrinks until the cooldown expires, which reads as a hard judder for blunt impacts. In damped mode it is an amplitude times an exponential of the damping times elapsed time, evaluated at a frequency scaled into binary angle units, and the offset is declared finished once it stays inside plus or minus 0.1 world units. Elapsed shake time is advanced by the frame delta divided by 60, so the frequency is expressed in cycles per second rather than per update, and a shake requested at 30 Hz keeps that meaning if the frame rate ever moves. The offset is applied to the view matrix with opposite signs on the two interlace fields, so it reads as vertical motion rather than as a pan.",
+      "constants": [
+        {
+          "name": "bounceRetain",
+          "value": 0.9,
+          "unit": "velocity multiplier per update at 60 Hz",
+          "source": "src/main/camera.c:779"
+        },
+        {
+          "name": "shakeFinishThreshold",
+          "value": 0.1,
+          "unit": "world units",
+          "source": "src/main/camera.c:787"
+        },
+        {
+          "name": "updatesPerSecond",
+          "value": 60,
+          "unit": "updates per second used to convert shake time",
+          "source": "src/main/camera.c:791"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/camera.c",
+          "line": 754
+        },
+        {
+          "path": "src/main/camera.c",
+          "line": 779
+        },
+        {
+          "path": "src/main/camera.c",
+          "line": 791
+        }
+      ],
+      "capabilities": [
+        "bounce shake",
+        "damped sine shake",
+        "seconds-based shake frequency"
+      ],
+      "tags": [
+        "camera",
+        "shake",
+        "impact",
+        "feedback"
+      ]
+    },
+    {
+      "id": "camera-mode-blend",
+      "node": "camera",
+      "name": "Camera mode blend",
+      "summary": "Mode changes blend across a frame count with a selectable curve, and the per-update correction is capped",
+      "behavior": "Every camera mode request carries a blend length in frames and a curve selector. Blend progress starts at one, falls by the reciprocal of the frame count each update, and is clamped into the zero to one range, and the applied weight is one minus that progress shaped by the selected curve: cubic, quadratic or linear, so a mode can arrive softly, sharply or evenly. Independent of the blend, a mode can also ask for positional smoothing, in which case the error toward the wanted world position is scaled by 0.22 and the step in one update is capped at three times the frame delta, so a long follow never lurches even if its target teleports. The look overlay uses a 30-frame request, half a second at the 60 Hz step, and restores the default mode with the same length, so entering and leaving aim mode cost the same amount of time and the shot framing is symmetric.",
+      "constants": [
+        {
+          "name": "blendSmoothing",
+          "value": 0.22,
+          "unit": "fraction of remaining error per update at 60 Hz",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:723"
+        },
+        {
+          "name": "blendMovementCap",
+          "value": 3,
+          "unit": "world units per update at 60 Hz, scaled by the frame delta",
+          "source": "src/dlls/engine/1_camcontrol/camcontrol.c:724"
+        },
+        {
+          "name": "lookOverlayBlendFrames",
+          "value": "0x1e",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:11784"
+        },
+        {
+          "name": "defaultModeRestoreFrames",
+          "value": "0x1e",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:11801"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "line": 705
+        },
+        {
+          "path": "src/dlls/engine/1_camcontrol/camcontrol.c",
+          "line": 723
+        },
+        {
+          "path": "src/dlls/objects/195_Player/player.c",
+          "line": 11784
+        }
+      ],
+      "capabilities": [
+        "curved blend",
+        "capped blend movement",
+        "symmetric aim transition"
+      ],
+      "tags": [
+        "camera",
+        "blend",
+        "transition",
+        "aim"
+      ]
+    },
+    {
+      "id": "animation-driven-speed",
+      "node": "animation",
+      "name": "Animation-step locomotion",
+      "summary": "Gameplay speed is a step scale on animation playback, so events and travel are expressed as animation frames",
+      "behavior": "Locomotion and attacks do not push the body directly. They set a step scale that is clamped to the minus one to plus one range and multiplied by the move's own frame length, and that product is what advances the animation each update. Events inside the move fire from a countdown measured on a fixed 16384-unit event scale, and a request written as a frame count is converted by dividing 16384 by that count, so asking for 8 frames means the event fires every eighth of the move regardless of the move's real length. Because the step scale is bounded, a move can never play faster than one full length per update, which caps how much root motion a single update can deliver and is the real reason the animation and the collision envelope stay in agreement. The same scale runs in reverse for the layered staff animation, where a negative rate rewinds the pose while the body is standing still.",
+      "constants": [
+        {
+          "name": "eventScale",
+          "value": 16384,
+          "unit": "fixed-point event units per move",
+          "source": "src/main/objanim.c:341"
+        },
+        {
+          "name": "stepScaleFloor",
+          "value": -1,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/main/objanim.c:528"
+        },
+        {
+          "name": "progressCeiling",
+          "value": 1,
+          "unit": "move lengths per update at 60 Hz",
+          "source": "src/main/objanim.c:10"
+        },
+        {
+          "name": "quickTurnEventFrames",
+          "value": "0x10",
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:12389"
+        },
+        {
+          "name": "guardEventFrames",
+          "value": 8,
+          "unit": "updates at 60 Hz",
+          "source": "src/dlls/objects/195_Player/player.c:11889"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/objanim.c",
+          "line": 530
+        },
+        {
+          "path": "src/main/objanim.c",
+          "line": 341
+        },
+        {
+          "path": "src/main/objanim.c",
+          "line": 590
+        }
+      ],
+      "capabilities": [
+        "bounded playback rate",
+        "frame-count event spacing",
+        "negative rate rewind"
+      ],
+      "tags": [
+        "animation",
+        "root motion",
+        "events",
+        "timing"
+      ]
+    },
+    {
+      "id": "frame-clock",
+      "node": "frame-timing",
+      "name": "Frame clock and loop order",
+      "summary": "One clock normalises wall time to a 60 Hz step, clamps long frames, and fixes the order of every subsystem",
+      "behavior": "The frame begins by stopping the stopwatch, converting elapsed hardware ticks into milliseconds, and multiplying by 60 divided by 1000. A delta of 1 therefore means exactly one sixtieth of a second, and every per-update constant in the player code is written against that unit, so a port to another refresh rate has to rescale all of them rather than just the loop. The delta is then clamped to 6, which caps a stalled frame at a tenth of a second so a disc read cannot teleport the body through geometry, and the disc-error pause path forces the delta to zero outright. The integer part of the delta becomes the step count that timers and the camera shake consume. The order is fixed: pad sampling, voxel timers, the game update, camera shake and far-plane fade, audio, then render, so a camera mode change made during the update is visible on the same frame that requested it.",
+      "constants": [
+        {
+          "name": "timestepNormalisation",
+          "value": 60,
+          "unit": "updates per second used to normalise the frame delta",
+          "source": "src/main/pi_videoinit.c:387"
+        },
+        {
+          "name": "maximumFrameDelta",
+          "value": 6,
+          "unit": "updates at 60 Hz",
+          "source": "src/main/pi_videoinit.c:94"
+        },
+        {
+          "name": "initialFrameDelta",
+          "value": 1,
+          "unit": "updates at 60 Hz",
+          "source": "src/main/gameloop.c:97"
+        },
+        {
+          "name": "playerTrailSamples",
+          "value": "0x3c",
+          "unit": "samples",
+          "source": "src/main/gameloop.c:1041"
+        },
+        {
+          "name": "menuStickRepeatDelay",
+          "value": 5,
+          "unit": "updates at 60 Hz",
+          "source": "src/main/pad.c:9"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/pi_videoinit.c",
+          "line": 377
+        },
+        {
+          "path": "src/main/gameloop.c",
+          "line": 1110
+        },
+        {
+          "path": "src/main/gameloop.c",
+          "line": 1011
+        }
+      ],
+      "capabilities": [
+        "60 Hz normalised delta",
+        "long-frame clamp",
+        "fixed update order"
+      ],
+      "tags": [
+        "timing",
+        "game loop",
+        "delta time",
+        "frame rate"
+      ]
+    },
+    {
+      "id": "hit-volume-sweep",
+      "node": "hits",
+      "name": "Hit volume sweep",
+      "summary": "One sorted sweep per update tests overlapping hit shapes, with fixed capacities and per-slot contact cooldowns",
+      "behavior": "Collision is a single sorted sweep over the world's hit shapes rather than a check of every object against every other. Each enabled object contributes one entry carrying its horizontal extent, the entries are sorted on that extent, and only entries whose spans overlap are tested against each other. The capacities are fixed numbers rather than dynamic allocations: at most 400 sweep entries in an update, 50 priority work slots, and 19 skeleton hits collected from one pair test, so the worst case of an update is bounded by constants and does not grow with the level's object count. Contact cooldowns live in the work slots and are decremented by one per update, with the current delta recorded alongside them, which is what stops a single sustained overlap from recording a hit on every frame it lasts.",
+      "constants": [
+        {
+          "name": "sweepEntryCapacity",
+          "value": 400,
+          "unit": "entries per update",
+          "source": "include/main/objhits.h:12"
+        },
+        {
+          "name": "priorityWorkSlots",
+          "value": "0x32",
+          "unit": "slots",
+          "source": "include/main/objhits.h:21"
+        },
+        {
+          "name": "skeletonHitCapacity",
+          "value": "0x13",
+          "unit": "hits per pair test",
+          "source": "include/main/objhits.h:32"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/main/objhits.c",
+          "line": 1992
+        },
+        {
+          "path": "src/main/objhits.c",
+          "line": 879
+        },
+        {
+          "path": "include/main/objhits.h",
+          "line": 12
+        }
+      ],
+      "capabilities": [
+        "sorted sweep broadphase",
+        "bounded work buffers",
+        "per-slot contact cooldown"
+      ],
+      "tags": [
+        "collision",
+        "physics",
+        "hit detection",
+        "performance"
+      ]
+    }
+  ]
+}

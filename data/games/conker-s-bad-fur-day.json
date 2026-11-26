@@ -1,0 +1,1334 @@
+{
+  "version": 1,
+  "id": "conker-s-bad-fur-day",
+  "title": "Conker's Bad Fur Day",
+  "repo": "https://github.com/mkst/conker",
+  "sha": "3adf229175c037c771f251f169f9dd80ca306924",
+  "nodes": [
+    {
+      "id": "actor-core",
+      "name": "Actor state, timers and ground controls",
+      "purpose": "Per-actor update that owns the physics fields (positions, vertical and horizontal speed, gravity, lateral impulse), the shared effect-timer countdown, the ground-state restore, the scripted descent and the death dissolve",
+      "paths": [
+        "conker/src/game_77AD0.c"
+      ],
+      "functions": [
+        {
+          "name": "func_1504BC38",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            369,
+            440
+          ]
+        },
+        {
+          "name": "func_15052408",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            515,
+            527
+          ]
+        },
+        {
+          "name": "func_15052490",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            538,
+            548
+          ]
+        },
+        {
+          "name": "func_1505250C",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            550,
+            567
+          ]
+        },
+        {
+          "name": "func_15055BF8",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            1091,
+            1099
+          ]
+        },
+        {
+          "name": "func_15055D48",
+          "path": "conker/src/game_77AD0.c",
+          "lines": [
+            1119,
+            1147
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-schema",
+        "world-math"
+      ]
+    },
+    {
+      "id": "actor-physics",
+      "name": "Surface height, containment and ground helpers",
+      "purpose": "Helpers called from the actor update: vertical coupling to a moving surface height, spherical tether containment, gravity bands with vertical speed clamps, and the angle-between-actors test used by chase and hit logic",
+      "paths": [
+        "conker/src/game_83300.c"
+      ],
+      "functions": [
+        {
+          "name": "func_15056150",
+          "path": "conker/src/game_83300.c",
+          "lines": [
+            17,
+            48
+          ]
+        },
+        {
+          "name": "func_15056258",
+          "path": "conker/src/game_83300.c",
+          "lines": [
+            50,
+            67
+          ]
+        },
+        {
+          "name": "func_15058EA4",
+          "path": "conker/src/game_83300.c",
+          "lines": [
+            417,
+            428
+          ]
+        },
+        {
+          "name": "func_1505C140",
+          "path": "conker/src/game_83300.c",
+          "lines": [
+            842,
+            850
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-schema",
+        "world-math"
+      ]
+    },
+    {
+      "id": "world-math",
+      "name": "Vector and angle helpers",
+      "purpose": "Flat-vector headings in degrees and in eight-bit angle units, plus the shortest signed turn used whenever two headings are compared",
+      "paths": [
+        "conker/src/game_75FC0.c",
+        "conker/src/game_75E60.c"
+      ],
+      "functions": [
+        {
+          "name": "func_15048FC8",
+          "path": "conker/src/game_75FC0.c",
+          "lines": [
+            121,
+            146
+          ]
+        },
+        {
+          "name": "func_150490A8",
+          "path": "conker/src/game_75FC0.c",
+          "lines": [
+            148,
+            169
+          ]
+        },
+        {
+          "name": "func_15048A70",
+          "path": "conker/src/game_75E60.c",
+          "lines": [
+            33,
+            43
+          ]
+        },
+        {
+          "name": "func_15048AD0",
+          "path": "conker/src/game_75E60.c",
+          "lines": [
+            45,
+            55
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "camera",
+      "name": "Chase camera aim and mode dispatch",
+      "purpose": "Rebuilds yaw and pitch from the eye-to-actor offset, turns them into a forward basis, and picks the distance preset for the current view mode",
+      "paths": [
+        "conker/src/game_14FF90.c"
+      ],
+      "functions": [
+        {
+          "name": "func_15124AB4",
+          "path": "conker/src/game_14FF90.c",
+          "lines": [
+            351,
+            356
+          ]
+        },
+        {
+          "name": "func_15124B18",
+          "path": "conker/src/game_14FF90.c",
+          "lines": [
+            358,
+            386
+          ]
+        },
+        {
+          "name": "func_1512523C",
+          "path": "conker/src/game_14FF90.c",
+          "lines": [
+            390,
+            412
+          ]
+        },
+        {
+          "name": "func_15125330",
+          "path": "conker/src/game_14FF90.c",
+          "lines": [
+            414,
+            423
+          ]
+        }
+      ],
+      "dependsOn": [
+        "world-math"
+      ]
+    },
+    {
+      "id": "camera-presets",
+      "name": "Per-mode camera preset setters",
+      "purpose": "Small setters that install a view mode distance pair, an outer distance and a tilt before the camera update reads them",
+      "paths": [
+        "conker/src/game/done/game_129EB0.c",
+        "conker/src/game/done/game_33130.c",
+        "conker/src/game/done/game_32F60.c",
+        "conker/src/game/done/game_33260.c",
+        "conker/src/game/done/game_334C0.c"
+      ],
+      "functions": [
+        {
+          "name": "func_150FCA00",
+          "path": "conker/src/game/done/game_129EB0.c",
+          "lines": [
+            7,
+            11
+          ]
+        },
+        {
+          "name": "func_15005C80",
+          "path": "conker/src/game/done/game_33130.c",
+          "lines": [
+            7,
+            20
+          ]
+        },
+        {
+          "name": "func_15005AB0",
+          "path": "conker/src/game/done/game_32F60.c",
+          "lines": [
+            7,
+            14
+          ]
+        },
+        {
+          "name": "func_15005DB0",
+          "path": "conker/src/game/done/game_33260.c",
+          "lines": [
+            7,
+            15
+          ]
+        },
+        {
+          "name": "func_15006010",
+          "path": "conker/src/game/done/game_334C0.c",
+          "lines": [
+            7,
+            37
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera"
+      ]
+    },
+    {
+      "id": "actor-actions",
+      "name": "Scripted actions and contact resolution",
+      "purpose": "Action handlers driven by the script argument buffer that launch, bounce and stun other actors, and the single resolve step that turns a contact into a hit",
+      "paths": [
+        "conker/src/game_981E0.c"
+      ],
+      "functions": [
+        {
+          "name": "func_1506EA98",
+          "path": "conker/src/game_981E0.c",
+          "lines": [
+            695,
+            725
+          ]
+        },
+        {
+          "name": "func_15074E80",
+          "path": "conker/src/game_981E0.c",
+          "lines": [
+            1761,
+            1770
+          ]
+        },
+        {
+          "name": "func_15075050",
+          "path": "conker/src/game_981E0.c",
+          "lines": [
+            1801,
+            1808
+          ]
+        },
+        {
+          "name": "func_150750C4",
+          "path": "conker/src/game_981E0.c",
+          "lines": [
+            1814,
+            1826
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-core",
+        "actor-physics"
+      ]
+    },
+    {
+      "id": "actor-schema",
+      "name": "Actor and camera data layout",
+      "purpose": "The field layout the cards name: position, vertical and horizontal speed, gravity, lateral impulse, facing angles, health, immunity, run and jump locks, water flag and the per-actor camera pointer",
+      "paths": [
+        "conker/include/structs.h",
+        "conker/include/variables.h"
+      ],
+      "functions": [],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-state-restore",
+      "node": "actor-core",
+      "name": "Ground state restore",
+      "summary": "Leaving a special state rebuilds the movement numbers instead of inheriting them: gravity 4.0, horizontal speed 15.0, water flag cleared and running locked for six update units.",
+      "behavior": "Whenever an actor becomes an ordinary walker again, one routine rewrites the values the movement integrator reads rather than trusting what the previous state left behind. The water flag is cleared, two state bytes are zeroed, the lateral impulse is set to zero, and the run lock is set to six update units, but only while the actor still has health: a dead actor is not given a run delay. Gravity is restored to 4.0 world units of acceleration per update and horizontal speed to 15.0 world units per update. Because the run lock is a short countdown instead of zero, the actor cannot sprint out of a landing, cutscene exit or respawn for a few updates, which is what stops the first frame after a transition from looking like a dash. Copy this as one reset routine that every transition calls, so a new state can never start with a stale speed.",
+      "constants": [
+        {
+          "name": "restoredGravity",
+          "value": 4,
+          "unit": "world units of downward acceleration per update; update rate unverified",
+          "source": "conker/src/game_77AD0.c:524"
+        },
+        {
+          "name": "restoredSpeed",
+          "value": 15,
+          "unit": "world units of horizontal travel per update; update rate unverified",
+          "source": "conker/src/game_77AD0.c:526"
+        },
+        {
+          "name": "restoredRunLock",
+          "value": 6,
+          "unit": "updates of the run lock; one unit consumed per update",
+          "source": "conker/src/game_77AD0.c:521"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 515
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 521
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 523
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 524
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 526
+        }
+      ],
+      "capabilities": [
+        "state reset",
+        "predictable respawn frame",
+        "gravity and ground speed defaults"
+      ],
+      "tags": [
+        "movement",
+        "state",
+        "platformer"
+      ]
+    },
+    {
+      "id": "turn-steer",
+      "node": "actor-core",
+      "name": "Steer by the side of the target angle",
+      "summary": "A steering call converts facing to degrees with 360 divided by 65536 and applies a lateral impulse left or right depending on which half of the circle the target angle falls on.",
+      "behavior": "Steering is a sideways impulse, not a direct heading write. The call takes a target angle, a magnitude and a gain. It first writes a secondary facing value in degrees by adding a quarter turn to the actor facing and multiplying by 360 divided by 65536, so the stored angle is ready for anything that wants degrees. It then tests the signed difference between the target and the current facing after the same quarter-turn offset: if the half-turn bit is set the impulse decreases by magnitude times gain, otherwise it increases. The visible facing is chased separately, so the impulse and the turn rate can be tuned apart: a larger gain makes a character slide into corners, a smaller one makes the same input read as a pivot in place. The sign test costs one mask and covers the whole circle without any wrap arithmetic.",
+      "constants": [
+        {
+          "name": "quarterTurn",
+          "value": 16384,
+          "unit": "angle units of a 65536-step turn; applied per update",
+          "source": "conker/src/game_77AD0.c:541"
+        },
+        {
+          "name": "degreesPerAngleUnit",
+          "value": 0.005493164,
+          "unit": "degrees per angle unit (360 divided by 65536); applied per update",
+          "source": "conker/src/game_77AD0.c:541"
+        },
+        {
+          "name": "halfTurnMask",
+          "value": "0x8000",
+          "unit": "16-bit angle mask; tested once per steering update",
+          "source": "conker/src/game_77AD0.c:543"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 538
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 541
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 543
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 544
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 546
+        }
+      ],
+      "capabilities": [
+        "signed lateral steering",
+        "angle to degrees conversion",
+        "half-turn side test"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "angles"
+      ]
+    },
+    {
+      "id": "facing-chase",
+      "node": "actor-core",
+      "name": "Facing chase with a one-unit floor",
+      "summary": "A current angle closes on a wanted angle by a twelfth of the gap plus one angle unit each update, clamped so it never passes the target.",
+      "behavior": "Turning uses a proportional chase with a fixed divisor. Each update the current angle moves one twelfth of the remaining gap toward the wanted angle, plus one extra angle unit, and the result is clamped on both sides so it cannot overshoot. The fixed divisor makes the approach exponential rather than linear: the first update closes about eight percent of a large gap, roughly two thirds of the gap is gone after twelve updates, and each later step closes a twelfth of what is left. The extra unit guarantees that small gaps finish instead of stalling on integer truncation, which matters because the angles are integers. Because the step is not scaled by the update delta, this is per-update smoothing: a slow frame makes the turn visibly lag, and the divisor is the one number to change if a character should feel snappier without changing its top speed.",
+      "constants": [
+        {
+          "name": "gapDivisor",
+          "value": "0xC",
+          "unit": "angle units of the chase divisor, one step per update (12 decimal)",
+          "source": "conker/src/game_77AD0.c:556"
+        },
+        {
+          "name": "minimumStep",
+          "value": 1,
+          "unit": "angle units added per update so small gaps finish",
+          "source": "conker/src/game_77AD0.c:556"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 550
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 556
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 561
+        }
+      ],
+      "capabilities": [
+        "exponential angle smoothing",
+        "no overshoot",
+        "integer-safe small steps"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "feel"
+      ]
+    },
+    {
+      "id": "effect-timer-convention",
+      "node": "actor-core",
+      "name": "Effect timer convention",
+      "summary": "Run, jump and immunity locks share one countdown: zero means finished, 255 means held, every other value drops by the update delta, and the run lock treats 250 and above as held too.",
+      "behavior": "Every timed effect on an actor uses one convention. The run lock, the jump lock, the immunity counter and the chase and interaction timers that share the same block are all decremented by the update delta rather than by a constant one, so a long update consumes several units at once and the effect still ends at the same wall-clock moment. Two values are sentinels: zero means the effect is over and the field is left alone, and 255 means held on forever because the countdown branch skips it. The run lock adds a third rule, treating any value from 250 upward as held, so the top of the byte is a second permanent marker and the usable range stops at 249. Every branch clamps to zero instead of wrapping, so a caller only has to test for non-zero to know whether a lock is live. This is the single most reusable pattern in the file: one decrement helper, two sentinels, no per-effect bookkeeping.",
+      "constants": [
+        {
+          "name": "heldValue",
+          "value": "0xFF",
+          "unit": "timer units; 255 is held and never decremented, read per update",
+          "source": "conker/src/game_77AD0.c:388"
+        },
+        {
+          "name": "heldRunThreshold",
+          "value": "0xFA",
+          "unit": "timer units; 250 and above are held, tested per update",
+          "source": "conker/src/game_77AD0.c:371"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 369
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 371
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 388
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 395
+        }
+      ],
+      "capabilities": [
+        "delta-driven lockouts",
+        "held-timer sentinels",
+        "one countdown helper for every effect"
+      ],
+      "tags": [
+        "timing",
+        "state",
+        "combat"
+      ]
+    },
+    {
+      "id": "fall-past-floor",
+      "node": "actor-core",
+      "name": "Fall past the stored floor",
+      "summary": "A scripted descent subtracts the update vertical step each update and ends when the actor is 100 world units below the stored floor height.",
+      "behavior": "One vertical state does not integrate velocity at all: it subtracts the update vertical step from height every update, which gives a constant descent rate independent of gravity, and it watches a stored floor height for the actor. When the actor drops more than 100 world units below that stored height the state calls the shared state-exit routine with a zero argument, which hands the actor back to its normal update. The 100-unit margin keeps an actor from ending its state on a floor that is stored slightly high, and it doubles as a pit plane: lower the value and pits must be shallower to register, raise it and an actor survives a longer drop. Because the step is the update delta, the descent covers the same distance per second on a slow frame as on a fast one.",
+      "constants": [
+        {
+          "name": "pitMargin",
+          "value": 100,
+          "unit": "world units below the stored floor height; checked per update",
+          "source": "conker/src/game_77AD0.c:1096"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1091
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1094
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1096
+        }
+      ],
+      "capabilities": [
+        "constant-rate descent",
+        "pit kill plane",
+        "floor height margin"
+      ],
+      "tags": [
+        "physics",
+        "hazards",
+        "platformer"
+      ]
+    },
+    {
+      "id": "death-dissolve",
+      "node": "actor-core",
+      "name": "Death dissolve countdown",
+      "summary": "A dying actor counts up by the update delta while its scales and horizontal speed decay by 0.95 each update, then locks into a dead state with zeroed motion at 141 units.",
+      "behavior": "Dying is a countdown, not a switch. The counter gains the update delta every update while it stays below 141, and on each of those updates the horizontal scale, the vertical scale and the horizontal speed are multiplied by 0.95, so the character shrinks and slows geometrically and ends at roughly seven hundredths of a percent of its starting size. When the counter reaches 141 the actor is locked out: immunity, stun and run lock all go to 255, a set of state flags is raised, every velocity is zeroed, health becomes zero and the interaction state moves to 5. The threshold test sits above the rest of the routine, so the lockout runs once and the decay stops. Copying this shape gives a death that reads as a fade rather than a disappearance, and the 0.95 step is the one number to tune for how long the fade feels.",
+      "constants": [
+        {
+          "name": "dissolveUnits",
+          "value": "0x8D",
+          "unit": "timer units added by the update delta (141 decimal), one count per update",
+          "source": "conker/src/game_77AD0.c:1123"
+        },
+        {
+          "name": "decayFactor",
+          "value": 0.949999988079071,
+          "unit": "multiplier on both scales and on horizontal speed; applied per update",
+          "source": "conker/include/variables.h:583"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1119
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1123
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1133
+        },
+        {
+          "path": "conker/src/game_77AD0.c",
+          "line": 1144
+        },
+        {
+          "path": "conker/include/variables.h",
+          "line": 583
+        }
+      ],
+      "capabilities": [
+        "death fade",
+        "one-shot lockout",
+        "geometric shrink"
+      ],
+      "tags": [
+        "combat",
+        "death",
+        "feel"
+      ]
+    },
+    {
+      "id": "heading-from-flat-vector",
+      "node": "world-math",
+      "name": "Heading from a flat direction",
+      "summary": "A flat vector becomes a compass bearing by normalizing x to the horizontal length, taking an inverse cosine, folding the sign of z through 270 or 90 degrees, shifting by 90 and wrapping into one full turn.",
+      "behavior": "Facing is derived from movement, not from the stick. The helper normalizes the x component by the horizontal length, feeds that into an inverse cosine, and then picks an offset from the sign of the z component: 270 degrees minus the angle when z is positive, 90 plus the angle otherwise. It then subtracts 90 and adds a full turn to negative results, producing a bearing between zero and 360 degrees. A twin version answers in the eight-bit angle units the actor facing byte uses, mirroring around 128 below a quarter turn and around 384 above it, which keeps the wrap intact at the byte boundary. Both work on the horizontal pair only, so jumping or falling never spins a character, and both return zero for a zero-length vector instead of dividing by zero. The inverse cosine is an approximation, so the result is smooth enough for steering and cheap enough to call for several actors per update.",
+      "constants": [
+        {
+          "name": "positiveZOffset",
+          "value": 270,
+          "unit": "degrees; evaluated per heading query, once per actor per update",
+          "source": "conker/src/game_75FC0.c:135"
+        },
+        {
+          "name": "negativeZOffset",
+          "value": 90,
+          "unit": "degrees; evaluated per heading query",
+          "source": "conker/src/game_75FC0.c:137"
+        },
+        {
+          "name": "finalShift",
+          "value": 90,
+          "unit": "degrees subtracted after the sign fold; evaluated per heading query",
+          "source": "conker/src/game_75FC0.c:140"
+        },
+        {
+          "name": "fullTurn",
+          "value": 360,
+          "unit": "degrees added to negative bearings; evaluated per heading query",
+          "source": "conker/src/game_75FC0.c:143"
+        },
+        {
+          "name": "byteQuarter",
+          "value": 64,
+          "unit": "eight-bit angle units, the mirror boundary; tested per heading query",
+          "source": "conker/src/game_75FC0.c:162"
+        },
+        {
+          "name": "byteUpperMirror",
+          "value": 384,
+          "unit": "eight-bit angle units used above a quarter turn; evaluated per heading query",
+          "source": "conker/src/game_75FC0.c:165"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 121
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 135
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 140
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 143
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 148
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 162
+        },
+        {
+          "path": "conker/src/game_75FC0.c",
+          "line": 165
+        }
+      ],
+      "capabilities": [
+        "heading from velocity",
+        "degree and byte angle output",
+        "safe zero-length input"
+      ],
+      "tags": [
+        "movement",
+        "angles",
+        "math"
+      ]
+    },
+    {
+      "id": "shortest-turn",
+      "node": "world-math",
+      "name": "Shortest signed turn between angles",
+      "summary": "Two helpers return the signed shortest turn from one angle to another by moving one angle a full turn whenever the raw difference leaves the half-turn range.",
+      "behavior": "Comparing headings needs the short way round the circle. The floating helper subtracts the two angles and then, if the difference is more than 180 degrees, moves the first angle back by a full turn; if the difference is minus 180 degrees or less it moves the second angle back by a full turn instead. The returned value therefore always lies inside a half turn and carries the sign of the turn direction. An integer twin uses 181 and minus 179 as its thresholds, keeping the accepted range symmetric for the eight-bit facing units used elsewhere. Without this step a raw subtraction reports a one-degree correction on the far side of the seam as a 359-degree turn, which is exactly the long swing this pair prevents. The helper makes that impossible in one place instead of at every call site.",
+      "constants": [
+        {
+          "name": "halfTurn",
+          "value": 180,
+          "unit": "degrees, the upper wrap threshold; evaluated per angle comparison",
+          "source": "conker/src/game_75E60.c:35"
+        },
+        {
+          "name": "fullTurn",
+          "value": 360,
+          "unit": "degrees removed from the wrapped angle; evaluated per angle comparison",
+          "source": "conker/src/game_75E60.c:36"
+        },
+        {
+          "name": "negativeHalfTurn",
+          "value": -180,
+          "unit": "degrees, the lower wrap threshold; evaluated per angle comparison",
+          "source": "conker/src/game_75E60.c:38"
+        },
+        {
+          "name": "integerUpperBound",
+          "value": 181,
+          "unit": "eight-bit angle units, upper threshold; evaluated per angle comparison",
+          "source": "conker/src/game_75E60.c:47"
+        },
+        {
+          "name": "integerLowerBound",
+          "value": -179,
+          "unit": "eight-bit angle units, lower threshold; evaluated per angle comparison",
+          "source": "conker/src/game_75E60.c:50"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_75E60.c",
+          "line": 33
+        },
+        {
+          "path": "conker/src/game_75E60.c",
+          "line": 35
+        },
+        {
+          "path": "conker/src/game_75E60.c",
+          "line": 36
+        },
+        {
+          "path": "conker/src/game_75E60.c",
+          "line": 45
+        },
+        {
+          "path": "conker/src/game_75E60.c",
+          "line": 47
+        }
+      ],
+      "capabilities": [
+        "shortest angle difference",
+        "signed turn direction",
+        "integer and float variants"
+      ],
+      "tags": [
+        "angles",
+        "math",
+        "steering"
+      ]
+    },
+    {
+      "id": "camera-aim",
+      "node": "camera",
+      "name": "Camera aim from the eye-to-actor offset",
+      "summary": "Yaw is the bearing of the flattened eye-to-actor offset, pitch is the height difference over the horizontal distance wrapped into half a turn, and the look direction is rebuilt from both with sine and cosine.",
+      "behavior": "The chase camera derives its orientation every update from two points: an eye position and the tracked actor. Yaw is the compass bearing of the offset projected onto the horizontal plane, produced with the same vector-to-bearing helper the characters use and then scaled into radians. Pitch is the angle of the height difference over the horizontal distance, wrapped so values past 180 degrees lose a full turn, negated, offset by stored bias values and finally scaled into radians. The forward direction is rebuilt from those two angles as sine yaw times cosine pitch on one horizontal axis, minus sine pitch on the vertical axis and cosine yaw times cosine pitch on the other horizontal axis. That is the standard yaw-then-pitch basis, so the camera looks exactly along the line of sight it just measured rather than at a smoothed approximation of it. Because the offset is the source, closing the vertical gap levels the camera out and shortening the horizontal distance steepens the pitch, and the aim always points at the actor it measured.",
+      "constants": [
+        {
+          "name": "pitchWrap",
+          "value": 180,
+          "unit": "degrees, the point past which a full turn is removed; applied per camera update",
+          "source": "conker/src/game_14FF90.c:405"
+        },
+        {
+          "name": "fullTurn",
+          "value": 360,
+          "unit": "degrees removed from an over-wrapped pitch; applied per camera update",
+          "source": "conker/src/game_14FF90.c:406"
+        },
+        {
+          "name": "flatOffsetY",
+          "value": 0,
+          "unit": "world units, the flattened offset height; rebuilt per camera update",
+          "source": "conker/src/game_14FF90.c:418"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 351
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 352
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 354
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 390
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 405
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 411
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 414
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 421
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 422
+        }
+      ],
+      "capabilities": [
+        "yaw from target offset",
+        "pitch from height difference",
+        "yaw-then-pitch basis"
+      ],
+      "tags": [
+        "camera",
+        "aiming",
+        "platformer"
+      ]
+    },
+    {
+      "id": "camera-mode-presets",
+      "node": "camera-presets",
+      "name": "Camera mode presets",
+      "summary": "Each view mode installs a near distance pair and a larger outer distance; the tightest special case is 40 and 40 with an outer 150, the widest 500 and 500 with an outer 800.",
+      "behavior": "Camera views are chosen as presets, not solved from scratch. A dispatcher reads a view-mode index into a table, copies the table outer value into one field and its near value into both members of a pair, and overrides them for special states: a mode bit with a held button gives 40 and 40 with an outer 150, a mode bit without the button rebuilds the near value from an eye-height difference, and a flag raised by the tracked actor gives 40 and 40 with an outer 194. Scene setup calls dedicated setters that write the extremes: 500 and 500 with 800 for a wide overview, 117 and 117 with 370 for a close follow, 230 and 230 with 290 for a mid shot. Two setters also write tilt: one puts minus 38 degrees into a single field for its close case, the other writes 30 degrees into two fields alongside 155 and 155 with an outer 178. Copy the ratios rather than the absolute numbers, because the unit is the world scale of the game, and keep the pair equal unless a mode needs asymmetric damping.",
+      "constants": [
+        {
+          "name": "tightNear",
+          "value": 40,
+          "unit": "world units of view distance; written once per mode change",
+          "source": "conker/src/game_14FF90.c:367"
+        },
+        {
+          "name": "tightOuter",
+          "value": 150,
+          "unit": "world units of outer view distance; written once per mode change",
+          "source": "conker/src/game_14FF90.c:369"
+        },
+        {
+          "name": "actorFlagOuter",
+          "value": 194,
+          "unit": "world units of outer view distance; written once per mode change",
+          "source": "conker/src/game_14FF90.c:379"
+        },
+        {
+          "name": "wideNear",
+          "value": 500,
+          "unit": "world units of view distance; written once per mode change",
+          "source": "conker/src/game/done/game_129EB0.c:8"
+        },
+        {
+          "name": "wideOuter",
+          "value": 800,
+          "unit": "world units of outer view distance; written once per mode change",
+          "source": "conker/src/game/done/game_129EB0.c:10"
+        },
+        {
+          "name": "closeNear",
+          "value": 117,
+          "unit": "world units of view distance; written once per mode change",
+          "source": "conker/src/game/done/game_33130.c:12"
+        },
+        {
+          "name": "closeOuter",
+          "value": 370,
+          "unit": "world units of outer view distance; written once per mode change",
+          "source": "conker/src/game/done/game_33130.c:19"
+        },
+        {
+          "name": "chaseTilt",
+          "value": -38,
+          "unit": "degrees of camera tilt; written once per mode change",
+          "source": "conker/src/game/done/game_334C0.c:20"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 358
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 367
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 371
+        },
+        {
+          "path": "conker/src/game_14FF90.c",
+          "line": 381
+        },
+        {
+          "path": "conker/src/game/done/game_129EB0.c",
+          "line": 8
+        },
+        {
+          "path": "conker/src/game/done/game_33130.c",
+          "line": 12
+        },
+        {
+          "path": "conker/src/game/done/game_32F60.c",
+          "line": 10
+        },
+        {
+          "path": "conker/src/game/done/game_32F60.c",
+          "line": 13
+        },
+        {
+          "path": "conker/src/game/done/game_334C0.c",
+          "line": 17
+        },
+        {
+          "path": "conker/src/game/done/game_334C0.c",
+          "line": 29
+        },
+        {
+          "path": "conker/src/game/done/game_334C0.c",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "per-mode view distance",
+        "special-case overrides",
+        "per-mode tilt"
+      ],
+      "tags": [
+        "camera",
+        "presets",
+        "platformer"
+      ]
+    },
+    {
+      "id": "stomp-bounce",
+      "node": "actor-actions",
+      "name": "Bounce off a stomped target",
+      "summary": "A bounce sets vertical speed to 12 and gravity to 5, and adds a lateral push of 5 mirrored against the current horizontal speed direction.",
+      "behavior": "The bounce after landing on a target is three numbers and a sign. Vertical speed becomes 12 world units per update, gravity becomes 5 units of acceleration per update, and the lateral impulse is written as 5 with the opposite sign to the current horizontal speed, so an actor moving one way is pushed the other way and the hop reads as recoil rather than continuation. Gravity above the resting ground value shortens the hop, which is what keeps a bounce chain from drifting upward, and the small lateral number next to the vertical launch is what stops a bounce from throwing a player off a narrow platform. A single function owns all four writes, so every stompable surface produces the same feel and only the vertical number needs tuning to change hop height.",
+      "constants": [
+        {
+          "name": "bounceSpeed",
+          "value": 12,
+          "unit": "world units of upward travel per update; update rate unverified",
+          "source": "conker/src/game_981E0.c:1807"
+        },
+        {
+          "name": "bounceGravity",
+          "value": 5,
+          "unit": "world units of downward acceleration per update",
+          "source": "conker/src/game_981E0.c:1806"
+        },
+        {
+          "name": "recoilPush",
+          "value": 5,
+          "unit": "world units per update of lateral push; sign chosen once per bounce",
+          "source": "conker/src/game_981E0.c:1802"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1801
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1802
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1804
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1806
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1807
+        }
+      ],
+      "capabilities": [
+        "stomp bounce",
+        "direction-aware recoil",
+        "separate bounce gravity"
+      ],
+      "tags": [
+        "jump",
+        "combat",
+        "feel"
+      ]
+    },
+    {
+      "id": "scripted-launch",
+      "node": "actor-actions",
+      "name": "Scripted launch and stun",
+      "summary": "A launch action stamps horizontal 18, vertical 40 and gravity 6 on its target, copies the attacker facing and stuns it at 254; one target id gets its motion zeroed instead.",
+      "behavior": "One action in the scripted set is a launch. It resolves the target from the current actor target index, checks a state byte on that target, and then writes a velocity triple: 18 world units per update horizontally, 40 upward and gravity 6, well above an ordinary bounce. It copies the attacker facing onto the target, sets the stun byte to 254, clears two counters and raises a bit on the target flags. A target whose id matches one particular value is exempt: its three velocities are zeroed and a different flag is raised instead, so the same action throws most targets and only shoves that one. The gravity is part of the action rather than a property of the target, which lets the same actor be thrown softly by one script point and hard by another.",
+      "constants": [
+        {
+          "name": "launchSpeed",
+          "value": 18,
+          "unit": "world units of horizontal travel per update; update rate unverified",
+          "source": "conker/src/game_981E0.c:704"
+        },
+        {
+          "name": "launchUp",
+          "value": 40,
+          "unit": "world units of upward travel per update",
+          "source": "conker/src/game_981E0.c:705"
+        },
+        {
+          "name": "launchGravity",
+          "value": 6,
+          "unit": "world units of downward acceleration per update",
+          "source": "conker/src/game_981E0.c:706"
+        },
+        {
+          "name": "stunValue",
+          "value": "0xFE",
+          "unit": "stun units; 254 is written once per launch and held per update",
+          "source": "conker/src/game_981E0.c:715"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 695
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 704
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 705
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 706
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 715
+        }
+      ],
+      "capabilities": [
+        "script-driven knockback",
+        "per-action gravity",
+        "stun and flag lockout"
+      ],
+      "tags": [
+        "combat",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "hit-immunity",
+      "node": "actor-actions",
+      "name": "Immunity split on contact",
+      "summary": "Contact gives the attacker 255 immunity, a held value that never ticks, and the victim 200 units that count down by the update delta.",
+      "behavior": "A successful contact writes two different immunity values. The attacker gets 255, which the timer convention treats as held, so it cannot be touched again until something clears the field explicitly. The victim gets 200, which counts down by the update delta and returns it to vulnerability after roughly two hundred update units, about three seconds if the update runs at sixty hertz. Splitting the two values lets one contact resolution serve both sides: the acting side is protected for the whole swing, while the receiving side is protected only for a recovery window that can be tuned without touching the attacker. Because 255 is the held sentinel rather than a large finite number, a script can grant permanent immunity by writing the same value the timer already knows how to skip.",
+      "constants": [
+        {
+          "name": "attackerHeldImmunity",
+          "value": "0xFF",
+          "unit": "immunity units; 255 is held and never decremented per update",
+          "source": "conker/src/game_981E0.c:1765"
+        },
+        {
+          "name": "victimWindow",
+          "value": "0xC8",
+          "unit": "immunity units (200 decimal); one consumed per update",
+          "source": "conker/src/game_981E0.c:1766"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1761
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1765
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1766
+        }
+      ],
+      "capabilities": [
+        "attacker protection",
+        "victim recovery window",
+        "held immunity via sentinel"
+      ],
+      "tags": [
+        "combat",
+        "timing",
+        "feel"
+      ]
+    },
+    {
+      "id": "hit-resolve",
+      "node": "actor-actions",
+      "name": "Melee hit resolution",
+      "summary": "One function owns every melee result: it bumps a per-id combo counter, runs the shared hit handler, then zeroes the target health, moves its state to index 8 and returns 39, except for one exempt id.",
+      "behavior": "Melee damage funnels through a single resolve function so every attack reports the same way. It first looks at the target id and the attacker counter: for one specific id, when the attacker counter is still below 55, the counter gains three. The shared hit handler then runs, and unless the target id matches one particular exempt value, the resolver zeroes the target health, calls the state changer with index 8 and writes 39 into the caller result byte. Copy the shape rather than the ids: one resolve step that owns the damage write, the state transition and the return code keeps separate attacks from drifting apart, and the counter bump is how a single attack keeps its own combo tally without another field on the actor.",
+      "constants": [
+        {
+          "name": "comboCap",
+          "value": "0x37",
+          "unit": "counter units (55 decimal); compared once per hit",
+          "source": "conker/src/game_981E0.c:1816"
+        },
+        {
+          "name": "comboStep",
+          "value": 3,
+          "unit": "counter units added per qualifying hit",
+          "source": "conker/src/game_981E0.c:1817"
+        },
+        {
+          "name": "stateIndex",
+          "value": 8,
+          "unit": "state index handed to the state changer; written once per killing hit",
+          "source": "conker/src/game_981E0.c:1823"
+        },
+        {
+          "name": "resultCode",
+          "value": 39,
+          "unit": "code written to the caller result byte; written once per hit",
+          "source": "conker/src/game_981E0.c:1824"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1814
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1816
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1817
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1820
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1822
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1823
+        },
+        {
+          "path": "conker/src/game_981E0.c",
+          "line": 1824
+        }
+      ],
+      "capabilities": [
+        "single hit resolve step",
+        "combo counter",
+        "uniform hit result code"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "architecture"
+      ]
+    },
+    {
+      "id": "surface-height-follow",
+      "node": "actor-physics",
+      "name": "Follow a changing surface height",
+      "summary": "An actor springs vertically with a surface height that moves at most 30 world units per update, moving by twice the gap to a point 230 units below it, capped at 300.",
+      "behavior": "Riding a changing surface is a spring, not a snap. The helper keeps the surface height from the previous update and subtracts it from the current one to get this update movement, then ignores anything larger than 30 world units so a teleported or newly streamed surface cannot fling the actor. Otherwise it moves the actor vertically by twice the gap between the actor and a point 230 world units below the surface, times that movement and a gain, with the gap capped at 300. The 230 is written as two constants, 60 and 170, and sets how firmly the actor is tied to the surface: a larger offset means a bigger response to the same movement. When the surface rises the actor rises with it, and when it falls the actor follows down, which is the cheap version of buoyancy and needs no volume queries per update.",
+      "constants": [
+        {
+          "name": "surfaceGate",
+          "value": 30,
+          "unit": "world units of surface travel per update; larger moves are ignored",
+          "source": "conker/src/game_83300.c:60"
+        },
+        {
+          "name": "offsetLow",
+          "value": 60,
+          "unit": "world units, first part of the 230-unit gap; applied per update",
+          "source": "conker/src/game_83300.c:58"
+        },
+        {
+          "name": "offsetHigh",
+          "value": 170,
+          "unit": "world units, second part of the 230-unit gap; applied per update",
+          "source": "conker/src/game_83300.c:58"
+        },
+        {
+          "name": "gapCap",
+          "value": 300,
+          "unit": "world units, the largest gap used; applied per update",
+          "source": "conker/src/game_83300.c:61"
+        },
+        {
+          "name": "gapResponse",
+          "value": 2,
+          "unit": "multiplier on the gap before the gain; applied per update",
+          "source": "conker/src/game_83300.c:58"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 50
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 56
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 58
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 60
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 61
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 64
+        }
+      ],
+      "capabilities": [
+        "buoyant vertical follow",
+        "large-jump rejection",
+        "gap cap"
+      ],
+      "tags": [
+        "physics",
+        "water",
+        "feel"
+      ]
+    },
+    {
+      "id": "tether-radius",
+      "node": "actor-physics",
+      "name": "Tether radius clamp",
+      "summary": "With a tether index set, an actor is held inside a sphere of eight world units per index around a table point, and rewritten onto that radius when it strays outside.",
+      "behavior": "One containment state ties an actor to a point stored in a scene table. Each update it measures the full three-dimensional distance to that point, adding a small epsilon inside the square root so a coincident actor cannot divide by zero, and compares the distance with the tether index times 8 world units. If the actor is outside that radius the position is rewritten to exactly the radius along the same direction, which keeps the actor on the sphere rather than dragging it back gradually, so a large index allows a wide circle and an index of zero releases the constraint entirely. Because the clamp preserves direction, an actor circling the anchor keeps its orbit and only loses outward distance, and because the measurement is three-dimensional a tall anchor point produces a sphere rather than a cylinder.",
+      "constants": [
+        {
+          "name": "radiusStep",
+          "value": 8,
+          "unit": "world units of radius per tether index; clamp checked per update",
+          "source": "conker/src/game_83300.c:34"
+        }
+      ],
+      "sources": [
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 17
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 34
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 38
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 42
+        },
+        {
+          "path": "conker/src/game_83300.c",
+          "line": 44
+        }
+      ],
+      "capabilities": [
+        "spherical containment",
+        "index-scaled radius",
+        "direction-preserving clamp"
+      ],
+      "tags": [
+        "physics",
+        "containment",
+        "platformer"
+      ]
+    }
+  ]
+}

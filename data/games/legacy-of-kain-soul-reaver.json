@@ -1,0 +1,2394 @@
+{
+  "version": 1,
+  "id": "legacy-of-kain-soul-reaver",
+  "title": "Legacy of Kain: Soul Reaver",
+  "repo": "https://github.com/fmil95/soul-re",
+  "sha": "74607bcf46d04d49736918b89230f8d5c6e7a018",
+  "nodes": [
+    {
+      "id": "player-state",
+      "name": "Player state machine and defaults",
+      "purpose": "The three-section animation state machine, the per-state message queues, the initial velocity and slope limits, and the upper-body aim offset layered on top of whatever the animation is doing",
+      "paths": [
+        "src/Game/RAZIEL/RAZIEL.c",
+        "src/Game/RAZIEL/RAZLIB.c",
+        "src/Game/STATE.c",
+        "include/Game/RAZIEL/RAZIEL.h"
+      ],
+      "functions": [
+        {
+          "name": "InitStates",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            143,
+            246
+          ]
+        },
+        {
+          "name": "StateHandlerIdle",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            359,
+            653
+          ]
+        },
+        {
+          "name": "StateHandlerLookAround",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            655,
+            750
+          ]
+        },
+        {
+          "name": "RAZIEL_TurnHead",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            6724,
+            6795
+          ]
+        },
+        {
+          "name": "razRotateUpperBody",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            151,
+            201
+          ]
+        },
+        {
+          "name": "EnMessageQueueData",
+          "path": "src/Game/STATE.c",
+          "lines": [
+            60,
+            84
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "locomotion",
+      "parent": "player-state",
+      "name": "Analog gait ladder",
+      "purpose": "The three walking and running cycles, the stick bands that select between them, and the playback-rate interpolation that makes speed continuous across the bands",
+      "paths": [
+        "src/Game/RAZIEL/RAZLIB.c",
+        "src/Game/RAZIEL/STEERING.c"
+      ],
+      "functions": [
+        {
+          "name": "razSelectMotionAnim",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            777,
+            1109
+          ]
+        },
+        {
+          "name": "razAdjustSpeed",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            438,
+            461
+          ]
+        },
+        {
+          "name": "razZeroAxis",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            421,
+            436
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state"
+      ]
+    },
+    {
+      "id": "steering",
+      "parent": "player-state",
+      "name": "Camera-relative steering",
+      "purpose": "Collapses the pad into a compass direction, offsets it by the camera yaw to produce a bearing, and drives the body toward that bearing with a rate-limited angle move",
+      "paths": [
+        "src/Game/RAZIEL/STEERING.c"
+      ],
+      "functions": [
+        {
+          "name": "ProcessMovement",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            156,
+            409
+          ]
+        },
+        {
+          "name": "GetControllerInput",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            27,
+            112
+          ]
+        },
+        {
+          "name": "DecodeDirection",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            114,
+            154
+          ]
+        },
+        {
+          "name": "SteerTurn",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            411,
+            437
+          ]
+        },
+        {
+          "name": "SteerMove",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            439,
+            460
+          ]
+        },
+        {
+          "name": "SteerSwitchMode",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            639,
+            758
+          ]
+        }
+      ],
+      "dependsOn": [
+        "locomotion",
+        "camera-follow"
+      ]
+    },
+    {
+      "id": "airborne",
+      "parent": "player-state",
+      "name": "Jump, fall and glide",
+      "purpose": "The three airborne states and the velocity writes that start each of them, plus the landing state that restores gravity and picks the impact animation",
+      "paths": [
+        "src/Game/RAZIEL/RAZIEL.c",
+        "src/Game/RAZIEL/CONTROL.c"
+      ],
+      "functions": [
+        {
+          "name": "StateHandlerJump",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            2029,
+            2146
+          ]
+        },
+        {
+          "name": "StateHandlerFall",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            2148,
+            2270
+          ]
+        },
+        {
+          "name": "StateHandlerGlide",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            2560,
+            2789
+          ]
+        },
+        {
+          "name": "StateHandlerDeCompression",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            2453,
+            2555
+          ]
+        },
+        {
+          "name": "SetPhysics",
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "lines": [
+            12,
+            19
+          ]
+        },
+        {
+          "name": "SetDropPhysics",
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "lines": [
+            74,
+            81
+          ]
+        },
+        {
+          "name": "SetExternalTransitionForce",
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "lines": [
+            110,
+            119
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-core"
+      ]
+    },
+    {
+      "id": "physics-core",
+      "name": "Body integrator",
+      "purpose": "The single routine that advances position and velocity for every body, the per-axis speed clamps, and the external-force list that carries gravity",
+      "paths": [
+        "src/Game/PHYSICS.c",
+        "src/Game/RAZIEL/CONTROL.c",
+        "src/Game/STATE.c"
+      ],
+      "functions": [
+        {
+          "name": "PhysicsMove",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1770,
+            1818
+          ]
+        },
+        {
+          "name": "PhysicsMoveLocalZClamp",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1747,
+            1768
+          ]
+        },
+        {
+          "name": "PhysicsCheckGravity",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            255,
+            526
+          ]
+        },
+        {
+          "name": "PhysicsDefaultGravityResponse",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            530,
+            543
+          ]
+        },
+        {
+          "name": "ApplyExternalLocalForces",
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "lines": [
+            180,
+            237
+          ]
+        },
+        {
+          "name": "ProcessPhysics",
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "lines": [
+            121,
+            178
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-world"
+      ]
+    },
+    {
+      "id": "physics-contact",
+      "parent": "physics-core",
+      "name": "Contact probes",
+      "purpose": "The line and edge probes that decide what the body is standing on, holding onto, sliding down or swimming in, and the thresholds their surface normals have to clear",
+      "paths": [
+        "src/Game/PHYSICS.c",
+        "src/Game/RAZIEL/RAZIEL.c",
+        "src/Game/STATE.c"
+      ],
+      "functions": [
+        {
+          "name": "PhysicsCheckEdgeGrabbing",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            545,
+            759
+          ]
+        },
+        {
+          "name": "PhysicsCheckSliding",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            844,
+            1005
+          ]
+        },
+        {
+          "name": "PhysicsCheckDropHeight",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1362,
+            1488
+          ]
+        },
+        {
+          "name": "PhysicsCheckDropOff",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1490,
+            1577
+          ]
+        },
+        {
+          "name": "PhysicsCheckSwim",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1172,
+            1256
+          ]
+        },
+        {
+          "name": "PhysicsCheckBlockers",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1050,
+            1170
+          ]
+        },
+        {
+          "name": "RazielAdditionalCollide",
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "lines": [
+            6225,
+            6392
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-world",
+        "physics-core"
+      ]
+    },
+    {
+      "id": "collision-world",
+      "name": "Terrain and BSP queries",
+      "purpose": "The world-space line query the probes call, the terrain face and normal lookup behind it, and the point-in-face test used to decide whether the body is still on the polygon it was standing on",
+      "paths": [
+        "src/Game/COLLIDE.c",
+        "src/Game/BSP.c",
+        "src/Game/PHYSICS.c",
+        "include/Game/COLLIDE.h"
+      ],
+      "functions": [
+        {
+          "name": "COLLIDE_PointAndTfaceFunc",
+          "path": "src/Game/COLLIDE.c",
+          "lines": [
+            3608,
+            3692
+          ]
+        },
+        {
+          "name": "COLLIDE_GetNormal",
+          "path": "src/Game/COLLIDE.c",
+          "lines": [
+            240,
+            271
+          ]
+        },
+        {
+          "name": "COLLIDE_PointAndWorld",
+          "path": "src/Game/COLLIDE.c",
+          "lines": [
+            1295,
+            1476
+          ]
+        },
+        {
+          "name": "COLLIDE_PointAndTerrain",
+          "path": "src/Game/COLLIDE.c",
+          "lines": [
+            546,
+            549
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "wall-crawl",
+      "parent": "player-state",
+      "name": "Wall crawling",
+      "purpose": "The climb states and the wall-follow physics that re-pin the body to a climbed face every update, with its own steering frame and world-space skeleton rotation",
+      "paths": [
+        "src/Game/RAZIEL/SPIDER.c",
+        "src/Game/RAZIEL/RAZLIB.c",
+        "src/Game/RAZIEL/STEERING.c",
+        "src/Game/PHYSICS.c"
+      ],
+      "functions": [
+        {
+          "name": "StateHandlerWallGrab",
+          "path": "src/Game/RAZIEL/SPIDER.c",
+          "lines": [
+            3,
+            74
+          ]
+        },
+        {
+          "name": "StateHandlerWallIdle",
+          "path": "src/Game/RAZIEL/SPIDER.c",
+          "lines": [
+            76,
+            363
+          ]
+        },
+        {
+          "name": "StateHandlerWallDismount",
+          "path": "src/Game/RAZIEL/SPIDER.c",
+          "lines": [
+            365,
+            424
+          ]
+        },
+        {
+          "name": "razSetWallCrawlNodes",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            1270,
+            1297
+          ]
+        },
+        {
+          "name": "SteerWallcrawling",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            614,
+            619
+          ]
+        },
+        {
+          "name": "PhysicsFollowWall",
+          "path": "src/Game/PHYSICS.c",
+          "lines": [
+            1579,
+            1745
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-contact",
+        "steering"
+      ]
+    },
+    {
+      "id": "swim",
+      "parent": "player-state",
+      "name": "Water and swimming",
+      "purpose": "The water probe's depth bands, the swim and tread states, the separate yaw and pitch steering used in water, and the drowning drain",
+      "paths": [
+        "src/Game/RAZIEL/SWIM.c",
+        "src/Game/RAZIEL/STEERING.c",
+        "src/Game/RAZIEL/RAZLIB.c",
+        "src/Game/PHYSICS.c"
+      ],
+      "functions": [
+        {
+          "name": "StateHandlerInitSwim",
+          "path": "src/Game/RAZIEL/SWIM.c",
+          "lines": [
+            3,
+            36
+          ]
+        },
+        {
+          "name": "StateHandlerSwim",
+          "path": "src/Game/RAZIEL/SWIM.c",
+          "lines": [
+            627,
+            1020
+          ]
+        },
+        {
+          "name": "StateHandlerSwimTread",
+          "path": "src/Game/RAZIEL/SWIM.c",
+          "lines": [
+            271,
+            521
+          ]
+        },
+        {
+          "name": "StateHandlerSwimCoil",
+          "path": "src/Game/RAZIEL/SWIM.c",
+          "lines": [
+            38,
+            269
+          ]
+        },
+        {
+          "name": "SteerSwim",
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "lines": [
+            578,
+            612
+          ]
+        },
+        {
+          "name": "razSetSwimVelocity",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            1250,
+            1268
+          ]
+        },
+        {
+          "name": "razEnterWater",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            1179,
+            1248
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physics-contact",
+        "steering"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "name": "Follow camera",
+      "purpose": "The critically damped follow rig: focus point, distance presets, the two damping regimes chosen by line of sight, and the maximum-speed governor",
+      "paths": [
+        "src/Game/CAMERA.c",
+        "include/Game/CAMERA.h"
+      ],
+      "functions": [
+        {
+          "name": "CAMERA_Initialize",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            720,
+            835
+          ]
+        },
+        {
+          "name": "CAMERA_LookProcess",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            2163,
+            2246
+          ]
+        },
+        {
+          "name": "CriticalDampValue",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1453,
+            1532
+          ]
+        },
+        {
+          "name": "CriticalDampPosition",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1534,
+            1691
+          ]
+        },
+        {
+          "name": "CAMERA_SetFocus",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1190,
+            1254
+          ]
+        },
+        {
+          "name": "CAMERA_SetMaxVel",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1102,
+            1139
+          ]
+        },
+        {
+          "name": "CAMERA_SetInstanceFocus",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            837,
+            860
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state"
+      ]
+    },
+    {
+      "id": "camera-collision",
+      "parent": "camera-follow",
+      "name": "Camera collision",
+      "purpose": "The swept sphere between focus point and camera, the pull-in margin and floor, the separately damped vertical axis, and the projection distance rebuild",
+      "paths": [
+        "src/Game/CAMERA.c"
+      ],
+      "functions": [
+        {
+          "name": "CAMERA_AbsoluteCollision",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            2741,
+            2787
+          ]
+        },
+        {
+          "name": "CAMERA_update_z_damped",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            2789,
+            2846
+          ]
+        },
+        {
+          "name": "CAMERA_SphereToSphereWithLines",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1798,
+            2127
+          ]
+        },
+        {
+          "name": "CAMERA_SetProjDistance",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            183,
+            205
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera-follow"
+      ]
+    },
+    {
+      "id": "camera-combat",
+      "parent": "camera-follow",
+      "name": "Combat framing",
+      "purpose": "The blend of player and enemy positions into one focus point, the screen-space distance extension, and the tilt derived from the on-screen angle between the two bodies",
+      "paths": [
+        "src/Game/CAMERA.c"
+      ],
+      "functions": [
+        {
+          "name": "CAMERA_CombatCamDist",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            2848,
+            2941
+          ]
+        },
+        {
+          "name": "CAMERA_SetFocus",
+          "path": "src/Game/CAMERA.c",
+          "lines": [
+            1190,
+            1254
+          ]
+        }
+      ],
+      "dependsOn": [
+        "camera-follow",
+        "senses"
+      ]
+    },
+    {
+      "id": "senses",
+      "name": "Engagement tests",
+      "purpose": "The candidate scan that decides which nearby body the action button applies to, using a cone test on the relative position plus per-ability distance windows",
+      "paths": [
+        "src/Game/RAZIEL/SENSES.c",
+        "src/Game/MATH3D.c"
+      ],
+      "functions": [
+        {
+          "name": "UpdateEngagementList",
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "lines": [
+            32,
+            495
+          ]
+        },
+        {
+          "name": "SetEngagedInstance",
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "lines": [
+            3,
+            30
+          ]
+        },
+        {
+          "name": "UpdateAutoFaceAngle",
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "lines": [
+            497,
+            504
+          ]
+        },
+        {
+          "name": "MATH3D_ConeDetect",
+          "path": "src/Game/MATH3D.c",
+          "lines": [
+            603,
+            617
+          ]
+        },
+        {
+          "name": "MATH3D_FastAtan2",
+          "path": "src/Game/MATH3D.c",
+          "lines": [
+            134,
+            198
+          ]
+        }
+      ],
+      "dependsOn": [
+        "collision-world"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Melee swings",
+      "purpose": "The table-driven attack state: entry selection by held-object class, chaining through the table on animation completion, and the contact message that carries scaled power and knockback",
+      "paths": [
+        "src/Game/RAZIEL/ATTACK.c",
+        "src/Game/RAZIEL/RAZIEL.c"
+      ],
+      "functions": [
+        {
+          "name": "StateHandlerAttack2",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            179,
+            741
+          ]
+        },
+        {
+          "name": "StateHandlerThrow2",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            1036,
+            1364
+          ]
+        },
+        {
+          "name": "StateHandlerHitReaction",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            945,
+            1034
+          ]
+        },
+        {
+          "name": "StateHandlerStumble",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            828,
+            943
+          ]
+        },
+        {
+          "name": "LimitRotation",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            1448,
+            1510
+          ]
+        },
+        {
+          "name": "StateHandlerDecodeHold",
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "lines": [
+            5,
+            177
+          ]
+        }
+      ],
+      "dependsOn": [
+        "senses",
+        "locomotion"
+      ]
+    },
+    {
+      "id": "reaver",
+      "parent": "combat",
+      "name": "Charged blade",
+      "purpose": "The blade's charge countdown, the rumble ramp and its blast cycle, and the collision query that decides what the charged edge can end",
+      "paths": [
+        "src/Game/REAVER.c",
+        "include/Game/REAVER.h"
+      ],
+      "functions": [
+        {
+          "name": "SoulReaverCharge",
+          "path": "src/Game/REAVER.c",
+          "lines": [
+            236,
+            270
+          ]
+        },
+        {
+          "name": "StopSoulReaverCharge",
+          "path": "src/Game/REAVER.c",
+          "lines": [
+            272,
+            280
+          ]
+        },
+        {
+          "name": "SoulReaverCollide",
+          "path": "src/Game/REAVER.c",
+          "lines": [
+            52,
+            114
+          ]
+        },
+        {
+          "name": "SoulReaverPost",
+          "path": "src/Game/REAVER.c",
+          "lines": [
+            282,
+            398
+          ]
+        },
+        {
+          "name": "REAVER_GetGlowColor",
+          "path": "src/Game/REAVER.c",
+          "lines": [
+            400,
+            410
+          ]
+        }
+      ],
+      "dependsOn": [
+        "combat"
+      ]
+    },
+    {
+      "id": "health",
+      "name": "Health and plane transfer",
+      "purpose": "The single health counter, its two ceiling rules, the low-health floor that refuses lethal damage, the warning band above full, and the plane transfer that fires when the counter crosses it",
+      "paths": [
+        "src/Game/RAZIEL/HEALTH.c",
+        "src/Game/RAZIEL/RAZLIB.c"
+      ],
+      "functions": [
+        {
+          "name": "InitHealthSystem",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            3,
+            37
+          ]
+        },
+        {
+          "name": "ProcessHealth",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            123,
+            250
+          ]
+        },
+        {
+          "name": "GetMaxHealth",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            111,
+            121
+          ]
+        },
+        {
+          "name": "GainHealth",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            39,
+            49
+          ]
+        },
+        {
+          "name": "LoseHealth",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            51,
+            78
+          ]
+        },
+        {
+          "name": "DrainHealth",
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "lines": [
+            80,
+            102
+          ]
+        },
+        {
+          "name": "razPlaneShift",
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "lines": [
+            214,
+            235
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-state",
+        "reaver"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "gait-ladder",
+      "node": "locomotion",
+      "name": "Analog gait ladder",
+      "summary": "Stick travel selects one of three cycle animations, and each cycle then scales its own playback rate across a band, so ground speed is continuous instead of stepping between walk and run.",
+      "behavior": "Walking is not a two-way switch. Each update the locomotion selector picks one of three cycle animations from where the analog stick currently sits, and each of the three owns a playback-rate band rather than a single speed. Below a band's floor the rate is pinned to the band minimum; as the stick magnitude climbs toward the band ceiling the rate interpolates linearly toward the band maximum; once the magnitude passes the ceiling the next gait takes over and the rate restarts from that gait's own floor. The bands are laid out so they meet exactly: the slow cycle ramps its rate from 4096 to 7168 over stick magnitude 2300 to 2783, the middle cycle ramps 3276 to 6144 over 2783 to 3768, and the fast cycle sits at a flat 3547 to 4096 over 3768 to the stick's full 4096. Because 4096 is the neutral rate, the slow cycle already runs at normal speed at the bottom of its band and accelerates up to about one and three quarter times normal before handing over. Each cycle also carries a fixed signed root translation that is written into the skeleton root every animation frame, scaled by the current playback rate and by the frame-time percentage, so a cycle played faster covers proportionally more ground: the slow cycle contributes 16 engine units of root travel per frame, the middle 35, and the fast 60.",
+      "constants": [
+        {
+          "name": "slowCycleRateMin",
+          "value": 4096,
+          "unit": "animation playback scalar where 4096 is 1.0x, applied per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1008"
+        },
+        {
+          "name": "slowCycleRateMax",
+          "value": 7168,
+          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1009"
+        },
+        {
+          "name": "slowCycleStickFloor",
+          "value": 2300,
+          "unit": "stick magnitude in 4096-unit full-deflection space",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1011"
+        },
+        {
+          "name": "slowCycleStickCeiling",
+          "value": 2783,
+          "unit": "stick magnitude in 4096-unit full-deflection space",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1012"
+        },
+        {
+          "name": "middleCycleRateMin",
+          "value": 3276,
+          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1027"
+        },
+        {
+          "name": "fastCycleRateMin",
+          "value": 3547,
+          "unit": "animation playback scalar where 4096 is 1.0x, per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1046"
+        },
+        {
+          "name": "fastCycleStickCeiling",
+          "value": 4096,
+          "unit": "stick magnitude in 4096-unit full-deflection space",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1050"
+        },
+        {
+          "name": "slowCycleRootTravel",
+          "value": -16,
+          "unit": "engine units of root travel per animation frame at playback rate 1.0",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1067"
+        },
+        {
+          "name": "fastCycleRootTravel",
+          "value": -60,
+          "unit": "engine units of root travel per animation frame at playback rate 1.0",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1070"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 455
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 458
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 1076
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 1008
+        }
+      ],
+      "capabilities": [
+        "three-gait locomotion",
+        "analog speed ramping",
+        "rate-interpolated cycle blending"
+      ],
+      "tags": [
+        "movement",
+        "analog",
+        "animation speed",
+        "gaits"
+      ]
+    },
+    {
+      "id": "camera-relative-bearing",
+      "node": "steering",
+      "name": "Camera-relative bearing",
+      "summary": "The pad direction is added to the camera's live yaw to form a bearing, so forward on the stick always means away from the camera even while the camera is still swinging.",
+      "behavior": "Movement intent is never stored in world space. Each update the pad is collapsed into one of eight compass values or zero, and that value is added to the camera's current yaw to produce the bearing the body should end up facing. Because the camera yaw is sampled every update rather than latched when the stick is first pressed, a camera that is still swinging behind the player continuously rotates the meaning of forward on the stick, and the body follows that rotation without an extra input. The eight compass values are one eighth of a turn apart in the engine's 4096-unit turn: the four cardinal presses are 2048, 4096, 3584 and 1024, and the four diagonals sit between them at 2560, 512, 1536 and 3072. The analog axes are handled separately from the D-pad: the two axes are dead-zoned as a radial disk rather than per axis, so a small circular wobble produces no input at all, and the surviving vector is squared into a magnitude that is capped at full deflection and floored at a quarter of full. The floor is what stops a barely deflected stick from producing a useless crawl, since the gait selector downstream would otherwise pick the slowest cycle at a very low playback rate.",
+      "constants": [
+        {
+          "name": "padCardinalAngleA",
+          "value": 2048,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:72"
+        },
+        {
+          "name": "padDiagonalAngleA",
+          "value": 2560,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:40"
+        },
+        {
+          "name": "padCardinalAngleB",
+          "value": 3584,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:56"
+        },
+        {
+          "name": "padDiagonalAngleB",
+          "value": 512,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:64"
+        },
+        {
+          "name": "stickDeadzoneRadius",
+          "value": 1024,
+          "unit": "squared stick units; the dead zone is a radial disk of radius 32 per axis",
+          "source": "src/Game/RAZIEL/STEERING.c:173"
+        },
+        {
+          "name": "stickMagnitudeCap",
+          "value": 4096,
+          "unit": "magnitude in 4096-unit full-deflection space",
+          "source": "src/Game/RAZIEL/STEERING.c:185"
+        },
+        {
+          "name": "stickMagnitudeFloor",
+          "value": 1024,
+          "unit": "magnitude in 4096-unit full-deflection space",
+          "source": "src/Game/RAZIEL/STEERING.c:190"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 199
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 203
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 177
+        }
+      ],
+      "capabilities": [
+        "camera-relative movement",
+        "eight-way directional input",
+        "radial dead zone",
+        "analog magnitude floor"
+      ],
+      "tags": [
+        "movement",
+        "steering",
+        "input",
+        "camera space"
+      ]
+    },
+    {
+      "id": "turn-rate",
+      "node": "steering",
+      "name": "Rate-limited turning",
+      "summary": "The body yaw is moved toward the bearing by a step that depends on the steering mode, and while walking that step shrinks with the angle still to cover.",
+      "behavior": "Turning never snaps to the requested direction. Each update the body yaw is moved toward the bearing by a step that is a per-mode turn rate multiplied by the elapsed time fraction, and the move stops exactly on the target instead of overshooting. Three fixed rates cover the cases where steering is not proportional: 256 units per update while pivoting in place, 96 while gliding, and 64 in the grab state. Walking uses a different rule in which the rate follows the size of the angle still to cover. The absolute angular error is measured first: anything above 768 becomes a quarter of itself plus 112, while anything at or below that threshold collapses to a flat floor of 112. A small correction therefore turns slowly and precisely, and a half-turn reversal turns at roughly a quarter of the error without ever overshooting the target. The angle is wrapped to the shortest arc before any of this, and when the error is exactly half a turn the code nudges the stored target by one unit per update so the body does not oscillate between two equally short arcs.",
+      "constants": [
+        {
+          "name": "pivotTurnRate",
+          "value": 256,
+          "unit": "engine angle units of yaw per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:231"
+        },
+        {
+          "name": "glideTurnRate",
+          "value": 96,
+          "unit": "engine angle units of yaw per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:241"
+        },
+        {
+          "name": "grabTurnRate",
+          "value": 64,
+          "unit": "engine angle units of yaw per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:236"
+        },
+        {
+          "name": "walkTurnErrorCap",
+          "value": 768,
+          "unit": "engine angle units of remaining error in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:452"
+        },
+        {
+          "name": "walkTurnRateFloor",
+          "value": 112,
+          "unit": "engine angle units of yaw per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:452"
+        },
+        {
+          "name": "halfTurnError",
+          "value": 2048,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:417"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 427
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 452
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 415
+        }
+      ],
+      "capabilities": [
+        "proportional turn rate",
+        "pivot in place",
+        "turn-rate clamping",
+        "half-turn tie breaking"
+      ],
+      "tags": [
+        "movement",
+        "turning",
+        "steering",
+        "feel"
+      ]
+    },
+    {
+      "id": "jump-impulse",
+      "node": "airborne",
+      "name": "Jump as a velocity write",
+      "summary": "A jump overwrites the vertical and forward speeds outright and switches on gravity, so the arc is fixed by three numbers rather than by the speed the body happened to be carrying.",
+      "behavior": "Jumping does not add an impulse to whatever motion the body already had. It writes the velocity out completely and enters a state whose only job is to wait for the arc to finish. The ordinary jump writes 154 units per update upward and 40 units per update forward, and sets gravity to -16 units per update squared. A second jump variant, used when the body is already crouched or compressed, writes 195 upward but only 21 forward, which is the tall, flat leap: much more height at the cost of most of the forward carry. Because both variants write a fixed upward speed, the apex height of each is independent of the approach speed, and the jump is a function of the vertical write and the gravity alone until the state ends. The jump state hands over to the falling state when the animation has run its assigned frames or when the jump button has been released past a short grace window, whichever comes first, which is what allows a player to cut a jump short. Landing is a separate state: it restores normal gravity first, then chooses between the ordinary compression animation and a heavier variant using the downward speed at the moment of contact, with anything below -256 units per update taking the heavy one.",
+      "constants": [
+        {
+          "name": "jumpVerticalSpeed",
+          "value": 154,
+          "unit": "engine units of upward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:1989"
+        },
+        {
+          "name": "jumpForwardSpeed",
+          "value": 40,
+          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:1989"
+        },
+        {
+          "name": "leapVerticalSpeed",
+          "value": 195,
+          "unit": "engine units of upward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:1975"
+        },
+        {
+          "name": "leapForwardSpeed",
+          "value": 21,
+          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:1975"
+        },
+        {
+          "name": "gravity",
+          "value": -16,
+          "unit": "engine units of vertical acceleration per update squared at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:225"
+        },
+        {
+          "name": "heavyLandingSpeed",
+          "value": -256,
+          "unit": "engine units of downward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2486"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 2004
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 2458
+        },
+        {
+          "path": "src/Game/RAZIEL/CONTROL.c",
+          "line": 14
+        }
+      ],
+      "capabilities": [
+        "fixed-height jump",
+        "two jump variants",
+        "jump cut",
+        "landing variants"
+      ],
+      "tags": [
+        "jump",
+        "movement",
+        "airborne",
+        "feel"
+      ]
+    },
+    {
+      "id": "fall-and-glide",
+      "node": "airborne",
+      "name": "Fall, glide and drop",
+      "summary": "Holding jump again in the air replaces gravity with a constant forward speed and a slow fixed sink, and the transition in and out is damped over four updates.",
+      "behavior": "The glide is a velocity override rather than a reduced gravity. While gliding, gravity is set to zero, forward speed to 52 units per update and vertical speed to -24 units per update, so the descent becomes a straight shallow line instead of an accelerating fall and the horizontal distance covered is a function of time aloft only. It is entered from the falling state when the jump button is pressed again after it was released at the hand-off from the jump, provided the character is not carrying the class of object that forbids it. It exits back to the plain fall when the button is released and the glide animation has passed frame 12. A separate forced-glide state takes over instead when the body falls inside a level unit flagged as a glide zone. Entering and leaving both go through a four-update transition force that ramps the current velocity toward the target instead of writing it in one step, which is what keeps the pose change from reading as a teleport. The plain fall is the opposite treatment. Drop physics writes a downward acceleration of -16 units per update squared and leaves the vertical speed to the state, and the default falling velocity for the player is -32 units per update, so an ordinary fall keeps accelerating until the global vertical speed clamp catches it.",
+      "constants": [
+        {
+          "name": "glideForwardSpeed",
+          "value": 52,
+          "unit": "engine units of forward speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2599"
+        },
+        {
+          "name": "glideSinkSpeed",
+          "value": -24,
+          "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2599"
+        },
+        {
+          "name": "glideSinkHoldFrames",
+          "value": 12,
+          "unit": "animation frames of the glide cycle before release is allowed",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2637"
+        },
+        {
+          "name": "fallSinkVelocity",
+          "value": -32,
+          "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:204"
+        },
+        {
+          "name": "dropAcceleration",
+          "value": -16,
+          "unit": "engine units of vertical acceleration per update squared at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/CONTROL.c:79"
+        },
+        {
+          "name": "glideTransitionUpdates",
+          "value": 4,
+          "unit": "updates over which the velocity is ramped into or out of the glide",
+          "source": "src/Game/RAZIEL/RAZIEL.c:2660"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 2637
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 2648
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 2192
+        }
+      ],
+      "capabilities": [
+        "glide",
+        "constant sink rate",
+        "damped velocity transition",
+        "fall acceleration"
+      ],
+      "tags": [
+        "glide",
+        "falling",
+        "movement",
+        "feel"
+      ]
+    },
+    {
+      "id": "velocity-integration",
+      "node": "physics-core",
+      "name": "Trapezoidal body integrator",
+      "summary": "Every body advances through one routine that adds a half-acceleration term to position and a full-acceleration term to velocity, then clamps each axis.",
+      "behavior": "All motion goes through one integrator, and it uses the constant-acceleration form rather than a plain Euler step: the position gains the velocity term plus half of the acceleration term for the step, and only after that does the velocity gain the full acceleration term. That ordering is what makes a projectile arc integrate the same way at a high and a low frame rate. Both terms are scaled by an elapsed time expressed in 4096ths of a nominal frame, so 4096 means one normal update of about 33 milliseconds and 2048 means half of one; anything that multiplies a rate by this time value gets frame-rate independence for free. Immediately after integration each of the three velocity components is clamped to the body's own per-axis maximum, and the player's maximum is 256 units per update on all three axes. That single clamp is what produces terminal velocity: under the -16 units per update squared gravity of a fall, the vertical speed reaches the clamp after 16 updates and stays there, while the 154-unit jump write starts below the clamp and is never clipped on the way up. The vertical component of the resulting step can also be suppressed for a move mode, which keeps a body that is following a surface from being pushed off it by its own gravity.",
+      "constants": [
+        {
+          "name": "playerMaxHorizontalSpeed",
+          "value": 256,
+          "unit": "engine units of speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:217"
+        },
+        {
+          "name": "playerMaxVerticalSpeed",
+          "value": 256,
+          "unit": "engine units of speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/RAZIEL.c:219"
+        },
+        {
+          "name": "timeScale",
+          "value": 4096,
+          "unit": "elapsed-time units per nominal update, 33 ms at full speed",
+          "source": "src/Game/PHYSICS.c:1789"
+        },
+        {
+          "name": "halfAccelerationDivisor",
+          "value": 8192,
+          "unit": "divisor applied to the acceleration term so it contributes half a step to the position",
+          "source": "src/Game/PHYSICS.c:1789"
+        },
+        {
+          "name": "playerGravityStepLimit",
+          "value": 128,
+          "unit": "engine units of vertical displacement per update at the 33 ms nominal frame",
+          "source": "src/Game/PHYSICS.c:537"
+        },
+        {
+          "name": "slideSpeedFloor",
+          "value": 48,
+          "unit": "engine units of speed per update at the 33 ms nominal frame",
+          "source": "src/Game/PHYSICS.c:356"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 1789
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 1793
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 1813
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 537
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent integration",
+        "per-axis velocity clamps",
+        "terminal velocity",
+        "vertical suppression"
+      ],
+      "tags": [
+        "physics",
+        "integration",
+        "feel",
+        "frame rate"
+      ]
+    },
+    {
+      "id": "world-line-query",
+      "node": "collision-world",
+      "name": "Streamed world line query",
+      "summary": "One probe call resolves a start and end pair against the current level first, then against every other streamed unit, and returns a typed hit carrying the face and its normal.",
+      "behavior": "Every contact probe in the engine funnels into one query, and that query is written for a streaming world rather than a single map. The caller supplies a start point and an end point in world space plus a mask of what may be hit; one mask bit gates terrain and the rest select which instance groups the same call should sweep, so a single routine answers both questions and a caller can ask for geometry only, bodies only, or both. The terrain pass runs first against the level the body currently stands in. That test returns the terrain face that was crossed, the BSP tree node the face lives in, and the face normal, and the query reports the hit as a terrain hit with all three attached. If the current level yields nothing, the routine walks all 16 streamed unit slots and repeats the same test against each loaded neighbour, skipping the level it has already tried and honouring a flag that suppresses neighbouring levels while the body is inside a warp room. The practical effect is that a probe near a level boundary still finds the floor on the other side without any special case at the call site. After the terrain pass, independently of whether it hit, the mask's instance bits drive a sweep of the global instance lists — every group for the broadest bit, otherwise the static and the dynamic groups the mask selects — with a cheap bounds rejection placed in front of each full test so most candidates cost almost nothing. The normal itself is taken straight from the terrain's shared normal list unless the world is mid-morph, in which case a normal is recomputed from the face's three vertices so the shading stays continuous through the transition.",
+      "constants": [
+        {
+          "name": "defaultCollideMask",
+          "value": 63,
+          "unit": "bitmask of hit categories, all six bits set",
+          "source": "src/Game/PHYSICS.c:51"
+        },
+        {
+          "name": "streamedUnitSlots",
+          "value": 16,
+          "unit": "streamed level slots scanned per query",
+          "source": "src/Game/COLLIDE.c:1350"
+        },
+        {
+          "name": "terrainHitType",
+          "value": 3,
+          "unit": "collision result code identifying a terrain face hit",
+          "source": "src/Game/COLLIDE.c:1323"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/COLLIDE.c",
+          "line": 1323
+        },
+        {
+          "path": "src/Game/COLLIDE.c",
+          "line": 1350
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 51
+        },
+        {
+          "path": "src/Game/COLLIDE.c",
+          "line": 240
+        }
+      ],
+      "capabilities": [
+        "streamed-world line queries",
+        "typed collision results",
+        "cross-unit probes",
+        "morph-aware normals"
+      ],
+      "tags": [
+        "collision",
+        "world",
+        "streaming",
+        "physics"
+      ]
+    },
+    {
+      "id": "ledge-grab",
+      "node": "physics-contact",
+      "name": "Ledge detection and grab",
+      "summary": "Two line probes look for a steep wall in front and a near-flat lip above it, and the surface normals decide whether the character commits to the grab.",
+      "behavior": "Edge detection is a small probe sequence, not a single ray. The first probe runs forward at head height, from directly above the body origin to 256 units in front, to find any solid inside the grab envelope. If that probe finds nothing, a second short vertical check runs to make sure the space above the head is not already blocked, which prevents a grab attempt in a ceiling pocket. A hit only counts as a grabbable wall when its surface normal has a vertical component below 2048 in the engine's 4096-unit normal scale, meaning the face is steeper than about 60 degrees from horizontal; shallower faces are treated as ground and ignored by the grab. The lip test then drops a probe just past the wall face and requires the top surface's vertical normal to be at least 3548, so the ledge itself has to be close to flat, and the grab is only committed when that top normal also clears 2896. The probe lengths are fixed and asymmetric: 400 units up, 256 units forward and 144 units above the head, all taken from a point 498 units above the body origin, so tall characters and short characters use the same reach.",
+      "constants": [
+        {
+          "name": "grabProbeRise",
+          "value": 400,
+          "unit": "engine units above the probe origin",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "grabProbeReach",
+          "value": -256,
+          "unit": "engine units in the probe frame, the negative sign pointing forward",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "grabProbeLift",
+          "value": 144,
+          "unit": "engine units above the body head",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "grabProbeOriginHeight",
+          "value": 498,
+          "unit": "engine units above the body origin",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6287"
+        },
+        {
+          "name": "grabWallNormalLimit",
+          "value": 2048,
+          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "source": "src/Game/PHYSICS.c:652"
+        },
+        {
+          "name": "grabLedgeNormalMin",
+          "value": 3548,
+          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "source": "src/Game/PHYSICS.c:697"
+        },
+        {
+          "name": "grabCommitNormalMin",
+          "value": 2896,
+          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "source": "src/Game/PHYSICS.c:713"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 6287
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 652
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 697
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 713
+        }
+      ],
+      "capabilities": [
+        "ledge grab",
+        "wall versus floor classification",
+        "ceiling rejection",
+        "committed grab"
+      ],
+      "tags": [
+        "ledge",
+        "grab",
+        "collision",
+        "feel"
+      ]
+    },
+    {
+      "id": "slope-slide",
+      "node": "physics-contact",
+      "name": "Slope slip and slide",
+      "summary": "One normal threshold separates floor from ramp, and on ramp surfaces the motion is projected along the plane instead of being snapped to it.",
+      "behavior": "The boundary between ground and ramp is one number, and it is expressed as a surface normal rather than an angle: a face counts as ground only while its vertical normal component stays at or above 2896 out of 4096, which is a slope of about 45 degrees. Below that the gravity probe stops writing the body onto the surface and starts accumulating a slide amount, and the existing position update is allowed to carry the body along the face instead. The slide itself is a projection, not a special case: the body's motion vector is dotted with the face normal, the result is divided by 4096, and that share of the normal is subtracted from the motion, which is exactly the part of the movement that points into the wall. What remains is the component along the plane, so steep faces behave like ramps with no separate ramp code, and the same projection is what makes a body skid along a wall it is pressed against rather than stopping dead. The gravity response also keeps the correction under control: the magnitude it pushes along the surface normal is the body's downward speed, but never less than 48 units, which stops the slide correction from vanishing when the body is barely moving downward.",
+      "constants": [
+        {
+          "name": "slipSlopeNormal",
+          "value": 2896,
+          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "source": "src/Game/RAZIEL/RAZIEL.c:242"
+        },
+        {
+          "name": "normalScale",
+          "value": 4096,
+          "unit": "normal units for a face pointing straight up",
+          "source": "src/Game/PHYSICS.c:881"
+        },
+        {
+          "name": "landingNormalMin",
+          "value": 3200,
+          "unit": "normal units in 4096-unit scale, where 4096 is straight up",
+          "source": "src/Game/PHYSICS.c:1459"
+        },
+        {
+          "name": "gravityCorrectionFloor",
+          "value": 48,
+          "unit": "engine units of vertical correction per update at the 33 ms nominal frame",
+          "source": "src/Game/PHYSICS.c:356"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 242
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 881
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 888
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 348
+        }
+      ],
+      "capabilities": [
+        "slope-limited movement",
+        "surface projection sliding",
+        "gravity snapping",
+        "walkable normal threshold"
+      ],
+      "tags": [
+        "slopes",
+        "collision",
+        "physics",
+        "feel"
+      ]
+    },
+    {
+      "id": "wall-crawl",
+      "node": "wall-crawl",
+      "name": "Wall crawling",
+      "summary": "The climb states replace gravity with a two-probe wall follow that re-pins the body to the face every update, and steering switches to a frame measured on the wall itself.",
+      "behavior": "Climbing is a physics mode of its own. Gravity is switched off and a wall-follow probe runs in its place: it casts 448 units down the body's root segment and 160 units forward along the face, with an 186-unit offset along the surface normal, and the whole test is repeated every update. Repeating it is what lets the body follow convex and concave curvature instead of assuming one planar wall, and the shift applied each update is skipped while it is smaller than 100 squared units, which removes the jitter that would otherwise come from sub-unit noise on a nearly flat surface. When both probes fail the climb ends and the body is returned to the idle state with its rotation cleared, so there is no state where the character is clinging to nothing. Steering on the wall is not the ordinary steering: the requested bearing is computed as the difference between the wall frame and the stick direction with a half-turn offset built in, because the climb pose is rotated onto the face and the skeleton's forward axis no longer points along the body's planar heading. The body's world rotation is then driven from the surface normal itself, so the pose lies flat against a floor, a wall or a ceiling with the same animation.",
+      "constants": [
+        {
+          "name": "wallProbeDrop",
+          "value": -448,
+          "unit": "engine units along the body root's local forward axis",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6378"
+        },
+        {
+          "name": "wallProbeReach",
+          "value": 160,
+          "unit": "engine units along the body root's local forward axis",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6378"
+        },
+        {
+          "name": "wallProbeNormalOffset",
+          "value": -186,
+          "unit": "engine units along the surface normal",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6378"
+        },
+        {
+          "name": "wallSnapDeadband",
+          "value": 100,
+          "unit": "squared engine units; corrections below this are skipped",
+          "source": "src/Game/RAZIEL/RAZLIB.c:1276"
+        },
+        {
+          "name": "wallFrameHalfTurn",
+          "value": 2048,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:618"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 6378
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 1611
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 1276
+        },
+        {
+          "path": "src/Game/RAZIEL/SPIDER.c",
+          "line": 8
+        }
+      ],
+      "capabilities": [
+        "wall crawl",
+        "surface-relative steering",
+        "world-space skeleton rotation",
+        "climb dismount"
+      ],
+      "tags": [
+        "climbing",
+        "movement",
+        "walls",
+        "feel"
+      ]
+    },
+    {
+      "id": "swim-envelope",
+      "node": "swim",
+      "name": "Water depth bands and swim steering",
+      "summary": "Three depth bands around the water plane separate wading, treading and full swimming, and swimming steers with independent yaw and pitch rates instead of a bearing.",
+      "behavior": "Water is not a boolean state. The water probe measures the body against the water plane and reports separate conditions for wading, treading and being deeper than the swim depth, along with edge signals for crossing the surface in either direction and for passing under the plane while descending. The three bands are 416 units for the wade depth, 112 for the tread depth and 256 for the swim depth, so a body can be well over a stride below the water line and still be wading with an ordinary walking cycle rather than switching to a swim. Once the swim state takes over, the stick stops producing a bearing. The horizontal component rotates the body yaw at 32 units per update and the vertical component rotates a separate pitch offset at 48 units per update, so vertical aiming is faster than horizontal turning. That pitch offset is clamped between zero and a half turn, which lets the character aim straight up or straight down but never roll past vertical. Passing below the swim depth is reported as its own condition, separate from treading, and it is what the drowning rules key on. The drain that actually hurts is applied every update while the body reports a water face and lacks the swim ability, so it is continuous rather than a one-off damage event and getting the head back above the surface stops it.",
+      "constants": [
+        {
+          "name": "swimDepth",
+          "value": 256,
+          "unit": "engine units below the water plane",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6331"
+        },
+        {
+          "name": "wadeDepth",
+          "value": 416,
+          "unit": "engine units below the water plane",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6331"
+        },
+        {
+          "name": "treadDepth",
+          "value": 112,
+          "unit": "engine units below the water plane",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6331"
+        },
+        {
+          "name": "swimYawRate",
+          "value": 32,
+          "unit": "engine angle units of yaw per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:585"
+        },
+        {
+          "name": "swimPitchRate",
+          "value": 48,
+          "unit": "engine angle units of pitch per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/STEERING.c:592"
+        },
+        {
+          "name": "swimPitchLimit",
+          "value": 2048,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/STEERING.c:600"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 6331
+        },
+        {
+          "path": "src/Game/PHYSICS.c",
+          "line": 1281
+        },
+        {
+          "path": "src/Game/RAZIEL/STEERING.c",
+          "line": 603
+        },
+        {
+          "path": "src/Game/RAZIEL/SWIM.c",
+          "line": 20
+        }
+      ],
+      "capabilities": [
+        "water depth bands",
+        "swim steering",
+        "pitch clamping",
+        "surface crossing signals"
+      ],
+      "tags": [
+        "swimming",
+        "water",
+        "movement",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-follow",
+      "node": "camera-follow",
+      "name": "Critically damped follow camera",
+      "summary": "The camera chases a focus point through a second-order damper whose stiffness and speed cap are swapped the moment the line of sight is blocked.",
+      "behavior": "The follow camera never sits at a fixed offset from the character. Each update it runs a second-order damper: an acceleration is formed from a fraction of the remaining error minus the current velocity, that acceleration is added to the velocity, and the velocity is then added to the value. The result is a critically damped approach with no overshoot and no stall, and because it is expressed as velocity and acceleration rather than a lerp fraction it behaves the same whatever the frame time. Two parameter sets are used, and the switch is driven by the line of sight. While the view is clear the distance damper runs with a smoothing cap of 128 and targets the normal follow distance; the moment the collision probe reports a hit the cap jumps to 512 and the target becomes the collision-limited distance, so the camera pulls in roughly four times faster than it eases back out. The same damped approach drives the focus point itself, using the camera's maximum speed as its cap. Distances come from a table indexed by camera-mode group and then by a preset offset, with three slots per group. The group the ordinary follow mode uses runs 1500, 2250 and 3200 units across its close, default and far slots, while the tightest group runs 1200, 1600 and 2000, and the starting preset is the middle one at 2250. The focus point itself sits 352 units above the player's origin, so the camera aims at the chest rather than the feet.",
+      "constants": [
+        {
+          "name": "playerFocusHeight",
+          "value": 352,
+          "unit": "engine units above the body origin",
+          "source": "src/Game/CAMERA.c:851"
+        },
+        {
+          "name": "defaultFollowDistance",
+          "value": 2250,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:739"
+        },
+        {
+          "name": "closeFollowDistance",
+          "value": 1200,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:744"
+        },
+        {
+          "name": "farFollowDistance",
+          "value": 2000,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:746"
+        },
+        {
+          "name": "baseSmooth",
+          "value": 16,
+          "unit": "damping smooth parameter used by the default focus blend",
+          "source": "src/Game/CAMERA.c:773"
+        },
+        {
+          "name": "baseMaxSpeed",
+          "value": 200,
+          "unit": "engine units of camera travel per update at the 33 ms nominal frame",
+          "source": "src/Game/CAMERA.c:777"
+        },
+        {
+          "name": "blockedSightSmooth",
+          "value": 512,
+          "unit": "damping smooth parameter while the line of sight is blocked",
+          "source": "src/Game/CAMERA.c:2191"
+        },
+        {
+          "name": "clearSightSmooth",
+          "value": 128,
+          "unit": "damping smooth parameter while the line of sight is clear",
+          "source": "src/Game/CAMERA.c:2206"
+        },
+        {
+          "name": "minCloseDistance",
+          "value": 550,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:2211"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 1470
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2191
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2206
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2211
+        }
+      ],
+      "capabilities": [
+        "critically damped follow",
+        "line-of-sight damping switch",
+        "distance presets",
+        "focus height"
+      ],
+      "tags": [
+        "camera",
+        "follow",
+        "damping",
+        "feel"
+      ]
+    },
+    {
+      "id": "camera-collision",
+      "node": "camera-collision",
+      "name": "Pull-in on obstruction",
+      "summary": "A sphere swept from the focus point reports how far the camera can back off, and the result is shortened by a margin and floored so the view never enters the character.",
+      "behavior": "Camera collision treats the camera as a sphere rather than a point. The sweep runs from the focus point outward along the desired camera direction, using a radius of 280 units, and returns the length at which the sphere first touches geometry. On a hit the target distance is shortened to that length minus a 150-unit margin, which keeps the near plane clear of the wall instead of exactly touching it, and the result is then floored at 400 units so a player pressed into a corner still gets a usable view rather than the inside of the character's head. The vertical axis is handled by a separate damper with asymmetric limits. While the camera is descending, its maximum vertical step is one sixth of the remaining height error; while it is being pushed upward the cap is twice the error, so going up is deliberately looser than coming down, and the horizontal and vertical behaviour never fight each other. The projection is 320 units with a near plane of 50 and a far plane of 12000, and any change to the projection distance rebuilds the view-volume planes and re-derives the fog and light falloff for every streamed level, which is why the camera distance can be adjusted without the world's lighting drifting.",
+      "constants": [
+        {
+          "name": "cameraSphereRadius",
+          "value": 280,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:762"
+        },
+        {
+          "name": "pullInMargin",
+          "value": 150,
+          "unit": "engine units subtracted from the hit distance",
+          "source": "src/Game/CAMERA.c:2760"
+        },
+        {
+          "name": "minPullInDistance",
+          "value": 400,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:2762"
+        },
+        {
+          "name": "nearPlane",
+          "value": 50,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:767"
+        },
+        {
+          "name": "farPlane",
+          "value": 12000,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:768"
+        },
+        {
+          "name": "descentStepDivisor",
+          "value": 6,
+          "unit": "divisor applied to the remaining height error to get the per-update maximum step",
+          "source": "src/Game/CAMERA.c:2802"
+        },
+        {
+          "name": "riseStepMultiplier",
+          "value": 2,
+          "unit": "multiplier applied to the remaining height error to get the per-update maximum step",
+          "source": "src/Game/CAMERA.c:2806"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2760
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2762
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2802
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 183
+        }
+      ],
+      "capabilities": [
+        "swept-sphere camera collision",
+        "pull-in margin",
+        "minimum distance floor",
+        "asymmetric vertical damping"
+      ],
+      "tags": [
+        "camera",
+        "collision",
+        "feel"
+      ]
+    },
+    {
+      "id": "combat-camera",
+      "node": "camera-combat",
+      "name": "Combat framing",
+      "summary": "While a target is engaged the focus point slides between the two bodies in fixed steps and the camera backs off only as far as the player's screen-space offset demands.",
+      "behavior": "Combat framing reuses the follow rig and bends two of its inputs. The focus point becomes a weighted average of the player's position and the engaged target's position, and the weight moves in fixed steps inside a two-to-one window rather than continuously: it climbs by 48 per update up to a ceiling of 4096 while the player's own projection is drawn low in the frame, and falls by the same step down to a floor of 2048 while that projection is drawn high. The blend therefore tracks the player's vertical position on screen rather than a fixed offset, so the framing follows the fight as it moves up and down the camera. Distance is derived from the player's own horizontal screen offset from the centre column: that offset in pixels is multiplied by the projected depth and divided by 128, capped at 3000 units, and never allowed below the ordinary follow distance, so the camera only backs off when the player's projection drifts away from the middle of the frame, which is what a crowded close fight produces. Vertical aim is taken from the on-screen angle between the two bodies, folded into a half turn, divided by 8 and biased by -170 units, so a target off to one side tilts the camera a little rather than spinning it. When nothing is engaged the whole effect collapses: the distance becomes the ordinary follow distance and the blend weight is forced to full.",
+      "constants": [
+        {
+          "name": "maxCombatDistance",
+          "value": 3000,
+          "unit": "engine units",
+          "source": "src/Game/CAMERA.c:2887"
+        },
+        {
+          "name": "focusWeightStep",
+          "value": 48,
+          "unit": "weight units per update in a 4096-unit blend",
+          "source": "src/Game/CAMERA.c:2899"
+        },
+        {
+          "name": "focusWeightFloor",
+          "value": 2048,
+          "unit": "weight units in a 4096-unit blend",
+          "source": "src/Game/CAMERA.c:2910"
+        },
+        {
+          "name": "screenCentreColumn",
+          "value": 256,
+          "unit": "screen pixels",
+          "source": "src/Game/CAMERA.c:2878"
+        },
+        {
+          "name": "screenHighRow",
+          "value": 240,
+          "unit": "screen pixels",
+          "source": "src/Game/CAMERA.c:2897"
+        },
+        {
+          "name": "screenLowRow",
+          "value": 210,
+          "unit": "screen pixels",
+          "source": "src/Game/CAMERA.c:2906"
+        },
+        {
+          "name": "tiltHalfTurn",
+          "value": 1024,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/CAMERA.c:2935"
+        },
+        {
+          "name": "tiltBias",
+          "value": -170,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/CAMERA.c:2940"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2887
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2899
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 2940
+        },
+        {
+          "path": "src/Game/CAMERA.c",
+          "line": 1234
+        }
+      ],
+      "capabilities": [
+        "combat framing",
+        "screen-space distance extension",
+        "weighted focus point",
+        "tilt from screen angle"
+      ],
+      "tags": [
+        "camera",
+        "combat",
+        "framing"
+      ]
+    },
+    {
+      "id": "engagement-cone",
+      "node": "senses",
+      "name": "Engagement cone and distance windows",
+      "summary": "What the action button affects is chosen by a wide cone test on the relative position plus a per-category distance window, and the nearest candidate wins.",
+      "behavior": "The game decides what the player is addressing with a cone rather than a lock-on. Each candidate body is tested against a half angle of 967 units of a 4096-unit turn on the horizontal axis and the same again on elevation, which is a wide, forgiving cone of roughly 85 degrees off centre, so a target does not have to be centred to be addressable. Distance is then checked per ability rather than globally. A climbable wall or grabbable body has to be within 512 units horizontally and between -256 and 640 units vertically, a generous vertical window because climbing surfaces are tall. A generic scene object has to be within 640 units horizontally and only 16 units vertically, a very flat window that only catches things at the character's own height and not the floor beneath them. A collectible gets 525 units horizontally and 256 units vertically. Because the cone test runs first, an object behind the player is rejected even when it is closer in a straight line, and among the survivors the nearest per category is kept. The charged-blade target query uses the same cone but a much larger radius of 3200 units.",
+      "constants": [
+        {
+          "name": "engagementHalfAngle",
+          "value": 967,
+          "unit": "engine angle units in the 4096-unit turn, about 85 degrees off centre",
+          "source": "src/Game/RAZIEL/SENSES.c:83"
+        },
+        {
+          "name": "grabEngageRadius",
+          "value": 512,
+          "unit": "engine units of horizontal distance",
+          "source": "src/Game/RAZIEL/SENSES.c:71"
+        },
+        {
+          "name": "grabEngageZMin",
+          "value": -256,
+          "unit": "engine units of vertical offset, negative is below",
+          "source": "src/Game/RAZIEL/SENSES.c:71"
+        },
+        {
+          "name": "grabEngageZMax",
+          "value": 640,
+          "unit": "engine units of vertical offset, positive is above",
+          "source": "src/Game/RAZIEL/SENSES.c:71"
+        },
+        {
+          "name": "pickupEngageRadius",
+          "value": 525,
+          "unit": "engine units of horizontal distance",
+          "source": "src/Game/RAZIEL/SENSES.c:103"
+        },
+        {
+          "name": "bladeTargetRange",
+          "value": 3200,
+          "unit": "engine units of distance",
+          "source": "src/Game/RAZIEL/SENSES.c:292"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "line": 83
+        },
+        {
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "line": 71
+        },
+        {
+          "path": "src/Game/RAZIEL/SENSES.c",
+          "line": 103
+        },
+        {
+          "path": "src/Game/MATH3D.c",
+          "line": 611
+        }
+      ],
+      "capabilities": [
+        "cone-based targeting",
+        "per-category distance windows",
+        "nearest candidate selection",
+        "vertical offset gates"
+      ],
+      "tags": [
+        "interaction",
+        "targeting",
+        "combat",
+        "feel"
+      ]
+    },
+    {
+      "id": "attack-chain",
+      "node": "combat",
+      "name": "Table-driven melee chain",
+      "summary": "Each swing is a table entry with its own animation, ignore delay and power scale, and the chain advances by table index rather than by state.",
+      "behavior": "Melee is table driven from the first frame. An attack index selects a row, and the row is selected again by what the character is holding, so the same button produces a different swing with empty hands, with a light object, with a heavy object or with the charged blade. Each row supplies the animation, the number of frames to blend it in over, an effect ribbon, an ignore delay in animation frames, a power scale, a knockback distance and a knockback frame count. Damage is not read from the animation. It arrives as a contact message raised by the weapon or hand collision, and the raw power carried by that contact is multiplied by the row's power scale in 4096ths before being sent to the target, with the body hit by the previous swing passed along in the same message. Chaining is positional: once the current row's animation passes its ignore delay and the table still holds a non-empty row at the next index, the state increments the index and switches to that row's animation, so a three-hit string costs three table rows instead of three separate states. Two timers are attached to specific rows: the high attack indices hold an auto-facing window open for 4 frames, and row 5 sets a single-frame timer. Swing states also temporarily raise the ledge drop-off height to 256 units and set a fall velocity of -96 units per update, so a swing performed at a ledge does not immediately slide the body off it.",
+      "constants": [
+        {
+          "name": "powerScaleDivisor",
+          "value": 4096,
+          "unit": "fixed-point divisor for a 1.0x power multiplier",
+          "source": "src/Game/RAZIEL/ATTACK.c:668"
+        },
+        {
+          "name": "swingDropOffHeight",
+          "value": 256,
+          "unit": "engine units of height tolerance while the swing is running",
+          "source": "src/Game/RAZIEL/ATTACK.c:379"
+        },
+        {
+          "name": "swingFallVelocity",
+          "value": -96,
+          "unit": "engine units of vertical speed per update at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/ATTACK.c:381"
+        },
+        {
+          "name": "specialAutoFaceFrames",
+          "value": 4,
+          "unit": "updates at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/ATTACK.c:305"
+        },
+        {
+          "name": "chargeReleaseFrames",
+          "value": 1,
+          "unit": "updates at the 33 ms nominal frame",
+          "source": "src/Game/RAZIEL/ATTACK.c:317"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "line": 668
+        },
+        {
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "line": 357
+        },
+        {
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "line": 441
+        },
+        {
+          "path": "src/Game/RAZIEL/ATTACK.c",
+          "line": 236
+        }
+      ],
+      "capabilities": [
+        "combo chaining",
+        "weapon-class move tables",
+        "contact-driven damage",
+        "knockback parameters"
+      ],
+      "tags": [
+        "combat",
+        "melee",
+        "combo",
+        "animation events"
+      ]
+    },
+    {
+      "id": "reaver-charge",
+      "node": "reaver",
+      "name": "Blade charge cycle",
+      "summary": "While the blade is charged a countdown and a rumble ramp run together, and the cycle re-arms itself on a fixed period instead of ending.",
+      "behavior": "The charged blade runs its own timer, counted down by the same per-update time multiplier as everything else, and while that timer is non-zero the controller rumble is re-armed every single update rather than being started once. The rumble strength is derived from a separate accumulator that climbs toward a cap of 245759 in time-multiplier units: below the cap the strength is the accumulator divided by 4096 plus a base of 50, and above it the strength is pinned at 110, so the motor ramps from 50 to 110 over roughly two seconds and then holds at maximum. Each update the pad is re-armed with a 20480-unit duration, which is why a long feed does not drop back to silence partway through. When the countdown reaches zero the effect is not stopped: a full 61440 time-multiplier units are added back to the timer and a blast ring is fired, so the visual pulse and the rumble ramp repeat on a fixed period for as long as the blade stays charged. Cancelling zeroes the timer and the accumulator and stops the motor in one call, which is what makes the effect end cleanly when the blade is put away.",
+      "constants": [
+        {
+          "name": "shockRampCap",
+          "value": 245759,
+          "unit": "time-multiplier units, where 4096 is one 33 ms update",
+          "source": "src/Game/REAVER.c:248"
+        },
+        {
+          "name": "shockBaseStrength",
+          "value": 50,
+          "unit": "controller rumble strength units",
+          "source": "src/Game/REAVER.c:252"
+        },
+        {
+          "name": "shockMaxStrength",
+          "value": 110,
+          "unit": "controller rumble strength units",
+          "source": "src/Game/REAVER.c:256"
+        },
+        {
+          "name": "shockRearmSpan",
+          "value": 20480,
+          "unit": "time-multiplier units, where 4096 is one 33 ms update",
+          "source": "src/Game/REAVER.c:259"
+        },
+        {
+          "name": "chargeCycleLength",
+          "value": 61440,
+          "unit": "time-multiplier units, about 15 updates at the 33 ms nominal frame",
+          "source": "src/Game/REAVER.c:263"
+        },
+        {
+          "name": "shockScale",
+          "value": 4096,
+          "unit": "time-multiplier units per nominal update",
+          "source": "src/Game/REAVER.c:252"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/REAVER.c",
+          "line": 248
+        },
+        {
+          "path": "src/Game/REAVER.c",
+          "line": 252
+        },
+        {
+          "path": "src/Game/REAVER.c",
+          "line": 259
+        },
+        {
+          "path": "src/Game/REAVER.c",
+          "line": 263
+        }
+      ],
+      "capabilities": [
+        "charge countdown",
+        "rumble ramp",
+        "cyclic blast effect",
+        "clean cancel"
+      ],
+      "tags": [
+        "combat",
+        "weapon",
+        "feedback",
+        "timers"
+      ]
+    },
+    {
+      "id": "health-planes",
+      "node": "health",
+      "name": "Health counter and plane transfer",
+      "summary": "One health integer serves both planes, but its ceiling, its recovery rule and its floor differ, and crossing 100000 is what moves the body between them.",
+      "behavior": "Both planes share one health integer, but the rules attached to it are deliberately asymmetric. One branch regenerates the counter toward a ceiling that scales with the number of health upgrades collected, drains it at a fixed weight while the body is under water without the swim ability, and hands the body to the other plane the instant the counter drops below 100000. Above 100000 that same branch keeps climbing into a warning band that ends at 150000: inside the band a separate accumulator drains, its period is derived from how far the counter is above 100000, and it is floored at 18750 so the warning never slows to a stop near the bottom of the band. The other branch is bounded hard at 100000, converges to that value from either side, and stops dead at 525: at 525 it plays a fixed reaction animation, sets a state lock, and refuses to let the counter pass further until it is restored. Incoming damage is only applied while the counter is above that 525 floor, so a single large hit cannot step over it, and every damage value is expressed in 4096ths before being scaled into the counter, which makes a full-power hit worth 20000 health units on a 4096-unit scale.",
+      "constants": [
+        {
+          "name": "cappedBranchCeiling",
+          "value": 100000,
+          "unit": "health units",
+          "source": "src/Game/RAZIEL/HEALTH.c:115"
+        },
+        {
+          "name": "healthPerUpgrade",
+          "value": 100000,
+          "unit": "health units added to the scaled ceiling per upgrade collected",
+          "source": "src/Game/RAZIEL/HEALTH.c:119"
+        },
+        {
+          "name": "damageFloor",
+          "value": 525,
+          "unit": "health units",
+          "source": "src/Game/RAZIEL/HEALTH.c:53"
+        },
+        {
+          "name": "warningBandCeiling",
+          "value": 150000,
+          "unit": "health units",
+          "source": "src/Game/RAZIEL/HEALTH.c:177"
+        },
+        {
+          "name": "warningDrainFloor",
+          "value": 18750,
+          "unit": "health units of remaining excess",
+          "source": "src/Game/RAZIEL/HEALTH.c:187"
+        },
+        {
+          "name": "fullPowerHitValue",
+          "value": 20000,
+          "unit": "health units delivered by a 4096-unit power hit",
+          "source": "src/Game/RAZIEL/HEALTH.c:41"
+        },
+        {
+          "name": "powerScale",
+          "value": 4096,
+          "unit": "power units for a 1.0x hit",
+          "source": "src/Game/RAZIEL/HEALTH.c:41"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 166
+        },
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 177
+        },
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 216
+        },
+        {
+          "path": "src/Game/RAZIEL/HEALTH.c",
+          "line": 53
+        }
+      ],
+      "capabilities": [
+        "dual-plane health",
+        "upgrade-scaled ceiling",
+        "low-health floor",
+        "warning band drain"
+      ],
+      "tags": [
+        "health",
+        "progression",
+        "survival",
+        "rules"
+      ]
+    },
+    {
+      "id": "look-around",
+      "node": "player-state",
+      "name": "Free-look head offset",
+      "summary": "Standing still, the right stick drives an upper-body aim offset with asymmetric limits rather than moving the camera directly.",
+      "behavior": "In the handful of states that allow it, the right stick does not orbit the camera. It accumulates a head and torso offset that is layered on top of whatever the animation is playing. The stick's vertical axis is divided by 4 and its horizontal axis by 3 before it is accumulated, so sideways head turn is a third faster than the vertical nod for the same stick travel. The accumulated value is wrapped into the signed half-turn range and then clamped, which gives the offset two different characters: the pitch axis is limited to -768 below zero and 512 above it, while the yaw axis is allowed a full quarter turn in either direction at -1024 and 1024. The clamped offset is then distributed across three additive skeleton controllers at decreasing fractions, half on the torso, three tenths on the chest and a fifth on the head, so the whole upper body turns rather than just the neck. Releasing the look interpolates those three controllers away over a 300-unit ramp, so the body returns to the animation's own pose instead of snapping back. The look is only permitted while the character is standing idle, mid-throw or in the water, so it can never be used to aim during a run or a fall.",
+      "constants": [
+        {
+          "name": "pitchDownLimit",
+          "value": -768,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6784"
+        },
+        {
+          "name": "pitchUpLimit",
+          "value": 512,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6785"
+        },
+        {
+          "name": "yawLimit",
+          "value": 1024,
+          "unit": "engine angle units in the 4096-unit turn",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6791"
+        },
+        {
+          "name": "pitchStickDivisor",
+          "value": 4,
+          "unit": "divisor applied to vertical stick travel",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6763"
+        },
+        {
+          "name": "yawStickDivisor",
+          "value": 3,
+          "unit": "divisor applied to horizontal stick travel",
+          "source": "src/Game/RAZIEL/RAZIEL.c:6764"
+        },
+        {
+          "name": "torsoShare",
+          "value": 2,
+          "unit": "divisor applied to the offset for the torso controller, so it takes half",
+          "source": "src/Game/RAZIEL/RAZLIB.c:178"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 6763
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZIEL.c",
+          "line": 6784
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 178
+        },
+        {
+          "path": "src/Game/RAZIEL/RAZLIB.c",
+          "line": 194
+        }
+      ],
+      "capabilities": [
+        "free look",
+        "layered skeleton offset",
+        "asymmetric aim limits",
+        "interpolated release"
+      ],
+      "tags": [
+        "camera",
+        "look",
+        "animation",
+        "feel"
+      ]
+    }
+  ]
+}
