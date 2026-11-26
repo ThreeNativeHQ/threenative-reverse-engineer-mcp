@@ -1,0 +1,2575 @@
+{
+  "version": 1,
+  "id": "super-mario-galaxy-2",
+  "title": "Super Mario Galaxy 2",
+  "repo": "https://github.com/SMGCommunity/Garigari",
+  "sha": "b0a4c5663e026cf60ec27905eee221c8c43b710d",
+  "nodes": [
+    {
+      "id": "frame-pacing",
+      "name": "Movement tick",
+      "purpose": "Owns the simulation cadence: the frame control pins one video retrace per movement update on non-PAL hardware and expresses the same choice as a one-frame tick rate on PAL, so every per-update constant in this map shares one step",
+      "paths": [
+        "src/Game/System/GameSystemFrameControl.cpp",
+        "src/Game/System/MainLoopFramework.cpp"
+      ],
+      "functions": [
+        {
+          "name": "setMovement60fps",
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "lines": [
+            8,
+            18
+          ]
+        },
+        {
+          "name": "waitForRetrace",
+          "path": "src/Game/System/MainLoopFramework.cpp",
+          "lines": [
+            215,
+            218
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "gravity-field",
+      "name": "Planet gravity field",
+      "purpose": "One manager blends every placed gravity zone at a queried position: zones are priority sorted, equal priorities add, the strongest contributor is reported back, and the base class turns a zone's surface distance into an inverse-square pull",
+      "paths": [
+        "src/Game/Gravity/PlanetGravity.cpp",
+        "src/Game/Gravity/PlanetGravityManager.cpp",
+        "src/Game/Gravity/GravityInfo.cpp",
+        "src/Game/Util/GravityUtil.cpp",
+        "include/Game/Gravity/PlanetGravityManager.hpp"
+      ],
+      "functions": [
+        {
+          "name": "PlanetGravity::calcGravity",
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "lines": [
+            13,
+            40
+          ]
+        },
+        {
+          "name": "calcTotalGravityVector",
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "lines": [
+            12,
+            80
+          ]
+        },
+        {
+          "name": "GravityInfo::init",
+          "path": "src/Game/Gravity/GravityInfo.cpp",
+          "lines": [
+            6,
+            9
+          ]
+        },
+        {
+          "name": "settingGravityParamFromJMap",
+          "path": "src/Game/Util/GravityUtil.cpp",
+          "lines": [
+            114,
+            137
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "gravity-shapes",
+      "name": "Gravity zone shapes",
+      "purpose": "Each shape answers one question at a position: which way is down and how far the nearest surface is. Disc, plane, barrel, cone, point, segment and wire variants share the base field and differ only in that surface query",
+      "paths": [
+        "src/Game/Gravity/DiskGravity.cpp",
+        "src/Game/Gravity/ParallelGravity.cpp",
+        "src/Game/Gravity/BarrelGravity.cpp",
+        "src/Game/Gravity/ConeGravity.cpp",
+        "src/Game/Gravity/PointGravity.cpp",
+        "src/Game/Gravity/SegmentGravity.cpp"
+      ],
+      "functions": [
+        {
+          "name": "DiskGravity::calcOwnGravityVector",
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "lines": [
+            43,
+            93
+          ]
+        },
+        {
+          "name": "ParallelGravity::calcOwnGravityVector",
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "lines": [
+            16,
+            26
+          ]
+        },
+        {
+          "name": "BarrelGravity::calcOwnGravityVector",
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "lines": [
+            39,
+            70
+          ]
+        },
+        {
+          "name": "ConeGravity::calcOwnGravityVector",
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "lines": [
+            33,
+            161
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gravity-field"
+      ]
+    },
+    {
+      "id": "gravity-placement",
+      "name": "Gravity zone placement",
+      "purpose": "Placed gravity objects build their zone from the object transform and its map arguments, and a follow matrix re-poses the zone every update when it rides a moving host",
+      "paths": [
+        "src/Game/Gravity/GravityCreator.cpp",
+        "src/Game/Gravity/GlobalGravityObj.cpp",
+        "src/Game/Gravity/GravityFollower.cpp"
+      ],
+      "functions": [
+        {
+          "name": "BarrelGravityCreator::settingFromSRT",
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "lines": [
+            67,
+            77
+          ]
+        },
+        {
+          "name": "DiskGravityCreator::settingFromSRT",
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "lines": [
+            146,
+            161
+          ]
+        },
+        {
+          "name": "PlaneInCylinderGravityCreator::settingFromSRT",
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "lines": [
+            328,
+            340
+          ]
+        },
+        {
+          "name": "GravityFollower::update",
+          "path": "src/Game/Gravity/GravityFollower.cpp",
+          "lines": [
+            15,
+            27
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gravity-shapes"
+      ]
+    },
+    {
+      "id": "actor-kinematics",
+      "name": "Actor motion helpers",
+      "purpose": "Gravity-relative motion shared by every actor: build a basis from the local down vector, split velocity into along-gravity and tangential parts, damp each, bounce off floor, wall and ceiling normals, and turn a push into a capped speed along a direction",
+      "paths": [
+        "src/Game/Util/ActorMovementUtil.cpp",
+        "include/Game/Util/MathUtil.hpp"
+      ],
+      "functions": [
+        {
+          "name": "calcMtxFromGravityAndZAxis",
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "lines": [
+            367,
+            394
+          ]
+        },
+        {
+          "name": "turnQuatUpToGravity",
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "lines": [
+            490,
+            506
+          ]
+        },
+        {
+          "name": "reboundVelocityFromEachCollision",
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "lines": [
+            856,
+            890
+          ]
+        },
+        {
+          "name": "applyVelocityDampAndGravity",
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "lines": [
+            943,
+            974
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gravity-field"
+      ]
+    },
+    {
+      "id": "actor-state",
+      "name": "Nerve state machine",
+      "purpose": "Every actor runs one state per update: the spine applies a pending state before and after the state body, resets the step counter on a swap and increments it once per update, so state logic can gate on elapsed updates",
+      "paths": [
+        "src/Game/LiveActor/Spine.cpp",
+        "src/Game/LiveActor/ActorStateKeeper.cpp"
+      ],
+      "functions": [
+        {
+          "name": "Spine::update",
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "lines": [
+            11,
+            16
+          ]
+        },
+        {
+          "name": "Spine::setNerve",
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "lines": [
+            18,
+            25
+          ]
+        },
+        {
+          "name": "ActorStateKeeper::startState",
+          "path": "src/Game/LiveActor/ActorStateKeeper.cpp",
+          "lines": [
+            26,
+            33
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "enemy-combat",
+      "name": "Enemy attacks",
+      "purpose": "Hostile patterns with readable windows: a thrown fireball that can be frozen, reflected and culled, a tongue ghost that chases, tackles and spins the player, and rock projectiles launched out of a hip drop",
+      "paths": [
+        "src/Game/Enemy/FireBall.cpp",
+        "src/Game/Enemy/FireBallSpread.cpp",
+        "src/Game/Enemy/BombTeresa.cpp",
+        "src/Game/Enemy/AttackRock.cpp",
+        "src/Game/Enemy/AttackRockUtil.cpp"
+      ],
+      "functions": [
+        {
+          "name": "FireBall::exeThrow",
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "lines": [
+            218,
+            242
+          ]
+        },
+        {
+          "name": "FireBall::exeReflect",
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "lines": [
+            250,
+            261
+          ]
+        },
+        {
+          "name": "FireBallSpread::fn_8017DF50",
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "lines": [
+            209,
+            216
+          ]
+        },
+        {
+          "name": "BombTeresa::exeChase",
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "lines": [
+            500,
+            514
+          ]
+        },
+        {
+          "name": "BombTeresa::exeDirectTackle",
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "lines": [
+            545,
+            560
+          ]
+        },
+        {
+          "name": "BombTeresa::addTeresaSpinPullVelocity",
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "lines": [
+            839,
+            844
+          ]
+        },
+        {
+          "name": "startAttack",
+          "path": "src/Game/Enemy/AttackRockUtil.cpp",
+          "lines": [
+            36,
+            50
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-kinematics",
+        "actor-state"
+      ]
+    },
+    {
+      "id": "ride-objects",
+      "name": "Ride and input objects",
+      "purpose": "Objects that take the player for a stretch: a rope with a point chain, a vine that climbs a rail, a tube slide that rides a rail inside a pipe, and the tilt controller that turns a motion sensor into a rolling sphere",
+      "paths": [
+        "src/Game/Ride/SwingRope.cpp",
+        "src/Game/Ride/SwingRopePoint.cpp",
+        "src/Game/Ride/Plant.cpp",
+        "src/Game/Ride/TubeSlider.cpp",
+        "src/Game/Ride/SphereAccelSensorController.cpp"
+      ],
+      "functions": [
+        {
+          "name": "SwingRope::updateHangPoint",
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "lines": [
+            477,
+            536
+          ]
+        },
+        {
+          "name": "SwingRopePoint::restrict",
+          "path": "src/Game/Ride/SwingRopePoint.cpp",
+          "lines": [
+            12,
+            40
+          ]
+        },
+        {
+          "name": "Plant::updateHangUp",
+          "path": "src/Game/Ride/Plant.cpp",
+          "lines": [
+            618,
+            639
+          ]
+        },
+        {
+          "name": "Plant::tryAccelHangUp",
+          "path": "src/Game/Ride/Plant.cpp",
+          "lines": [
+            726,
+            747
+          ]
+        },
+        {
+          "name": "TubeSlider::updatePlayer",
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "lines": [
+            628,
+            758
+          ]
+        },
+        {
+          "name": "SphereAccelSensorController::clacXY",
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "lines": [
+            73,
+            125
+          ]
+        }
+      ],
+      "dependsOn": [
+        "actor-kinematics",
+        "actor-state"
+      ]
+    },
+    {
+      "id": "world-objects",
+      "name": "Field objects",
+      "purpose": "Map objects that add a force or a hazard to the space around them: a fan that pushes along its facing with a linear falloff, and a black hole that swallows whatever enters its sensor",
+      "paths": [
+        "src/Game/MapObj/BigFan.cpp",
+        "src/Game/MapObj/BlackHole.cpp"
+      ],
+      "functions": [
+        {
+          "name": "BigFan::calcWindInfo",
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "lines": [
+            86,
+            122
+          ]
+        },
+        {
+          "name": "BlackHole::attackSensor",
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "lines": [
+            93,
+            113
+          ]
+        },
+        {
+          "name": "BlackHole::initMapToolInfo",
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "lines": [
+            123,
+            147
+          ]
+        }
+      ],
+      "dependsOn": [
+        "gravity-field"
+      ]
+    },
+    {
+      "id": "camera-cues",
+      "name": "Camera programs and distance cues",
+      "purpose": "Camera side of gameplay: an actor camera set identifier selects a named event camera program for a scripted shot, and an animation driven table fires rumble and shake tiers by the distance between the actor and the player",
+      "paths": [
+        "src/Game/Util/ActorCameraUtil.cpp",
+        "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp"
+      ],
+      "functions": [
+        {
+          "name": "initMultiActorCameraNoInit",
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "lines": [
+            59,
+            75
+          ]
+        },
+        {
+          "name": "updatePadAndCamera",
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "lines": [
+            127,
+            144
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "movement-tick",
+      "node": "frame-pacing",
+      "name": "Sixty hertz movement tick",
+      "summary": "The simulation advances on one fixed beat: a single video retrace per movement update on non-PAL hardware, and an explicit one-frame tick rate on PAL",
+      "behavior": "The frame control owns the cadence and selects the sixty per second movement rate when it is constructed. On non-PAL hardware that method stores a retrace count of one and a zero tick duration, so each movement update waits for exactly one video retrace; when the console reports the PAL video format the same decision is written as a tick rate taken from one frame instead. Nothing below this layer owns a clock. Actor states, gravity blending, velocity integration, ride objects and enemy decision logic are all written as once per movement update, so one update is one sixtieth of a second on the hardware the reference targets and every per-update constant in this map converts to a rate by multiplying by sixty. Because the rate is declared rather than derived from frame times, gameplay timers are authored in whole updates rather than in seconds.",
+      "constants": [
+        {
+          "name": "retracesPerMovementUpdate",
+          "value": 1,
+          "unit": "video retraces per movement update, one update per retrace at 60 Hz",
+          "source": "src/Game/System/GameSystemFrameControl.cpp:15"
+        },
+        {
+          "name": "extraTickDelay",
+          "value": 0,
+          "unit": "ticks of added delay per movement update at 60 Hz",
+          "source": "src/Game/System/GameSystemFrameControl.cpp:16"
+        },
+        {
+          "name": "palTickRateFrames",
+          "value": 1,
+          "unit": "frames per movement update on PAL, converted once into a tick duration when movement starts",
+          "source": "src/Game/System/GameSystemFrameControl.cpp:12"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "line": 8
+        },
+        {
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "line": 9
+        },
+        {
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "line": 12
+        },
+        {
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "line": 15
+        },
+        {
+          "path": "src/Game/System/GameSystemFrameControl.cpp",
+          "line": 16
+        },
+        {
+          "path": "src/Game/System/MainLoopFramework.cpp",
+          "line": 216
+        }
+      ],
+      "capabilities": [
+        "fixed simulation step",
+        "pal cadence conversion",
+        "per-update constant conversion"
+      ],
+      "tags": [
+        "timing",
+        "frame rate",
+        "simulation step"
+      ]
+    },
+    {
+      "id": "gravity-falloff",
+      "node": "gravity-field",
+      "name": "Inverse-square pull toward a zone surface",
+      "summary": "A zone reports a direction and a distance to the surface it attracts to, and the base field turns that distance into a pull that falls off with the square of it, floored at one unit so contact never divides by zero",
+      "behavior": "Every zone answers the same surface query: given a world position, return the direction attraction acts along and the distance to the nearest surface, or decline when the position is outside the zone. The base field then subtracts the zone's distant offset from that distance, lifts the remainder to a minimum of one unit, and scales the unit direction by four million divided by the squared radius. A zone marked inverse negates the pull so it repels, and a zone flagged for zero gravity writes a null vector while still reporting that the position is in range. Because the result is a direction times that scalar, the pull is enormous near a surface and decays quickly with distance, and the one-unit floor is what stops a body resting on the surface from receiving an infinite pull. The zone also stamps the pull with its type and power, so a caller can tell a normal fall from a shadow fall or a magnet field and can tell light from heavy mass without re-querying the field.",
+      "constants": [
+        {
+          "name": "falloffNumerator",
+          "value": 4000000,
+          "unit": "position units cubed in the falloff numerator, evaluated once per query per update at 60 Hz",
+          "source": "src/Game/Gravity/PlanetGravity.cpp:27"
+        },
+        {
+          "name": "minimumFalloffRadius",
+          "value": 1,
+          "unit": "position units, clamped once per query per update at 60 Hz",
+          "source": "src/Game/Gravity/PlanetGravity.cpp:23"
+        },
+        {
+          "name": "rangeDisabledSentinel",
+          "value": -1,
+          "unit": "position units; a negative range disables the range test on every query",
+          "source": "src/Game/Gravity/PlanetGravity.cpp:5"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 13
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 21
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 23
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 27
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 30
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravity.cpp",
+          "line": 47
+        }
+      ],
+      "capabilities": [
+        "inverse-square attraction",
+        "legal repelling zones",
+        "zero gravity zones",
+        "gravity type and power tagging"
+      ],
+      "tags": [
+        "gravity",
+        "physics",
+        "falloff"
+      ]
+    },
+    {
+      "id": "gravity-priority",
+      "node": "gravity-field",
+      "name": "Priority blending of overlapping zones",
+      "summary": "Overlapping zones resolve by priority: the manager walks a priority sorted array, stops at the first weaker zone, adds zones that tie for the top priority and normalises the sum into one unit direction",
+      "behavior": "Zones are registered into a fixed array of one hundred and twenty-eight slots that an insertion pass keeps in descending priority order, which lets a query stop as soon as it meets a zone weaker than the best one it has already added. The walk skips zones whose validity flag is down, zones whose type bits do not intersect the requested context, and zones hosted by the requesting actor itself, which is how a planet can host a field without being pulled by it. A zone below the running maximum priority ends the walk. A zone that ties the maximum adds its pull to the accumulator and, when its magnitude beats the previous best, replaces the recorded winner. A zone above the maximum replaces the accumulator outright. The accumulated vector is normalised at the end and the call reports whether anything contributed, so an actor standing outside every zone reads as zero gravity and can fall along a straight line. The report handed back to the caller carries the winning zone, its priority and its own pull, which is how a body learns it is inside a light or heavy field without a second query.",
+      "constants": [
+        {
+          "name": "zoneSlotCount",
+          "value": 128,
+          "unit": "zones registered per stage, fixed at compile time and scanned once per query per update",
+          "source": "include/Game/Gravity/PlanetGravityManager.hpp:51"
+        },
+        {
+          "name": "priorityScanSeed",
+          "value": -1,
+          "unit": "priority value used as the running maximum, reset once per gravity query",
+          "source": "src/Game/Gravity/PlanetGravityManager.cpp:24"
+        },
+        {
+          "name": "magnitudeScanSeed",
+          "value": -1,
+          "unit": "pull magnitude in position units per update squared, reset once per gravity query",
+          "source": "src/Game/Gravity/PlanetGravityManager.cpp:23"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 12
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 33
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 37
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 41
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 47
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 62
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 67
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 75
+        },
+        {
+          "path": "src/Game/Gravity/PlanetGravityManager.cpp",
+          "line": 91
+        },
+        {
+          "path": "include/Game/Gravity/PlanetGravityManager.hpp",
+          "line": 51
+        }
+      ],
+      "capabilities": [
+        "overlapping zone blending",
+        "priority short circuit",
+        "self host exclusion",
+        "normalised gravity direction"
+      ],
+      "tags": [
+        "gravity",
+        "priority",
+        "blending"
+      ]
+    },
+    {
+      "id": "disc-gravity",
+      "node": "gravity-shapes",
+      "name": "Disc surface gravity",
+      "summary": "A disc zone makes a flat plate walkable from either side: above the plate the pull points down through it, below it points up, and beyond the rim the pull swings toward the nearest edge point",
+      "behavior": "The disc is a plane with a radius and an optional wedge. For a position the query takes the vector from the disc centre, projects it onto the disc normal to get a signed height, and subtracts that projection to get the in-plane offset. A single sided zone declines at once when the height is negative. A wedge narrows the zone to a slice of the plate by comparing the offset direction against the cosine of half the configured angle, and a full three hundred and sixty degrees leaves that test effectively off. Inside the radius the pull runs along the normal, pointing back toward the plate from whichever side the position is on, and the reported distance is the absolute height, so a body above the plate falls onto its top face and a body below falls onto the underside. Outside the radius, when edge gravity is enabled, the query finds the nearest point on the rim circle and pulls toward that instead, which rounds the field off at the plate boundary rather than switching it off at a seam. The world radius, normal and wedge axis are re-derived from the host matrix on every transform update, so a scaled or rotated emitter scales and tilts the walkable plate with it.",
+      "constants": [
+        {
+          "name": "defaultRadius",
+          "value": 2500,
+          "unit": "position units against the emitter transform, recomputed every transform update",
+          "source": "src/Game/Gravity/DiskGravity.cpp:6"
+        },
+        {
+          "name": "defaultPlaneElevation",
+          "value": 50,
+          "unit": "position units along the emitter local up axis, applied once per transform update",
+          "source": "src/Game/Gravity/DiskGravity.cpp:5"
+        },
+        {
+          "name": "defaultWedgeAngle",
+          "value": 360,
+          "unit": "degrees of in-plane wedge, tested on every query",
+          "source": "src/Game/Gravity/DiskGravity.cpp:7"
+        },
+        {
+          "name": "wedgeDisabledCosine",
+          "value": -1,
+          "unit": "cosine of half the wedge angle; minus one leaves the wedge test disabled on every query",
+          "source": "src/Game/Gravity/DiskGravity.cpp:7"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 43
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 47
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 49
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 53
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 57
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 65
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 76
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 80
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 102
+        },
+        {
+          "path": "src/Game/Gravity/DiskGravity.cpp",
+          "line": 113
+        }
+      ],
+      "capabilities": [
+        "two sided plate gravity",
+        "angular wedge limit",
+        "rim attraction beyond the radius",
+        "transform driven rescaling"
+      ],
+      "tags": [
+        "gravity",
+        "disc",
+        "surface"
+      ]
+    },
+    {
+      "id": "directional-gravity",
+      "node": "gravity-shapes",
+      "name": "Directional gravity volume",
+      "summary": "A plane zone gives a whole box or cylinder one fixed down direction: the pull is the negated plane normal everywhere inside, and the range shape alone decides where that applies",
+      "behavior": "This zone stores a plane normal, a plane position and a range shape, and nothing about direction depends on where the queried point sits, so the pull inside the volume is exactly the negated world normal. Acceptance carries the whole mechanic. A sphere mode accepts every position while the range is negative and otherwise compares squared distance to the plane position against the squared range. A box mode builds a world matrix from the emitter transform and rejects positions outside any of the three axis extents. A cylinder mode uses a radius and a height around the normal axis. The distance reported to the caller is the zone base distance rather than a distance to any surface, and setting a negative base distance restores the two thousand unit default, so downstream code that reads the scalar gets a flat falloff reference. The plane family also has zero gravity creators, which build the same plane or box and set the null pull flag on the instance, giving a room or a shaft a true zero gravity pocket with identical containment rules.",
+      "constants": [
+        {
+          "name": "defaultCylinderHeight",
+          "value": 1000,
+          "unit": "position units along the plane normal, compared per query",
+          "source": "src/Game/Gravity/ParallelGravity.cpp:10"
+        },
+        {
+          "name": "defaultCylinderRadius",
+          "value": 500,
+          "unit": "position units from the plane normal axis, compared per query",
+          "source": "src/Game/Gravity/ParallelGravity.cpp:10"
+        },
+        {
+          "name": "defaultBaseDistance",
+          "value": 2000,
+          "unit": "position units reported as the zone distance on every query",
+          "source": "src/Game/Gravity/ParallelGravity.cpp:10"
+        },
+        {
+          "name": "baseDistanceRestore",
+          "value": 2000,
+          "unit": "position units assigned once when a negative base distance is set",
+          "source": "src/Game/Gravity/ParallelGravity.cpp:67"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 9
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 10
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 16
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 22
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 65
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 67
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 82
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 88
+        },
+        {
+          "path": "src/Game/Gravity/ParallelGravity.cpp",
+          "line": 100
+        }
+      ],
+      "capabilities": [
+        "uniform down direction",
+        "sphere, box and cylinder containment",
+        "zero gravity pocket variant"
+      ],
+      "tags": [
+        "gravity",
+        "plane",
+        "volume"
+      ]
+    },
+    {
+      "id": "barrel-gravity",
+      "node": "gravity-shapes",
+      "name": "Barrel interior gravity",
+      "summary": "A barrel zone works only between its base plane and its height, and its pull runs tangent to the axis, rotated inward by an angle that grows as a body nears the centre and stops at forty-five degrees",
+      "behavior": "The barrel is a finite cylinder described by a base point, an up direction and a radius. A position is accepted only when its projection onto the up direction is strictly positive and strictly below the world height, so the field starts just above the base disc and ends at the top. The query takes the point on the axis nearest the position, forms the vector from the position to that axis point, crosses it with the up direction and normalises, which yields the tangential direction around the barrel. The pull is then rotated about the axis by the inward threshold divided by the distance to the axis, clamped between zero and forty-five degrees. Far from the axis the pull is nearly pure tangential; close to the axis it is tilted as far as the clamp allows and carries a real inward component. That is what makes a barrel interior read as a walkable band rather than a floor: bodies are carried sideways along the wall while being drawn toward the middle. The world height is the configured radius times the length of the transformed up direction, so stretching the emitter along its up axis lengthens the barrel as well as widening it, and the pull is rejected when the distance falls outside the zone range.",
+      "constants": [
+        {
+          "name": "defaultRadius",
+          "value": 1000,
+          "unit": "position units from the barrel axis, rescaled on every transform update",
+          "source": "src/Game/Gravity/BarrelGravity.cpp:5"
+        },
+        {
+          "name": "defaultInwardsThreshold",
+          "value": 1,
+          "unit": "position units in the inward ratio numerator, evaluated on every query",
+          "source": "src/Game/Gravity/BarrelGravity.cpp:6"
+        },
+        {
+          "name": "maximumInwardTilt",
+          "value": 45,
+          "unit": "degrees away from the pure tangent, clamped on every query",
+          "source": "src/Game/Gravity/BarrelGravity.cpp:61"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 5
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 6
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 36
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 48
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 60
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/Game/Gravity/BarrelGravity.cpp",
+          "line": 63
+        }
+      ],
+      "capabilities": [
+        "finite cylinder containment",
+        "tangential gravity band",
+        "distance driven inward tilt"
+      ],
+      "tags": [
+        "gravity",
+        "cylinder",
+        "curved surface"
+      ]
+    },
+    {
+      "id": "cone-gravity",
+      "node": "gravity-shapes",
+      "name": "Cone hill gravity",
+      "summary": "A cone zone turns a conical hill into ground: the pull is perpendicular to the slanted face, aimed at the nearest point on it, with an optional flat top and an optional floor under the base",
+      "behavior": "The cone is a transform whose scale gives its radius and height. The query splits the vector from the base centre into a height along the axis and an in-plane offset. On the axis the answer is trivial: above the base the pull runs straight down the axis at a distance shortened by the top cut, and below it the pull runs straight up. Off the axis the query classifies the position as inside or outside the cone by comparing the in-plane radius against the radius the cone has at that height, and it builds the nearest point on the slanted face by scaling the offset out to that radius. Below the base plane the zone either declines when the bottom is disabled or pulls toward the nearest point on the base circle, which makes the underside of the hill walkable too. A top cut rate above one percent replaces the single face point with a frustum test, so a truncated hill stops pulling from its flat top and starts behaving like a short cylinder above the cut. Positions inside the cone are pushed straight out along the vector from the face point, which gives a body on the slope a down direction perpendicular to the slope rather than to the axis.",
+      "constants": [
+        {
+          "name": "topCutDisableThreshold",
+          "value": 0.01,
+          "unit": "fraction of cone height, tested on every query per update at 60 Hz",
+          "source": "src/Game/Gravity/ConeGravity.cpp:105"
+        },
+        {
+          "name": "defaultWedgeAngle",
+          "value": 360,
+          "unit": "degrees of wedge around the axis, tested on every query",
+          "source": "src/Game/Gravity/ConeGravity.cpp:4"
+        },
+        {
+          "name": "wedgeDisabledCosine",
+          "value": -1,
+          "unit": "cosine of half the wedge angle; minus one leaves the wedge test disabled on every query",
+          "source": "src/Game/Gravity/ConeGravity.cpp:4"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 4
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 19
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 33
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 51
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 61
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 80
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 88
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 105
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 109
+        },
+        {
+          "path": "src/Game/Gravity/ConeGravity.cpp",
+          "line": 153
+        }
+      ],
+      "capabilities": [
+        "slanted face gravity",
+        "truncated cone support",
+        "base underside gravity",
+        "interior push out"
+      ],
+      "tags": [
+        "gravity",
+        "cone",
+        "slope"
+      ]
+    },
+    {
+      "id": "gravity-emitter-scale",
+      "node": "gravity-placement",
+      "name": "Zone radius follows the emitter scale",
+      "summary": "Placed zones take their size from the object transform: each shape multiplies a half-extent constant by the scale axes it cares about, and map arguments add only the shape specific switches",
+      "behavior": "A placed gravity object is a transform plus a short argument list, and the creator for each shape turns that transform into zone parameters. A barrel takes its radius from one thousand units times the vertical scale. A cube builds a matrix translated half its height along the local up vector and pre-scaled by five hundred units on every axis, so authored scale is read as a half extent, while argument bits choose which faces are active. A disc uses five hundred units times the largest scale axis for its radius and takes its wedge from an argument, falling back to a full three hundred and sixty degrees when the argument is negative. A cone builds a full transform scaled by five hundred units and takes its top cut from an argument divided by one thousand. A cylinder range takes five hundred units times the horizontal and vertical scales. A point field sets its distant offset to five hundred units times the horizontal scale, and a segment field builds a line from two points one thousand units apart along the up vector. On top of that, a follow matrix re-poses the zone every update while the host is alive and visible, and drops the follow when it is not.",
+      "constants": [
+        {
+          "name": "barrelRadiusPerVerticalScale",
+          "value": 1000,
+          "unit": "position units per unit of emitter vertical scale, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:76"
+        },
+        {
+          "name": "boxHalfExtentPerScale",
+          "value": 500,
+          "unit": "position units per unit of emitter scale on each axis, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:279"
+        },
+        {
+          "name": "cylinderRadiusPerScale",
+          "value": 500,
+          "unit": "position units per unit of emitter horizontal scale, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:339"
+        },
+        {
+          "name": "pointDistantPerScale",
+          "value": 500,
+          "unit": "position units per unit of emitter horizontal scale, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:371"
+        },
+        {
+          "name": "segmentPointSpacing",
+          "value": 1000,
+          "unit": "position units along the emitter up axis, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:396"
+        },
+        {
+          "name": "topCutRateDivisor",
+          "value": 1000,
+          "unit": "argument units per unit of cone height, applied once per placement",
+          "source": "src/Game/Gravity/GravityCreator.cpp:243"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 67
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 76
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 160
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 174
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 243
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 279
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 339
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 371
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 396
+        },
+        {
+          "path": "src/Game/Gravity/GravityCreator.cpp",
+          "line": 349
+        },
+        {
+          "path": "src/Game/Gravity/GravityFollower.cpp",
+          "line": 22
+        }
+      ],
+      "capabilities": [
+        "transform driven zone sizing",
+        "map argument switches",
+        "zero gravity variant",
+        "zone following a moving host"
+      ],
+      "tags": [
+        "gravity",
+        "authoring",
+        "placement"
+      ]
+    },
+    {
+      "id": "surface-rebound",
+      "node": "actor-kinematics",
+      "name": "Surface rebound and hit stop",
+      "summary": "Velocity is reflected off the bound surface normal with a restitution chosen by floor, wall or ceiling, and a heavy blow freezes the scene when the player is close enough to feel it",
+      "behavior": "A bound actor hands the engine a fixed reaction vector and a polygon class. The rebound helper normalises the reaction vector, dots it with gravity to classify the contact, and picks a restitution from the floor, wall or ceiling argument. It then dots the same normal with velocity, and only when the body is moving into the surface does it correct. A slow approach simply loses its inward component and reports no bounce, so resting contact stays quiet. An approach faster than the supplied minimum first loses the inward component, which leaves only motion along the surface; the polygon variant then adds back an outward push of that impact speed times one plus the restitution for the polygon class, while the single surface variant scales what remains by a passed factor and adds an outward push of the impact speed times its own restitution argument. That difference is what makes a fast fall bounce and a scrappy one slide. Directional blows use a companion helper: it builds the direction between two sensors, kills the part that points into gravity, sets the length to the requested speed and then applies it as a minimum velocity along that direction, so a stronger blow overrides the current motion and a weaker one is ignored. When the affected actor is within a thousand units of the player the same helper asks the scene to stop for the hit, which is the freeze frame players read as impact.",
+      "constants": [
+        {
+          "name": "restitutionBias",
+          "value": 1,
+          "unit": "dimensionless, added to the per surface restitution on every bounce",
+          "source": "src/Game/Util/ActorMovementUtil.cpp:880"
+        },
+        {
+          "name": "hitStopProximity",
+          "value": 1000,
+          "unit": "position units between player and actor, tested once per blow",
+          "source": "src/Game/Util/ActorMovementUtil.cpp:1027"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 856
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 861
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 869
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 877
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 880
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 884
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 904
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 1016
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 1027
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 1035
+        }
+      ],
+      "capabilities": [
+        "per surface restitution",
+        "quiet resting contact",
+        "capped directional blow",
+        "hit stop on close blows"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "impact",
+        "combat feel"
+      ]
+    },
+    {
+      "id": "gravity-facing",
+      "node": "actor-kinematics",
+      "name": "Gravity relative facing and up axis",
+      "summary": "Actor orientation is rebuilt from the local down vector every update: up is minus gravity, the requested facing is kept, the X axis comes from a cross product, and a quaternion path turns the model up onto gravity with a special case at the antipode",
+      "behavior": "Two helpers keep a body standing on whatever surface its zone defines. The matrix helper takes gravity and a desired facing axis, sets the basis up direction to minus gravity, keeps the requested facing when it is not zero and otherwise keeps the current model facing, then crosses facing into up to obtain the side axis. When that cross product degenerates, meaning the two directions are parallel, it rebuilds the facing axis from the current model side crossed with up, so the frame never collapses. The result is written as an up, facing and position matrix, which is why a body on a wall or a ceiling is oriented by the field rather than by the world up axis. The quaternion helper is the incremental version: it rotates the model up direction onto minus gravity, but when the two are within a thousandth of exactly opposite it spins the model half a turn about its own side axis instead, avoiding the undefined rotation axis of an exact reversal. Callers that need smoothing pass separate rates for the up axis and the facing axis, and a wrapper feeds the ground normal while the body is bound and minus gravity while it is not, so the visual up follows the surface actually touched.",
+      "constants": [
+        {
+          "name": "antiparallelCosineLimit",
+          "value": -0.999,
+          "unit": "cosine between model up and the target up, tested once per alignment per update",
+          "source": "src/Game/Util/ActorMovementUtil.cpp:495"
+        },
+        {
+          "name": "nearZeroTolerance",
+          "value": 0.001,
+          "unit": "vector component magnitude, tested once per axis per update",
+          "source": "include/Game/Util/MathUtil.hpp:304"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 367
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 374
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 381
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 387
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 393
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 490
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 495
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 498
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 500
+        },
+        {
+          "path": "src/Game/Util/ActorMovementUtil.cpp",
+          "line": 508
+        },
+        {
+          "path": "include/Game/Util/MathUtil.hpp",
+          "line": 304
+        }
+      ],
+      "capabilities": [
+        "gravity aligned basis",
+        "degenerate axis recovery",
+        "antipodal turn special case",
+        "ground normal following"
+      ],
+      "tags": [
+        "movement",
+        "orientation",
+        "gravity"
+      ]
+    },
+    {
+      "id": "nerve-step-windows",
+      "node": "actor-state",
+      "name": "State step counting",
+      "summary": "A state lasts a counted number of updates: the spine runs one state per update, resets the counter on every swap and increments it after the state body runs",
+      "behavior": "Each actor owns a spine holding the current state, the pending state and an update counter. Every update the spine first applies any pending state, then runs the current state body, then increments the counter, then applies a pending state again so a swap requested inside the body takes effect before the update ends. A swap request stores the pending state and sets the counter to minus one. When the pending state is promoted it becomes current, the pending slot is cleared and the counter is set to zero, so a state body sees zero on its first run and one only on the following update. The outgoing state gets its end hook before the swap, which is how per-state cleanup happens, and a state keeper lets a sub state take over and return control by killing itself. Gameplay gates directly on this counter. A fireball needs thirty updates before the pointer can freeze it and is removed sixty updates after a reflect. A tongue ghost gives up a chase after two hundred and forty updates. A black hole winds its model down over ninety updates before it removes itself. At sixty updates per second those counts read as half a second, one second, four seconds and one and a half seconds.",
+      "constants": [
+        {
+          "name": "stepWhileSwapPending",
+          "value": -1,
+          "unit": "updates, the counter value stored while a state swap is pending",
+          "source": "src/Game/LiveActor/Spine.cpp:24"
+        },
+        {
+          "name": "stepAtFirstExecution",
+          "value": 0,
+          "unit": "updates, the counter value a state body sees on its first run",
+          "source": "src/Game/LiveActor/Spine.cpp:44"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 11
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 12
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 14
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 15
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 20
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 24
+        },
+        {
+          "path": "src/Game/LiveActor/Spine.cpp",
+          "line": 44
+        },
+        {
+          "path": "src/Game/LiveActor/ActorStateKeeper.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/Game/LiveActor/ActorStateKeeper.cpp",
+          "line": 30
+        }
+      ],
+      "capabilities": [
+        "one state per update",
+        "counter based timing",
+        "state end hooks",
+        "sub state takeover"
+      ],
+      "tags": [
+        "states",
+        "timing",
+        "animation logic"
+      ]
+    },
+    {
+      "id": "fireball-reflect",
+      "node": "enemy-combat",
+      "name": "Thrown fireball with freeze and reflect",
+      "summary": "A fireball is thrown at the player with a fixed upward aim offset, freezeable by the pointer after half a second, and reflects back at a hundred units per update while decaying and finally expiring",
+      "behavior": "A fireball spawns at a position with a speed, computes gravity there and stores its up direction as minus gravity. The aim point is the player position raised by one hundred and twenty units along that up direction, so the throw leads toward the torso rather than the feet and works on any surface orientation. Each update the throw state keeps its trail effect only while the camera is within two hundred units, and after thirty updates it tries to freeze: if the pointer locks on, the current velocity is saved and the projectile holds it in place. A spin attack converts the throw or freeze state into the reflect state; the reflect path rotates the saved velocity about the up direction by up to twenty degrees and multiplies it by one hundred, which is the speed it travels back. Every reflect update multiplies velocity by zero point nine six, and at sixty updates the projectile is removed if it has not hit anything. A bind against floor, wall or roof sends an attack message at that surface and kills the projectile, and a projectile more than seven thousand units from the player deletes itself, so stray shots clean up on their own.",
+      "constants": [
+        {
+          "name": "throwAimUpOffset",
+          "value": 120,
+          "unit": "position units along the local up axis, applied once per throw",
+          "source": "src/Game/Enemy/FireBall.cpp:29"
+        },
+        {
+          "name": "reflectSpeed",
+          "value": 100,
+          "unit": "position units per update at 60 Hz, applied once per reflect",
+          "source": "src/Game/Enemy/FireBall.cpp:30"
+        },
+        {
+          "name": "reflectDecay",
+          "value": 0.96,
+          "unit": "velocity multiplier per update at 60 Hz while reflecting",
+          "source": "src/Game/Enemy/FireBall.cpp:31"
+        },
+        {
+          "name": "freezeEnableStep",
+          "value": 30,
+          "unit": "updates at 60 Hz after spawn before the pointer may freeze it",
+          "source": "src/Game/Enemy/FireBall.cpp:32"
+        },
+        {
+          "name": "reflectLifetimeSteps",
+          "value": 60,
+          "unit": "updates at 60 Hz after a reflect before it expires",
+          "source": "src/Game/Enemy/FireBall.cpp:33"
+        },
+        {
+          "name": "forceKillDistance",
+          "value": 7000,
+          "unit": "position units from the player, tested per update",
+          "source": "src/Game/Enemy/FireBall.cpp:28"
+        },
+        {
+          "name": "reflectTiltLimit",
+          "value": 20,
+          "unit": "degrees about the local up axis, applied once per reflect",
+          "source": "src/Game/Enemy/FireBall.cpp:214"
+        },
+        {
+          "name": "modelShowDistance",
+          "value": 200,
+          "unit": "position units from the camera, tested per update",
+          "source": "src/Game/Enemy/FireBall.cpp:223"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 28
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 29
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 30
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 31
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 32
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 33
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 79
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 82
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 189
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 199
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 214
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 215
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 223
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 231
+        },
+        {
+          "path": "src/Game/Enemy/FireBall.cpp",
+          "line": 258
+        }
+      ],
+      "capabilities": [
+        "aimed throw with surface independent up",
+        "pointer freeze window",
+        "reflect with decay",
+        "out of range cleanup"
+      ],
+      "tags": [
+        "combat",
+        "projectile",
+        "enemy"
+      ]
+    },
+    {
+      "id": "tongue-ghost",
+      "node": "enemy-combat",
+      "name": "Tongue ghost chase, tackle and spin",
+      "summary": "The tongue ghost hovers on a fixed shadow height, chases with a capped turn rate and a ramping speed, swerves into a close tackle when the player is in front, and can grab the player into a spinning throw",
+      "behavior": "The ghost holds a constant height above ground using its shadow projection: an acceleration band around a one hundred and fifty unit offset with a zero point four gain and a forty unit clamp keeps it hovering, while velocity is multiplied by zero point nine each update and collision response is set to no restitution so it never bounces. Its facing turns toward the player on the gravity plane at a capped rate. In the wander state the rate is half a degree per update on a six hundred update cycle that reverses direction after four hundred. In chase it is one point four degrees per update with speed ramping to zero point nine over sixty updates. A direct tackle triggers only when the player is within nine hundred units and inside a thirty degree horizontal cone in front, winds up at ten degrees per update with a hundred unit height hold, then drives forward at one point five for one hundred and twenty updates. Chase gives up after two hundred and forty updates or two thousand units. When it catches the player the drift state swings the pair around the player centre: a shake adds twenty units to both swing scales every forty updates, the pull magnitude eases from one hundred and fifty down to seventy between updates one hundred and ninety and two hundred and forty, and the radius blend factor is zero point one five per update.",
+      "constants": [
+        {
+          "name": "hoverHeightOffset",
+          "value": 150,
+          "unit": "position units above the shadow projection, held every update at 60 Hz",
+          "source": "src/Game/Enemy/BombTeresa.cpp:126"
+        },
+        {
+          "name": "hoverAccelGain",
+          "value": 0.4,
+          "unit": "velocity units per update at 60 Hz per unit of height error",
+          "source": "src/Game/Enemy/BombTeresa.cpp:126"
+        },
+        {
+          "name": "hoverAccelClamp",
+          "value": 40,
+          "unit": "position units per update at 60 Hz",
+          "source": "src/Game/Enemy/BombTeresa.cpp:126"
+        },
+        {
+          "name": "dragPerUpdate",
+          "value": 0.9,
+          "unit": "velocity multiplier per update at 60 Hz",
+          "source": "src/Game/Enemy/BombTeresa.cpp:127"
+        },
+        {
+          "name": "chaseTimeoutSteps",
+          "value": 240,
+          "unit": "updates at 60 Hz before the chase is abandoned",
+          "source": "src/Game/Enemy/BombTeresa.cpp:305"
+        },
+        {
+          "name": "chaseRangeLimit",
+          "value": 2000,
+          "unit": "position units from the player, tested per update",
+          "source": "src/Game/Enemy/BombTeresa.cpp:305"
+        },
+        {
+          "name": "tackleTriggerRadius",
+          "value": 900,
+          "unit": "position units from the player, tested per update",
+          "source": "src/Game/Enemy/BombTeresa.cpp:314"
+        },
+        {
+          "name": "tackleTriggerCone",
+          "value": 30,
+          "unit": "degrees of horizontal facing around the front vector, tested per update",
+          "source": "src/Game/Enemy/BombTeresa.cpp:314"
+        },
+        {
+          "name": "chaseTurnRate",
+          "value": 1.4,
+          "unit": "degrees per update at 60 Hz on the gravity plane",
+          "source": "src/Game/Enemy/BombTeresa.cpp:507"
+        },
+        {
+          "name": "chaseSpeedTarget",
+          "value": 0.9,
+          "unit": "position units per update at 60 Hz at full ramp",
+          "source": "src/Game/Enemy/BombTeresa.cpp:508"
+        },
+        {
+          "name": "tackleSpeedTarget",
+          "value": 1.5,
+          "unit": "position units per update at 60 Hz at full ramp",
+          "source": "src/Game/Enemy/BombTeresa.cpp:553"
+        },
+        {
+          "name": "windUpTurnRate",
+          "value": 10,
+          "unit": "degrees per update at 60 Hz before a tackle",
+          "source": "src/Game/Enemy/BombTeresa.cpp:536"
+        },
+        {
+          "name": "driftPullStart",
+          "value": 150,
+          "unit": "position units per update at 60 Hz at the start of the pull ease",
+          "source": "src/Game/Enemy/BombTeresa.cpp:620"
+        },
+        {
+          "name": "driftRadiusStep",
+          "value": 20,
+          "unit": "position units added to each swing radius per shake",
+          "source": "src/Game/Enemy/BombTeresa.cpp:612"
+        },
+        {
+          "name": "driftShakeCooldown",
+          "value": 40,
+          "unit": "updates at 60 Hz between accepted shakes",
+          "source": "src/Game/Enemy/BombTeresa.cpp:611"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 126
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 127
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 128
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 156
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 305
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 314
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 412
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 433
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 440
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 490
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 507
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 508
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 536
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 537
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 553
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 611
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 612
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 620
+        },
+        {
+          "path": "src/Game/Enemy/BombTeresa.cpp",
+          "line": 843
+        }
+      ],
+      "capabilities": [
+        "shadow height hover",
+        "capped turn chase",
+        "facing cone tackle trigger",
+        "spin throw with eased pull"
+      ],
+      "tags": [
+        "combat",
+        "enemy",
+        "pursuit",
+        "boss"
+      ]
+    },
+    {
+      "id": "rope-swing",
+      "node": "ride-objects",
+      "name": "Rope swing point chain",
+      "summary": "A rope is a chain of points fifty units apart anchored at its top, and the rider hangs from a coordinate along it while each point integrates gravity, the stick and a length restriction",
+      "behavior": "The rope is built from its length: the point count is the length divided by fifty, points are laid out fifty units apart along the local gravity direction from the anchor, and a sled point represents the rider. On grab the grab coordinate is the projection of the player onto the rope line clamped to keep one hundred units at the top and two hundred at the bottom, and the point index is that coordinate divided by the spacing, offset by one and clamped into range. While hanging, the sled point receives the stick direction as acceleration scaled by zero point eight in the loose state and zero point five in the stretched state, plus gravity scaled by zero point six or zero point eight depending on state, and its position is then restricted to the grab coordinate so the chain cannot stretch. Friction is interpolated along the chain rather than constant: bound points run from zero point seven at the head to zero point eight at the tail, free points from zero point eight to zero point nine two, so the far end settles sooner. The slide down state accelerates the grab coordinate at half a unit per update squared, capped at ten units per update. The release jump clamps vertical speed between twenty five and fifty and horizontal between five and thirty five, taking the stick times five when a direction is held.",
+      "constants": [
+        {
+          "name": "pointSpacing",
+          "value": 50,
+          "unit": "position units between chain points, fixed once per rope",
+          "source": "src/Game/Ride/SwingRope.cpp:34"
+        },
+        {
+          "name": "hangAccelRateLoose",
+          "value": 0.8,
+          "unit": "stick acceleration multiplier per update at 60 Hz in the loose state",
+          "source": "src/Game/Ride/SwingRope.cpp:41"
+        },
+        {
+          "name": "hangAccelRateStretched",
+          "value": 0.5,
+          "unit": "stick acceleration multiplier per update at 60 Hz in the stretched state",
+          "source": "src/Game/Ride/SwingRope.cpp:42"
+        },
+        {
+          "name": "hangGravityRateLoose",
+          "value": 0.6,
+          "unit": "gravity multiplier per update at 60 Hz in the loose state",
+          "source": "src/Game/Ride/SwingRope.cpp:43"
+        },
+        {
+          "name": "hangGravityRateStretched",
+          "value": 0.8,
+          "unit": "gravity multiplier per update at 60 Hz in the stretched state",
+          "source": "src/Game/Ride/SwingRope.cpp:44"
+        },
+        {
+          "name": "hangFriction",
+          "value": 0.995,
+          "unit": "velocity multiplier per update at 60 Hz at the sled point",
+          "source": "src/Game/Ride/SwingRope.cpp:45"
+        },
+        {
+          "name": "mapRebound",
+          "value": 0.7,
+          "unit": "restitution against map collision, applied per contact",
+          "source": "src/Game/Ride/SwingRope.cpp:46"
+        },
+        {
+          "name": "slideDownAccel",
+          "value": 0.5,
+          "unit": "position units per update squared at 60 Hz",
+          "source": "src/Game/Ride/SwingRope.cpp:52"
+        },
+        {
+          "name": "slideDownSpeedCap",
+          "value": -10,
+          "unit": "position units per update at 60 Hz, downward slide speed limit",
+          "source": "src/Game/Ride/SwingRope.cpp:53"
+        },
+        {
+          "name": "grabTopMargin",
+          "value": 100,
+          "unit": "position units of rope kept above the grab coordinate, clamped once per grab",
+          "source": "src/Game/Ride/SwingRope.cpp:54"
+        },
+        {
+          "name": "grabBottomMargin",
+          "value": 200,
+          "unit": "position units of rope kept below the grab coordinate, clamped every update at 60 Hz",
+          "source": "src/Game/Ride/SwingRope.cpp:97"
+        },
+        {
+          "name": "jumpVerticalMin",
+          "value": 25,
+          "unit": "position units per update at 60 Hz on release",
+          "source": "src/Game/Ride/SwingRope.cpp:58"
+        },
+        {
+          "name": "jumpVerticalMax",
+          "value": 50,
+          "unit": "position units per update at 60 Hz on release",
+          "source": "src/Game/Ride/SwingRope.cpp:59"
+        },
+        {
+          "name": "jumpHorizontalMax",
+          "value": 35,
+          "unit": "position units per update at 60 Hz on release",
+          "source": "src/Game/Ride/SwingRope.cpp:57"
+        },
+        {
+          "name": "stickToSpeed",
+          "value": 5,
+          "unit": "position units per update at 60 Hz per unit of stick deflection",
+          "source": "src/Game/Ride/SwingRope.cpp:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 34
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 45
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 97
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 243
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 299
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 345
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 483
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 504
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 510
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 515
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 516
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 605
+        },
+        {
+          "path": "src/Game/Ride/SwingRope.cpp",
+          "line": 608
+        },
+        {
+          "path": "src/Game/Ride/SwingRopePoint.cpp",
+          "line": 31
+        },
+        {
+          "path": "src/Game/Ride/SwingRopePoint.cpp",
+          "line": 63
+        }
+      ],
+      "capabilities": [
+        "point chain rope",
+        "length constrained swing",
+        "graded chain friction",
+        "clamped release jump"
+      ],
+      "tags": [
+        "movement",
+        "rope",
+        "swing",
+        "ride"
+      ]
+    },
+    {
+      "id": "tube-slide",
+      "node": "ride-objects",
+      "name": "Tube slide rail ride",
+      "summary": "Inside the tube the player rides a rail with an automatically accelerating speed clamped between twenty and forty five units per update, while a separate lateral offset rolls the body around the tube wall",
+      "behavior": "The slide keeps the player on a rail and integrates a single speed value. Every update it adds one unit of speed, multiplies by a surface factor of zero point nine five on a slow surface, zero point nine nine five on ice and zero point nine nine elsewhere, then clamps the result to the range twenty to forty five and advances the rail coordinate by it. No stick input feeds forward speed, so the ride is a controlled fall along the rail. Steering is separate: a lateral offset is driven by the sub controller horizontal stick at zero point two one five per update, loses a cross product term of seven units per update, and is clamped to plus or minus one point four five; the body is then rotated about the rail by that offset, so leaning slides the body around the tube wall while the surface still governs speed. A jump starts the ride with twenty five units of upward power, a spin adds twenty two units of swing, and the body is turned ten degrees toward the rail direction per update so the character and the camera settle onto the tube axis.",
+      "constants": [
+        {
+          "name": "speedAccel",
+          "value": 1,
+          "unit": "position units per update at 60 Hz added before damping",
+          "source": "src/Game/Ride/TubeSlider.cpp:630"
+        },
+        {
+          "name": "slowSurfaceDamping",
+          "value": 0.95,
+          "unit": "speed multiplier per update at 60 Hz on a slow surface",
+          "source": "src/Game/Ride/TubeSlider.cpp:633"
+        },
+        {
+          "name": "iceSurfaceDamping",
+          "value": 0.995,
+          "unit": "speed multiplier per update at 60 Hz on ice",
+          "source": "src/Game/Ride/TubeSlider.cpp:635"
+        },
+        {
+          "name": "defaultSurfaceDamping",
+          "value": 0.99,
+          "unit": "speed multiplier per update at 60 Hz on a normal surface",
+          "source": "src/Game/Ride/TubeSlider.cpp:637"
+        },
+        {
+          "name": "speedFloor",
+          "value": 20,
+          "unit": "position units per update at 60 Hz, clamped every update",
+          "source": "src/Game/Ride/TubeSlider.cpp:644"
+        },
+        {
+          "name": "speedCeiling",
+          "value": 45,
+          "unit": "position units per update at 60 Hz, clamped every update",
+          "source": "src/Game/Ride/TubeSlider.cpp:644"
+        },
+        {
+          "name": "lateralStickGain",
+          "value": 0.215,
+          "unit": "radians per update at 60 Hz per unit of horizontal stick",
+          "source": "src/Game/Ride/TubeSlider.cpp:670"
+        },
+        {
+          "name": "lateralClamp",
+          "value": 1.45,
+          "unit": "radians of lateral offset from the tube floor, clamped every update",
+          "source": "src/Game/Ride/TubeSlider.cpp:671"
+        },
+        {
+          "name": "jumpPower",
+          "value": 25,
+          "unit": "position units per update at 60 Hz applied once on jump",
+          "source": "src/Game/Ride/TubeSlider.cpp:539"
+        },
+        {
+          "name": "spinKick",
+          "value": 22,
+          "unit": "position units per update at 60 Hz applied once on spin",
+          "source": "src/Game/Ride/TubeSlider.cpp:553"
+        },
+        {
+          "name": "alignRate",
+          "value": 10,
+          "unit": "degrees per update at 60 Hz toward the rail direction",
+          "source": "src/Game/Ride/TubeSlider.cpp:664"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 539
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 553
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 628
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 630
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 633
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 635
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 637
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 644
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 645
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 651
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 664
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 670
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 672
+        },
+        {
+          "path": "src/Game/Ride/TubeSlider.cpp",
+          "line": 584
+        }
+      ],
+      "capabilities": [
+        "rail based slide",
+        "auto accelerate with surface damping",
+        "lateral lean around the tube",
+        "jump and spin exits"
+      ],
+      "tags": [
+        "movement",
+        "ride",
+        "rail",
+        "physics feel"
+      ]
+    },
+    {
+      "id": "vine-climb",
+      "node": "ride-objects",
+      "name": "Vine climb and launch",
+      "summary": "The climbing vine is a rail: the rider loses zero point three units of speed per update to a gravity term, is clamped between fifteen and thirty five going up, and each shake adds one unit while the body turns at one point three times its speed",
+      "behavior": "The plant is a rail whose coordinate is the rider height. Its hang logic subtracts zero point three units of speed each update and clamps into zero to thirty five, declines to move while the speed is zero or below and flips the rail direction so the rider slides back down, then advances the rail coordinate by the current speed. A shake raises the speed by one unit, lifts it to the fifteen unit floor when the accumulated value is below, and fires a rumble; the body is rotated about the rail up axis at one point three times the current speed, capped at thirty degrees per update climbing and twenty per update descending, so climbing reads faster than falling. The grab range is seven hundred units, the body radius three hundred and the push radius fifty, so the object reads as an interactable at distance and as a solid stalk up close. Reaching the goal launches the player: the end point up vector scaled by the thirty unit default jump speed becomes the launch impulse, the player is detached with weak gravity, and the swing timer is inhibited for one hundred and twenty updates so the player cannot immediately swing away.",
+      "constants": [
+        {
+          "name": "climbGravity",
+          "value": 0.3,
+          "unit": "position units per update at 60 Hz subtracted from climb speed",
+          "source": "src/Game/Ride/Plant.cpp:50"
+        },
+        {
+          "name": "climbSpeedMin",
+          "value": 15,
+          "unit": "position units per update at 60 Hz, clamped every update",
+          "source": "src/Game/Ride/Plant.cpp:51"
+        },
+        {
+          "name": "climbSpeedMax",
+          "value": 35,
+          "unit": "position units per update at 60 Hz, clamped every update",
+          "source": "src/Game/Ride/Plant.cpp:52"
+        },
+        {
+          "name": "descendSpeedMax",
+          "value": 20,
+          "unit": "position units per update at 60 Hz, clamped every update",
+          "source": "src/Game/Ride/Plant.cpp:53"
+        },
+        {
+          "name": "shakeSpeedStep",
+          "value": 1,
+          "unit": "position units per update at 60 Hz added per shake",
+          "source": "src/Game/Ride/Plant.cpp:47"
+        },
+        {
+          "name": "turnPerSpeed",
+          "value": 1.3,
+          "unit": "degrees per update at 60 Hz per unit of climb speed",
+          "source": "src/Game/Ride/Plant.cpp:56"
+        },
+        {
+          "name": "turnCapClimbing",
+          "value": 30,
+          "unit": "degrees per update at 60 Hz",
+          "source": "src/Game/Ride/Plant.cpp:54"
+        },
+        {
+          "name": "turnCapDescending",
+          "value": 20,
+          "unit": "degrees per update at 60 Hz",
+          "source": "src/Game/Ride/Plant.cpp:55"
+        },
+        {
+          "name": "launchSpeed",
+          "value": 30,
+          "unit": "position units per update at 60 Hz applied once at the top",
+          "source": "src/Game/Ride/Plant.cpp:58"
+        },
+        {
+          "name": "swingInhibitSteps",
+          "value": 120,
+          "unit": "updates at 60 Hz after a launch",
+          "source": "src/Game/Ride/Plant.cpp:73"
+        },
+        {
+          "name": "grabRadius",
+          "value": 700,
+          "unit": "position units from the stalk, tested per update",
+          "source": "src/Game/Ride/Plant.cpp:38"
+        },
+        {
+          "name": "bodyRadius",
+          "value": 300,
+          "unit": "position units around the stalk, tested per update",
+          "source": "src/Game/Ride/Plant.cpp:39"
+        },
+        {
+          "name": "pushRadius",
+          "value": 50,
+          "unit": "position units around the stalk, tested per contact",
+          "source": "src/Game/Ride/Plant.cpp:40"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 38
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 39
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 40
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 45
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 47
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 58
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 245
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 259
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 262
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 344
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 605
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 619
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 620
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 683
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 718
+        },
+        {
+          "path": "src/Game/Ride/Plant.cpp",
+          "line": 733
+        }
+      ],
+      "capabilities": [
+        "rail coordinate climbing",
+        "shake driven acceleration",
+        "speed tied body rotation",
+        "top launch with swing lockout"
+      ],
+      "tags": [
+        "movement",
+        "climb",
+        "ride",
+        "rail"
+      ]
+    },
+    {
+      "id": "tilt-sphere",
+      "node": "ride-objects",
+      "name": "Tilt controlled rolling sphere",
+      "summary": "The rolling sphere is driven by the motion sensor: tilt becomes a signed input through a dead zone and a range, and the sub controller uses a wider base angle and a narrower vertical range",
+      "behavior": "The sphere controller reads the acceleration of whichever remote it is bound to and maps tilt into a signed input on two axes. It takes the forward plane angle from the acceleration components, subtracts a dead zone of five degrees for the core remote or ten for the sub remote, then divides by what remains of the range: twenty five degrees on both axes for the core remote, forty degrees horizontally and twenty two point five vertically for the sub remote. The vertical axis is measured against a base angle of ten degrees for the core remote and forty five for the sub remote, so the same physical tilt produces a much larger response from the sub remote. The sign of the angle is preserved through the dead zone subtraction, so the value is a signed response that falls to zero at rest rather than a magnitude. Braking also differs per remote: the core remote uses its A button, while the sub remote accepts either the Z or the C button. The result is a rolling control defined entirely by two dead zones, three ranges and one base angle per remote rather than by a simulation of rolling contact.",
+      "constants": [
+        {
+          "name": "coreBaseAngle",
+          "value": 10,
+          "unit": "degrees of tilt treated as neutral, applied once per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:19"
+        },
+        {
+          "name": "coreDeadZone",
+          "value": 5,
+          "unit": "degrees of tilt ignored around neutral, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:20"
+        },
+        {
+          "name": "coreRange",
+          "value": 25,
+          "unit": "degrees of tilt across the full input on both axes, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:21"
+        },
+        {
+          "name": "subBaseAngle",
+          "value": 45,
+          "unit": "degrees of tilt treated as neutral for the sub remote, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:23"
+        },
+        {
+          "name": "subDeadZone",
+          "value": 10,
+          "unit": "degrees of tilt ignored around neutral for the sub remote, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:24"
+        },
+        {
+          "name": "subRangeHorizontal",
+          "value": 40,
+          "unit": "degrees of tilt across the full horizontal input for the sub remote, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:25"
+        },
+        {
+          "name": "subRangeVertical",
+          "value": 22.5,
+          "unit": "degrees of tilt across the full vertical input for the sub remote, applied per sample",
+          "source": "src/Game/Ride/SphereAccelSensorController.cpp:26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 19
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 21
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 23
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 26
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 73
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 83
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 93
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 96
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 105
+        },
+        {
+          "path": "src/Game/Ride/SphereAccelSensorController.cpp",
+          "line": 120
+        }
+      ],
+      "capabilities": [
+        "tilt to signed input",
+        "per remote dead zones",
+        "animated dead zone response",
+        "per remote brake button"
+      ],
+      "tags": [
+        "input",
+        "movement",
+        "motion control",
+        "ride"
+      ]
+    },
+    {
+      "id": "fan-wind",
+      "node": "world-objects",
+      "name": "Fan wind field",
+      "summary": "A fan pushes along its facing across a box four hundred units wide and four thousand long, with a strength that falls linearly to zero at the far end",
+      "behavior": "The fan reports a wind vector for any position. It rejects everything behind its facing plane by dotting the facing direction with the offset to the position, then measures the perpendicular distance from the fan axis and rejects positions outside a fixed width scaled by the object horizontal scale, and finally scales the facing direction by one minus the along-axis distance divided by the wind length, rejecting the position when that factor would go negative. The result is a field that is strong just in front of the fan, weak at the far end of the box, zero at the sides and zero behind, with no falloff across the width. The wind length and wind speed both come from map arguments over a four thousand length and one hundred speed default, and the wind model is stretched so its length matches the field, which keeps the visual and the force in agreement. A stage switch can stop the fan, and while it is stopped the wind query returns zero and the model is hidden, so a switched off fan contributes nothing at all.",
+      "constants": [
+        {
+          "name": "windWidth",
+          "value": 400,
+          "unit": "position units either side of the fan axis, tested per query per update",
+          "source": "src/Game/MapObj/BigFan.cpp:18"
+        },
+        {
+          "name": "defaultWindLength",
+          "value": 4000,
+          "unit": "position units along the fan facing, tested per query per update",
+          "source": "src/Game/MapObj/BigFan.cpp:28"
+        },
+        {
+          "name": "defaultWindSpeed",
+          "value": 100,
+          "unit": "position units per update at 60 Hz before the falloff scale",
+          "source": "src/Game/MapObj/BigFan.cpp:28"
+        },
+        {
+          "name": "modelLengthDivisor",
+          "value": 2000,
+          "unit": "position units per unit of model length, applied once when the model is built",
+          "source": "src/Game/MapObj/BigFan.cpp:83"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 18
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 28
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 47
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 48
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 54
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 83
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 101
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 110
+        },
+        {
+          "path": "src/Game/MapObj/BigFan.cpp",
+          "line": 115
+        }
+      ],
+      "capabilities": [
+        "box shaped wind volume",
+        "linear along axis falloff",
+        "switch driven enable",
+        "model matches field"
+      ],
+      "tags": [
+        "physics",
+        "wind",
+        "field",
+        "map object"
+      ]
+    },
+    {
+      "id": "black-hole",
+      "node": "world-objects",
+      "name": "Black hole inhalation",
+      "summary": "The black hole is a five hundred unit sensor body that swallows whatever enters it, sends an inhale message, and switches to its scripted state only when the victim is the player",
+      "behavior": "The black hole registers a single body sensor whose radius is five hundred units scaled by the object scale, or the diagonal of a box built from five hundred units per axis when it is placed as the cube variant. On contact it first checks the cube volume in its own local space when one exists, then sends an inhale message to the receiver, and anything that accepts is pulled in. Only when the receiver is the player does the object switch to its demo state, which starts a scripted camera when one is attached. Removal is staged in the disappear state: the visible scale is eased from the authored scale to zero across ninety updates while the core model follows a second ease that starts at thirty updates, and the object removes itself at the ninety update mark. Clipping is a sphere of five hundred units plus the larger of the sensor radius and five hundred times the model scale, so a heavily scaled hole still draws before it acts. An optional argument divides a thousand to rescale the visual model independently of the sensor radius.",
+      "constants": [
+        {
+          "name": "sensorRadius",
+          "value": 500,
+          "unit": "position units of body sensor radius, scaled by the object scale at init",
+          "source": "src/Game/MapObj/BlackHole.cpp:23"
+        },
+        {
+          "name": "sensorGroupSize",
+          "value": 16,
+          "unit": "contacts the body sensor tracks per update",
+          "source": "src/Game/MapObj/BlackHole.cpp:33"
+        },
+        {
+          "name": "clippingBaseRadius",
+          "value": 500,
+          "unit": "position units added to the sensor radius for clipping, computed once at init",
+          "source": "src/Game/MapObj/BlackHole.cpp:37"
+        },
+        {
+          "name": "cubeBoxExtent",
+          "value": 1000,
+          "unit": "position units per unit of cube variant scale, halved into a box half extent, applied once at init",
+          "source": "src/Game/MapObj/BlackHole.cpp:161"
+        },
+        {
+          "name": "shrinkSteps",
+          "value": 90,
+          "unit": "updates at 60 Hz to shrink the field and remove the object",
+          "source": "src/Game/MapObj/BlackHole.cpp:200"
+        },
+        {
+          "name": "coreShrinkDelay",
+          "value": 30,
+          "unit": "updates at 60 Hz before the core model starts shrinking",
+          "source": "src/Game/MapObj/BlackHole.cpp:201"
+        },
+        {
+          "name": "modelScaleDivisor",
+          "value": 1000,
+          "unit": "argument units per unit of model scale, applied once at init",
+          "source": "src/Game/MapObj/BlackHole.cpp:141"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 23
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 33
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 37
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 93
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 99
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 104
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 108
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 132
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 141
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 161
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 169
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 200
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 201
+        },
+        {
+          "path": "src/Game/MapObj/BlackHole.cpp",
+          "line": 205
+        }
+      ],
+      "capabilities": [
+        "sphere and cube hazard volumes",
+        "message driven inhalation",
+        "player only demo trigger",
+        "staged shrink out"
+      ],
+      "tags": [
+        "hazard",
+        "map object",
+        "gravity",
+        "demo"
+      ]
+    },
+    {
+      "id": "actor-camera",
+      "node": "camera-cues",
+      "name": "Actor camera programs and distance cues",
+      "summary": "An actor camera set identifier names a scripted camera program around it, and an animation driven table fires rumble and shake tiers by the distance between the actor and the player",
+      "behavior": "Two camera side hooks are visible in this tree. The first is program binding: an actor reads a camera set identifier and builds a program name from its own name plus that identifier, marking identifiers with the high bit set as shared programs and stripping that bit before formatting a three character number, or as actor specific programs otherwise. A negative identifier means the actor has no camera, and the start and stop calls simply decline. The rest is data driven: the formatted name is looked up in an event camera table, optionally with an event suffix, and the caller supplies a target and a frame count for the blend. The second hook is impact cueing: an actor carrying an animation driven table plays, for a given animation, a rumble and a camera shake chosen by distance. The table gives a start and an end animation frame for the cue, three distance thresholds and three pairs of cue names. The update picks the far pair when the player distance passes the far threshold, the middle pair when it passes the middle threshold and the near pair otherwise, and a negative threshold disables that tier, so the same animation can shake differently across a large planet and stay quiet on a small one.",
+      "constants": [
+        {
+          "name": "sharedCameraFlag",
+          "value": "0x8000",
+          "unit": "camera set identifier bit flag, tested once per binding and once per start or stop",
+          "source": "src/Game/Util/ActorCameraUtil.cpp:10"
+        },
+        {
+          "name": "programNameDigits",
+          "value": 3,
+          "unit": "decimal digits of the camera set identifier written into the program name, applied once per binding",
+          "source": "src/Game/Util/ActorCameraUtil.cpp:11"
+        },
+        {
+          "name": "nameBufferBytes",
+          "value": 256,
+          "unit": "bytes of stack buffer for the generated program name, per start or stop call",
+          "source": "src/Game/Util/ActorCameraUtil.cpp:64"
+        },
+        {
+          "name": "noCameraSetId",
+          "value": -1,
+          "unit": "camera set identifier; negative disables the program, tested once per actor initialisation",
+          "source": "src/Game/Util/ActorCameraUtil.cpp:38"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 10
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 11
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 38
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 59
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 64
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 72
+        },
+        {
+          "path": "src/Game/Util/ActorCameraUtil.cpp",
+          "line": 125
+        },
+        {
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "line": 56
+        },
+        {
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "line": 118
+        },
+        {
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "line": 127
+        },
+        {
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "line": 130
+        },
+        {
+          "path": "src/Game/LiveActor/ActorPadAndCameraCtrl.cpp",
+          "line": 134
+        }
+      ],
+      "capabilities": [
+        "named event camera binding",
+        "shared and actor specific programs",
+        "animation triggered rumble",
+        "distance tiered camera shake"
+      ],
+      "tags": [
+        "camera",
+        "feedback",
+        "rumble",
+        "scripting"
+      ]
+    }
+  ]
+}

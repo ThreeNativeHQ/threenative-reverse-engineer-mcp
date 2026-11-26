@@ -1,0 +1,4297 @@
+{
+  "version": 1,
+  "id": "quake-ii",
+  "title": "Quake II",
+  "repo": "https://github.com/id-Software/Quake-2",
+  "sha": "372afde46e7defc9dd2d719a1732b8ace1fa096e",
+  "nodes": [
+    {
+      "id": "pmove-motion",
+      "name": "Player movement physics step",
+      "purpose": "Shared movement code that runs on client and server for every input command: friction, acceleration, air and water movement, collision sliding, stair stepping and ground detection",
+      "paths": [
+        "qcommon/pmove.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_ClipVelocity",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            80,
+            95
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove_",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            113,
+            263
+          ]
+        },
+        {
+          "name": "PM_StepSlideMove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            271,
+            335
+          ]
+        },
+        {
+          "name": "PM_Friction",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            345,
+            387
+          ]
+        },
+        {
+          "name": "PM_Accelerate",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            397,
+            412
+          ]
+        },
+        {
+          "name": "PM_AirAccelerate",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            414,
+            431
+          ]
+        },
+        {
+          "name": "PM_AddCurrents",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            438,
+            524
+          ]
+        },
+        {
+          "name": "PM_WaterMove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            533,
+            566
+          ]
+        },
+        {
+          "name": "PM_AirMove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            575,
+            662
+          ]
+        },
+        {
+          "name": "PM_CatagorizePosition",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            671,
+            770
+          ]
+        },
+        {
+          "name": "PM_FlyMove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            882,
+            966
+          ]
+        },
+        {
+          "name": "PM_DeadMove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            1034,
+            1054
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "pmove-actions",
+      "name": "Player jump, crouch, ladder and ledge actions",
+      "purpose": "Discrete player actions layered on the movement step: jump launch and landing lockout, crouch hull swap, ladder detection, water ledge hop and the per-command entry point",
+      "paths": [
+        "qcommon/pmove.c"
+      ],
+      "functions": [
+        {
+          "name": "PM_CheckJump",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            778,
+            823
+          ]
+        },
+        {
+          "name": "PM_CheckSpecialMovement",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            831,
+            874
+          ]
+        },
+        {
+          "name": "PM_CheckDuck",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            976,
+            1026
+          ]
+        },
+        {
+          "name": "PM_ClampAngles",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            1204,
+            1231
+          ]
+        },
+        {
+          "name": "Pmove",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            1240,
+            1359
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-motion"
+      ]
+    },
+    {
+      "id": "pmove-sync",
+      "name": "Command timing, prediction and position quantization",
+      "purpose": "How input commands are timed, run on the server, replayed on the client for prediction, reconciled with server results and stored at one eighth unit precision",
+      "paths": [
+        "client/cl_pred.c",
+        "client/cl_input.c",
+        "client/cl_ents.c",
+        "qcommon/pmove.c",
+        "game/p_client.c",
+        "server/sv_main.c"
+      ],
+      "functions": [
+        {
+          "name": "CL_CheckPredictionError",
+          "path": "client/cl_pred.c",
+          "lines": [
+            29,
+            64
+          ]
+        },
+        {
+          "name": "CL_PredictMovement",
+          "path": "client/cl_pred.c",
+          "lines": [
+            199,
+            278
+          ]
+        },
+        {
+          "name": "CL_FinishMove",
+          "path": "client/cl_input.c",
+          "lines": [
+            330,
+            364
+          ]
+        },
+        {
+          "name": "PM_SnapPosition",
+          "path": "qcommon/pmove.c",
+          "lines": [
+            1081,
+            1121
+          ]
+        },
+        {
+          "name": "ClientThink",
+          "path": "game/p_client.c",
+          "lines": [
+            1570,
+            1744
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-actions"
+      ]
+    },
+    {
+      "id": "entity-physics",
+      "name": "Server entity physics tick",
+      "purpose": "The 10 Hz server physics for projectiles, gibs, items and monsters: gravity, velocity clamp, bounce, resting rules, friction and multi-plane sliding",
+      "paths": [
+        "game/g_phys.c",
+        "game/g_local.h"
+      ],
+      "functions": [
+        {
+          "name": "SV_CheckVelocity",
+          "path": "game/g_phys.c",
+          "lines": [
+            72,
+            86
+          ]
+        },
+        {
+          "name": "ClipVelocity",
+          "path": "game/g_phys.c",
+          "lines": [
+            145,
+            168
+          ]
+        },
+        {
+          "name": "SV_FlyMove",
+          "path": "game/g_phys.c",
+          "lines": [
+            183,
+            313
+          ]
+        },
+        {
+          "name": "SV_AddGravity",
+          "path": "game/g_phys.c",
+          "lines": [
+            322,
+            325
+          ]
+        },
+        {
+          "name": "SV_Physics_Toss",
+          "path": "game/g_phys.c",
+          "lines": [
+            670,
+            763
+          ]
+        },
+        {
+          "name": "SV_Physics_Step",
+          "path": "game/g_phys.c",
+          "lines": [
+            815,
+            923
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "damage-model",
+      "name": "Damage, armor, power armor and splash",
+      "purpose": "Central damage routine: knockback, difficulty and surprise modifiers, invulnerability, power armor then armor absorption, splash falloff and line-of-sight checks",
+      "paths": [
+        "game/g_combat.c",
+        "game/g_items.c"
+      ],
+      "functions": [
+        {
+          "name": "CanDamage",
+          "path": "game/g_combat.c",
+          "lines": [
+            32,
+            84
+          ]
+        },
+        {
+          "name": "Killed",
+          "path": "game/g_combat.c",
+          "lines": [
+            92,
+            126
+          ]
+        },
+        {
+          "name": "CheckPowerArmor",
+          "path": "game/g_combat.c",
+          "lines": [
+            171,
+            253
+          ]
+        },
+        {
+          "name": "CheckArmor",
+          "path": "game/g_combat.c",
+          "lines": [
+            255,
+            293
+          ]
+        },
+        {
+          "name": "M_ReactToDamage",
+          "path": "game/g_combat.c",
+          "lines": [
+            295,
+            368
+          ]
+        },
+        {
+          "name": "T_Damage",
+          "path": "game/g_combat.c",
+          "lines": [
+            377,
+            539
+          ]
+        },
+        {
+          "name": "T_RadiusDamage",
+          "path": "game/g_combat.c",
+          "lines": [
+            547,
+            576
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "projectiles",
+      "name": "Hitscan, rockets, grenades, rail and energy sphere",
+      "purpose": "Weapon fire primitives that run on the server: spread rays, projectile spawning and touch rules, grenade timers, piercing rail trace and the energy sphere tether",
+      "paths": [
+        "game/g_weapon.c"
+      ],
+      "functions": [
+        {
+          "name": "check_dodge",
+          "path": "game/g_weapon.c",
+          "lines": [
+            32,
+            53
+          ]
+        },
+        {
+          "name": "fire_lead",
+          "path": "game/g_weapon.c",
+          "lines": [
+            134,
+            266
+          ]
+        },
+        {
+          "name": "fire_shotgun",
+          "path": "game/g_weapon.c",
+          "lines": [
+            290,
+            296
+          ]
+        },
+        {
+          "name": "fire_blaster",
+          "path": "game/g_weapon.c",
+          "lines": [
+            345,
+            453
+          ]
+        },
+        {
+          "name": "blaster_touch",
+          "path": "game/g_weapon.c",
+          "lines": [
+            306,
+            343
+          ]
+        },
+        {
+          "name": "Grenade_Explode",
+          "path": "game/g_weapon.c",
+          "lines": [
+            398,
+            453
+          ]
+        },
+        {
+          "name": "fire_grenade",
+          "path": "game/g_weapon.c",
+          "lines": [
+            486,
+            517
+          ]
+        },
+        {
+          "name": "fire_grenade2",
+          "path": "game/g_weapon.c",
+          "lines": [
+            519,
+            561
+          ]
+        },
+        {
+          "name": "rocket_touch",
+          "path": "game/g_weapon.c",
+          "lines": [
+            569,
+            618
+          ]
+        },
+        {
+          "name": "fire_rocket",
+          "path": "game/g_weapon.c",
+          "lines": [
+            620,
+            650
+          ]
+        },
+        {
+          "name": "fire_rail",
+          "path": "game/g_weapon.c",
+          "lines": [
+            658,
+            713
+          ]
+        },
+        {
+          "name": "bfg_explode",
+          "path": "game/g_weapon.c",
+          "lines": [
+            721,
+            763
+          ]
+        },
+        {
+          "name": "bfg_touch",
+          "path": "game/g_weapon.c",
+          "lines": [
+            765,
+            801
+          ]
+        },
+        {
+          "name": "bfg_think",
+          "path": "game/g_weapon.c",
+          "lines": [
+            804,
+            879
+          ]
+        },
+        {
+          "name": "fire_bfg",
+          "path": "game/g_weapon.c",
+          "lines": [
+            882,
+            916
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-model",
+        "entity-physics"
+      ]
+    },
+    {
+      "id": "player-weapons",
+      "name": "Player weapon state machine and fire functions",
+      "purpose": "Frame-driven weapon states, per-weapon fire functions, ammo checks, view kick values and the noise the player makes when firing",
+      "paths": [
+        "game/p_weapon.c",
+        "game/p_client.c"
+      ],
+      "functions": [
+        {
+          "name": "PlayerNoise",
+          "path": "game/p_weapon.c",
+          "lines": [
+            58,
+            115
+          ]
+        },
+        {
+          "name": "ChangeWeapon",
+          "path": "game/p_weapon.c",
+          "lines": [
+            174,
+            227
+          ]
+        },
+        {
+          "name": "NoAmmoWeaponChange",
+          "path": "game/p_weapon.c",
+          "lines": [
+            234,
+            273
+          ]
+        },
+        {
+          "name": "Think_Weapon",
+          "path": "game/p_weapon.c",
+          "lines": [
+            282,
+            301
+          ]
+        },
+        {
+          "name": "Weapon_Generic",
+          "path": "game/p_weapon.c",
+          "lines": [
+            380,
+            531
+          ]
+        },
+        {
+          "name": "weapon_grenade_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            546,
+            593
+          ]
+        },
+        {
+          "name": "weapon_grenadelauncher_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            709,
+            741
+          ]
+        },
+        {
+          "name": "Weapon_RocketLauncher_Fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            759,
+            797
+          ]
+        },
+        {
+          "name": "Blaster_Fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            816,
+            844
+          ]
+        },
+        {
+          "name": "Weapon_HyperBlaster_Fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            868,
+            935
+          ]
+        },
+        {
+          "name": "Machinegun_Fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            953,
+            1037
+          ]
+        },
+        {
+          "name": "Chaingun_Fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            1047,
+            1164
+          ]
+        },
+        {
+          "name": "weapon_shotgun_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            1184,
+            1228
+          ]
+        },
+        {
+          "name": "weapon_supershotgun_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            1239,
+            1282
+          ]
+        },
+        {
+          "name": "weapon_railgun_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            1302,
+            1347
+          ]
+        },
+        {
+          "name": "weapon_bfg_fire",
+          "path": "game/p_weapon.c",
+          "lines": [
+            1367,
+            1423
+          ]
+        }
+      ],
+      "dependsOn": [
+        "projectiles"
+      ]
+    },
+    {
+      "id": "player-view",
+      "name": "Player view effects and end-of-frame feedback",
+      "purpose": "Per server frame view work: head bob, run lean, weapon sway, fall damage, damage kick, screen tints and liquid hazards",
+      "paths": [
+        "game/p_view.c",
+        "game/g_save.c"
+      ],
+      "functions": [
+        {
+          "name": "SV_CalcRoll",
+          "path": "game/p_view.c",
+          "lines": [
+            42,
+            61
+          ]
+        },
+        {
+          "name": "P_DamageFeedback",
+          "path": "game/p_view.c",
+          "lines": [
+            71,
+            201
+          ]
+        },
+        {
+          "name": "SV_CalcViewOffset",
+          "path": "game/p_view.c",
+          "lines": [
+            222,
+            338
+          ]
+        },
+        {
+          "name": "SV_CalcGunOffset",
+          "path": "game/p_view.c",
+          "lines": [
+            345,
+            389
+          ]
+        },
+        {
+          "name": "SV_CalcBlend",
+          "path": "game/p_view.c",
+          "lines": [
+            418,
+            493
+          ]
+        },
+        {
+          "name": "P_FallingDamage",
+          "path": "game/p_view.c",
+          "lines": [
+            501,
+            570
+          ]
+        },
+        {
+          "name": "P_WorldEffects",
+          "path": "game/p_view.c",
+          "lines": [
+            579,
+            737
+          ]
+        },
+        {
+          "name": "ClientEndServerFrame",
+          "path": "game/p_view.c",
+          "lines": [
+            958,
+            1086
+          ]
+        }
+      ],
+      "dependsOn": [
+        "pmove-actions",
+        "damage-model"
+      ]
+    },
+    {
+      "id": "monster-movement",
+      "name": "Monster stepping, turning and animation clock",
+      "purpose": "How monsters move: animation frames at 10 Hz carry the distance, step and edge tests, turn rate limits and chase direction choice",
+      "paths": [
+        "game/m_move.c",
+        "game/g_monster.c"
+      ],
+      "functions": [
+        {
+          "name": "M_CheckBottom",
+          "path": "game/m_move.c",
+          "lines": [
+            37,
+            97
+          ]
+        },
+        {
+          "name": "SV_movestep",
+          "path": "game/m_move.c",
+          "lines": [
+            112,
+            293
+          ]
+        },
+        {
+          "name": "M_ChangeYaw",
+          "path": "game/m_move.c",
+          "lines": [
+            304,
+            341
+          ]
+        },
+        {
+          "name": "SV_StepDirection",
+          "path": "game/m_move.c",
+          "lines": [
+            353,
+            381
+          ]
+        },
+        {
+          "name": "SV_NewChaseDir",
+          "path": "game/m_move.c",
+          "lines": [
+            403,
+            487
+          ]
+        },
+        {
+          "name": "M_MoveToGoal",
+          "path": "game/m_move.c",
+          "lines": [
+            515,
+            534
+          ]
+        },
+        {
+          "name": "M_walkmove",
+          "path": "game/m_move.c",
+          "lines": [
+            542,
+            556
+          ]
+        },
+        {
+          "name": "M_CheckGround",
+          "path": "game/g_monster.c",
+          "lines": [
+            141,
+            180
+          ]
+        },
+        {
+          "name": "M_CatagorizePosition",
+          "path": "game/g_monster.c",
+          "lines": [
+            183,
+            215
+          ]
+        },
+        {
+          "name": "M_MoveFrame",
+          "path": "game/g_monster.c",
+          "lines": [
+            361,
+            416
+          ]
+        },
+        {
+          "name": "monster_think",
+          "path": "game/g_monster.c",
+          "lines": [
+            419,
+            430
+          ]
+        }
+      ],
+      "dependsOn": [
+        "entity-physics"
+      ]
+    },
+    {
+      "id": "monster-ai",
+      "name": "Monster sensing, attack choice and pursuit",
+      "purpose": "Generic monster brain: who a monster notices by sight or sound, when it attacks, how it chases and how it follows the player breadcrumb trail",
+      "paths": [
+        "game/g_ai.c",
+        "game/p_trail.c",
+        "game/p_client.c"
+      ],
+      "functions": [
+        {
+          "name": "AI_SetSightClient",
+          "path": "game/g_ai.c",
+          "lines": [
+            50,
+            80
+          ]
+        },
+        {
+          "name": "ai_stand",
+          "path": "game/g_ai.c",
+          "lines": [
+            106,
+            153
+          ]
+        },
+        {
+          "name": "ai_walk",
+          "path": "game/g_ai.c",
+          "lines": [
+            163,
+            183
+          ]
+        },
+        {
+          "name": "ai_charge",
+          "path": "game/g_ai.c",
+          "lines": [
+            194,
+            204
+          ]
+        },
+        {
+          "name": "range",
+          "path": "game/g_ai.c",
+          "lines": [
+            264,
+            278
+          ]
+        },
+        {
+          "name": "visible",
+          "path": "game/g_ai.c",
+          "lines": [
+            287,
+            302
+          ]
+        },
+        {
+          "name": "infront",
+          "path": "game/g_ai.c",
+          "lines": [
+            284,
+            302
+          ]
+        },
+        {
+          "name": "HuntTarget",
+          "path": "game/g_ai.c",
+          "lines": [
+            331,
+            345
+          ]
+        },
+        {
+          "name": "FoundTarget",
+          "path": "game/g_ai.c",
+          "lines": [
+            347,
+            387
+          ]
+        },
+        {
+          "name": "FindTarget",
+          "path": "game/g_ai.c",
+          "lines": [
+            407,
+            583
+          ]
+        },
+        {
+          "name": "FacingIdeal",
+          "path": "game/g_ai.c",
+          "lines": [
+            594,
+            602
+          ]
+        },
+        {
+          "name": "M_CheckAttack",
+          "path": "game/g_ai.c",
+          "lines": [
+            607,
+            693
+          ]
+        },
+        {
+          "name": "ai_run_slide",
+          "path": "game/g_ai.c",
+          "lines": [
+            743,
+            760
+          ]
+        },
+        {
+          "name": "ai_checkattack",
+          "path": "game/g_ai.c",
+          "lines": [
+            771,
+            904
+          ]
+        },
+        {
+          "name": "ai_run",
+          "path": "game/g_ai.c",
+          "lines": [
+            914,
+            1117
+          ]
+        },
+        {
+          "name": "PlayerTrail_Add",
+          "path": "game/p_trail.c",
+          "lines": [
+            67,
+            82
+          ]
+        },
+        {
+          "name": "PlayerTrail_PickFirst",
+          "path": "game/p_trail.c",
+          "lines": [
+            95,
+            122
+          ]
+        }
+      ],
+      "dependsOn": [
+        "monster-movement",
+        "player-weapons"
+      ]
+    },
+    {
+      "id": "monster-soldier",
+      "name": "Light infantry monster behavior",
+      "purpose": "A concrete monster: three armament tiers, aim error, pain and dodge reactions, head hit death and gib rules",
+      "paths": [
+        "game/m_soldier.c",
+        "game/g_monster.c"
+      ],
+      "functions": [
+        {
+          "name": "soldier_pain",
+          "path": "game/m_soldier.c",
+          "lines": [
+            409,
+            451
+          ]
+        },
+        {
+          "name": "soldier_fire",
+          "path": "game/m_soldier.c",
+          "lines": [
+            462,
+            524
+          ]
+        },
+        {
+          "name": "soldier_dodge",
+          "path": "game/m_soldier.c",
+          "lines": [
+            828,
+            867
+          ]
+        },
+        {
+          "name": "soldier_die",
+          "path": "game/m_soldier.c",
+          "lines": [
+            1144,
+            1193
+          ]
+        },
+        {
+          "name": "SP_monster_soldier_x",
+          "path": "game/m_soldier.c",
+          "lines": [
+            1200,
+            1233
+          ]
+        }
+      ],
+      "dependsOn": [
+        "monster-ai",
+        "projectiles"
+      ]
+    },
+    {
+      "id": "gibs-and-death",
+      "name": "Gibs, corpses and player death",
+      "purpose": "What happens at death: gib spawning velocities, lifetimes, player death camera and respawn delay",
+      "paths": [
+        "game/g_misc.c",
+        "game/p_client.c"
+      ],
+      "functions": [
+        {
+          "name": "VelocityForDamage",
+          "path": "game/g_misc.c",
+          "lines": [
+            58,
+            68
+          ]
+        },
+        {
+          "name": "ClipGibVelocity",
+          "path": "game/g_misc.c",
+          "lines": [
+            70,
+            84
+          ]
+        },
+        {
+          "name": "ThrowGib",
+          "path": "game/g_misc.c",
+          "lines": [
+            135,
+            181
+          ]
+        },
+        {
+          "name": "ThrowHead",
+          "path": "game/g_misc.c",
+          "lines": [
+            183,
+            226
+          ]
+        },
+        {
+          "name": "player_die",
+          "path": "game/p_client.c",
+          "lines": [
+            501,
+            595
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-model",
+        "entity-physics"
+      ]
+    },
+    {
+      "id": "items-and-triggers",
+      "name": "Powerup timers and map trigger volumes",
+      "purpose": "Timed powerups measured in server frames plus push, hurt and gravity trigger volumes",
+      "paths": [
+        "game/g_items.c",
+        "game/g_trigger.c"
+      ],
+      "functions": [
+        {
+          "name": "Use_Quad",
+          "path": "game/g_items.c",
+          "lines": [
+            339,
+            362
+          ]
+        },
+        {
+          "name": "Use_Invulnerability",
+          "path": "game/g_items.c",
+          "lines": [
+            396,
+            407
+          ]
+        },
+        {
+          "name": "Use_Silencer",
+          "path": "game/g_items.c",
+          "lines": [
+            411,
+            418
+          ]
+        },
+        {
+          "name": "trigger_push_touch",
+          "path": "game/g_trigger.c",
+          "lines": [
+            394,
+            417
+          ]
+        },
+        {
+          "name": "hurt_touch",
+          "path": "game/g_trigger.c",
+          "lines": [
+            468,
+            494
+          ]
+        },
+        {
+          "name": "trigger_gravity_touch",
+          "path": "game/g_trigger.c",
+          "lines": [
+            532,
+            535
+          ]
+        }
+      ],
+      "dependsOn": [
+        "damage-model",
+        "pmove-actions"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "ground-friction-accel",
+      "node": "pmove-motion",
+      "name": "Ground friction, acceleration and speed caps",
+      "summary": "Walking loses 6 times the larger of speed and 100 per second to friction, gains 10 times the wish speed per second of acceleration, and is capped at 300 units per second (100 while crouched).",
+      "behavior": "The movement step runs once per input command. Its time step is the command length in milliseconds times 0.001. Friction runs first. The speed drop equals the larger of the current speed and the stop speed 100, times the friction value 6, times the time step. Friction applies only on solid ground that is not marked slippery, or on a ladder. Below 1 unit per second the horizontal velocity is set to zero. Acceleration then compares the speed along the wished direction with the wished speed. It adds at most the shortfall. One step adds at most acceleration 10 times the time step times the wished speed. The wished speed is capped at 300, or at 100 while crouched. The keyboard sends 200 per axis by default and doubles that when run is on, so the 300 cap sets the real run speed. Ground and air movement build the wish vector from the view angles with the pitch divided by 3. Looking steeply up or down costs only a little forward speed. These numbers are file-level defaults in the shared movement code. This source tree has no other assignment to them.",
+      "constants": [
+        {
+          "name": "stop speed",
+          "value": 100,
+          "unit": "units per second; floor on the speed used to scale friction, per command step",
+          "source": "qcommon/pmove.c:53"
+        },
+        {
+          "name": "ground friction",
+          "value": 6,
+          "unit": "dimensionless factor; speed lost per second equals factor times the larger of speed and stop speed, per command step",
+          "source": "qcommon/pmove.c:59"
+        },
+        {
+          "name": "ground acceleration",
+          "value": 10,
+          "unit": "dimensionless factor; speed gained per second equals factor times wish speed, per command step",
+          "source": "qcommon/pmove.c:56"
+        },
+        {
+          "name": "maximum wished speed",
+          "value": 300,
+          "unit": "units per second",
+          "source": "qcommon/pmove.c:54"
+        },
+        {
+          "name": "crouched maximum wished speed",
+          "value": 100,
+          "unit": "units per second while the crouch flag is set",
+          "source": "qcommon/pmove.c:55"
+        },
+        {
+          "name": "default forward command",
+          "value": 200,
+          "unit": "units per second per axis before the run doubling",
+          "source": "client/cl_main.c:1442"
+        },
+        {
+          "name": "run doubling",
+          "value": 2,
+          "unit": "multiplier on forward, side and up commands when run is active",
+          "source": "client/cl_input.c:306"
+        },
+        {
+          "name": "friction cutoff speed",
+          "value": 1,
+          "unit": "units per second; below it horizontal velocity is zeroed",
+          "source": "qcommon/pmove.c:355"
+        },
+        {
+          "name": "pitch divisor for wish direction",
+          "value": 3,
+          "unit": "view pitch is divided by this before ground and air wish vectors are built",
+          "source": "qcommon/pmove.c:1347"
+        },
+        {
+          "name": "command time scale",
+          "value": 0.001,
+          "unit": "seconds per millisecond of command length",
+          "source": "qcommon/pmove.c:1267"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 345
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 397
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 575
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 1240
+        }
+      ],
+      "capabilities": [
+        "quick stop with a speed-proportional drop and a stop-speed floor",
+        "acceleration that never overshoots the wish speed",
+        "slippery surfaces that skip friction",
+        "run speed set by a single cap"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "air-movement-no-strafe",
+      "node": "pmove-motion",
+      "name": "Air control in single player and the optional strafe mode",
+      "summary": "With the default air acceleration of 0 the air step reuses the ground formula at acceleration 1, which is one tenth of ground control and has no 30 unit strafe cap.",
+      "behavior": "The air acceleration setting defaults to 0 on the server. Single player forces it to 0 through the configuration string. Only deathmatch passes the server setting on. When the setting is 0, the airborne step calls the ordinary acceleration function with an acceleration of 1. That adds at most 1 times the wish speed times the time step, so 300 units per second squared at full input, against 3000 on the ground. There is no friction in the air. When a server sets a nonzero air acceleration, a second function runs instead. It clamps the wished speed to 30 for the add-speed test but scales each push by the full wished speed and the ground acceleration value 10. That second mode is what allows strafe turning. Gravity is subtracted after acceleration, once per command, as gravity times the time step. Treat the 0 default as the single player feel: a jump commits to its direction and only bends slowly. Add the clamped mode only when a deathmatch style feel is wanted.",
+      "constants": [
+        {
+          "name": "air acceleration default",
+          "value": 0,
+          "unit": "units per second squared selector; 0 selects the weak air path",
+          "source": "qcommon/pmove.c:57"
+        },
+        {
+          "name": "server air acceleration default",
+          "value": 0,
+          "unit": "cvar default; applies in deathmatch only",
+          "source": "server/sv_main.c:974"
+        },
+        {
+          "name": "single player forced air acceleration",
+          "value": 0,
+          "unit": "value written to the shared setting when deathmatch is off",
+          "source": "server/sv_init.c:204"
+        },
+        {
+          "name": "air fallback acceleration",
+          "value": 1,
+          "unit": "dimensionless factor; speed gained per second equals factor times wish speed, per command step",
+          "source": "qcommon/pmove.c:657"
+        },
+        {
+          "name": "strafe mode wish speed clamp",
+          "value": 30,
+          "unit": "units per second used only in the add-speed test when the setting is nonzero",
+          "source": "qcommon/pmove.c:419"
+        },
+        {
+          "name": "gravity",
+          "value": 800,
+          "unit": "units per second squared; server default, a map can override it",
+          "source": "game/g_save.c:164"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 575
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 414
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 397
+        },
+        {
+          "path": "server/sv_init.c",
+          "line": 198
+        }
+      ],
+      "capabilities": [
+        "weak air steering by default",
+        "optional capped air acceleration for strafe turning",
+        "no air friction",
+        "per-command gravity step"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-and-landing-lock",
+      "node": "pmove-actions",
+      "name": "Jump impulse and hard-landing jump lockout",
+      "summary": "A jump sets vertical speed to at least 270 units per second (about 45 units of rise under gravity 800), needs the button released between jumps, and a hard landing blocks jumping for 144 or 200 ms.",
+      "behavior": "A jump needs a vertical command of at least 10, a floor under the player and a live player. The jump-held flag blocks a second jump until the command drops below 10. A jump adds 270 to the vertical velocity and raises it to 270 when it is lower. The step then applies gravity once per command. Rise is about 270 squared over twice gravity, which is near 45 units. Rise varies a little with command length because gravity is stepped, not solved exactly. Landing sets a timer in units of 8 ms. A landing faster than 200 units per second down sets 18 units (144 ms). Faster than 400 sets 25 units (200 ms). While the timer runs the player cannot jump. The timer ticks down by the command length shifted right by 3 bits. In water the same button swims instead of jumping. The server also plays a jump sound and posts a noise when the player leaves the floor with the button held.",
+      "constants": [
+        {
+          "name": "jump impulse",
+          "value": 270,
+          "unit": "units per second upward added at launch; floor on resulting vertical speed",
+          "source": "qcommon/pmove.c:820"
+        },
+        {
+          "name": "minimum launch speed",
+          "value": 270,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:821"
+        },
+        {
+          "name": "jump command threshold",
+          "value": 10,
+          "unit": "upward command value needed to count as jump held",
+          "source": "qcommon/pmove.c:785"
+        },
+        {
+          "name": "hard landing speed",
+          "value": -400,
+          "unit": "units per second; vertical speed below this gives the long lockout",
+          "source": "qcommon/pmove.c:722"
+        },
+        {
+          "name": "hard landing lockout",
+          "value": 25,
+          "unit": "timer units of 8 ms each (200 ms)",
+          "source": "qcommon/pmove.c:723"
+        },
+        {
+          "name": "soft landing speed",
+          "value": -200,
+          "unit": "units per second; vertical speed below this gives the short lockout",
+          "source": "qcommon/pmove.c:718"
+        },
+        {
+          "name": "soft landing lockout",
+          "value": 18,
+          "unit": "timer units of 8 ms each (144 ms)",
+          "source": "qcommon/pmove.c:725"
+        },
+        {
+          "name": "timer unit",
+          "value": 8,
+          "unit": "milliseconds per movement timer unit",
+          "source": "game/q_shared.h:493"
+        },
+        {
+          "name": "timer shift",
+          "value": 3,
+          "unit": "right shift applied to command milliseconds, so the timer counts in 8 ms units",
+          "source": "qcommon/pmove.c:1307"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 778
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 671
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 1240
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1654
+        }
+      ],
+      "capabilities": [
+        "single jump per button press",
+        "fixed impulse jump with gravity stepped per command",
+        "landing recovery after a long fall",
+        "jump noise that alerts monsters"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "fps"
+      ]
+    },
+    {
+      "id": "step-slide-collision",
+      "node": "pmove-motion",
+      "name": "Slide collision, stair stepping and ground contact",
+      "summary": "Movement slides along up to 5 planes in 4 bumps, retries blocked moves lifted by 18 units and keeps the farther result, and counts as grounded when a 0.25 unit probe hits a surface with normal at least 0.7.",
+      "behavior": "The slide routine traces the remaining time along the velocity, up to 4 times. After each hit it clips the velocity against every stored plane with an overbounce of 1.01 and tiny components under 0.1 become zero. If clipping leaves no valid direction and there are exactly two planes, it slides along their crease. With other plane counts it stops. If the new velocity opposes the original, it stops dead to avoid corner jitter. The stair routine runs the slide once from the start. It then lifts the start by 18 units, slides again with the original velocity, and presses down by 18. It keeps the lifted result when it travelled farther in the horizontal plane and the landing normal is at least 0.7. Otherwise it keeps the flat result. Ground contact traces 0.25 units down from the origin. It fails when the player rises faster than 180 units per second or the surface normal is below 0.7. Positions and velocities are stored in 16-bit integers at one eighth unit precision.",
+      "constants": [
+        {
+          "name": "step height",
+          "value": 18,
+          "unit": "units lifted and pressed back during the stair retry",
+          "source": "qcommon/pmove.c:25"
+        },
+        {
+          "name": "minimum step landing normal",
+          "value": 0.7,
+          "unit": "vertical component of the surface normal",
+          "source": "qcommon/pmove.c:111"
+        },
+        {
+          "name": "collision bumps per step",
+          "value": 4,
+          "unit": "trace iterations per movement step",
+          "source": "qcommon/pmove.c:126"
+        },
+        {
+          "name": "stored clip planes",
+          "value": 5,
+          "unit": "planes remembered during one slide",
+          "source": "qcommon/pmove.c:112"
+        },
+        {
+          "name": "slide overbounce",
+          "value": 1.01,
+          "unit": "dimensionless clip factor applied to the velocity into each plane",
+          "source": "qcommon/pmove.c:221"
+        },
+        {
+          "name": "tiny velocity cutoff",
+          "value": 0.1,
+          "unit": "units per second; clipped components below this become zero",
+          "source": "qcommon/pmove.c:78"
+        },
+        {
+          "name": "ground probe depth",
+          "value": 0.25,
+          "unit": "units below the origin",
+          "source": "qcommon/pmove.c:685"
+        },
+        {
+          "name": "walkable floor normal",
+          "value": 0.7,
+          "unit": "vertical component of the floor normal",
+          "source": "qcommon/pmove.c:698"
+        },
+        {
+          "name": "rising speed that drops ground contact",
+          "value": 180,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:686"
+        },
+        {
+          "name": "position precision",
+          "value": 0.125,
+          "unit": "units per stored integer step",
+          "source": "qcommon/pmove.c:1256"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 113
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 271
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 671
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 80
+        }
+      ],
+      "capabilities": [
+        "climb stairs and curbs at full speed",
+        "slide along walls and creases",
+        "reject steep slopes as floor",
+        "corner jitter guard"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "fps"
+      ]
+    },
+    {
+      "id": "crouch-hull-swap",
+      "node": "pmove-actions",
+      "name": "Crouch as an instant hull swap",
+      "summary": "The player hull is 32 units wide by 56 tall (half-width 16, from -24 to 32), and crouch instantly shrinks the top to 4 (28 tall) and the eye height from 22 to -2, with a ceiling check to stand.",
+      "behavior": "Each command first rebuilds the hull. The horizontal half-extent is 16 on both axes, so the box is 32 units wide. The bottom is 24 below the origin. Standing, the top is 32 above the origin, giving 56 units of height, and the eye sits 22 above the origin. Crouch needs a downward vertical command while on the ground. It sets the flag at once with no timed transition. The top drops to 4, giving 28 units of height, and the eye height becomes -2. The speed cap for ground and air drops to 100. While crouched without the key, the code tests the standing hull at the current origin and clears the flag only when that box is free of solid. Leaving the ground also tries to stand, even with the key held. A dead player is forced into the crouched hull. A gibbed player uses a small hull from 0 to 16 with the eye at 8.",
+      "constants": [
+        {
+          "name": "hull half-width",
+          "value": 16,
+          "unit": "units on X and Y; full width is 32",
+          "source": "qcommon/pmove.c:983"
+        },
+        {
+          "name": "hull bottom",
+          "value": -24,
+          "unit": "units relative to the origin",
+          "source": "qcommon/pmove.c:994"
+        },
+        {
+          "name": "standing hull top",
+          "value": 32,
+          "unit": "units relative to the origin; full height 56",
+          "source": "qcommon/pmove.c:1023"
+        },
+        {
+          "name": "crouched hull top",
+          "value": 4,
+          "unit": "units relative to the origin; full height 28",
+          "source": "qcommon/pmove.c:1018"
+        },
+        {
+          "name": "standing eye height",
+          "value": 22,
+          "unit": "units above the origin",
+          "source": "qcommon/pmove.c:1024"
+        },
+        {
+          "name": "crouched eye height",
+          "value": -2,
+          "unit": "units relative to the origin",
+          "source": "qcommon/pmove.c:1019"
+        },
+        {
+          "name": "crouched speed cap",
+          "value": 100,
+          "unit": "units per second",
+          "source": "qcommon/pmove.c:55"
+        },
+        {
+          "name": "gib hull top",
+          "value": 16,
+          "unit": "units; gib hull spans 0 to 16",
+          "source": "qcommon/pmove.c:989"
+        },
+        {
+          "name": "gib eye height",
+          "value": 8,
+          "unit": "units above the origin",
+          "source": "qcommon/pmove.c:990"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 976
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 575
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 1034
+        }
+      ],
+      "capabilities": [
+        "instant crouch with no camera ease",
+        "stand-up blocked by low ceilings",
+        "half-height collision when crouched",
+        "slow crouch walk"
+      ],
+      "tags": [
+        "movement",
+        "collision",
+        "stealth"
+      ]
+    },
+    {
+      "id": "swimming-water-currents",
+      "node": "pmove-motion",
+      "name": "Swimming, sinking, jump in water and currents",
+      "summary": "At waist depth the player swims in 3D at half of the 300 cap (150), sinks at 60 units per second with no input, and water currents add up to 400 units per second to the wish vector.",
+      "behavior": "Water depth has three levels from sample points at the feet, the mid body and the eye. Level 2 or higher switches to the swim step. The wish vector follows the full view direction, pitch included, plus the up command. With no input at all the player drifts down at 60. The result is capped at 300 and then halved, so the swim cap is 150 units per second. Water acceleration is 10 and uses the ordinary acceleration function. Drag removes speed in proportion to the speed, the water friction 1 and the depth level, so deeper water slows more. Gravity does not run while swimming. Pressing jump at level 2 or higher sets upward speed to 100 in water, 80 in slime or 50 in lava, unless the player already falls faster than 300. Currents flagged in the water volume add a push of 400 along the flagged direction. At level 1 on the ground the push is halved. Conveyor floors add a fixed 100 push.",
+      "constants": [
+        {
+          "name": "swim entry depth level",
+          "value": 2,
+          "unit": "depth level at or above which the swim step runs",
+          "source": "qcommon/pmove.c:1339"
+        },
+        {
+          "name": "idle sink speed",
+          "value": 60,
+          "unit": "units per second downward added when no input is held",
+          "source": "qcommon/pmove.c:547"
+        },
+        {
+          "name": "swim speed scale",
+          "value": 0.5,
+          "unit": "multiplier on the capped wish speed",
+          "source": "qcommon/pmove.c:561"
+        },
+        {
+          "name": "water acceleration",
+          "value": 10,
+          "unit": "dimensionless factor; same formula as ground acceleration, per command step",
+          "source": "qcommon/pmove.c:58"
+        },
+        {
+          "name": "water friction",
+          "value": 1,
+          "unit": "dimensionless factor times depth level times speed, per command step",
+          "source": "qcommon/pmove.c:60"
+        },
+        {
+          "name": "water current speed",
+          "value": 400,
+          "unit": "units per second added along the flagged direction",
+          "source": "qcommon/pmove.c:61"
+        },
+        {
+          "name": "jump speed in water",
+          "value": 100,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:806"
+        },
+        {
+          "name": "jump speed in slime",
+          "value": 80,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:808"
+        },
+        {
+          "name": "jump speed in lava",
+          "value": 50,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:810"
+        },
+        {
+          "name": "fast sink limit for swim jump",
+          "value": -300,
+          "unit": "units per second; falling faster blocks the swim jump",
+          "source": "qcommon/pmove.c:802"
+        },
+        {
+          "name": "conveyor push",
+          "value": 100,
+          "unit": "units per second added by a flagged floor",
+          "source": "qcommon/pmove.c:522"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 533
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 438
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 778
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 671
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 345
+        }
+      ],
+      "capabilities": [
+        "free 3D swimming along the view",
+        "sinking when idle",
+        "depth-scaled drag",
+        "directional water currents and conveyor floors"
+      ],
+      "tags": [
+        "movement",
+        "water",
+        "fps"
+      ]
+    },
+    {
+      "id": "ladder-and-water-ledge-hop",
+      "node": "pmove-actions",
+      "name": "Ladders by look pitch and the water ledge hop",
+      "summary": "A flagged ladder volume ahead lets look pitch beyond 15 degrees with forward input climb or descend at 200 units per second, and a chest-deep player facing a ledge hops out with 350 up and 50 forward for up to 255 timer units.",
+      "behavior": "Each command traces 1 unit ahead on the horizontal. If the hit surface carries the ladder flag the ladder state is on. On a ladder, ground friction still applies, gravity does not, and the wish vector is edited. Forward input with the view pitched up by 15 degrees or more sets the vertical wish to 200. Pitched down by 15 or more it sets -200. Without pitch, the up and down commands set 200 or -200. Otherwise the vertical wish is 0 and the vertical velocity bleeds toward zero by gravity. Horizontal wish is clamped to 25 on each axis. The edit applies only while the vertical speed magnitude is 200 or less. The ledge hop needs water depth level 2 and no active timer. It probes 30 units ahead and 4 up for solid. It then probes 16 higher for empty space. When both pass, it sets 50 units per second forward and 350 up, and starts a timer of 255 units. Gravity applies during the hop, steering is off, and the timer clears when the vertical speed turns negative.",
+      "constants": [
+        {
+          "name": "ladder probe distance",
+          "value": 1,
+          "unit": "units ahead on the horizontal",
+          "source": "qcommon/pmove.c:849"
+        },
+        {
+          "name": "ladder climb speed",
+          "value": 200,
+          "unit": "units per second vertical wish",
+          "source": "qcommon/pmove.c:450"
+        },
+        {
+          "name": "look-up pitch threshold",
+          "value": -15,
+          "unit": "degrees; at or below it forward input climbs",
+          "source": "qcommon/pmove.c:449"
+        },
+        {
+          "name": "look-down pitch threshold",
+          "value": 15,
+          "unit": "degrees; at or above it forward input descends",
+          "source": "qcommon/pmove.c:451"
+        },
+        {
+          "name": "ladder horizontal wish clamp",
+          "value": 25,
+          "unit": "units per second per axis",
+          "source": "qcommon/pmove.c:463"
+        },
+        {
+          "name": "ladder edit vertical speed limit",
+          "value": 200,
+          "unit": "units per second; edits apply only up to this magnitude",
+          "source": "qcommon/pmove.c:447"
+        },
+        {
+          "name": "ledge forward probe",
+          "value": 30,
+          "unit": "units ahead",
+          "source": "qcommon/pmove.c:858"
+        },
+        {
+          "name": "ledge low probe rise",
+          "value": 4,
+          "unit": "units above the origin",
+          "source": "qcommon/pmove.c:859"
+        },
+        {
+          "name": "ledge clearance rise",
+          "value": 16,
+          "unit": "additional units above the low probe",
+          "source": "qcommon/pmove.c:864"
+        },
+        {
+          "name": "ledge hop forward speed",
+          "value": 50,
+          "unit": "units per second along the facing",
+          "source": "qcommon/pmove.c:869"
+        },
+        {
+          "name": "ledge hop lift",
+          "value": 350,
+          "unit": "units per second upward",
+          "source": "qcommon/pmove.c:870"
+        },
+        {
+          "name": "ledge hop timer",
+          "value": 255,
+          "unit": "timer units of 8 ms (2040 ms upper bound; ends early when falling)",
+          "source": "qcommon/pmove.c:873"
+        }
+      ],
+      "sources": [
+        {
+          "path": "qcommon/pmove.c",
+          "line": 831
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 438
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 575
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 1323
+        }
+      ],
+      "capabilities": [
+        "look-direction ladder climbing",
+        "stopping dead on a ladder when idle",
+        "climb out of pools onto ledges",
+        "steering lock during the hop"
+      ],
+      "tags": [
+        "movement",
+        "ladder",
+        "water"
+      ]
+    },
+    {
+      "id": "prediction-and-position-quantization",
+      "node": "pmove-sync",
+      "name": "Command timing, client prediction and one eighth unit positions",
+      "summary": "The same movement step runs per input command on both sides, the client replays unacknowledged commands, snaps when it misses by more than 80 units, and smooths stair steps over 100 ms against a 10 Hz server.",
+      "behavior": "Each client frame becomes one command whose length is the frame time in milliseconds. A command longer than 250 ms is replaced by 100 ms. The input module also limits one frame to 200 ms. The server runs the identical movement function for each received command. The server world ticks at 10 Hz, with the time advanced by 100 ms per frame. The client keeps the commands the server has not acknowledged. Each frame it starts from the last server player state and replays them, which yields the predicted origin. When a new server state arrives, it compares the server origin with the stored prediction for the acknowledged command. When the summed integer error exceeds 640 (80 units) it clears the error as a teleport. Otherwise it stores the error and the view applies it. Positions are stored as 16-bit integers at one eighth unit. After a move the origin is rounded and tested against the world. Eight neighbour roundings are tried and the previous position is used when none is valid. When a replayed command raises the origin by 7.9 to 20 units on the ground, the view subtracts the step and fades it out over 100 ms.",
+      "constants": [
+        {
+          "name": "overlong frame replaced",
+          "value": 250,
+          "unit": "milliseconds; a longer frame time is treated as unreasonable",
+          "source": "client/cl_input.c:351"
+        },
+        {
+          "name": "replacement command length",
+          "value": 100,
+          "unit": "milliseconds",
+          "source": "client/cl_input.c:352"
+        },
+        {
+          "name": "input frame limit",
+          "value": 200,
+          "unit": "milliseconds",
+          "source": "client/cl_input.c:378"
+        },
+        {
+          "name": "server frame length",
+          "value": 100,
+          "unit": "milliseconds per server tick (10 Hz)",
+          "source": "server/sv_main.c:733"
+        },
+        {
+          "name": "teleport error threshold",
+          "value": 640,
+          "unit": "stored integer units (80 world units)",
+          "source": "client/cl_pred.c:48"
+        },
+        {
+          "name": "error scale",
+          "value": 0.125,
+          "unit": "world units per stored integer unit",
+          "source": "client/cl_pred.c:62"
+        },
+        {
+          "name": "step detection minimum",
+          "value": 63,
+          "unit": "stored integer units (about 7.9 world units)",
+          "source": "client/cl_pred.c:265"
+        },
+        {
+          "name": "step detection maximum",
+          "value": 160,
+          "unit": "stored integer units (20 world units)",
+          "source": "client/cl_pred.c:265"
+        },
+        {
+          "name": "step smoothing time",
+          "value": 100,
+          "unit": "milliseconds to fade the stair offset",
+          "source": "client/cl_ents.c:1393"
+        },
+        {
+          "name": "velocity storage scale",
+          "value": 8,
+          "unit": "stored integer units per world unit per second",
+          "source": "qcommon/pmove.c:1091"
+        },
+        {
+          "name": "rounding retry combinations",
+          "value": 8,
+          "unit": "neighbour roundings tried per move",
+          "source": "qcommon/pmove.c:1106"
+        }
+      ],
+      "sources": [
+        {
+          "path": "client/cl_pred.c",
+          "line": 199
+        },
+        {
+          "path": "client/cl_pred.c",
+          "line": 29
+        },
+        {
+          "path": "client/cl_input.c",
+          "line": 330
+        },
+        {
+          "path": "qcommon/pmove.c",
+          "line": 1081
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1570
+        },
+        {
+          "path": "client/cl_ents.c",
+          "line": 1391
+        }
+      ],
+      "capabilities": [
+        "identical movement on both sides",
+        "local replay of unacknowledged input",
+        "snap on large misses and smooth correction on small ones",
+        "stair smoothing in the camera"
+      ],
+      "tags": [
+        "networking",
+        "prediction",
+        "movement"
+      ]
+    },
+    {
+      "id": "fall-damage-landing-kick",
+      "node": "player-view",
+      "name": "Fall damage from squared speed change",
+      "summary": "Fall strength is the squared vertical speed change times 0.0001, so damage starts near 548 units per second and equals (strength - 30) / 2, with armor still absorbing it.",
+      "behavior": "At the end of each server frame the code compares the vertical speed with the previous frame. A player standing on the floor uses the vertical speed change since the last frame. A player still in the air who was suddenly slowed uses the old downward speed. Strength is that change squared times 0.0001. Fully submerged players take nothing. Waist-deep strength is multiplied by 0.25 and level 1 by 0.5. Below 1 nothing happens. Below 15 only a footstep event plays. From 15 the view dips for 0.3 seconds by half the strength, up to 40. Strength above 30 deals damage of (strength - 30) divided by 2, at least 1. Strength of 55 or more selects the louder fall sound. Strength 30 matches about 548 units per second, 55 about 742. A fall at 800 units per second deals about 17 and at 1000 about 35. The damage call passes no flags, so armor absorbs it. Deathmatch can turn fall damage off by flag.",
+      "constants": [
+        {
+          "name": "strength scale",
+          "value": 0.0001,
+          "unit": "per unit squared of vertical speed change per server frame (10 Hz)",
+          "source": "game/p_view.c:523"
+        },
+        {
+          "name": "waist-deep scale",
+          "value": 0.25,
+          "unit": "multiplier on strength at water depth level 2",
+          "source": "game/p_view.c:529"
+        },
+        {
+          "name": "shin-deep scale",
+          "value": 0.5,
+          "unit": "multiplier on strength at water depth level 1",
+          "source": "game/p_view.c:531"
+        },
+        {
+          "name": "footstep ceiling",
+          "value": 15,
+          "unit": "strength units; below this only a footstep plays",
+          "source": "game/p_view.c:536"
+        },
+        {
+          "name": "damage threshold",
+          "value": 30,
+          "unit": "strength units; damage starts above it",
+          "source": "game/p_view.c:547"
+        },
+        {
+          "name": "damage divisor",
+          "value": 2,
+          "unit": "damage equals (strength - 30) divided by this",
+          "source": "game/p_view.c:557"
+        },
+        {
+          "name": "loud fall strength",
+          "value": 55,
+          "unit": "strength units for the louder fall event",
+          "source": "game/p_view.c:551"
+        },
+        {
+          "name": "view dip scale",
+          "value": 0.5,
+          "unit": "view dip amount per strength unit",
+          "source": "game/p_view.c:542"
+        },
+        {
+          "name": "view dip cap",
+          "value": 40,
+          "unit": "view dip amount limit",
+          "source": "game/p_view.c:543"
+        },
+        {
+          "name": "view dip duration",
+          "value": 0.3,
+          "unit": "seconds",
+          "source": "game/g_local.h:45"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_view.c",
+          "line": 501
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 958
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 552
+        }
+      ],
+      "capabilities": [
+        "quadratic fall damage ramp",
+        "water softens falls",
+        "landing view dip",
+        "armor that protects against falls"
+      ],
+      "tags": [
+        "damage",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "view-bob-and-gun-sway",
+      "node": "player-view",
+      "name": "Head bob, run lean and weapon sway",
+      "summary": "View bob advances 0.25, 0.125 or 0.0625 per server frame by speed band, adds up to 6 units of vertical bob and small pitch and roll scaled by horizontal speed, plus gun sway and a clamped view offset.",
+      "behavior": "The bob clock advances each 0.1 second server frame. The step is chosen on the ground only: 0.25 above 210 units per second, 0.125 above 100 and 0.0625 otherwise. In the air the last step keeps running. The clock resets below 5. The clock is multiplied by 4 while crouched. The bob wave is the absolute value of a sine of the clock times pi. The integer part of the clock gives a cycle number that flips the roll sign and times footstep sounds when speed passes 225. Vertical bob is the wave times speed times 0.005, capped at 6 units. View pitch bob uses 0.002 per unit of speed and roll bob 0.002, both times 6 when crouched. Run lean adds 0.002 times the forward speed to pitch and 0.005 times the sideways speed to roll. The gun model sways with roll 0.005 and yaw 0.01 per unit of speed times the wave, plus a lag of 0.2 of the recent view angle change limited to 45 degrees. The final view offset is clamped to 14 units on each horizontal axis and from -22 to 30 vertically.",
+      "constants": [
+        {
+          "name": "fast bob step",
+          "value": 0.25,
+          "unit": "clock units per server frame (10 Hz) above 210 units per second",
+          "source": "game/p_view.c:1024"
+        },
+        {
+          "name": "fast bob speed",
+          "value": 210,
+          "unit": "units per second",
+          "source": "game/p_view.c:1023"
+        },
+        {
+          "name": "medium bob step",
+          "value": 0.125,
+          "unit": "clock units per server frame above 100 units per second",
+          "source": "game/p_view.c:1026"
+        },
+        {
+          "name": "medium bob speed",
+          "value": 100,
+          "unit": "units per second",
+          "source": "game/p_view.c:1025"
+        },
+        {
+          "name": "slow bob step",
+          "value": 0.0625,
+          "unit": "clock units per server frame otherwise",
+          "source": "game/p_view.c:1028"
+        },
+        {
+          "name": "bob reset speed",
+          "value": 5,
+          "unit": "units per second; below it the clock resets",
+          "source": "game/p_view.c:1016"
+        },
+        {
+          "name": "crouch clock multiplier",
+          "value": 4,
+          "unit": "multiplier on the bob clock while crouched",
+          "source": "game/p_view.c:1034"
+        },
+        {
+          "name": "footstep speed",
+          "value": 225,
+          "unit": "units per second above which a cycle change plays a footstep",
+          "source": "game/p_view.c:803"
+        },
+        {
+          "name": "vertical bob gain",
+          "value": 0.005,
+          "unit": "view units per unit of speed",
+          "source": "game/g_save.c:193"
+        },
+        {
+          "name": "vertical bob cap",
+          "value": 6,
+          "unit": "view units",
+          "source": "game/p_view.c:312"
+        },
+        {
+          "name": "pitch bob gain",
+          "value": 0.002,
+          "unit": "degrees per unit of speed",
+          "source": "game/g_save.c:194"
+        },
+        {
+          "name": "roll bob gain",
+          "value": 0.002,
+          "unit": "degrees per unit of speed",
+          "source": "game/g_save.c:195"
+        },
+        {
+          "name": "crouch bob multiplier",
+          "value": 6,
+          "unit": "multiplier on pitch and roll bob while crouched",
+          "source": "game/p_view.c:282"
+        },
+        {
+          "name": "run pitch gain",
+          "value": 0.002,
+          "unit": "degrees per unit of forward speed",
+          "source": "game/g_save.c:191"
+        },
+        {
+          "name": "run roll gain",
+          "value": 0.005,
+          "unit": "degrees per unit of sideways speed",
+          "source": "game/g_save.c:192"
+        },
+        {
+          "name": "gun roll sway",
+          "value": 0.005,
+          "unit": "degrees per unit of speed times bob wave",
+          "source": "game/p_view.c:351"
+        },
+        {
+          "name": "gun yaw sway",
+          "value": 0.01,
+          "unit": "degrees per unit of speed times bob wave",
+          "source": "game/p_view.c:352"
+        },
+        {
+          "name": "gun lag gain",
+          "value": 0.2,
+          "unit": "fraction of the view angle change per server frame",
+          "source": "game/p_view.c:375"
+        },
+        {
+          "name": "gun lag limit",
+          "value": 45,
+          "unit": "degrees",
+          "source": "game/p_view.c:369"
+        },
+        {
+          "name": "view offset horizontal limit",
+          "value": 14,
+          "unit": "units on X and Y",
+          "source": "game/p_view.c:326"
+        },
+        {
+          "name": "view offset upper limit",
+          "value": 30,
+          "unit": "units above the origin",
+          "source": "game/p_view.c:334"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_view.c",
+          "line": 958
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 222
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 345
+        }
+      ],
+      "capabilities": [
+        "speed-scaled head bob",
+        "strafe and forward run lean",
+        "footstep timing from the bob cycle",
+        "laggy weapon model"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "fps"
+      ]
+    },
+    {
+      "id": "damage-view-kick-and-blend",
+      "node": "player-view",
+      "name": "Damage view kick and screen tint",
+      "summary": "Each hit kicks the view by up to 50 scaled by 0.3 over 0.5 seconds and raises a red tint of 0.2 to 0.6 alpha that fades 0.06 per 0.1 second server frame.",
+      "behavior": "All damage taken in one server frame is summed into blood, armor and power armor parts. Totals below 10 count as 10 so a hit always shows. The tint alpha grows by 0.01 per point, with a floor of 0.2 and a cap of 0.6, and its color mixes red for blood, white for armor and green for power armor by share. It fades by 0.06 each server frame. The kick starts from the knockback, scaled by 100 over current health, raised to half the total and capped at 50. The roll equals kick times the sideways share of the hit direction times 0.3. The pitch uses the forward share the same way. The kick fades linearly over 0.5 seconds. A pain sound plays at most once per 0.7 seconds and its tier follows health under 25, 50 and 75. Water, lava and slime add a screen tint with alpha 0.4 for water and 0.6 for lava or being inside a wall. On the easiest skill the player takes half damage.",
+      "constants": [
+        {
+          "name": "minimum damage count for effects",
+          "value": 10,
+          "unit": "damage points",
+          "source": "game/p_view.c:129"
+        },
+        {
+          "name": "alpha per damage point",
+          "value": 0.01,
+          "unit": "tint alpha per point",
+          "source": "game/p_view.c:151"
+        },
+        {
+          "name": "alpha floor",
+          "value": 0.2,
+          "unit": "tint alpha",
+          "source": "game/p_view.c:152"
+        },
+        {
+          "name": "alpha cap",
+          "value": 0.6,
+          "unit": "tint alpha",
+          "source": "game/p_view.c:154"
+        },
+        {
+          "name": "alpha fade",
+          "value": 0.06,
+          "unit": "tint alpha per server frame (10 Hz)",
+          "source": "game/p_view.c:485"
+        },
+        {
+          "name": "kick health scale",
+          "value": 100,
+          "unit": "knockback times this divided by current health",
+          "source": "game/p_view.c:175"
+        },
+        {
+          "name": "kick cap",
+          "value": 50,
+          "unit": "kick units",
+          "source": "game/p_view.c:179"
+        },
+        {
+          "name": "kick to angle scale",
+          "value": 0.3,
+          "unit": "degrees per kick unit",
+          "source": "game/p_view.c:186"
+        },
+        {
+          "name": "kick duration",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "game/g_local.h:44"
+        },
+        {
+          "name": "pain sound spacing",
+          "value": 0.7,
+          "unit": "seconds",
+          "source": "game/p_view.c:136"
+        },
+        {
+          "name": "water tint alpha",
+          "value": 0.4,
+          "unit": "alpha",
+          "source": "game/p_view.c:440"
+        },
+        {
+          "name": "lava tint alpha",
+          "value": 0.6,
+          "unit": "alpha",
+          "source": "game/p_view.c:436"
+        },
+        {
+          "name": "easy skill damage scale",
+          "value": 0.5,
+          "unit": "multiplier on damage to the player",
+          "source": "game/g_combat.c:407"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_view.c",
+          "line": 71
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 418
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 222
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 377
+        }
+      ],
+      "capabilities": [
+        "directional hit kick",
+        "tint that mixes blood, armor and power armor",
+        "minimum visible feedback for small hits",
+        "underwater and lava screen tints"
+      ],
+      "tags": [
+        "camera",
+        "damage",
+        "feel"
+      ]
+    },
+    {
+      "id": "armor-and-power-armor",
+      "node": "damage-model",
+      "name": "Armor tiers and power armor",
+      "summary": "Three armor tiers absorb 30, 60 or 80 percent of normal damage (0, 30 or 60 percent of energy damage) and spend one armor point per absorbed point, after power armor absorbs two thirds or a third from cells.",
+      "behavior": "Damage passes through three stages. First, invulnerability or god mode can zero it. Second, power armor takes its share and spends cells. Third, worn armor takes a share and loses the same number of points. Worn armor absorbs the protection fraction times the damage, rounded up, but never more than the armor still held. The jacket tier grants 25 when picked up bare and holds up to 50, with 30 percent normal and 0 percent energy protection. The combat tier grants 50, holds 100, with 60 and 30 percent. The body tier grants 100, holds 200, with 80 and 60 percent. Power armor comes in two kinds. The screen kind works only for hits from the front, where the hit direction has a dot product above 0.3 with the facing. It absorbs one third of the damage at 1 point per cell. The shield kind works from all sides, absorbs two thirds and spends 1 cell per 2 points. Drowning bypasses all armor. Falls and liquids do not.",
+      "constants": [
+        {
+          "name": "jacket pickup armor",
+          "value": 25,
+          "unit": "armor points granted when no armor is held",
+          "source": "game/g_items.c:39"
+        },
+        {
+          "name": "jacket maximum armor",
+          "value": 50,
+          "unit": "armor points",
+          "source": "game/g_items.c:39"
+        },
+        {
+          "name": "jacket normal protection",
+          "value": 30,
+          "unit": "percent of normal damage absorbed",
+          "source": "game/g_items.c:39"
+        },
+        {
+          "name": "jacket energy protection",
+          "value": 0,
+          "unit": "percent of energy damage absorbed",
+          "source": "game/g_items.c:39"
+        },
+        {
+          "name": "combat pickup armor",
+          "value": 50,
+          "unit": "armor points granted when no armor is held",
+          "source": "game/g_items.c:40"
+        },
+        {
+          "name": "combat maximum armor",
+          "value": 100,
+          "unit": "armor points",
+          "source": "game/g_items.c:40"
+        },
+        {
+          "name": "combat normal protection",
+          "value": 60,
+          "unit": "percent of normal damage absorbed",
+          "source": "game/g_items.c:40"
+        },
+        {
+          "name": "combat energy protection",
+          "value": 30,
+          "unit": "percent of energy damage absorbed",
+          "source": "game/g_items.c:40"
+        },
+        {
+          "name": "body pickup armor",
+          "value": 100,
+          "unit": "armor points granted when no armor is held",
+          "source": "game/g_items.c:41"
+        },
+        {
+          "name": "body maximum armor",
+          "value": 200,
+          "unit": "armor points",
+          "source": "game/g_items.c:41"
+        },
+        {
+          "name": "body normal protection",
+          "value": 80,
+          "unit": "percent of normal damage absorbed",
+          "source": "game/g_items.c:41"
+        },
+        {
+          "name": "body energy protection",
+          "value": 60,
+          "unit": "percent of energy damage absorbed",
+          "source": "game/g_items.c:41"
+        },
+        {
+          "name": "screen front dot threshold",
+          "value": 0.3,
+          "unit": "dot product of hit direction and facing",
+          "source": "game/g_combat.c:223"
+        },
+        {
+          "name": "screen absorption divisor",
+          "value": 3,
+          "unit": "damage divided by this is absorbed",
+          "source": "game/g_combat.c:228"
+        },
+        {
+          "name": "screen damage per cell",
+          "value": 1,
+          "unit": "damage points absorbed per cell",
+          "source": "game/g_combat.c:226"
+        },
+        {
+          "name": "shield damage per cell",
+          "value": 2,
+          "unit": "damage points absorbed per cell",
+          "source": "game/g_combat.c:232"
+        },
+        {
+          "name": "power armor glow time",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "game/g_combat.c:244"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_combat.c",
+          "line": 255
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 171
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 377
+        },
+        {
+          "path": "game/g_items.c",
+          "line": 39
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 695
+        }
+      ],
+      "capabilities": [
+        "percent absorption that spends the armor pool",
+        "weaker armor against energy weapons",
+        "front-only screen armor and all-round shield armor",
+        "cell-powered absorption"
+      ],
+      "tags": [
+        "damage",
+        "armor",
+        "combat"
+      ]
+    },
+    {
+      "id": "splash-damage-and-rocket-jump",
+      "node": "damage-model",
+      "name": "Splash falloff, knockback and self launch",
+      "summary": "Splash damage equals the base minus half the distance to the target box center, halved again for the shooter, and knockback pushes 500 times the knockback over mass, rising to 1600 for self hits.",
+      "behavior": "Splash finds every damageable entity in the radius. Distance runs from the explosion to the center of the target box. Points equal the base damage minus half that distance. The shooter gets half of the points. A target takes damage only when the explosion has a clear line to its origin or to one of four corners offset by 15 units on both axes. Moving brush models use their center instead. The points are also the knockback. The velocity change is the hit direction times 500 times the knockback divided by the target mass. The mass floor is 50. Player mass is 200. When a player hurts themself, the 500 becomes 1600, which enables launch jumps. A rocket with radius 120 and base 120 still deals 60 at the radius edge, then 0 outside. On a monster that has no enemy yet, a direct hit by a player deals double damage.",
+      "constants": [
+        {
+          "name": "splash falloff factor",
+          "value": 0.5,
+          "unit": "damage points lost per unit of distance",
+          "source": "game/g_combat.c:564"
+        },
+        {
+          "name": "self splash scale",
+          "value": 0.5,
+          "unit": "multiplier on points when target is the shooter",
+          "source": "game/g_combat.c:566"
+        },
+        {
+          "name": "knockback scale",
+          "value": 500,
+          "unit": "velocity units per unit of knockback per unit of mass (applied once per hit)",
+          "source": "game/g_combat.c:444"
+        },
+        {
+          "name": "self knockback scale",
+          "value": 1600,
+          "unit": "same formula when a player hurts themself",
+          "source": "game/g_combat.c:442"
+        },
+        {
+          "name": "minimum knockback mass",
+          "value": 50,
+          "unit": "mass units",
+          "source": "game/g_combat.c:436"
+        },
+        {
+          "name": "player mass",
+          "value": 200,
+          "unit": "mass units",
+          "source": "game/p_client.c:1170"
+        },
+        {
+          "name": "surprise multiplier",
+          "value": 2,
+          "unit": "damage multiplier on a monster with no enemy",
+          "source": "game/g_combat.c:423"
+        },
+        {
+          "name": "line-of-sight corner offset",
+          "value": 15,
+          "unit": "units on both horizontal axes",
+          "source": "game/g_combat.c:55"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_combat.c",
+          "line": 547
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 32
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 377
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1170
+        }
+      ],
+      "capabilities": [
+        "linear splash falloff with a hard edge",
+        "half damage to the shooter",
+        "rocket jumping",
+        "corner-aware blast line of sight"
+      ],
+      "tags": [
+        "combat",
+        "physics",
+        "explosion"
+      ]
+    },
+    {
+      "id": "rocket-and-grenade-projectiles",
+      "node": "projectiles",
+      "name": "Rockets, launcher grenades and hand grenades",
+      "summary": "Rockets fly straight at 650 units per second for 100 to 119 direct and 120 splash, launcher grenades bounce at 600 for a 2.5 second fuse, and hand grenades throw 400 to 800 on a 3 second fuse.",
+      "behavior": "A rocket spawns near the view. It flies without gravity at 650 units per second and lives 8000 divided by its speed in seconds. On touching a damageable body it deals 100 plus a random 0 to 19 as a direct hit, then splash of 120 within radius 120 that skips the body already hit. Walls only splash. A launcher grenade has damage 120 and a radius of damage plus 40. It leaves at 600, with extra upward speed of 200 and sideways jitter of 10. It spins at 300 degrees per second on each axis. It bounces with an overbounce of 1.5. It rests on a floor with normal above 0.7 once its vertical speed is under 60. It explodes on its 2.5 second timer, or on touching a damageable entity. Touching walls only plays a bounce sound. A hand grenade is thrown at 400 plus extra speed up to 800 depending on how long the button was held. The fuse is 3 seconds plus a 0.2 second grace, and it counts down while the button is held. A hand grenade held too long explodes in the hand. The next throw waits 1 second. The server ticks projectiles every 0.1 second.",
+      "constants": [
+        {
+          "name": "rocket base damage",
+          "value": 100,
+          "unit": "damage points before the random addition",
+          "source": "game/p_weapon.c:767"
+        },
+        {
+          "name": "rocket random damage range",
+          "value": 20,
+          "unit": "damage points; roll is an integer below this",
+          "source": "game/p_weapon.c:767"
+        },
+        {
+          "name": "rocket splash damage",
+          "value": 120,
+          "unit": "damage points",
+          "source": "game/p_weapon.c:768"
+        },
+        {
+          "name": "rocket splash radius",
+          "value": 120,
+          "unit": "units",
+          "source": "game/p_weapon.c:769"
+        },
+        {
+          "name": "rocket speed",
+          "value": 650,
+          "unit": "units per second",
+          "source": "game/p_weapon.c:783"
+        },
+        {
+          "name": "projectile lifetime numerator",
+          "value": 8000,
+          "unit": "units; lifetime in seconds equals this divided by speed",
+          "source": "game/g_weapon.c:638"
+        },
+        {
+          "name": "launcher grenade damage",
+          "value": 120,
+          "unit": "damage points; radius is this plus 40",
+          "source": "game/p_weapon.c:714"
+        },
+        {
+          "name": "grenade radius bonus",
+          "value": 40,
+          "unit": "units added to the damage for the blast radius, for launcher and hand grenades",
+          "source": "game/p_weapon.c:556"
+        },
+        {
+          "name": "launcher grenade speed",
+          "value": 600,
+          "unit": "units per second",
+          "source": "game/p_weapon.c:728"
+        },
+        {
+          "name": "launcher grenade fuse",
+          "value": 2.5,
+          "unit": "seconds",
+          "source": "game/p_weapon.c:728"
+        },
+        {
+          "name": "grenade upward toss",
+          "value": 200,
+          "unit": "units per second added upward",
+          "source": "game/g_weapon.c:498"
+        },
+        {
+          "name": "grenade spin",
+          "value": 300,
+          "unit": "degrees per second per axis",
+          "source": "game/g_weapon.c:500"
+        },
+        {
+          "name": "bounce overbounce",
+          "value": 1.5,
+          "unit": "dimensionless clip factor for bouncing objects",
+          "source": "game/g_phys.c:720"
+        },
+        {
+          "name": "rest vertical speed",
+          "value": 60,
+          "unit": "units per second; below it a bouncer on a floor stops",
+          "source": "game/g_phys.c:729"
+        },
+        {
+          "name": "rest floor normal",
+          "value": 0.7,
+          "unit": "vertical component of the floor normal",
+          "source": "game/g_phys.c:727"
+        },
+        {
+          "name": "hand grenade fuse",
+          "value": 3,
+          "unit": "seconds",
+          "source": "game/p_weapon.c:542"
+        },
+        {
+          "name": "hand grenade minimum speed",
+          "value": 400,
+          "unit": "units per second",
+          "source": "game/p_weapon.c:543"
+        },
+        {
+          "name": "hand grenade maximum speed",
+          "value": 800,
+          "unit": "units per second",
+          "source": "game/p_weapon.c:544"
+        },
+        {
+          "name": "hand grenade damage",
+          "value": 125,
+          "unit": "damage points; radius is this plus 40",
+          "source": "game/p_weapon.c:551"
+        },
+        {
+          "name": "hand grenade throw cooldown",
+          "value": 1,
+          "unit": "seconds",
+          "source": "game/p_weapon.c:571"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_weapon.c",
+          "line": 759
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 709
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 546
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 620
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 486
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 398
+        },
+        {
+          "path": "game/g_phys.c",
+          "line": 670
+        }
+      ],
+      "capabilities": [
+        "straight rocket with direct and splash damage",
+        "bouncing timed grenades",
+        "charge-by-hold throw speed",
+        "cook-off in the hand"
+      ],
+      "tags": [
+        "combat",
+        "projectile",
+        "weapons"
+      ]
+    },
+    {
+      "id": "weapon-frame-cadence",
+      "node": "player-weapons",
+      "name": "Weapon cadence from 10 Hz animation frames",
+      "summary": "Each weapon steps one animation frame per 0.1 second server tick, so rates are tick counts: machine gun 10 shots per second, chain gun 10, 20 then 30, hyperblaster 10, and slower weapons repeat every 0.5 to 2.5 seconds (derived).",
+      "behavior": "The weapon logic is a frame state machine with ready, firing, activating and dropping states. It runs once per 0.1 second server frame. Extra input commands within the same frame do not step it again. Firing sets the first fire frame, calls the fire function on the listed fire frames and advances one frame per tick. The weapon returns to ready when the frame passes the end of the fire range. With the button held it refires on the next tick. Rates below are counted from the frame tables and may be off by one tick. Blaster about 0.5 seconds, rocket launcher 0.9, shotgun 1.2, double barrel shotgun 1.2, grenade launcher 1.2, rail gun 1.6, heavy energy sphere weapon 2.5 counted from one shot to the next, including its pre-fire frames. The machine gun alternates two frames and fires on each, so 10 per second. The chain gun fires 1 shot per tick up to frame 9, 2 per tick up to frame 14 while held, then 3 per tick, so 10, 20, then 30 shots per second. The hyperblaster fires once per tick. Idle fidget frames are skipped 15 times out of 16. Weapon switching plays a lowering animation and then raises the new one.",
+      "constants": [
+        {
+          "name": "server tick",
+          "value": 0.1,
+          "unit": "seconds per weapon state machine step",
+          "source": "game/g_local.h:73"
+        },
+        {
+          "name": "blaster last fire frame",
+          "value": 8,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:864"
+        },
+        {
+          "name": "rocket launcher last fire frame",
+          "value": 12,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:804"
+        },
+        {
+          "name": "shotgun last fire frame",
+          "value": 18,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1235"
+        },
+        {
+          "name": "double barrel last fire frame",
+          "value": 17,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1289"
+        },
+        {
+          "name": "grenade launcher last fire frame",
+          "value": 16,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:748"
+        },
+        {
+          "name": "rail gun last fire frame",
+          "value": 18,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1355"
+        },
+        {
+          "name": "energy sphere last fire frame",
+          "value": 32,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1430"
+        },
+        {
+          "name": "chain gun single shot frame limit",
+          "value": 9,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1104"
+        },
+        {
+          "name": "chain gun double shot frame limit",
+          "value": 14,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1106"
+        },
+        {
+          "name": "chain gun double shot count",
+          "value": 2,
+          "unit": "shots per tick",
+          "source": "game/p_weapon.c:1109"
+        },
+        {
+          "name": "chain gun triple shot count",
+          "value": 3,
+          "unit": "shots per tick",
+          "source": "game/p_weapon.c:1114"
+        },
+        {
+          "name": "hyperblaster last looping fire frame",
+          "value": 11,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:940"
+        },
+        {
+          "name": "idle fidget skip mask",
+          "value": 15,
+          "unit": "random mask; the fidget is skipped unless the masked roll is 0",
+          "source": "game/p_weapon.c:500"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_weapon.c",
+          "line": 380
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 282
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1047
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 953
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1755
+        }
+      ],
+      "capabilities": [
+        "tick-locked fire rates",
+        "spin-up chain gun",
+        "weapon swap animation",
+        "no-ammo auto switch"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "feel"
+      ]
+    },
+    {
+      "id": "bullet-and-pellet-spread",
+      "node": "projectiles",
+      "name": "Bullet and pellet spread, climb and per-weapon damage",
+      "summary": "Rays aim at a point 8192 units out with a uniform offset of up to 300 by 500 (bullets) or 1000 by 500 (pellets), the machine gun climbs 1.5 degrees per shot up to 9 shots, and water doubles the spread.",
+      "behavior": "Each bullet or pellet picks a uniform random sideways offset and a uniform random vertical offset at a far point 8192 units along the aim. The bullet limits are 300 and 500. The pellet limits are 1000 and 500. The result is a rectangle, not a bell curve. A ray that crosses water is re-aimed from the water surface with the offsets doubled. The shotgun fires 12 pellets of 4 damage and kick 8. The double barrel fires 20 pellets of 6 damage and kick 12 as two groups of 10, each aimed 5 degrees to one side of the view. The machine gun fires 1 bullet of 8 damage and kick 2 per tick. In single player the machine gun adds 1.5 degrees of upward aim per sustained shot, counting up to 9 shots, so the spray climbs. The chain gun also jitters the muzzle position and deals 8 damage, or 6 in deathmatch. Each shot also adds a small random view kick that is cleared at the end of the frame. Impacts on the world post a noise that monsters can hear.",
+      "constants": [
+        {
+          "name": "bullet horizontal spread",
+          "value": 300,
+          "unit": "units of offset at 8192 units of range, uniform in both directions",
+          "source": "game/g_local.h:667"
+        },
+        {
+          "name": "bullet vertical spread",
+          "value": 500,
+          "unit": "units of offset at 8192 units of range, uniform in both directions",
+          "source": "game/g_local.h:668"
+        },
+        {
+          "name": "pellet horizontal spread",
+          "value": 1000,
+          "unit": "units of offset at 8192 units of range, uniform in both directions",
+          "source": "game/g_local.h:669"
+        },
+        {
+          "name": "pellet vertical spread",
+          "value": 500,
+          "unit": "units of offset at 8192 units of range, uniform in both directions",
+          "source": "game/g_local.h:670"
+        },
+        {
+          "name": "ray range",
+          "value": 8192,
+          "unit": "units",
+          "source": "game/g_weapon.c:154"
+        },
+        {
+          "name": "water spread multiplier",
+          "value": 2,
+          "unit": "multiplier on both offsets after crossing water",
+          "source": "game/g_weapon.c:206"
+        },
+        {
+          "name": "shotgun pellets",
+          "value": 12,
+          "unit": "pellets per shot",
+          "source": "game/g_local.h:672"
+        },
+        {
+          "name": "double barrel pellets",
+          "value": 20,
+          "unit": "pellets per shot, split in two groups",
+          "source": "game/g_local.h:673"
+        },
+        {
+          "name": "shotgun pellet damage",
+          "value": 4,
+          "unit": "damage points per pellet",
+          "source": "game/p_weapon.c:1189"
+        },
+        {
+          "name": "double barrel pellet damage",
+          "value": 6,
+          "unit": "damage points per pellet",
+          "source": "game/p_weapon.c:1245"
+        },
+        {
+          "name": "double barrel group angle",
+          "value": 5,
+          "unit": "degrees of yaw to each side",
+          "source": "game/p_weapon.c:1263"
+        },
+        {
+          "name": "machine gun damage",
+          "value": 8,
+          "unit": "damage points per bullet",
+          "source": "game/p_weapon.c:959"
+        },
+        {
+          "name": "machine gun climb per shot",
+          "value": -1.5,
+          "unit": "degrees of pitch aim per sustained shot; negative is up",
+          "source": "game/p_weapon.c:999"
+        },
+        {
+          "name": "machine gun climb limit",
+          "value": 9,
+          "unit": "sustained shots counted",
+          "source": "game/p_weapon.c:1005"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_weapon.c",
+          "line": 134
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 290
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 953
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1184
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1239
+        }
+      ],
+      "capabilities": [
+        "rectangular spread cone",
+        "sustained fire that walks upward",
+        "pellet fans",
+        "water-aware ray tracing"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "hitscan"
+      ]
+    },
+    {
+      "id": "railgun-pierce",
+      "node": "projectiles",
+      "name": "Rail gun piercing hitscan",
+      "summary": "The rail gun traces 8192 units with no spread, deals 150 (100 in deathmatch) to each monster or player along the line, and stops only at world geometry.",
+      "behavior": "The shot is an instant straight trace from the muzzle. It never misses by spread. The trace loops. At each hit on a monster or a player it applies damage and then continues from that point while ignoring that body. It stops at the first thing that is not a monster or player. Slime and lava surfaces are crossed once and flagged so the beam draws on both sides. The weapon deals 150 damage with kick 250 in single player and 100 with kick 200 in deathmatch. The kick is the knockback applied to a hit target. The shooter view gets a 3 unit back push and 3 degrees of upward kick. Fire happens on frame 4, and the full cycle is about 1.6 seconds (derived). A hit posts an impact noise at the end point. Rail shots skip the projectile dodge warning, so monsters get no chance to duck them.",
+      "constants": [
+        {
+          "name": "rail range",
+          "value": 8192,
+          "unit": "units",
+          "source": "game/g_weapon.c:667"
+        },
+        {
+          "name": "rail damage",
+          "value": 150,
+          "unit": "damage points in single player",
+          "source": "game/p_weapon.c:1317"
+        },
+        {
+          "name": "rail deathmatch damage",
+          "value": 100,
+          "unit": "damage points in deathmatch",
+          "source": "game/p_weapon.c:1312"
+        },
+        {
+          "name": "rail kick",
+          "value": 250,
+          "unit": "knockback units in single player",
+          "source": "game/p_weapon.c:1318"
+        },
+        {
+          "name": "rail deathmatch kick",
+          "value": 200,
+          "unit": "knockback units in deathmatch",
+          "source": "game/p_weapon.c:1313"
+        },
+        {
+          "name": "rail view pitch kick",
+          "value": -3,
+          "unit": "degrees; negative is up",
+          "source": "game/p_weapon.c:1330"
+        },
+        {
+          "name": "rail fire frame",
+          "value": 4,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1353"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_weapon.c",
+          "line": 658
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1302
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1350
+        }
+      ],
+      "capabilities": [
+        "instant pierce through all living targets",
+        "no spread",
+        "strong knockback",
+        "liquid-aware beam"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "hitscan"
+      ]
+    },
+    {
+      "id": "energy-sphere-weapon",
+      "node": "projectiles",
+      "name": "Heavy energy sphere with tether lasers and sqrt falloff",
+      "summary": "The sphere flies at 400 units per second, zaps every living target within 256 units for 10 per 0.1 second tick, then bursts at 200 direct plus a radius 1000 blast with square-root falloff.",
+      "behavior": "The weapon has a pre-fire frame at 9 and the shot at frame 17. The sphere travels without gravity at 400 units per second for up to 8000 divided by speed seconds, which is 20 seconds. While it flies, every 0.1 second tick it looks for monsters, players and explosive barrels within 256 units. For each one it traces a line up to 2048 units in that direction and damages everything along it that takes damage and is not immune, at 10 per tick in single player and 5 in deathmatch. On impact it deals 200 to the body hit and 200 splash in radius 100 elsewhere. After one tick the blast fires once at frame 0 of a five frame animation (0.5 seconds). It hits every target within 1000 units that is visible from both the blast and the owner, except the owner. Damage is the base (500 in single player, 200 in deathmatch) times one minus the square root of the distance over the radius. Half the radius still gives about 29 percent.",
+      "constants": [
+        {
+          "name": "sphere speed",
+          "value": 400,
+          "unit": "units per second",
+          "source": "game/p_weapon.c:1415"
+        },
+        {
+          "name": "sphere single player damage",
+          "value": 500,
+          "unit": "damage points as the blast base",
+          "source": "game/p_weapon.c:1377"
+        },
+        {
+          "name": "sphere deathmatch damage",
+          "value": 200,
+          "unit": "damage points as the blast base",
+          "source": "game/p_weapon.c:1375"
+        },
+        {
+          "name": "blast radius",
+          "value": 1000,
+          "unit": "units",
+          "source": "game/p_weapon.c:1372"
+        },
+        {
+          "name": "sphere lifetime numerator",
+          "value": 8000,
+          "unit": "units; lifetime in seconds equals this divided by speed",
+          "source": "game/g_weapon.c:900"
+        },
+        {
+          "name": "tether radius",
+          "value": 256,
+          "unit": "units around the sphere",
+          "source": "game/g_weapon.c:821"
+        },
+        {
+          "name": "tether damage",
+          "value": 10,
+          "unit": "damage points per server tick (10 Hz), single player",
+          "source": "game/g_weapon.c:818"
+        },
+        {
+          "name": "tether deathmatch damage",
+          "value": 5,
+          "unit": "damage points per server tick (10 Hz)",
+          "source": "game/g_weapon.c:816"
+        },
+        {
+          "name": "tether trace length",
+          "value": 2048,
+          "unit": "units",
+          "source": "game/g_weapon.c:842"
+        },
+        {
+          "name": "impact direct damage",
+          "value": 200,
+          "unit": "damage points to the body hit",
+          "source": "game/g_weapon.c:781"
+        },
+        {
+          "name": "impact splash radius",
+          "value": 100,
+          "unit": "units",
+          "source": "game/g_weapon.c:782"
+        },
+        {
+          "name": "blast animation frames",
+          "value": 5,
+          "unit": "server ticks of 0.1 seconds",
+          "source": "game/g_weapon.c:761"
+        },
+        {
+          "name": "pre-fire frame",
+          "value": 9,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1428"
+        },
+        {
+          "name": "fire frame",
+          "value": 17,
+          "unit": "animation frame index",
+          "source": "game/p_weapon.c:1428"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_weapon.c",
+          "line": 882
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 804
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 765
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 721
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 1367
+        }
+      ],
+      "capabilities": [
+        "tether lasers that hit unseen enemies near the sphere",
+        "wide blast with gentle falloff",
+        "line of sight gating through the owner",
+        "owner immunity"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "projectile"
+      ]
+    },
+    {
+      "id": "powerup-timers",
+      "node": "items-and-triggers",
+      "name": "Powerup timers in server frames",
+      "summary": "Timed powerups last 300 server frames (30 seconds at 10 Hz), flicker in the last 30 frames, the damage boost multiplies damage and kick by 4, and the silencer lasts 30 shots.",
+      "behavior": "Powerups store an end frame number. Use adds 300 frames to the current frame, or adds to the remaining time when already active. At 10 frames per second that is 30 seconds. With the damage boost active, each weapon multiplies its damage and its kick by 4. Invulnerability sets all damage taken to zero except flagged no-protection damage. It plays a sound at most every 2 seconds on a hit. The rebreather and the environment suit also last 300 frames and refill the air timer to 10 seconds while under water. In the last 30 frames, the powerup effect and the screen tint show only when bit 4 of the remaining frame count is set, so they flicker. A warning sound plays when exactly 30 frames remain. The silencer counts 30 shots, and each weapon noise consumes one shot and is not posted to monsters.",
+      "constants": [
+        {
+          "name": "damage boost duration",
+          "value": 300,
+          "unit": "server frames (10 Hz), 30 seconds",
+          "source": "game/g_items.c:353"
+        },
+        {
+          "name": "invulnerability duration",
+          "value": 300,
+          "unit": "server frames (10 Hz), 30 seconds",
+          "source": "game/g_items.c:404"
+        },
+        {
+          "name": "rebreather duration",
+          "value": 300,
+          "unit": "server frames (10 Hz), 30 seconds",
+          "source": "game/g_items.c:374"
+        },
+        {
+          "name": "environment suit duration",
+          "value": 300,
+          "unit": "server frames (10 Hz), 30 seconds",
+          "source": "game/g_items.c:389"
+        },
+        {
+          "name": "silencer shots",
+          "value": 30,
+          "unit": "shots per pickup use",
+          "source": "game/g_items.c:415"
+        },
+        {
+          "name": "damage boost multiplier",
+          "value": 4,
+          "unit": "multiplier on damage and kick",
+          "source": "game/p_weapon.c:558"
+        },
+        {
+          "name": "flicker window",
+          "value": 30,
+          "unit": "server frames before the end",
+          "source": "game/p_view.c:448"
+        },
+        {
+          "name": "flicker bit",
+          "value": 4,
+          "unit": "bit mask on the remaining frame count",
+          "source": "game/p_view.c:448"
+        },
+        {
+          "name": "invulnerability sound spacing",
+          "value": 2,
+          "unit": "seconds",
+          "source": "game/g_combat.c:467"
+        },
+        {
+          "name": "breather air refill",
+          "value": 10,
+          "unit": "seconds of air",
+          "source": "game/p_view.c:658"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_items.c",
+          "line": 339
+        },
+        {
+          "path": "game/g_items.c",
+          "line": 396
+        },
+        {
+          "path": "game/g_items.c",
+          "line": 411
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 418
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 58
+        }
+      ],
+      "capabilities": [
+        "frame-counted powerup timers",
+        "stackable duration",
+        "flicker warning before expiry",
+        "silenced shots that stay hidden from monsters"
+      ],
+      "tags": [
+        "items",
+        "combat",
+        "powerup"
+      ]
+    },
+    {
+      "id": "monster-sight-and-hearing",
+      "node": "monster-ai",
+      "name": "Monster sight cone, range bands and noise hearing",
+      "summary": "Monsters check one player per frame, see in a cone of dot above 0.3 inside range bands of 80, 500 and 1000 units, ignore a player in near darkness, and hear noise posted within the last frame out to 1000 units.",
+      "behavior": "Each server frame one living player is picked as the sight target. Ranges are bands by distance: melee under 80, near under 500, mid under 1000 and far beyond. A far player is never noticed by sight. The monster needs an unblocked eye-to-eye line, and the player light level must exceed 5. At near range the target must lie in front, because only monsters ever set the wake flag in this source, never the player. At mid range the player must lie in front. Front means the dot product of the facing and the direction to the target is above 0.3, a cone with about a 145 degree total spread. A monster that notices a player marks itself hostile for 1 second. Monsters that see an alerted neighbour join it, which is why the alerting monster gets light level 128. Hearing uses noise entities. The player posts a noise when firing without a silencer, when bullets hit the world, when jumping and when entering or leaving water. A noise counts only in the frame it is posted and the next frame. The monster must be within the sound area, within 1000 units and in a connected area. It then turns toward the noise. Ambush monsters react to a noise only when they can see its source. Deathmatch posts no noise.",
+      "constants": [
+        {
+          "name": "melee range",
+          "value": 80,
+          "unit": "units",
+          "source": "game/g_local.h:80"
+        },
+        {
+          "name": "near range",
+          "value": 500,
+          "unit": "units",
+          "source": "game/g_ai.c:273"
+        },
+        {
+          "name": "mid range",
+          "value": 1000,
+          "unit": "units",
+          "source": "game/g_ai.c:275"
+        },
+        {
+          "name": "front dot threshold",
+          "value": 0.3,
+          "unit": "dot product of facing and direction to target",
+          "source": "game/g_ai.c:323"
+        },
+        {
+          "name": "minimum light level",
+          "value": 5,
+          "unit": "light level units; at or below it the player is unseen",
+          "source": "game/g_ai.c:499"
+        },
+        {
+          "name": "hearing distance",
+          "value": 1000,
+          "unit": "units",
+          "source": "game/g_ai.c:556"
+        },
+        {
+          "name": "noise freshness",
+          "value": 1,
+          "unit": "server frames (10 Hz) after the frame it was posted",
+          "source": "game/g_ai.c:445"
+        },
+        {
+          "name": "hostile wake time",
+          "value": 1,
+          "unit": "seconds",
+          "source": "game/g_ai.c:357"
+        },
+        {
+          "name": "light level after being spotted",
+          "value": 128,
+          "unit": "light level units set on the monster that found the player",
+          "source": "game/g_ai.c:354"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_ai.c",
+          "line": 407
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 264
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 284
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 287
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 50
+        },
+        {
+          "path": "game/p_weapon.c",
+          "line": 58
+        }
+      ],
+      "capabilities": [
+        "range-band awareness",
+        "dark corners that hide the player",
+        "noise that pulls monsters toward a spot",
+        "one sight check per frame to save time"
+      ],
+      "tags": [
+        "ai",
+        "stealth",
+        "perception"
+      ]
+    },
+    {
+      "id": "monster-attack-decision",
+      "node": "monster-ai",
+      "name": "Per-tick attack chance by range band",
+      "summary": "Each 0.1 second tick a monster with a clear shot starts a missile attack with chance 0.1 near and 0.02 mid (0.4 when holding ground), scaled by difficulty, then waits up to 2 seconds. Melee range always attacks.",
+      "behavior": "The attack check runs while the enemy is visible. A trace from eye to eye must hit the enemy first, so another monster in the way blocks the shot. At melee range the monster attacks at once, using melee if it has one. On the easiest skill 3 of 4 melee checks are skipped. Otherwise the monster needs an attack move, a finished cooldown and a non-far range. The chance per tick is 0.4 for a monster told to hold its ground, 0.1 near and 0.02 mid. A third chance value of 0.2 for melee range sits in the code but cannot run, because melee range returns earlier. The easiest skill halves the chance and skills 2 and 3 double it. A passed roll starts the attack and sets a cooldown of 0 to 2 seconds. When a monster first starts hunting, it waits 1 second before the first attack. Flying monsters that fail the roll pick sliding sideways with chance 0.3 or flying straight. The monster turns in place until it faces within 45 degrees of the target before the attack starts. A dead enemy ends the fight, and a monster flagged brutal keeps attacking corpses until their health reaches -80.",
+      "constants": [
+        {
+          "name": "hold ground chance",
+          "value": 0.4,
+          "unit": "probability per think tick (10 Hz)",
+          "source": "game/g_ai.c:653"
+        },
+        {
+          "name": "near band chance",
+          "value": 0.1,
+          "unit": "probability per think tick (10 Hz)",
+          "source": "game/g_ai.c:661"
+        },
+        {
+          "name": "mid band chance",
+          "value": 0.02,
+          "unit": "probability per think tick (10 Hz)",
+          "source": "game/g_ai.c:665"
+        },
+        {
+          "name": "easy skill chance scale",
+          "value": 0.5,
+          "unit": "multiplier on the chance",
+          "source": "game/g_ai.c:673"
+        },
+        {
+          "name": "hard skill chance scale",
+          "value": 2,
+          "unit": "multiplier on the chance",
+          "source": "game/g_ai.c:675"
+        },
+        {
+          "name": "attack cooldown range",
+          "value": 2,
+          "unit": "seconds; cooldown is a random value up to this",
+          "source": "game/g_ai.c:680"
+        },
+        {
+          "name": "first attack delay",
+          "value": 1,
+          "unit": "seconds after starting a hunt",
+          "source": "game/g_ai.c:344"
+        },
+        {
+          "name": "easy melee skip mask",
+          "value": 3,
+          "unit": "random mask; a nonzero masked roll skips the melee attack",
+          "source": "game/g_ai.c:632"
+        },
+        {
+          "name": "flying slide chance",
+          "value": 0.3,
+          "unit": "probability for sideways sliding",
+          "source": "game/g_ai.c:686"
+        },
+        {
+          "name": "facing tolerance",
+          "value": 45,
+          "unit": "degrees; larger error blocks the attack",
+          "source": "game/g_ai.c:599"
+        },
+        {
+          "name": "brutal corpse health limit",
+          "value": -80,
+          "unit": "health at or below which a brutal monster stops",
+          "source": "game/g_ai.c:823"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_ai.c",
+          "line": 607
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 771
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 594
+        },
+        {
+          "path": "game/g_ai.c",
+          "line": 331
+        }
+      ],
+      "capabilities": [
+        "range-scaled aggression",
+        "difficulty scaled attack rate",
+        "friendly fire blocking by monsters in the line",
+        "turn-then-shoot behavior"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "monster-pursuit-trail",
+      "node": "monster-ai",
+      "name": "Pursuit by last sighting and the player breadcrumb trail",
+      "summary": "A monster that loses sight heads for the last seen point, probes 16 units to each side when a wall blocks it, and then follows a ring of 8 breadcrumbs the player left.",
+      "behavior": "While the enemy is visible the monster walks straight at it and records the position and time. On losing sight it flags lost sight and targets the last seen point. If a trace to that point is blocked, it traces two side probes 16 units to each side at a point partway there. It picks the clearer side and sets a temporary goal. On reaching the point it asks the trail for the next marker. The trail is a ring of 8 positions. In single player the player adds a position each frame while not visible from the latest marker, which gives sparse breadcrumbs around corners. The monster picks the first marker newer than the last one it used, and steps along them. The search timer is 5 seconds from the last sighting. A sound target expires 5 seconds after the noise. A monster that reaches within 64 units of a noise target stops and holds position. Deathmatch has no trail.",
+      "constants": [
+        {
+          "name": "trail ring size",
+          "value": 8,
+          "unit": "breadcrumb positions kept",
+          "source": "game/p_trail.c:39"
+        },
+        {
+          "name": "side probe offset",
+          "value": -16,
+          "unit": "units to the left of the line to the goal; the right probe uses +16",
+          "source": "game/g_ai.c:1062"
+        },
+        {
+          "name": "search timer",
+          "value": 5,
+          "unit": "seconds from the last sighting",
+          "source": "game/g_ai.c:869"
+        },
+        {
+          "name": "extended search timeout",
+          "value": 20,
+          "unit": "seconds added to the search timer before it resets",
+          "source": "game/g_ai.c:977"
+        },
+        {
+          "name": "sound target expiry",
+          "value": 5,
+          "unit": "seconds after the noise",
+          "source": "game/g_ai.c:784"
+        },
+        {
+          "name": "noise stop distance",
+          "value": 64,
+          "unit": "units from the noise target to hold position",
+          "source": "game/g_ai.c:937"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_ai.c",
+          "line": 914
+        },
+        {
+          "path": "game/p_trail.c",
+          "line": 67
+        },
+        {
+          "path": "game/p_trail.c",
+          "line": 95
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1802
+        }
+      ],
+      "capabilities": [
+        "chase to the last seen spot",
+        "corner following by breadcrumbs",
+        "side probing around blockers",
+        "noise investigation"
+      ],
+      "tags": [
+        "ai",
+        "pursuit",
+        "navigation"
+      ]
+    },
+    {
+      "id": "monster-step-movement",
+      "node": "monster-movement",
+      "name": "Monster stepping, edge checks and turning",
+      "summary": "Monsters move by animation frames at 10 Hz, step up 18 units, refuse unsupported edges, turn at most 20 degrees per tick for walkers (10 for flyers) and must face within 45 degrees of a move.",
+      "behavior": "The monster brain thinks every 0.1 second. Each tick advances one animation frame, and the frame table gives a distance for that frame, scaled by the model scale. Motion is the move function that tries a step: it lifts by 18 units, traces down twice that, and refuses steps into water for walkers. After the move the bottom check requires solid under all four corners, or under the middle with no corner drop above 18 units. Otherwise the move is undone. Turning is limited each tick by the monster turn speed. Walkers default to 20 degrees and flyers to 10, and a monster type can set its own. A step is cancelled when the monster still faces more than 45 degrees from the direction. Direction choice favors the straight line to the goal, changes by multiples of 45 degrees, never turns back directly and re-rolls by chance 1 in 4 each tick. Flyers and swimmers change height by 8 units per step toward the goal. Walkers and flyers use an eye height of 25 units. Water depth uses a probe 26 units above the first one, then another 22 units higher.",
+      "constants": [
+        {
+          "name": "monster step height",
+          "value": 18,
+          "unit": "units",
+          "source": "game/m_move.c:24"
+        },
+        {
+          "name": "walker default turn speed",
+          "value": 20,
+          "unit": "degrees per think tick (10 Hz)",
+          "source": "game/g_monster.c:683"
+        },
+        {
+          "name": "flyer default turn speed",
+          "value": 10,
+          "unit": "degrees per think tick (10 Hz)",
+          "source": "game/g_monster.c:705"
+        },
+        {
+          "name": "turn cancel angle",
+          "value": 45,
+          "unit": "degrees",
+          "source": "game/m_move.c:370"
+        },
+        {
+          "name": "chase direction step",
+          "value": 45,
+          "unit": "degrees per direction bucket",
+          "source": "game/m_move.c:413"
+        },
+        {
+          "name": "reroll mask",
+          "value": 3,
+          "unit": "random mask; a roll of 1 triggers a new direction (1 in 4 per tick)",
+          "source": "game/m_move.c:529"
+        },
+        {
+          "name": "bottom check depth factor",
+          "value": 2,
+          "unit": "multiples of the step height traced downward",
+          "source": "game/m_move.c:73"
+        },
+        {
+          "name": "flyer height step",
+          "value": 8,
+          "unit": "units per move toward the goal height",
+          "source": "game/m_move.c:141"
+        },
+        {
+          "name": "walker and flyer eye height",
+          "value": 25,
+          "unit": "units above the origin",
+          "source": "game/g_monster.c:684"
+        },
+        {
+          "name": "ground probe depth",
+          "value": 0.25,
+          "unit": "units below the origin",
+          "source": "game/g_monster.c:158"
+        },
+        {
+          "name": "steep floor normal",
+          "value": 0.7,
+          "unit": "vertical component of the floor normal",
+          "source": "game/g_monster.c:163"
+        },
+        {
+          "name": "waist water probe",
+          "value": 26,
+          "unit": "units above the first probe",
+          "source": "game/g_monster.c:205"
+        },
+        {
+          "name": "head water probe",
+          "value": 22,
+          "unit": "units above the second probe",
+          "source": "game/g_monster.c:211"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/m_move.c",
+          "line": 112
+        },
+        {
+          "path": "game/m_move.c",
+          "line": 37
+        },
+        {
+          "path": "game/m_move.c",
+          "line": 304
+        },
+        {
+          "path": "game/m_move.c",
+          "line": 403
+        },
+        {
+          "path": "game/g_monster.c",
+          "line": 361
+        },
+        {
+          "path": "game/g_monster.c",
+          "line": 419
+        }
+      ],
+      "capabilities": [
+        "animation-driven movement distance",
+        "stairs for monsters",
+        "no walking off ledges",
+        "limited turn rates"
+      ],
+      "tags": [
+        "ai",
+        "movement",
+        "navigation"
+      ]
+    },
+    {
+      "id": "monster-pain-dodge-infighting",
+      "node": "monster-soldier",
+      "name": "Pain gating, dodging and infighting",
+      "summary": "A soldier flinches at most once per 3 seconds (never on the hardest skill), dodges incoming projectiles with chance 0.25, and monsters that hit each other turn on the attacker.",
+      "behavior": "The pain handler returns early when called within 3 seconds of the last pain. In that window it only upgrades an airborne flinch. Its skin changes when health falls under half. The hardest skill plays no flinch animation. The damage routine also locks pain for 5 seconds on that skill. Otherwise a random roll picks one of three flinch moves, thirds at 0.33 and 0.66. A launched monster with upward speed over 100 plays its own flinch. Projectile firing checks a line out to 8192 units for a monster ahead of it and gives that monster the time to impact. The monster then rolls 0.25 and may duck or fire back. Easier skills duck more often. The check itself runs at 25 percent on the easiest skill. Infighting: a monster hit by another monster of the same movement class takes the attacker as its new enemy, unless the attacker is one of the heavy bosses or tanks, which spray too widely. Friendly flagged monsters never retaliate against players.",
+      "constants": [
+        {
+          "name": "flinch spacing",
+          "value": 3,
+          "unit": "seconds",
+          "source": "game/m_soldier.c:424"
+        },
+        {
+          "name": "hardest skill pain lock",
+          "value": 5,
+          "unit": "seconds",
+          "source": "game/g_combat.c:514"
+        },
+        {
+          "name": "skin change fraction divisor",
+          "value": 2,
+          "unit": "health under max health divided by this changes the skin",
+          "source": "game/m_soldier.c:414"
+        },
+        {
+          "name": "first flinch roll limit",
+          "value": 0.33,
+          "unit": "probability bound",
+          "source": "game/m_soldier.c:445"
+        },
+        {
+          "name": "second flinch roll limit",
+          "value": 0.66,
+          "unit": "probability bound",
+          "source": "game/m_soldier.c:447"
+        },
+        {
+          "name": "airborne flinch speed",
+          "value": 100,
+          "unit": "units per second upward",
+          "source": "game/m_soldier.c:419"
+        },
+        {
+          "name": "dodge chance",
+          "value": 0.25,
+          "unit": "probability per warned projectile",
+          "source": "game/m_soldier.c:833"
+        },
+        {
+          "name": "dodge hold extra",
+          "value": 0.3,
+          "unit": "seconds added to the projectile arrival time",
+          "source": "game/m_soldier.c:845"
+        },
+        {
+          "name": "projectile warning trace",
+          "value": 8192,
+          "unit": "units",
+          "source": "game/g_weapon.c:45"
+        },
+        {
+          "name": "easy skill warning chance",
+          "value": 0.25,
+          "unit": "probability that the warning runs at all",
+          "source": "game/g_weapon.c:42"
+        },
+        {
+          "name": "soldier health standard",
+          "value": 30,
+          "unit": "health points",
+          "source": "game/m_soldier.c:1276"
+        },
+        {
+          "name": "soldier health light",
+          "value": 20,
+          "unit": "health points",
+          "source": "game/m_soldier.c:1255"
+        },
+        {
+          "name": "soldier health heavy",
+          "value": 40,
+          "unit": "health points",
+          "source": "game/m_soldier.c:1297"
+        },
+        {
+          "name": "soldier mass",
+          "value": 100,
+          "unit": "mass units",
+          "source": "game/m_soldier.c:1215"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/m_soldier.c",
+          "line": 409
+        },
+        {
+          "path": "game/m_soldier.c",
+          "line": 828
+        },
+        {
+          "path": "game/g_weapon.c",
+          "line": 32
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 295
+        },
+        {
+          "path": "game/g_combat.c",
+          "line": 377
+        }
+      ],
+      "capabilities": [
+        "flinch rate limiting",
+        "projectile dodging with a time window",
+        "monster infighting",
+        "difficulty scaled pain"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "monster-aim-error",
+      "node": "monster-soldier",
+      "name": "Monster aim error and armament tiers",
+      "summary": "The soldier aims at the target eye and offsets the 8192 unit aim point by up to 1000 sideways and 500 vertically, then fires a blaster bolt (5 at 600), a shotgun burst (12 pellets of 2) or machine gun bursts (2).",
+      "behavior": "The light tier fires blaster bolts. The mid tier fires shotgun pellets. The heavy tier fires machine gun bullets. All of them aim at the enemy eye height from the muzzle, then add a uniform random offset to a point 8192 units out. The offset is up to 1000 sideways and 500 up or down. That equals about 7 degrees and 3.5 degrees. Two special shots skip the aim and fire straight ahead, so the monster can sweep a burst. The blaster bolt deals 5 and flies at 600 units per second. The shotgun burst uses the player shotgun spread and count with damage 2 and kick 1. The machine gun deals 2 damage and kick 4 per bullet, then pauses for 3 to 10 ticks of 0.1 seconds between bursts. The monster counts as headshot dead when the hit height is within 4 units of its eye, which plays a distinct death. Death below the gib health of -30 throws three meat gibs, a chest and a head.",
+      "constants": [
+        {
+          "name": "aim horizontal error",
+          "value": 1000,
+          "unit": "units of offset at 8192 units, uniform both ways",
+          "source": "game/m_soldier.c:494"
+        },
+        {
+          "name": "aim vertical error",
+          "value": 500,
+          "unit": "units of offset at 8192 units, uniform both ways",
+          "source": "game/m_soldier.c:495"
+        },
+        {
+          "name": "aim reference range",
+          "value": 8192,
+          "unit": "units",
+          "source": "game/m_soldier.c:496"
+        },
+        {
+          "name": "blaster damage",
+          "value": 5,
+          "unit": "damage points per bolt",
+          "source": "game/m_soldier.c:506"
+        },
+        {
+          "name": "blaster speed",
+          "value": 600,
+          "unit": "units per second",
+          "source": "game/m_soldier.c:506"
+        },
+        {
+          "name": "shotgun pellet damage",
+          "value": 2,
+          "unit": "damage points per pellet",
+          "source": "game/m_soldier.c:510"
+        },
+        {
+          "name": "shotgun kick",
+          "value": 1,
+          "unit": "knockback units",
+          "source": "game/m_soldier.c:510"
+        },
+        {
+          "name": "machine gun damage",
+          "value": 2,
+          "unit": "damage points per bullet",
+          "source": "game/m_soldier.c:517"
+        },
+        {
+          "name": "machine gun kick",
+          "value": 4,
+          "unit": "knockback units",
+          "source": "game/m_soldier.c:517"
+        },
+        {
+          "name": "burst pause base",
+          "value": 3,
+          "unit": "think ticks (0.1 seconds each) before the random extra",
+          "source": "game/m_soldier.c:515"
+        },
+        {
+          "name": "burst pause random range",
+          "value": 8,
+          "unit": "think ticks; extra is a random integer below this",
+          "source": "game/m_soldier.c:515"
+        },
+        {
+          "name": "headshot tolerance",
+          "value": 4,
+          "unit": "units from the eye height",
+          "source": "game/m_soldier.c:1175"
+        },
+        {
+          "name": "gib health",
+          "value": -30,
+          "unit": "health at or below which the body gibs",
+          "source": "game/m_soldier.c:1256"
+        },
+        {
+          "name": "meat gib count",
+          "value": 3,
+          "unit": "small gibs thrown",
+          "source": "game/m_soldier.c:1152"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/m_soldier.c",
+          "line": 462
+        },
+        {
+          "path": "game/m_soldier.c",
+          "line": 1144
+        },
+        {
+          "path": "game/m_soldier.c",
+          "line": 1200
+        },
+        {
+          "path": "game/g_monster.c",
+          "line": 31
+        }
+      ],
+      "capabilities": [
+        "inaccurate monster fire that can be tuned by two numbers",
+        "three weapon tiers on one body",
+        "burst and pause pacing",
+        "head hit death animation"
+      ],
+      "tags": [
+        "ai",
+        "combat",
+        "accuracy"
+      ]
+    },
+    {
+      "id": "gibs-and-player-death",
+      "node": "gibs-and-death",
+      "name": "Gib launch velocities, lifetimes and player death",
+      "summary": "Gibs launch with 100 sideways and 200 to 300 up scaled by 0.7 or 1.2, clamped to 300 sideways and 200 to 500 up, live 10 to 20 seconds, and a player gibs below health -40 or respawns after 1 second.",
+      "behavior": "Each gib starts at a random point inside the body box. Its velocity is the dead body velocity plus a random push. The push has up to 100 in each horizontal axis and 200 plus up to 100 up. It is scaled by 0.7 when the killing hit dealt under 50 and by 1.2 otherwise. Organic gibs also halve that push. Then the velocity is clamped to 300 in each horizontal axis and to between 200 and 500 up, so every gib flies upward. Gibs spin up to 600 degrees per second and free themselves 10 to 20 seconds later. A player gibs when health falls below -40. A monster gibs at its own gib health. The player drops 4 meat gibs and a head. A normal player death keeps a corpse whose hull top is lowered to -8, tosses the weapon, clears powerups, and shows a camera tilted 40 degrees in roll and -15 in pitch toward the killer. In single player any button respawns after a 1 second delay.",
+      "constants": [
+        {
+          "name": "gib sideways push",
+          "value": 100,
+          "unit": "units per second per horizontal axis, random both ways",
+          "source": "game/g_misc.c:60"
+        },
+        {
+          "name": "gib upward base",
+          "value": 200,
+          "unit": "units per second",
+          "source": "game/g_misc.c:62"
+        },
+        {
+          "name": "gib damage split",
+          "value": 50,
+          "unit": "damage points; below it the push is scaled by 0.7",
+          "source": "game/g_misc.c:64"
+        },
+        {
+          "name": "small hit push scale",
+          "value": 0.7,
+          "unit": "multiplier",
+          "source": "game/g_misc.c:65"
+        },
+        {
+          "name": "large hit push scale",
+          "value": 1.2,
+          "unit": "multiplier",
+          "source": "game/g_misc.c:67"
+        },
+        {
+          "name": "organic push scale",
+          "value": 0.5,
+          "unit": "multiplier for organic gibs",
+          "source": "game/g_misc.c:162"
+        },
+        {
+          "name": "gib horizontal clamp",
+          "value": -300,
+          "unit": "units per second; the limit is the same magnitude on both sides",
+          "source": "game/g_misc.c:72"
+        },
+        {
+          "name": "gib minimum upward speed",
+          "value": 200,
+          "unit": "units per second",
+          "source": "game/g_misc.c:80"
+        },
+        {
+          "name": "gib maximum upward speed",
+          "value": 500,
+          "unit": "units per second",
+          "source": "game/g_misc.c:82"
+        },
+        {
+          "name": "gib spin",
+          "value": 600,
+          "unit": "degrees per second maximum per axis",
+          "source": "game/g_misc.c:173"
+        },
+        {
+          "name": "gib lifetime base",
+          "value": 10,
+          "unit": "seconds before a random 0 to 10 extra",
+          "source": "game/g_misc.c:178"
+        },
+        {
+          "name": "player gib health",
+          "value": -40,
+          "unit": "health below which a player gibs",
+          "source": "game/p_client.c:550"
+        },
+        {
+          "name": "player gib count",
+          "value": 4,
+          "unit": "meat gibs thrown",
+          "source": "game/p_client.c:553"
+        },
+        {
+          "name": "respawn delay",
+          "value": 1,
+          "unit": "seconds",
+          "source": "game/p_client.c:525"
+        },
+        {
+          "name": "corpse hull top",
+          "value": -8,
+          "unit": "units relative to the origin",
+          "source": "game/p_client.c:518"
+        },
+        {
+          "name": "death camera roll",
+          "value": 40,
+          "unit": "degrees",
+          "source": "game/p_view.c:241"
+        },
+        {
+          "name": "death camera pitch",
+          "value": -15,
+          "unit": "degrees",
+          "source": "game/p_view.c:242"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_misc.c",
+          "line": 135
+        },
+        {
+          "path": "game/g_misc.c",
+          "line": 58
+        },
+        {
+          "path": "game/g_misc.c",
+          "line": 70
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 501
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 222
+        }
+      ],
+      "capabilities": [
+        "upward-biased gib bursts",
+        "damage scaled gib speed",
+        "timed gib cleanup",
+        "death camera and respawn pause"
+      ],
+      "tags": [
+        "death",
+        "physics",
+        "gore"
+      ]
+    },
+    {
+      "id": "entity-physics-gravity-bounce",
+      "node": "entity-physics",
+      "name": "Server entity gravity, speed clamp and friction at 10 Hz",
+      "summary": "Non-player entities step every 0.1 second with gravity 800 applied as 80 units per second per tick, a 2000 speed clamp per axis, friction 6 with stop speed 100, and flyers using a third of the vertical friction.",
+      "behavior": "Projectiles, gibs, items and monsters share this tick. Each tick adds gravity times the entity gravity scale times 0.1 to the vertical speed, so a falling item gains 80 units per second per tick. Each velocity axis is clamped to 2000 first. Free movers advance by velocity times 0.1 and slide on contact. Bouncing objects reflect with a factor of 1.5. Other tossed objects slide. A tossed object that touches a floor with normal above 0.7 stops, and a bouncer stops only when its vertical speed is under 60. Walking monsters use a step mover with ground friction 6 and stop speed 100. Water friction is 1 per depth level. Flying monsters that gain vertical speed lose it at a third of the ground friction. Fast falls over a tenth of the gravity per second play a landing sound. The slide mover uses up to 4 bumps and 5 planes like player movement. Do not use these numbers for the player. The player uses the per-command step instead.",
+      "constants": [
+        {
+          "name": "physics tick",
+          "value": 0.1,
+          "unit": "seconds per entity step (10 Hz)",
+          "source": "game/g_local.h:73"
+        },
+        {
+          "name": "gravity",
+          "value": 800,
+          "unit": "units per second squared; server default, a map can override it",
+          "source": "game/g_save.c:164"
+        },
+        {
+          "name": "velocity clamp",
+          "value": 2000,
+          "unit": "units per second per axis",
+          "source": "game/g_save.c:163"
+        },
+        {
+          "name": "step mover friction",
+          "value": 6,
+          "unit": "dimensionless factor applied per 0.1 second tick",
+          "source": "game/g_phys.c:788"
+        },
+        {
+          "name": "step mover stop speed",
+          "value": 100,
+          "unit": "units per second floor on the friction speed",
+          "source": "game/g_phys.c:787"
+        },
+        {
+          "name": "step mover water friction",
+          "value": 1,
+          "unit": "dimensionless factor times depth level",
+          "source": "game/g_phys.c:789"
+        },
+        {
+          "name": "flyer vertical friction divisor",
+          "value": 3,
+          "unit": "ground friction divided by this for vertical motion",
+          "source": "game/g_phys.c:859"
+        },
+        {
+          "name": "landing sound speed factor",
+          "value": -0.1,
+          "unit": "fraction of gravity as downward speed that triggers the sound",
+          "source": "game/g_phys.c:848"
+        },
+        {
+          "name": "slide bumps",
+          "value": 4,
+          "unit": "trace iterations per step",
+          "source": "game/g_phys.c:198"
+        },
+        {
+          "name": "slide planes",
+          "value": 5,
+          "unit": "stored planes per step",
+          "source": "game/g_phys.c:182"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_phys.c",
+          "line": 322
+        },
+        {
+          "path": "game/g_phys.c",
+          "line": 72
+        },
+        {
+          "path": "game/g_phys.c",
+          "line": 670
+        },
+        {
+          "path": "game/g_phys.c",
+          "line": 815
+        },
+        {
+          "path": "game/g_phys.c",
+          "line": 183
+        }
+      ],
+      "capabilities": [
+        "tick-locked projectile and gib physics",
+        "bounce and rest rules",
+        "walking monster friction",
+        "global speed safety clamp"
+      ],
+      "tags": [
+        "physics",
+        "server",
+        "projectile"
+      ]
+    },
+    {
+      "id": "trigger-push-hurt-gravity",
+      "node": "items-and-triggers",
+      "name": "Push, hurt and gravity trigger volumes",
+      "summary": "A push volume sets velocity to its direction times speed times 10 (default speed 1000), a hurt volume deals 5 damage per 0.1 second tick by default, and the gravity volume does not change player gravity.",
+      "behavior": "A push volume replaces the velocity of a touching live body or grenade with the volume direction times its speed times 10. It does not add. The default speed is 1000 when the map gives none. For players it also copies the pushed velocity into the previous velocity record, so the landing does not hurt. A wind sound plays at most once per 1.5 seconds. A once flag removes the volume after one use. A hurt volume damages anything touching it every 0.1 second server tick, or once per second with the slow flag. The default damage is 5 per hit, which is 50 per second. The damage sound plays on every tenth frame. A flag lets the damage skip all protection. The gravity volume sets a per entity gravity scale on whatever touches it. Player movement reads only the global gravity value each command, so this source gives the player no gravity change from that volume. It affects tossed entities and monsters.",
+      "constants": [
+        {
+          "name": "push default speed",
+          "value": 1000,
+          "unit": "speed value before the factor of 10",
+          "source": "game/g_trigger.c:430"
+        },
+        {
+          "name": "push velocity factor",
+          "value": 10,
+          "unit": "multiplier from the speed value to units per second",
+          "source": "game/g_trigger.c:398"
+        },
+        {
+          "name": "wind sound spacing",
+          "value": 1.5,
+          "unit": "seconds",
+          "source": "game/g_trigger.c:410"
+        },
+        {
+          "name": "hurt default damage",
+          "value": 5,
+          "unit": "damage points per hit",
+          "source": "game/g_trigger.c:504"
+        },
+        {
+          "name": "slow hurt period",
+          "value": 1,
+          "unit": "seconds between hits with the slow flag",
+          "source": "game/g_trigger.c:479"
+        },
+        {
+          "name": "hurt sound frame interval",
+          "value": 10,
+          "unit": "server frames (10 Hz) between sound plays",
+          "source": "game/g_trigger.c:485"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/g_trigger.c",
+          "line": 394
+        },
+        {
+          "path": "game/g_trigger.c",
+          "line": 468
+        },
+        {
+          "path": "game/g_trigger.c",
+          "line": 532
+        },
+        {
+          "path": "game/p_client.c",
+          "line": 1612
+        }
+      ],
+      "capabilities": [
+        "jump pad volumes",
+        "timed hazard damage volumes",
+        "launch without fall damage",
+        "per-entity gravity scale for tossed bodies"
+      ],
+      "tags": [
+        "level",
+        "trigger",
+        "physics"
+      ]
+    },
+    {
+      "id": "liquid-hazards-and-drowning",
+      "node": "player-view",
+      "name": "Drowning, lava and slime damage",
+      "summary": "Players hold their breath 12 seconds, then drown for 2 rising by 2 each second up to 15 ignoring armor, while lava deals 3 times the depth level and slime 1 times the depth level every 0.1 second tick.",
+      "behavior": "The air timer is set to 12 seconds ahead whenever the head is out of water. When the head is under water and the timer has passed, the drowning check runs once per second. The first hit deals 4, because the damage counter starts at 2 and adds 2 first. Each next hit adds 2 more, capped at 15. Drowning ignores armor. Lava deals 3 times the depth level each server tick, which is up to 9 per 0.1 second. The environment suit cuts this to 1 times the depth level. Slime deals 1 times the depth level per tick and the suit removes it. Both liquid damages are normal damage, so armor absorbs them. The rebreather and the environment suit refill the air timer to 10 seconds while the head is under water. A gasp sound plays on surfacing, and entering water posts a noise.",
+      "constants": [
+        {
+          "name": "air supply",
+          "value": 12,
+          "unit": "seconds",
+          "source": "game/p_view.c:701"
+        },
+        {
+          "name": "drown damage start",
+          "value": 2,
+          "unit": "damage points; first hit adds the step before dealing",
+          "source": "game/p_view.c:702"
+        },
+        {
+          "name": "drown damage step",
+          "value": 2,
+          "unit": "damage points added per hit",
+          "source": "game/p_view.c:681"
+        },
+        {
+          "name": "drown damage cap",
+          "value": 15,
+          "unit": "damage points per hit",
+          "source": "game/p_view.c:682"
+        },
+        {
+          "name": "drown interval",
+          "value": 1,
+          "unit": "seconds between hits",
+          "source": "game/p_view.c:678"
+        },
+        {
+          "name": "lava damage per depth level",
+          "value": 3,
+          "unit": "damage points per depth level per server tick (10 Hz)",
+          "source": "game/p_view.c:726"
+        },
+        {
+          "name": "suited lava damage per depth level",
+          "value": 1,
+          "unit": "damage points per depth level per server tick (10 Hz)",
+          "source": "game/p_view.c:724"
+        },
+        {
+          "name": "breather air refill",
+          "value": 10,
+          "unit": "seconds",
+          "source": "game/p_view.c:658"
+        }
+      ],
+      "sources": [
+        {
+          "path": "game/p_view.c",
+          "line": 579
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 958
+        },
+        {
+          "path": "game/p_view.c",
+          "line": 418
+        }
+      ],
+      "capabilities": [
+        "breath timer with ramping drown damage",
+        "depth scaled lava damage",
+        "protective suit",
+        "armor bypass for drowning only"
+      ],
+      "tags": [
+        "damage",
+        "water",
+        "hazard"
+      ]
+    }
+  ]
+}

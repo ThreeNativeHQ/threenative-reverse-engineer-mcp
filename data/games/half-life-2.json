@@ -1,0 +1,2951 @@
+{
+  "version": 1,
+  "id": "half-life-2",
+  "title": "Half-Life 2",
+  "repo": "https://github.com/ValveSoftware/source-sdk-2013",
+  "sha": "3e957b70b167929f120360115d359d1ecb4c1699",
+  "nodes": [
+    {
+      "id": "player-movement",
+      "name": "Player ground, air, jump and crouch movement",
+      "purpose": "Shared movement step for client prediction and server: friction, acceleration, air control, jump launch, crouch transition and landing",
+      "paths": [
+        "src/game/shared/gamemovement.cpp",
+        "src/game/shared/gamemovement.h",
+        "src/game/shared/shareddefs.h",
+        "src/game/shared/gamerules.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CGameMovement::Friction",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            1610,
+            1677
+          ]
+        },
+        {
+          "name": "CGameMovement::AirAccelerate",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            1705,
+            1746
+          ]
+        },
+        {
+          "name": "CGameMovement::FinishGravity",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            1682,
+            1698
+          ]
+        },
+        {
+          "name": "CGameMovement::CheckJumpButton",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            2352,
+            2528
+          ]
+        },
+        {
+          "name": "CGameMovement::CheckFalling",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            3919,
+            3985
+          ]
+        },
+        {
+          "name": "CGameMovement::HandleDuckingSpeedCrop",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            4306,
+            4316
+          ]
+        },
+        {
+          "name": "CGameMovement::Duck",
+          "path": "src/game/shared/gamemovement.cpp",
+          "lines": [
+            4348,
+            4563
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "ladder-movement",
+      "name": "Ladder mounting, climbing and dismount",
+      "purpose": "Half-Life 2 specific ladder movement layered over the shared movement step: auto-mount cone, view-direction climbing, dismount nodes and jump-off",
+      "paths": [
+        "src/game/shared/hl2/hl_gamemovement.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CHL2GameMovement::FullLadderMove",
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "lines": [
+            566,
+            746
+          ]
+        },
+        {
+          "name": "CHL2GameMovement::CheckLadderAutoMountCone",
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "lines": [
+            789,
+            850
+          ]
+        },
+        {
+          "name": "CHL2GameMovement::LadderMove",
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "lines": [
+            935,
+            1167
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "suit-sprint-power",
+      "name": "Sprint speeds and the suit power pool",
+      "purpose": "Walk, normal and sprint speed selection, plus the single suit power meter that sprint, flashlight and underwater breathing all draw from",
+      "paths": [
+        "src/game/server/hl2/hl2_player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CHL2_Player::HandleSpeedChanges",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            498,
+            575
+          ]
+        },
+        {
+          "name": "CHL2_Player::ReduceTimers",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            577,
+            591
+          ]
+        },
+        {
+          "name": "CHL2_Player::CanSprint",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            1229,
+            1235
+          ]
+        },
+        {
+          "name": "CHL2_Player::SuitPower_Update",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            1792,
+            1860
+          ]
+        },
+        {
+          "name": "CHL2_Player::SuitPower_RemoveDevice",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            1939,
+            1967
+          ]
+        },
+        {
+          "name": "CHL2_Player::SuitPower_ShouldRecharge",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            1972,
+            1988
+          ]
+        },
+        {
+          "name": "CHL2_Player::FlashlightTurnOn",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            2053,
+            2074
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "damage-armor-skill",
+      "name": "Fall damage, armor absorption and skill scaling",
+      "purpose": "How the player takes damage: landing damage ramp, suit armor split, and the per-difficulty damage multipliers",
+      "paths": [
+        "src/game/server/player.cpp",
+        "src/game/server/movehelper_server.cpp",
+        "src/game/shared/singleplay_gamerules.cpp",
+        "src/game/shared/hl2/hl2_gamerules.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CMoveHelperServer::PlayerFallingDamage",
+          "path": "src/game/server/movehelper_server.cpp",
+          "lines": [
+            360,
+            404
+          ]
+        },
+        {
+          "name": "CSingleplayRules::FlPlayerFallDamage",
+          "path": "src/game/shared/singleplay_gamerules.cpp",
+          "lines": [
+            285,
+            291
+          ]
+        },
+        {
+          "name": "CBasePlayer::OnTakeDamage",
+          "path": "src/game/server/player.cpp",
+          "lines": [
+            1079,
+            1426
+          ]
+        },
+        {
+          "name": "CHalfLife2::AdjustPlayerDamageTaken",
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "lines": [
+            1601,
+            1623
+          ]
+        },
+        {
+          "name": "CHalfLife2::AdjustPlayerDamageInflicted",
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "lines": [
+            1627,
+            1647
+          ]
+        }
+      ],
+      "dependsOn": [
+        "player-movement"
+      ]
+    },
+    {
+      "id": "physcannon",
+      "name": "Gravity gun and hand pickup of physics objects",
+      "purpose": "Grab, hold, pull, drop, punt and launch of simulated props, shared by the gravity gun and the use-key hand pickup",
+      "paths": [
+        "src/game/server/hl2/weapon_physcannon.cpp",
+        "src/game/server/player_pickup.cpp",
+        "src/game/server/player.cpp",
+        "src/game/server/hl2/hl2_player.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CGrabController::AttachEntity",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            721,
+            821
+          ]
+        },
+        {
+          "name": "CGrabController::UpdateObject",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            2731,
+            2852
+          ]
+        },
+        {
+          "name": "CPlayerPickupController::Use",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            1111,
+            1165
+          ]
+        },
+        {
+          "name": "CWeaponPhysCannon::PuntVPhysics",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            1829,
+            1932
+          ]
+        },
+        {
+          "name": "CWeaponPhysCannon::PrimaryAttack",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            2108,
+            2278
+          ]
+        },
+        {
+          "name": "CWeaponPhysCannon::LaunchObject",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            3361,
+            3413
+          ]
+        },
+        {
+          "name": "CWeaponPhysCannon::CanPickupObject",
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "lines": [
+            3421,
+            3476
+          ]
+        },
+        {
+          "name": "Pickup_DefaultPhysGunLaunchVelocity",
+          "path": "src/game/server/player_pickup.cpp",
+          "lines": [
+            118,
+            138
+          ]
+        },
+        {
+          "name": "CBasePlayer::CanPickupObject",
+          "path": "src/game/server/player.cpp",
+          "lines": [
+            2814,
+            2886
+          ]
+        },
+        {
+          "name": "CHL2_Player::PickupObject",
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "lines": [
+            3154,
+            3171
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "player-weapons",
+      "name": "Player weapons: rifles, pistol, shotgun, crossbow and grenades",
+      "purpose": "Fire cadence, spread cones, view kick and projectile launch for the hitscan and projectile weapons",
+      "paths": [
+        "src/game/server/hl2/basehlcombatweapon.cpp",
+        "src/game/shared/basecombatweapon_shared.h",
+        "src/game/server/hl2/weapon_smg1.cpp",
+        "src/game/server/hl2/weapon_ar2.cpp",
+        "src/game/server/hl2/weapon_ar2.h",
+        "src/game/server/hl2/weapon_pistol.cpp",
+        "src/game/server/hl2/weapon_shotgun.cpp",
+        "src/game/server/hl2/weapon_crossbow.cpp",
+        "src/game/server/hl2/weapon_frag.cpp",
+        "src/game/server/hl2/grenade_frag.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CHLMachineGun::PrimaryAttack",
+          "path": "src/game/server/hl2/basehlcombatweapon.cpp",
+          "lines": [
+            50,
+            116
+          ]
+        },
+        {
+          "name": "CHLMachineGun::DoMachineGunKick",
+          "path": "src/game/server/hl2/basehlcombatweapon.cpp",
+          "lines": [
+            158,
+            201
+          ]
+        },
+        {
+          "name": "CWeaponSMG1::SecondaryAttack",
+          "path": "src/game/server/hl2/weapon_smg1.cpp",
+          "lines": [
+            324,
+            387
+          ]
+        },
+        {
+          "name": "CWeaponAR2::DelayedAttack",
+          "path": "src/game/server/hl2/weapon_ar2.cpp",
+          "lines": [
+            202,
+            262
+          ]
+        },
+        {
+          "name": "CWeaponAR2::SecondaryAttack",
+          "path": "src/game/server/hl2/weapon_ar2.cpp",
+          "lines": [
+            267,
+            295
+          ]
+        },
+        {
+          "name": "CWeaponPistol::PrimaryAttack",
+          "path": "src/game/server/hl2/weapon_pistol.cpp",
+          "lines": [
+            225,
+            258
+          ]
+        },
+        {
+          "name": "CWeaponPistol::UpdatePenaltyTime",
+          "path": "src/game/server/hl2/weapon_pistol.cpp",
+          "lines": [
+            263,
+            276
+          ]
+        },
+        {
+          "name": "CWeaponShotgun::PrimaryAttack",
+          "path": "src/game/server/hl2/weapon_shotgun.cpp",
+          "lines": [
+            443,
+            493
+          ]
+        },
+        {
+          "name": "CWeaponShotgun::SecondaryAttack",
+          "path": "src/game/server/hl2/weapon_shotgun.cpp",
+          "lines": [
+            500,
+            550
+          ]
+        },
+        {
+          "name": "CWeaponCrossbow::FireBolt",
+          "path": "src/game/server/hl2/weapon_crossbow.cpp",
+          "lines": [
+            621,
+            700
+          ]
+        },
+        {
+          "name": "CWeaponFrag::ThrowGrenade",
+          "path": "src/game/server/hl2/weapon_frag.cpp",
+          "lines": [
+            387,
+            409
+          ]
+        },
+        {
+          "name": "CWeaponFrag::RollGrenade",
+          "path": "src/game/server/hl2/weapon_frag.cpp",
+          "lines": [
+            441,
+            479
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "combine-ball",
+      "name": "Energy ball projectile",
+      "purpose": "The constant-speed bouncing dissolver ball launched by the rifle alt-fire, the elite soldier and the gravity gun",
+      "paths": [
+        "src/game/server/hl2/prop_combine_ball.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CreateCombineBall",
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "lines": [
+            68,
+            94
+          ]
+        },
+        {
+          "name": "CPropCombineBall::OnHitEntity",
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "lines": [
+            1197,
+            1291
+          ]
+        },
+        {
+          "name": "CPropCombineBall::DeflectTowardEnemy",
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "lines": [
+            1415,
+            1511
+          ]
+        },
+        {
+          "name": "CPropCombineBall::VPhysicsCollision",
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "lines": [
+            1565,
+            1665
+          ]
+        }
+      ],
+      "dependsOn": [
+        "physcannon"
+      ]
+    },
+    {
+      "id": "combine-soldier-ai",
+      "name": "Soldier grenade, alt-fire and squad combat decisions",
+      "purpose": "Combat schedule choice for the soldier enemy: attack slot rationing, grenade throw legality and the elite ball shot",
+      "paths": [
+        "src/game/server/hl2/npc_combine.cpp",
+        "src/game/server/ai_squad.cpp",
+        "src/game/server/ai_squad.h",
+        "src/game/server/ai_squadslot.h"
+      ],
+      "functions": [
+        {
+          "name": "CNPC_Combine::SelectCombatSchedule",
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "lines": [
+            1483,
+            1680
+          ]
+        },
+        {
+          "name": "CNPC_Combine::SelectScheduleAttack",
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "lines": [
+            1913,
+            2041
+          ]
+        },
+        {
+          "name": "CNPC_Combine::CanThrowGrenade",
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "lines": [
+            2753,
+            2811
+          ]
+        },
+        {
+          "name": "CNPC_Combine::CheckCanThrowGrenade",
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "lines": [
+            2818,
+            2860
+          ]
+        },
+        {
+          "name": "CNPC_Combine::CanAltFireEnemy",
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "lines": [
+            2864,
+            2935
+          ]
+        },
+        {
+          "name": "CAI_Squad::OccupyStrategySlotRange",
+          "path": "src/game/server/ai_squad.cpp",
+          "lines": [
+            579,
+            621
+          ]
+        }
+      ],
+      "dependsOn": [
+        "combine-ball"
+      ]
+    },
+    {
+      "id": "zombie-ai",
+      "name": "Zombie physics swatting and damage rules",
+      "purpose": "Melee zombie behaviour that treats nearby props as weapons, plus its hit-group damage multipliers and headcrab release",
+      "paths": [
+        "src/game/server/hl2/npc_BaseZombie.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CNPC_BaseZombie::FindNearestPhysicsObject",
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "lines": [
+            264,
+            407
+          ]
+        },
+        {
+          "name": "CNPC_BaseZombie::GetHitgroupDamageMultiplier",
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "lines": [
+            654,
+            682
+          ]
+        },
+        {
+          "name": "CNPC_BaseZombie::ShouldReleaseHeadcrab",
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "lines": [
+            762,
+            803
+          ]
+        },
+        {
+          "name": "CNPC_BaseZombie::OnTakeDamage_Alive",
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "lines": [
+            815,
+            943
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "vehicles",
+      "name": "Four-wheel vehicle controls and the airboat gun",
+      "purpose": "Driver input to throttle, brake and steering for the wheeled vehicle, plus airboat gun ammo, fire modes and invulnerability rules",
+      "paths": [
+        "src/game/server/fourwheelvehiclephysics.cpp",
+        "src/game/server/hl2/vehicle_jeep.cpp",
+        "src/game/server/hl2/vehicle_airboat.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CFourWheelVehiclePhysics::SteeringTurn",
+          "path": "src/game/server/fourwheelvehiclephysics.cpp",
+          "lines": [
+            961,
+            1016
+          ]
+        },
+        {
+          "name": "CFourWheelVehiclePhysics::UpdateDriverControls",
+          "path": "src/game/server/fourwheelvehiclephysics.cpp",
+          "lines": [
+            1054,
+            1399
+          ]
+        },
+        {
+          "name": "CPropAirboat::TraceAttack",
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "lines": [
+            822,
+            834
+          ]
+        },
+        {
+          "name": "CPropAirboat::RemoveAmmo",
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "lines": [
+            991,
+            1002
+          ]
+        },
+        {
+          "name": "CPropAirboat::RechargeAmmo",
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "lines": [
+            1008,
+            1045
+          ]
+        },
+        {
+          "name": "CPropAirboat::FireGun",
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "lines": [
+            1569,
+            1707
+          ]
+        },
+        {
+          "name": "CPropAirboat::UpdateGunState",
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "lines": [
+            1715,
+            1767
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "dynamic-resupply",
+      "name": "Adaptive health and ammo pickups",
+      "purpose": "Placeholder pickups that decide at spawn time which health, armor or ammo item the player most needs, and timed enemy drops",
+      "paths": [
+        "src/game/server/hl2/item_dynamic_resupply.cpp",
+        "src/game/shared/hl2/hl2_gamerules.cpp"
+      ],
+      "functions": [
+        {
+          "name": "CItem_DynamicResupply::ComputeHealthRatios",
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "lines": [
+            431,
+            475
+          ]
+        },
+        {
+          "name": "CItem_DynamicResupply::ComputeAmmoRatios",
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "lines": [
+            481,
+            517
+          ]
+        },
+        {
+          "name": "CItem_DynamicResupply::SpawnItemFromRatio",
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "lines": [
+            523,
+            567
+          ]
+        },
+        {
+          "name": "CItem_DynamicResupply::SpawnDynamicItem",
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "lines": [
+            573,
+            615
+          ]
+        },
+        {
+          "name": "CHalfLife2::NPC_ShouldDropHealth",
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "lines": [
+            1433,
+            1446
+          ]
+        },
+        {
+          "name": "CHalfLife2::NPC_ShouldDropGrenade",
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "lines": [
+            1452,
+            1466
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "sprint-walk-speeds",
+      "node": "suit-sprint-power",
+      "name": "Walk, normal and sprint speeds",
+      "summary": "The player moves at 190 units per second by default, 150 when holding the walk key or when no suit is worn, and 320 while sprinting with enough suit power.",
+      "behavior": "Each movement step picks a client max speed. Sprint needs the sprint key, an equipped suit, no crouch and not fully underwater. Sprint starts only when suit power is at least 10 and ends when power reaches zero or the walk key wins. Holding the walk key while not sprinting and not crouching gives the slow walk speed. A player with no suit always gets the slow walk speed, so the suit pickup is what unlocks normal speed. The engine speed cap is set separately from these three console variables and is not in this repository. Sprint drains the shared suit power meter, but the drain is skipped while the player has no horizontal velocity. The three speeds are replicated console variables, so a mod can retune them without code changes.",
+      "constants": [
+        {
+          "name": "walk speed",
+          "value": 150,
+          "unit": "units per second, applied as the client max speed each movement step",
+          "source": "src/game/server/hl2/hl2_player.cpp:86"
+        },
+        {
+          "name": "normal speed",
+          "value": 190,
+          "unit": "units per second, applied as the client max speed each movement step",
+          "source": "src/game/server/hl2/hl2_player.cpp:87"
+        },
+        {
+          "name": "sprint speed",
+          "value": 320,
+          "unit": "units per second, applied as the client max speed each movement step",
+          "source": "src/game/server/hl2/hl2_player.cpp:88"
+        },
+        {
+          "name": "minimum suit power to begin sprinting",
+          "value": 10,
+          "unit": "suit power points on a 0 to 100 scale",
+          "source": "src/game/server/hl2/hl2_player.cpp:512"
+        },
+        {
+          "name": "sprint drain rate",
+          "value": 12.5,
+          "unit": "suit power points per second, scaled by frame time (single player build)",
+          "source": "src/game/server/hl2/hl2_player.cpp:402"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 498
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 1229
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 577
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 1805
+        }
+      ],
+      "capabilities": [
+        "three-tier ground speed with a sprint key",
+        "sprint gated by suit power and equipment",
+        "no sprint while crouched or fully submerged",
+        "tunable speeds through replicated console variables"
+      ],
+      "tags": [
+        "movement",
+        "sprint",
+        "fps"
+      ]
+    },
+    {
+      "id": "suit-power-pool",
+      "node": "suit-sprint-power",
+      "name": "Shared suit power meter",
+      "summary": "One 100-point power pool feeds sprint, flashlight and underwater breathing; it recharges at 12.5 per second after half a second with every device off.",
+      "behavior": "Devices register a drain rate and the pool is reduced by the summed load times frame time. Recharge runs only when no device is active, the pool is below full and 0.5 seconds have passed since the last device switched off. Turning a device off costs an extra tenth of one second of its drain, which stops players from tapping sprint to dodge the drain while the recharge delay rewards patience. Underwater breathing drains 6.7 points per second, about 15 seconds of air from a full pool. The flashlight drains power only in the legacy mod folders (hl2, episodic, lostcoast, hl1); in other mods it is free. The flashlight rate is 1.111 per second in episodic builds and 2.222 otherwise, and the legacy flashlight is forced off when power falls below 4.8.",
+      "constants": [
+        {
+          "name": "pool size",
+          "value": 100,
+          "unit": "suit power points",
+          "source": "src/game/server/hl2/hl2_player.cpp:1869"
+        },
+        {
+          "name": "recharge rate",
+          "value": 12.5,
+          "unit": "suit power points per second, scaled by frame time",
+          "source": "src/game/server/hl2/hl2_player.cpp:397"
+        },
+        {
+          "name": "recharge start delay",
+          "value": 0.5,
+          "unit": "seconds with all devices off before recharge begins",
+          "source": "src/game/server/hl2/hl2_player.cpp:1971"
+        },
+        {
+          "name": "device shut-off penalty fraction",
+          "value": 0.1,
+          "unit": "fraction of one second of the device drain rate, charged once on shut-off",
+          "source": "src/game/server/hl2/hl2_player.cpp:1953"
+        },
+        {
+          "name": "breather drain rate",
+          "value": 6.7,
+          "unit": "suit power points per second while fully underwater",
+          "source": "src/game/server/hl2/hl2_player.cpp:410"
+        },
+        {
+          "name": "flashlight drain rate in episodic builds",
+          "value": 1.111,
+          "unit": "suit power points per second",
+          "source": "src/game/server/hl2/hl2_player.cpp:406"
+        },
+        {
+          "name": "flashlight drain rate in non-episodic builds",
+          "value": 2.222,
+          "unit": "suit power points per second",
+          "source": "src/game/server/hl2/hl2_player.cpp:408"
+        },
+        {
+          "name": "legacy flashlight cutoff",
+          "value": 4.8,
+          "unit": "suit power points; flashlight turns off below this",
+          "source": "src/game/server/hl2/hl2_player.cpp:1850"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 1792
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 1972
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 1939
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 2181
+        },
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 2053
+        }
+      ],
+      "capabilities": [
+        "single stamina pool shared by several abilities",
+        "recharge delay that blocks tap-to-cheat exploits",
+        "underwater air supply",
+        "flashlight with a battery cost"
+      ],
+      "tags": [
+        "stamina",
+        "resource",
+        "fps"
+      ]
+    },
+    {
+      "id": "jump-launch-forward-boost",
+      "node": "player-movement",
+      "name": "Jump launch and single-player forward boost",
+      "summary": "A jump rises about 21 units, launching at 160 units per second under gravity 600, and in single player adds a forward boost of half the move command.",
+      "behavior": "A jump needs ground contact, a released jump key since the last jump (no pogo), no active water jump and no crouch or uncrouch transition in progress. With movement optimizations on, the vertical launch speed is the fixed 160, which the code ties to a gravity of 600 and a rise of 21 units; without them it computes the square root of twice gravity times 21. The launch is added to current vertical speed, except while crouched, where it replaces it. Gravity is applied in half steps: the jump finishes with a half-step of gravity so the arc is exact regardless of frame time. In single player only, a jump also adds speed along the horizontal facing equal to a fraction of the forward move command: 0.5 when standing and not sprinting, 0.1 when sprinting or crouched. The boost is trimmed so total horizontal speed never exceeds max speed times one plus that fraction, so repeated jumps do not stack speed. The gravity value itself is an engine console variable outside this repository.",
+      "constants": [
+        {
+          "name": "jump rise height",
+          "value": 21,
+          "unit": "units",
+          "source": "src/game/shared/gamemovement.h:24"
+        },
+        {
+          "name": "jump launch speed",
+          "value": 160,
+          "unit": "units per second",
+          "source": "src/game/shared/gamemovement.cpp:2435"
+        },
+        {
+          "name": "assumed gravity for the fixed launch speed",
+          "value": 600,
+          "unit": "units per second squared",
+          "source": "src/game/shared/gamemovement.cpp:2434"
+        },
+        {
+          "name": "forward boost fraction when standing and not sprinting",
+          "value": 0.5,
+          "unit": "fraction of the forward move command added as speed, single player only",
+          "source": "src/game/shared/gamemovement.cpp:2477"
+        },
+        {
+          "name": "forward boost fraction when sprinting or crouched",
+          "value": 0.1,
+          "unit": "fraction of the forward move command added as speed, single player only",
+          "source": "src/game/shared/gamemovement.cpp:2477"
+        },
+        {
+          "name": "gravity half-step factor",
+          "value": 0.5,
+          "unit": "fraction of a gravity step applied after the move, scaled by frame time",
+          "source": "src/game/shared/gamemovement.cpp:1695"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 2352
+        },
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 1682
+        },
+        {
+          "path": "src/game/shared/gamemovement.h",
+          "line": 24
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent jump arc",
+        "no re-jump while the key is held",
+        "bounded forward jump boost that cannot compound",
+        "crouch jump with a fixed launch"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "fps"
+      ]
+    },
+    {
+      "id": "ground-friction-air-cap",
+      "node": "player-movement",
+      "name": "Ground friction and air strafe cap",
+      "summary": "Ground friction subtracts speed in proportion to the larger of current speed and a stop-speed floor, and air acceleration judges added speed against a 30 unit per second cap.",
+      "behavior": "Each step first skips friction if speed is below 0.1 units per second, then on the ground removes a drop equal to friction coefficient times surface friction times frame time times the larger of current speed and the stop speed. The result is clamped at zero and the velocity is scaled by the surviving proportion. The friction, stop speed, acceleration and air acceleration coefficients are engine console variables that this repository does not define, so tune them to taste. Surface friction from the floor material multiplies both friction and acceleration. In the air there is no friction and the add-speed test uses a wished speed capped at 30 units per second, so mid-air steering can add only a small speed along the wish direction, while the size of each push still scales with the uncapped wished speed. A console build doubles the stop-speed floor when standing, which makes stopping snappier for analog sticks.",
+      "constants": [
+        {
+          "name": "friction skip speed",
+          "value": 0.1,
+          "unit": "units per second; slower than this skips friction",
+          "source": "src/game/shared/gamemovement.cpp:1624"
+        },
+        {
+          "name": "air wished-speed cap",
+          "value": 30,
+          "unit": "units per second used in the add-speed test",
+          "source": "src/game/shared/gamemovement.h:104"
+        },
+        {
+          "name": "console stop-speed multiplier when standing",
+          "value": 2,
+          "unit": "multiplier on the stop-speed floor, console builds only",
+          "source": "src/game/shared/gamemovement.cpp:1650"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 1610
+        },
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 1705
+        },
+        {
+          "path": "src/game/shared/gamemovement.h",
+          "line": 104
+        }
+      ],
+      "capabilities": [
+        "speed-proportional braking with a floor",
+        "air strafing limited by a small cap",
+        "surface-dependent grip"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "fps"
+      ]
+    },
+    {
+      "id": "crouch-transition",
+      "node": "player-movement",
+      "name": "Crouch transition and hull change",
+      "summary": "Crouching eases the eye from 64 to 28 units over 0.4 seconds, swaps the collision hull from 72 to 36 units tall and slows ground movement to a third.",
+      "behavior": "Pressing crouch starts a timer and eases the eye height with a smooth spline over 0.4 seconds, then switches to the crouch hull and view offset. Being in the air finishes the crouch at once, so jumping and crouching tucks the legs immediately. Standing back up takes 0.2 seconds and only completes when the standing hull fits above the player. While crouched on the ground, forward, side and up move commands are multiplied by one third. Releasing crouch during a crouch jump uses a separate path that traces 36 units down first, so the standing hull fits before it commits. Both hulls are 32 units wide, a half-extent of 16 on each horizontal axis.",
+      "constants": [
+        {
+          "name": "crouch ease time",
+          "value": 0.4,
+          "unit": "seconds",
+          "source": "src/game/shared/shareddefs.h:109"
+        },
+        {
+          "name": "stand-up time",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "src/game/shared/shareddefs.h:112"
+        },
+        {
+          "name": "standing hull height",
+          "value": 72,
+          "unit": "units, full extent from feet",
+          "source": "src/game/shared/gamerules.cpp:51"
+        },
+        {
+          "name": "crouched hull height",
+          "value": 36,
+          "unit": "units, full extent from feet",
+          "source": "src/game/shared/gamerules.cpp:54"
+        },
+        {
+          "name": "standing eye height",
+          "value": 64,
+          "unit": "units above the feet",
+          "source": "src/game/shared/gamerules.cpp:48"
+        },
+        {
+          "name": "crouched eye height",
+          "value": 28,
+          "unit": "units above the feet",
+          "source": "src/game/shared/gamerules.cpp:55"
+        },
+        {
+          "name": "hull half-width",
+          "value": 16,
+          "unit": "units, half-extent on each horizontal axis",
+          "source": "src/game/shared/gamerules.cpp:51"
+        },
+        {
+          "name": "crouched ground move scale",
+          "value": 0.33333333,
+          "unit": "multiplier on forward, side and up move commands",
+          "source": "src/game/shared/gamemovement.cpp:4310"
+        },
+        {
+          "name": "duck timer length",
+          "value": 1000,
+          "unit": "milliseconds on the internal duck timer",
+          "source": "src/game/shared/gamemovement.h:22"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 4348
+        },
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 4306
+        },
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 4215
+        },
+        {
+          "path": "src/game/shared/gamerules.cpp",
+          "line": 47
+        }
+      ],
+      "capabilities": [
+        "eased crouch camera",
+        "hull swap with ceiling check on stand-up",
+        "instant crouch in the air",
+        "slow crouch walking"
+      ],
+      "tags": [
+        "movement",
+        "crouch",
+        "collision"
+      ]
+    },
+    {
+      "id": "ladder-climb-dismount",
+      "node": "ladder-movement",
+      "name": "Ladder climb in view direction with auto mount",
+      "summary": "On a ladder the player moves at 200 units per second along the ladder axis, up or down by where they look, and can mount by looking along it or dismount by jumping off at 200 plus 50 up.",
+      "behavior": "Ladders are brush volumes with a computed axis and top and bottom points. Moving toward a ladder while looking along its axis inside a dot tolerance of 0.4 starts an auto mount that glides the player to the ladder over a time derived from distance. While mounted, gravity is zero and any move key sets velocity to the climb speed along the axis. The sign is chosen by comparing the intended view-space direction to the ladder axis with a 0.3 deadband, or no deadband for ladders under 64 units tall, so looking up while pushing forward climbs and looking down descends. With no keys the player stops dead. Jump leaves the ladder with 200 units per second along the view direction (reversed when pressing back) plus 50 up when not looking down. Pressing use dismounts with 100 units per second forward and 50 up, and reaching an end with a move key auto dismounts if the option is on. Being more than 6 units off the ladder line drops the player off.",
+      "constants": [
+        {
+          "name": "climb speed",
+          "value": 200,
+          "unit": "units per second along the ladder axis, ignores walk, sprint and crouch",
+          "source": "src/game/shared/shareddefs.h:103"
+        },
+        {
+          "name": "jump-off added upward speed",
+          "value": 50,
+          "unit": "units per second",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:1084"
+        },
+        {
+          "name": "use-dismount forward speed",
+          "value": 100,
+          "unit": "units per second",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:28"
+        },
+        {
+          "name": "use-dismount upward speed",
+          "value": 50,
+          "unit": "units per second",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:710"
+        },
+        {
+          "name": "auto-mount look tolerance",
+          "value": 0.4,
+          "unit": "dot product between view direction and ladder axis",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:24"
+        },
+        {
+          "name": "climb direction deadband",
+          "value": 0.3,
+          "unit": "dot product; zero for ladders shorter than 64 units",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:1123"
+        },
+        {
+          "name": "horizontal ladder height limit",
+          "value": 64,
+          "unit": "units of vertical span below which the ladder counts as horizontal",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:1121"
+        },
+        {
+          "name": "fall-off distance squared",
+          "value": 36,
+          "unit": "squared units from the ladder line beyond which the player drops off (6 units)",
+          "source": "src/game/shared/hl2/hl_gamemovement.cpp:1112"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "line": 935
+        },
+        {
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "line": 566
+        },
+        {
+          "path": "src/game/shared/hl2/hl_gamemovement.cpp",
+          "line": 789
+        },
+        {
+          "path": "src/game/shared/shareddefs.h",
+          "line": 103
+        }
+      ],
+      "capabilities": [
+        "look-direction ladder climbing",
+        "auto mount from looking along the ladder",
+        "jump-off with a velocity kick",
+        "use-key dismount"
+      ],
+      "tags": [
+        "movement",
+        "ladder",
+        "fps"
+      ]
+    },
+    {
+      "id": "fall-damage-ramp",
+      "node": "damage-armor-skill",
+      "name": "Fall damage ramp and landing punch",
+      "summary": "Landing faster than 526.5 units per second hurts linearly, reaching 100 damage at 922.5, with a view punch from 303 units per second upward.",
+      "behavior": "On touching ground, the fall speed is checked. Below 303 nothing happens. From 303 the landing plays a step sound and kicks the view roll by 0.013 degrees per unit of speed, with pitch kick limited to 8 degrees. Landing on a floating object forgives 173 units per second, and landing on something that is itself moving down subtracts its speed. Above 526.5 the server converts the excess into damage with a linear ramp that reaches 100 at 922.5, so the damage per unit of excess speed is about 0.25. No fall damage applies when any part of the body is in water. Fall damage ignores both armor and the difficulty damage scale. A level script can switch fall damage off for 10 seconds with an input. These speeds apply to the single-player HL2 build, where gravity is 600; other builds use 580 and 1024.",
+      "constants": [
+        {
+          "name": "safe fall speed",
+          "value": 526.5,
+          "unit": "units per second",
+          "source": "src/game/shared/shareddefs.h:410"
+        },
+        {
+          "name": "fatal fall speed",
+          "value": 922.5,
+          "unit": "units per second",
+          "source": "src/game/shared/shareddefs.h:409"
+        },
+        {
+          "name": "landing punch threshold",
+          "value": 303,
+          "unit": "units per second",
+          "source": "src/game/shared/shareddefs.h:413"
+        },
+        {
+          "name": "floating object forgiveness",
+          "value": 173,
+          "unit": "units per second",
+          "source": "src/game/shared/shareddefs.h:411"
+        },
+        {
+          "name": "damage at the fatal speed",
+          "value": 100,
+          "unit": "health points",
+          "source": "src/game/shared/shareddefs.h:421"
+        },
+        {
+          "name": "landing roll kick",
+          "value": 0.013,
+          "unit": "degrees of view roll per unit per second of fall speed",
+          "source": "src/game/shared/gamemovement.cpp:4001"
+        },
+        {
+          "name": "landing pitch kick cap",
+          "value": 8,
+          "unit": "degrees",
+          "source": "src/game/shared/gamemovement.cpp:4003"
+        },
+        {
+          "name": "fall damage ignore duration",
+          "value": 10,
+          "unit": "seconds, set by a level input",
+          "source": "src/game/server/hl2/hl2_player.cpp:80"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/gamemovement.cpp",
+          "line": 3919
+        },
+        {
+          "path": "src/game/server/movehelper_server.cpp",
+          "line": 360
+        },
+        {
+          "path": "src/game/shared/singleplay_gamerules.cpp",
+          "line": 285
+        },
+        {
+          "path": "src/game/shared/shareddefs.h",
+          "line": 421
+        }
+      ],
+      "capabilities": [
+        "linear fall damage ramp",
+        "landing camera kick",
+        "water landing is safe",
+        "script control over fall damage"
+      ],
+      "tags": [
+        "damage",
+        "fall",
+        "fps"
+      ]
+    },
+    {
+      "id": "armor-absorption",
+      "node": "damage-armor-skill",
+      "name": "Suit armor absorbs eighty percent one for one",
+      "summary": "While armor lasts, only 20 percent of damage reaches health and the other 80 percent drains armor at one point per point; falls, drowning, poison and radiation skip armor.",
+      "behavior": "On damage the code splits it into a health part, 20 percent of the damage, and an armor part, the other 80 percent. In the current rules each absorbed point costs one armor point; an older mode costs half a point and is behind a console variable that defaults off. Every hit with armor present costs at least one armor point. If the armor part exceeds the armor left, the armor is spent entirely, and the part it could not absorb returns to health damage. Fall, drowning, poison and radiation damage ignore armor.",
+      "constants": [
+        {
+          "name": "health share of damage while armor lasts",
+          "value": 0.2,
+          "unit": "fraction of incoming damage",
+          "source": "src/game/server/player.cpp:1047"
+        },
+        {
+          "name": "armor cost per absorbed damage point",
+          "value": 1,
+          "unit": "armor points",
+          "source": "src/game/server/player.cpp:1048"
+        },
+        {
+          "name": "older armor cost per absorbed damage point",
+          "value": 0.5,
+          "unit": "armor points, only with the old armor console variable on",
+          "source": "src/game/server/player.cpp:1044"
+        },
+        {
+          "name": "minimum armor spent per hit",
+          "value": 1,
+          "unit": "armor points when armor is above zero",
+          "source": "src/game/server/player.cpp:1192"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/player.cpp",
+          "line": 1079
+        },
+        {
+          "path": "src/game/server/player.cpp",
+          "line": 1179
+        },
+        {
+          "path": "src/game/server/player.cpp",
+          "line": 1047
+        }
+      ],
+      "capabilities": [
+        "armor that soaks most damage",
+        "overflow damage returns to health",
+        "armor-proof damage types"
+      ],
+      "tags": [
+        "damage",
+        "armor",
+        "fps"
+      ]
+    },
+    {
+      "id": "skill-damage-scaling",
+      "node": "damage-armor-skill",
+      "name": "Difficulty damage multipliers",
+      "summary": "Three skill levels scale damage the player takes (0.5, 1.0 and 1.5 or 2.0) and damage the player deals to characters (1.5, 1.0, 0.75), by console variable defaults.",
+      "behavior": "Damage taken by the player is multiplied by a per-skill factor, except drowning, crush, fall, poison and sniper damage, which skip it. The hard factor is 2.0 in episodic builds and 1.5 otherwise. Damage dealt by the player scales only when shooting a character, so breakable props are not easier or harder by skill. The values are console variable defaults; the shipped skill config files are not in this repository, so the effective numbers can differ in a real install. Most weapon and enemy damage and health numbers in this game also come from those skill files with a code default of zero, so read them from the config, not the code.",
+      "constants": [
+        {
+          "name": "damage taken, easy",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:82"
+        },
+        {
+          "name": "damage taken, normal",
+          "value": 1,
+          "unit": "multiplier",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:83"
+        },
+        {
+          "name": "damage taken, hard (episodic)",
+          "value": 2,
+          "unit": "multiplier",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:85"
+        },
+        {
+          "name": "damage taken, hard (non-episodic)",
+          "value": 1.5,
+          "unit": "multiplier",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:87"
+        },
+        {
+          "name": "damage dealt, easy",
+          "value": 1.5,
+          "unit": "multiplier on player damage to characters",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:77"
+        },
+        {
+          "name": "damage dealt, hard",
+          "value": 0.75,
+          "unit": "multiplier on player damage to characters",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:79"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "line": 1601
+        },
+        {
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "line": 1627
+        },
+        {
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "line": 77
+        }
+      ],
+      "capabilities": [
+        "three difficulty levels as damage multipliers",
+        "skill-immune damage types",
+        "player damage scaling only against characters"
+      ],
+      "tags": [
+        "difficulty",
+        "damage",
+        "fps"
+      ]
+    },
+    {
+      "id": "gravity-gun-grab-hold",
+      "node": "physcannon",
+      "name": "Gravity gun grab, pull and hold",
+      "summary": "The secondary button grabs a prop up to 250 kg within 250 units, pulls props out to 1000 units with a force of 4000, holds the object at about 24 plus twice its radius, and drops it when tracking error passes 12 units.",
+      "behavior": "The secondary button grabs or, when holding, drops. A grab traces forward four times the reach, 1000 units, with a line and then a small hull. A hit within the first quarter of the trace (250 units) is grabbed; a hit farther out is pulled instead. Only when the straight trace finds nothing does a cone search with a 0.97 dot tolerance look for a prop. A grabbable object must be under the mass cap of 250 kg, not flesh, not hinged, not marked unpickable and not the thing the player stands on. Pulled objects get a force of 4000 toward the player, scaled down by (mass plus 0.5) over 50 for objects lighter than 50 kg so small props do not fly past. Once held, every part of the object has its mass cut to 1 kg and rotational damping set to 10, so the player cannot inject energy into the simulation. A motion controller then drags it toward a point in front of the eyes. The goal distance is 24 plus twice the object radius, shortened by a wall trace, and held pitch is clamped to plus or minus 75 degrees (overhead allowed for some props). The controller moves the object at up to 1000 units per second and 3600 degrees per second. An error timer waits 1 second after grab, then if the real position lags the goal by more than 12 units the object is dropped. The mass-based slow-down helper in this file is commented out of the grab path and does not run.",
+      "constants": [
+        {
+          "name": "grab reach",
+          "value": 250,
+          "unit": "units; hits inside it are grabbed",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:56"
+        },
+        {
+          "name": "search trace length multiplier",
+          "value": 4,
+          "unit": "times the reach; hits beyond the reach are pulled",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2477"
+        },
+        {
+          "name": "grab fraction of the search trace",
+          "value": 0.25,
+          "unit": "hits at or below this fraction are grabbed, farther hits are pulled",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2515"
+        },
+        {
+          "name": "grab mass limit",
+          "value": 250,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:55"
+        },
+        {
+          "name": "fallback cone tolerance",
+          "value": 0.97,
+          "unit": "dot product of aim and direction to object, used only when the straight trace finds nothing",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:61"
+        },
+        {
+          "name": "pull force",
+          "value": 4000,
+          "unit": "force units applied each update while pulling, rate unverified",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:59"
+        },
+        {
+          "name": "light object pull scaling mass",
+          "value": 50,
+          "unit": "kilograms; lighter objects get force times (mass + 0.5) / 50",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2607"
+        },
+        {
+          "name": "held mass",
+          "value": 1,
+          "unit": "kilograms per physics part while held",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:551"
+        },
+        {
+          "name": "hold distance base",
+          "value": 24,
+          "unit": "units plus twice the object radius",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2781"
+        },
+        {
+          "name": "held pitch limit",
+          "value": 75,
+          "unit": "degrees up and down",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2766"
+        },
+        {
+          "name": "drop error distance",
+          "value": 12,
+          "unit": "units of lag between goal and object",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2859"
+        },
+        {
+          "name": "grace before error counts",
+          "value": 1,
+          "unit": "seconds after grab",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:787"
+        },
+        {
+          "name": "held object maximum speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:560"
+        },
+        {
+          "name": "held object maximum spin",
+          "value": 10,
+          "unit": "full turns per second (360 degrees times this)",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:550"
+        },
+        {
+          "name": "held object rotational damping",
+          "value": 10,
+          "unit": "damping value",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:762"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 721
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 2731
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 3421
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 2854
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 2604
+        }
+      ],
+      "capabilities": [
+        "pick up and carry simulated props",
+        "distant pull",
+        "held objects that cannot inject energy",
+        "automatic drop when blocked or stuck"
+      ],
+      "tags": [
+        "physics",
+        "gravity-gun",
+        "carry"
+      ]
+    },
+    {
+      "id": "gravity-gun-punt-launch",
+      "node": "physcannon",
+      "name": "Gravity gun punt and launch",
+      "summary": "Firing at an object punts it with a force blast; firing while holding launches it at 1500 units per second for light props, fading to 700 for 600 kg props, with a half second lockout.",
+      "behavior": "With nothing held, fire sweeps an 8-unit half-extent hull 250 units forward and punts what it hits (damage-takers and physics objects). A normal punt applies a one-off force to each physics part of the object: 15000 times that part mass share (the struck part gets an extra 0.5 share, capped at 1) at its center, plus an offset force at the hit point of capped mass times 600 times the share, with total mass capped at 250 kg (625 for vehicles). Downward aim is mirrored and flattened by 0.65 so a high shot still carries into standing targets. The player view kicks 1 to 2 degrees. When holding, fire instead launches along the eye line by adding velocity. For objects up to 100 kg the speed is the maximum force convar of 1500 units per second; from 100 to 600 kg it eases down to the minimum of 700, with a random spin of up to 600 per axis. Launching also lays a chain of danger sounds every 128 units along the path, each with radius 128 for half a second, so enemies dodge. After either action the gun cannot fire or grab for 0.5 seconds to prevent instant regrab.",
+      "constants": [
+        {
+          "name": "punt hull half-extent",
+          "value": 8,
+          "unit": "units on each axis",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:2161"
+        },
+        {
+          "name": "punt force on the object center",
+          "value": 15000,
+          "unit": "force units times mass share, one application per punt",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1906"
+        },
+        {
+          "name": "punt offset force factor",
+          "value": 600,
+          "unit": "force units per kilogram of capped mass",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1907"
+        },
+        {
+          "name": "punt mass cap",
+          "value": 250,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1882"
+        },
+        {
+          "name": "punt mass cap multiplier for vehicles",
+          "value": 2.5,
+          "unit": "multiplier",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1886"
+        },
+        {
+          "name": "downward aim flatten factor",
+          "value": -0.65,
+          "unit": "multiplier on a downward vertical aim component; the sign flips it upward",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1858"
+        },
+        {
+          "name": "launch speed, light objects",
+          "value": 1500,
+          "unit": "units per second added to velocity",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:54"
+        },
+        {
+          "name": "launch speed, heaviest objects",
+          "value": 700,
+          "unit": "units per second added to velocity at 600 kg",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:53"
+        },
+        {
+          "name": "launch speed falloff starts",
+          "value": 100,
+          "unit": "kilograms",
+          "source": "src/game/server/player_pickup.cpp:126"
+        },
+        {
+          "name": "launch speed falloff ends",
+          "value": 600,
+          "unit": "kilograms",
+          "source": "src/game/server/player_pickup.cpp:130"
+        },
+        {
+          "name": "launch spin range",
+          "value": 600,
+          "unit": "angular impulse per axis, random in plus or minus",
+          "source": "src/game/server/player_pickup.cpp:115"
+        },
+        {
+          "name": "regrab lockout",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:3394"
+        },
+        {
+          "name": "danger sound spacing and radius",
+          "value": 128,
+          "unit": "units",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:3359"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 2108
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 1829
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 3361
+        },
+        {
+          "path": "src/game/server/player_pickup.cpp",
+          "line": 118
+        }
+      ],
+      "capabilities": [
+        "force-based punt scaled by mass",
+        "velocity launch of held props",
+        "enemy-alerting danger sounds along the throw",
+        "regrab lockout"
+      ],
+      "tags": [
+        "physics",
+        "gravity-gun",
+        "combat"
+      ]
+    },
+    {
+      "id": "hand-pickup-throw",
+      "node": "physcannon",
+      "name": "Use-key pickup limits and throw",
+      "summary": "Pressing use picks up props under 35 kg and no longer than 128 units on any axis, and attack throws them with 1000 force scaled by a mass factor from 0.5 to 4.",
+      "behavior": "Hand pickup reuses the gravity gun carry controller, so the hold distance, one kilogram carried mass and drop-on-error behavior match, but its limits are tighter. The prop must weigh at most 35 kg and have a bounding box no larger than 128 units on every axis, must not be what the player stands on, and must have no NPCs on it. Pressing attack while holding throws it. The throw force is 1000 times a mass factor: mass clamped between 0.5 and 15 kg, then remapped to a factor from 0.5 to 4, so light objects fly but never absurdly far. The object also gets a random spin up to 10 per axis times the factor. The 35 kg pickup cap means throws never reach the top of that range for most props.",
+      "constants": [
+        {
+          "name": "hand pickup mass limit",
+          "value": 35,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/hl2_player.cpp:3162"
+        },
+        {
+          "name": "hand pickup size limit",
+          "value": 128,
+          "unit": "units, full bounding box extent on each axis",
+          "source": "src/game/server/hl2/hl2_player.cpp:3162"
+        },
+        {
+          "name": "throw force base",
+          "value": 1000,
+          "unit": "force units, one application per throw",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:64"
+        },
+        {
+          "name": "throw mass factor input ceiling",
+          "value": 15,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1150"
+        },
+        {
+          "name": "throw mass factor ceiling",
+          "value": 4,
+          "unit": "multiplier",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1150"
+        },
+        {
+          "name": "throw spin range",
+          "value": 10,
+          "unit": "angular impulse per axis, random in plus or minus, times the factor",
+          "source": "src/game/server/hl2/weapon_physcannon.cpp:1154"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/hl2_player.cpp",
+          "line": 3154
+        },
+        {
+          "path": "src/game/server/player.cpp",
+          "line": 2814
+        },
+        {
+          "path": "src/game/server/hl2/weapon_physcannon.cpp",
+          "line": 1111
+        }
+      ],
+      "capabilities": [
+        "carry light props by hand",
+        "mass and size gated pickup",
+        "mass-scaled throws"
+      ],
+      "tags": [
+        "physics",
+        "carry",
+        "fps"
+      ]
+    },
+    {
+      "id": "smg-fire-kick",
+      "node": "player-weapons",
+      "name": "Submachine gun cadence, spread and rising kick",
+      "summary": "Fires every 0.075 seconds into a 5 degree cone with a view kick that grows over 2 seconds of continuous fire, and fires catch-up bullets if the frame is slow.",
+      "behavior": "The machine-gun base runs a loop that fires one bullet for each fire interval that has already elapsed, so a slow frame fires several bullets and the rate stays fixed at 13.3 shots per second. Bullets use the weapon spread, a 5 degree cone, with autoaim on the aim vector. After each shot the kick routine measures how long the trigger has been held, capped at 2 seconds, and uses that fraction to scale a vertical kick of up to 1 degree on top of a 0.2 degree base. Yaw and roll are random-signed fractions of it. The kick clears small residual punch first, is halved on easy skill, is limited to 24, 3 and 1 degrees on pitch, yaw and roll, and applied at half strength. The alt-fire fires a bouncing grenade at 1000 units per second and blocks the next primary for 0.5 seconds and the next alt-fire for 1 second.",
+      "constants": [
+        {
+          "name": "fire interval",
+          "value": 0.075,
+          "unit": "seconds between bullets",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:46"
+        },
+        {
+          "name": "spread, per-axis",
+          "value": 0.04362,
+          "unit": "offset per unit of aim distance; about a 5 degree full cone",
+          "source": "src/game/shared/basecombatweapon_shared.h:107"
+        },
+        {
+          "name": "kick base pitch",
+          "value": 0.2,
+          "unit": "degrees",
+          "source": "src/game/server/hl2/basehlcombatweapon.cpp:160"
+        },
+        {
+          "name": "maximum added vertical kick",
+          "value": 1,
+          "unit": "degrees at full sustained fire",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:309"
+        },
+        {
+          "name": "kick ramp time",
+          "value": 2,
+          "unit": "seconds of held fire to reach full kick",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:310"
+        },
+        {
+          "name": "kick easy-skill damping",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:308"
+        },
+        {
+          "name": "kick pitch limit",
+          "value": 24,
+          "unit": "degrees of total accumulated punch",
+          "source": "src/game/server/hl2/basehlcombatweapon.cpp:196"
+        },
+        {
+          "name": "alt-fire grenade speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:353"
+        },
+        {
+          "name": "alt-fire lockout on the same button",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_smg1.cpp:380"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/basehlcombatweapon.cpp",
+          "line": 50
+        },
+        {
+          "path": "src/game/server/hl2/basehlcombatweapon.cpp",
+          "line": 158
+        },
+        {
+          "path": "src/game/server/hl2/weapon_smg1.cpp",
+          "line": 306
+        },
+        {
+          "path": "src/game/server/hl2/weapon_smg1.cpp",
+          "line": 324
+        }
+      ],
+      "capabilities": [
+        "frame-rate independent automatic fire",
+        "kick that grows with sustained fire",
+        "bouncing alt-fire grenade"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps"
+      ]
+    },
+    {
+      "id": "ar2-rifle-altfire",
+      "node": "player-weapons",
+      "name": "Pulse rifle fire and delayed ball alt-fire",
+      "summary": "The rifle fires every 0.1 seconds in a 3 degree cone with up to 8 degrees of vertical kick over 5 seconds; alt-fire charges 0.5 seconds and then launches an energy ball with a violent view kick.",
+      "behavior": "The primary uses the same machine-gun base as the submachine gun with a tighter cone and a larger and slower-building kick. The alt-fire is two-stage. Pressing it starts a 0.5 second charge that locks both buttons, then releases the energy ball forward at 1000 units per second with the radius, mass and lifetime from console variables (10 units, 150 kg, 2 seconds by default, overridable by config). Release flashes the screen white, shifts the view angles by up to plus or minus 4 degrees in pitch and yaw, and punches the pitch up by 8 to 12 degrees. It then spends one alt-fire round, blocks primary for 0.5 seconds and alt-fire for 1 second. Alt-fire is refused underwater.",
+      "constants": [
+        {
+          "name": "fire interval",
+          "value": 0.1,
+          "unit": "seconds between bullets",
+          "source": "src/game/server/hl2/weapon_ar2.h:46"
+        },
+        {
+          "name": "spread, per-axis",
+          "value": 0.02618,
+          "unit": "offset per unit of aim distance; about a 3 degree full cone",
+          "source": "src/game/shared/basecombatweapon_shared.h:105"
+        },
+        {
+          "name": "maximum added vertical kick",
+          "value": 8,
+          "unit": "degrees at full sustained fire",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:474"
+        },
+        {
+          "name": "kick ramp time",
+          "value": 5,
+          "unit": "seconds of held fire to reach full kick",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:475"
+        },
+        {
+          "name": "alt-fire charge delay",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:282"
+        },
+        {
+          "name": "ball launch speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:229"
+        },
+        {
+          "name": "ball radius default",
+          "value": 10,
+          "unit": "units",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:34"
+        },
+        {
+          "name": "ball lifetime default",
+          "value": 2,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:35"
+        },
+        {
+          "name": "ball mass default",
+          "value": 150,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:36"
+        },
+        {
+          "name": "view angle disorient range",
+          "value": 4,
+          "unit": "degrees, random in plus or minus on pitch and yaw",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:246"
+        },
+        {
+          "name": "alt-fire primary lockout",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:258"
+        },
+        {
+          "name": "alt-fire repeat lockout",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:261"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_ar2.cpp",
+          "line": 267
+        },
+        {
+          "path": "src/game/server/hl2/weapon_ar2.cpp",
+          "line": 202
+        },
+        {
+          "path": "src/game/server/hl2/weapon_ar2.cpp",
+          "line": 471
+        },
+        {
+          "path": "src/game/server/hl2/weapon_ar2.h",
+          "line": 46
+        }
+      ],
+      "capabilities": [
+        "tight-cone automatic rifle",
+        "charged alt-fire with heavy recoil",
+        "screen flash and view disorientation"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps"
+      ]
+    },
+    {
+      "id": "pistol-accuracy-penalty",
+      "node": "player-weapons",
+      "name": "Pistol accuracy penalty for fast clicking",
+      "summary": "The pistol cone swings from 1 to 6 degrees as an accuracy penalty rises by 0.2 seconds per shot to a 1.5 second ceiling, and recovers one second per second once the trigger is released.",
+      "behavior": "Each shot adds 0.2 seconds to an accuracy penalty. The bullet cone is a straight blend from 1 degree at no penalty to 6 degrees at 1.5 seconds of penalty, so a measured tapper stays accurate and a spammer sprays. The stored penalty can pass the ceiling while clicking fast; the cone blend stops at the ceiling and the first recovery step trims the penalty back to it. Decay happens only after the minimum refire time has passed and the attack button is up, at one second of penalty per second. Fire is limited to the fastest refire of 0.1 seconds when the button is tapped; a held button advances the next shot by the weapon fire rate of 0.5 seconds, so holding is slower than clicking. Each shot resets the view punch so the aim does not drift. The older fixed 4 degree cone is used if the accuracy console variable is turned off.",
+      "constants": [
+        {
+          "name": "penalty added per shot",
+          "value": 0.2,
+          "unit": "seconds of penalty",
+          "source": "src/game/server/hl2/weapon_pistol.cpp:27"
+        },
+        {
+          "name": "penalty ceiling",
+          "value": 1.5,
+          "unit": "seconds of penalty",
+          "source": "src/game/server/hl2/weapon_pistol.cpp:28"
+        },
+        {
+          "name": "fastest refire",
+          "value": 0.1,
+          "unit": "seconds between taps",
+          "source": "src/game/server/hl2/weapon_pistol.cpp:24"
+        },
+        {
+          "name": "held-fire interval",
+          "value": 0.5,
+          "unit": "seconds between shots with the button held",
+          "source": "src/game/server/hl2/weapon_pistol.cpp:104"
+        },
+        {
+          "name": "best cone, per-axis",
+          "value": 0.00873,
+          "unit": "offset per unit of aim distance; about 1 degree",
+          "source": "src/game/shared/basecombatweapon_shared.h:103"
+        },
+        {
+          "name": "worst cone, per-axis",
+          "value": 0.05234,
+          "unit": "offset per unit of aim distance; about 6 degrees",
+          "source": "src/game/shared/basecombatweapon_shared.h:108"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_pistol.cpp",
+          "line": 225
+        },
+        {
+          "path": "src/game/server/hl2/weapon_pistol.cpp",
+          "line": 263
+        },
+        {
+          "path": "src/game/server/hl2/weapon_pistol.cpp",
+          "line": 301
+        }
+      ],
+      "capabilities": [
+        "accuracy that depends on click rate",
+        "tap-fire faster than held fire",
+        "recoil reset per shot"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps"
+      ]
+    },
+    {
+      "id": "shotgun-spread-double",
+      "node": "player-weapons",
+      "name": "Shotgun cone and double-barrel blast",
+      "summary": "The shotgun fires pellets into a 10 degree cone with the first pellet always accurate, and the alt-fire spends 2 shells for 12 pellets with up to 5 degrees of pitch kick.",
+      "behavior": "Both modes use a 10 degree cone and the player autoaim vector. The primary fires a configurable number of pellets (set by skill config, not in this repository) and forces the first pellet to land exactly on the aim point, which makes close shots reliable. It kicks pitch by 1 to 2 degrees and yaw by up to 2 degrees. The alt-fire burns two shells from the same clip, fires exactly 12 pellets without the accurate first pellet, and kicks pitch by up to 5 degrees either way. The time between shots is the length of the fire animation, not a code constant. After a primary shot with ammo left a pump step is required, and reload feeds shells one at a time.",
+      "constants": [
+        {
+          "name": "cone, per-axis",
+          "value": 0.08716,
+          "unit": "offset per unit of aim distance; about a 10 degree full cone",
+          "source": "src/game/shared/basecombatweapon_shared.h:112"
+        },
+        {
+          "name": "double-barrel pellets",
+          "value": 12,
+          "unit": "pellets per shot",
+          "source": "src/game/server/hl2/weapon_shotgun.cpp:529"
+        },
+        {
+          "name": "double-barrel shells used",
+          "value": 2,
+          "unit": "shells from the clip",
+          "source": "src/game/server/hl2/weapon_shotgun.cpp:523"
+        },
+        {
+          "name": "primary pitch kick range",
+          "value": -2,
+          "unit": "degrees of view pitch punch, random between -2 and -1; negative is upward",
+          "source": "src/game/server/hl2/weapon_shotgun.cpp:475"
+        },
+        {
+          "name": "double-barrel pitch kick range",
+          "value": 5,
+          "unit": "degrees, random in plus or minus",
+          "source": "src/game/server/hl2/weapon_shotgun.cpp:530"
+        },
+        {
+          "name": "combine shotgunner fire interval (episodic)",
+          "value": 0.8,
+          "unit": "seconds between shots, enemy only",
+          "source": "src/game/server/hl2/weapon_shotgun.cpp:264"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_shotgun.cpp",
+          "line": 443
+        },
+        {
+          "path": "src/game/server/hl2/weapon_shotgun.cpp",
+          "line": 500
+        },
+        {
+          "path": "src/game/server/hl2/weapon_shotgun.cpp",
+          "line": 260
+        }
+      ],
+      "capabilities": [
+        "pellet fan with a guaranteed center pellet",
+        "double barrel burst",
+        "pump and shell-by-shell reload"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "fps"
+      ]
+    },
+    {
+      "id": "crossbow-bolt-zoom",
+      "node": "player-weapons",
+      "name": "Crossbow bolt, ricochet and zoom",
+      "summary": "The bolt leaves at 2500 units per second in air (1500 underwater) with almost no gravity, ricochets off shallow hits at 75 percent speed, and the weapon zooms to a 20 degree field of view.",
+      "behavior": "Firing spawns a bolt along the autoaimed direction at 2500 units per second, or 1500 when the player eyes are fully underwater. The bolt flies with only 5 percent of gravity so it travels nearly straight. On hitting level geometry it checks the angle: if the surface normal dot the reverse direction is under 0.5 (a glancing hit) and speed is above 100, it reflects at 75 percent speed and raises gravity to full so it sinks quickly; otherwise it sticks and removes itself after 2 seconds. Firing kicks the view pitch down by 2 degrees and locks both buttons for 0.75 seconds. A 200-unit-radius combat sound is raised. The secondary button toggles a zoom to a 20 degree field of view in 0.1 seconds and back to normal in 0.2 seconds.",
+      "constants": [
+        {
+          "name": "bolt speed in air",
+          "value": 2500,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:38"
+        },
+        {
+          "name": "bolt speed underwater",
+          "value": 1500,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:39"
+        },
+        {
+          "name": "bolt gravity scale in flight",
+          "value": 0.05,
+          "unit": "fraction of normal gravity",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:170"
+        },
+        {
+          "name": "ricochet angle threshold",
+          "value": 0.5,
+          "unit": "dot of surface normal and reversed direction; below it the bolt reflects",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:322"
+        },
+        {
+          "name": "ricochet minimum speed",
+          "value": 100,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:322"
+        },
+        {
+          "name": "ricochet speed retained",
+          "value": 0.75,
+          "unit": "fraction of speed",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:332"
+        },
+        {
+          "name": "stuck bolt lifetime",
+          "value": 2,
+          "unit": "seconds before removal",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:340"
+        },
+        {
+          "name": "refire lockout",
+          "value": 0.75,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:696"
+        },
+        {
+          "name": "fire pitch kick",
+          "value": -2,
+          "unit": "degrees of view pitch punch; negative is upward",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:681"
+        },
+        {
+          "name": "zoom field of view",
+          "value": 20,
+          "unit": "degrees",
+          "source": "src/game/server/hl2/weapon_crossbow.cpp:748"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_crossbow.cpp",
+          "line": 621
+        },
+        {
+          "path": "src/game/server/hl2/weapon_crossbow.cpp",
+          "line": 199
+        },
+        {
+          "path": "src/game/server/hl2/weapon_crossbow.cpp",
+          "line": 748
+        }
+      ],
+      "capabilities": [
+        "near-straight fast projectile",
+        "glancing ricochet",
+        "sniper zoom toggle"
+      ],
+      "tags": [
+        "combat",
+        "weapons",
+        "projectile"
+      ]
+    },
+    {
+      "id": "frag-grenade-throws",
+      "node": "player-weapons",
+      "name": "Frag grenade throw, roll and lob",
+      "summary": "The grenade has three throws that add the player velocity: overhand at 1200 units per second, underhand lob at 350 plus 50 up, and a floor roll at 700, all on a 3 second fuse.",
+      "behavior": "Which throw runs depends on the animation event the draw-back raises: overhand, roll or lob. All three inherit the current player velocity, so running throws travel farther. The overhand throw adds 1200 units per second along the aim with a tumble. The lob adds 350 forward and 50 upward for short arcs. The roll places the grenade on its side 18 units ahead on the floor plane, follows the floor slope and adds 700 along it with a spin of 720 degrees per second. Every grenade has a 3 second fuse and an 8-unit-wide body (half-extent 4). After a throw both fire buttons are locked for 0.5 seconds. A throw also posts a short danger sound that scares snipers, and the grenade warns nearby AI 1.5 seconds before it explodes.",
+      "constants": [
+        {
+          "name": "overhand throw speed",
+          "value": 1200,
+          "unit": "units per second added to player velocity",
+          "source": "src/game/server/hl2/weapon_frag.cpp:400"
+        },
+        {
+          "name": "lob forward speed",
+          "value": 350,
+          "unit": "units per second added to player velocity",
+          "source": "src/game/server/hl2/weapon_frag.cpp:426"
+        },
+        {
+          "name": "lob upward speed",
+          "value": 50,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_frag.cpp:426"
+        },
+        {
+          "name": "roll speed",
+          "value": 700,
+          "unit": "units per second added to player velocity along the floor",
+          "source": "src/game/server/hl2/weapon_frag.cpp:466"
+        },
+        {
+          "name": "roll spin",
+          "value": 720,
+          "unit": "degrees per second",
+          "source": "src/game/server/hl2/weapon_frag.cpp:470"
+        },
+        {
+          "name": "roll spawn offset ahead of the player",
+          "value": 18,
+          "unit": "units",
+          "source": "src/game/server/hl2/weapon_frag.cpp:461"
+        },
+        {
+          "name": "fuse time",
+          "value": 3,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_frag.cpp:22"
+        },
+        {
+          "name": "throw lockout",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/weapon_frag.cpp:179"
+        },
+        {
+          "name": "AI warning lead time",
+          "value": 1.5,
+          "unit": "seconds before detonation",
+          "source": "src/game/server/hl2/grenade_frag.cpp:22"
+        },
+        {
+          "name": "grenade body half-extent",
+          "value": 4,
+          "unit": "units on each axis",
+          "source": "src/game/server/hl2/grenade_frag.cpp:122"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/weapon_frag.cpp",
+          "line": 387
+        },
+        {
+          "path": "src/game/server/hl2/weapon_frag.cpp",
+          "line": 415
+        },
+        {
+          "path": "src/game/server/hl2/weapon_frag.cpp",
+          "line": 441
+        },
+        {
+          "path": "src/game/server/hl2/grenade_frag.cpp",
+          "line": 291
+        }
+      ],
+      "capabilities": [
+        "three throw types with velocity inheritance",
+        "floor roll that follows slopes",
+        "timed fuse with an AI warning"
+      ],
+      "tags": [
+        "combat",
+        "grenade",
+        "projectile"
+      ]
+    },
+    {
+      "id": "energy-ball-behavior",
+      "node": "combine-ball",
+      "name": "Energy ball constant speed and dissolve",
+      "summary": "The energy ball never loses speed on bounces, dissolves what it hits, bends toward targets inside a 15 degree cone (or within 512 units after a first strike), explodes if held 8 seconds, and a gravity gun punt sets it to 1500 units per second.",
+      "behavior": "The ball is a simulated sphere whose desired speed is stored on launch. On every collision the speed is restored to that desired value (and raised if the impact was faster), so bounces never slow it. Bounces are rate limited to one per 0.25 seconds. On each bounce it may bend toward a target. Normally it scans a 2048-unit ray with a 256-unit half-extent box along its new heading and steers at the nearest character whose direction is within a dot of 0.966 (about 15 degrees). After a first strike on a character (episodic builds, weapon-launched balls) it instead steers at the closest character ahead within 512 units. The configurable seek angle and per-bounce guide factor are computed into a shadowed local variable and have no effect. Hitting a character or ragdoll dissolves it, which is an instant kill; strider hits trigger an explosion instead. If the ball runs out of allowed bounces it dies 0.5 seconds later. A gravity gun can catch it; a held ball explodes after 8 seconds (12 on easy in episodic builds). A ball launched from the gun gets a 4 second life and a speed of 1500 units per second.",
+      "constants": [
+        {
+          "name": "rifle launch speed",
+          "value": 1000,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/weapon_ar2.cpp:229"
+        },
+        {
+          "name": "life after a gravity gun launch",
+          "value": 4,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:36"
+        },
+        {
+          "name": "minimum time between bounces",
+          "value": 0.25,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:1644"
+        },
+        {
+          "name": "seek radius after a first strike",
+          "value": 512,
+          "unit": "units",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:46"
+        },
+        {
+          "name": "assist cone dot threshold",
+          "value": 0.966,
+          "unit": "dot product between heading and direction to the target",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:1461"
+        },
+        {
+          "name": "assist ray length",
+          "value": 2048,
+          "unit": "units",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:1481"
+        },
+        {
+          "name": "assist ray box half-extent",
+          "value": 256,
+          "unit": "units on each axis",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:1479"
+        },
+        {
+          "name": "time left after the last bounce",
+          "value": 0.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:1661"
+        },
+        {
+          "name": "gravity gun punt speed",
+          "value": 1500,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:907"
+        },
+        {
+          "name": "held ball explosion time",
+          "value": 8,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:38"
+        },
+        {
+          "name": "maximum radius",
+          "value": 12,
+          "unit": "units",
+          "source": "src/game/server/hl2/prop_combine_ball.cpp:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "line": 68
+        },
+        {
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "line": 1565
+        },
+        {
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "line": 1197
+        },
+        {
+          "path": "src/game/server/hl2/prop_combine_ball.cpp",
+          "line": 1415
+        }
+      ],
+      "capabilities": [
+        "projectile that keeps speed through bounces",
+        "instant-kill dissolve",
+        "light homing after the first hit",
+        "redirectable by the gravity gun"
+      ],
+      "tags": [
+        "combat",
+        "projectile",
+        "physics"
+      ]
+    },
+    {
+      "id": "soldier-grenade-altfire",
+      "node": "combine-soldier-ai",
+      "name": "Soldier grenade and elite energy-ball legality checks",
+      "summary": "A soldier throws a 650 units per second grenade only when stationary, 128 to 1024 units away, no squad mate within 250 units of the target and an arc is clear; elites instead fire the energy ball if a clear 65 percent path exists.",
+      "behavior": "A grenade throw needs at least one grenade, a re-check timer, a target distance between 128 and 1024 units and a standing pose (a moving soldier never checks). If any squadmate is within 250 units of the target point, the throw is cancelled for one second and a move-away sound is broadcast so the squad clears out. If the target is visible, a direct arc at a throw speed of 650 is solved with a 4-unit half-extent hull; otherwise a lob is tried only when 64 units of ceiling clearance exist. Failed checks retry after one second. A throw has a 3.5 second fuse. Soldiers also flush a hiding player: they throw at the last seen spot if the enemy was lost for no more than 3 seconds and moved no more than 256 units. Elite soldiers never throw grenades. Instead, against the player or a player ally, they test a 12-unit half-extent hull trace to the chest and fire the energy ball only if at least 65 percent of the path is clear and the clear part is longer than 128 units.",
+      "constants": [
+        {
+          "name": "grenade throw speed",
+          "value": 650,
+          "unit": "units per second",
+          "source": "src/game/server/hl2/npc_combine.cpp:42"
+        },
+        {
+          "name": "grenade fuse",
+          "value": 3.5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/npc_combine.cpp:43"
+        },
+        {
+          "name": "minimum throw distance",
+          "value": 128,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:2770"
+        },
+        {
+          "name": "maximum throw distance",
+          "value": 1024,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:2770"
+        },
+        {
+          "name": "squad clear radius around the target",
+          "value": 250,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:48"
+        },
+        {
+          "name": "retry delay after a failed check",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/npc_combine.cpp:2773"
+        },
+        {
+          "name": "high-lob ceiling clearance",
+          "value": 64,
+          "unit": "units above the eyes",
+          "source": "src/game/server/hl2/npc_combine.cpp:2837"
+        },
+        {
+          "name": "flush enemy lost time limit",
+          "value": 3,
+          "unit": "seconds since last seen",
+          "source": "src/game/server/hl2/npc_combine.cpp:44"
+        },
+        {
+          "name": "flush enemy movement limit",
+          "value": 256,
+          "unit": "units from the last seen spot",
+          "source": "src/game/server/hl2/npc_combine.cpp:45"
+        },
+        {
+          "name": "elite ball path clear fraction",
+          "value": 0.65,
+          "unit": "fraction of the trace that must be unobstructed",
+          "source": "src/game/server/hl2/npc_combine.cpp:2923"
+        },
+        {
+          "name": "elite ball minimum clear path length",
+          "value": 128,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:2923"
+        },
+        {
+          "name": "elite ball hull half-extent",
+          "value": 12,
+          "unit": "units on each axis",
+          "source": "src/game/server/hl2/npc_combine.cpp:2906"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 2753
+        },
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 2818
+        },
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 2864
+        },
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 2939
+        }
+      ],
+      "capabilities": [
+        "grenade throws gated by distance, pose and squad safety",
+        "move-away call so the squad clears blast area",
+        "flush-out grenades at hiding targets",
+        "elite special attack with a path check"
+      ],
+      "tags": [
+        "ai",
+        "grenade",
+        "squad"
+      ]
+    },
+    {
+      "id": "soldier-squad-slots",
+      "node": "combine-soldier-ai",
+      "name": "Squad attack slots and combat schedule order",
+      "summary": "Squads ration two shared attack slots, so only two soldiers shoot at once while the rest press, flank, wait or take cover, up to 16 members per squad.",
+      "behavior": "A combat tick runs a fixed priority list. On first sight of a new enemy a soldier that can shoot and gets a slot suppresses. The leader, or a member with a different enemy than the leader, tries an attack slot and shoots, or else enters overwatch if the attack slots are taken and it has line of sight. Other members try a grenade slot if they can throw, then, if not in the first 3 seconds of contact, take an attack slot and with a 60 percent chance establish a line of fire instead of pressing, or else take cover. Later in the fight, no ammo sends a soldier to hide and reload, light damage gives a 50 percent chance to crouch if it can still shoot, otherwise cover. If the enemy is hidden a soldier with a slot repositions for line of fire; beyond 3000 units it always does; otherwise it waits in cover. If the enemy is visible but not shootable, it presses (too far or pressure tactics) or assaults. A player with the mega gravity gun is charged: soldiers inside 192 units take attack slots and rush.",
+      "constants": [
+        {
+          "name": "shared attack slots",
+          "value": 2,
+          "unit": "slots per squad and enemy",
+          "source": "src/game/server/ai_squadslot.h:30"
+        },
+        {
+          "name": "maximum squad size",
+          "value": 16,
+          "unit": "members",
+          "source": "src/game/server/ai_squad.h:25"
+        },
+        {
+          "name": "first contact window",
+          "value": 3,
+          "unit": "seconds after an enemy is first seen",
+          "source": "src/game/server/hl2/npc_combine.cpp:1503"
+        },
+        {
+          "name": "establish line of fire chance",
+          "value": 60,
+          "unit": "percent when choosing between flank and press",
+          "source": "src/game/server/hl2/npc_combine.cpp:1556"
+        },
+        {
+          "name": "crouch instead of cover chance",
+          "value": 50,
+          "unit": "percent on light damage",
+          "source": "src/game/server/hl2/npc_combine.cpp:1594"
+        },
+        {
+          "name": "far occluded enemy distance",
+          "value": 3000,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:1657"
+        },
+        {
+          "name": "charge distance against the mega gravity gun",
+          "value": 192,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_combine.cpp:1910"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 1483
+        },
+        {
+          "path": "src/game/server/hl2/npc_combine.cpp",
+          "line": 1913
+        },
+        {
+          "path": "src/game/server/ai_squad.cpp",
+          "line": 579
+        },
+        {
+          "path": "src/game/server/ai_squadslot.h",
+          "line": 30
+        }
+      ],
+      "capabilities": [
+        "two-shooter limit with suppressing and flanking roles",
+        "overwatch for soldiers without a slot",
+        "priority ladder from reload to cover to assault",
+        "charge behavior against a strong player weapon"
+      ],
+      "tags": [
+        "ai",
+        "squad",
+        "combat"
+      ]
+    },
+    {
+      "id": "zombie-physics-swat",
+      "node": "zombie-ai",
+      "name": "Zombie prop swatting and damage multipliers",
+      "summary": "Zombies pick up to 100 resting props of at most 60 kg near them to swat at a player within 1000 units, once per 5 seconds, and take half damage from bullets except to the head.",
+      "behavior": "When a zombie has a target within 1000 units, it scans a box around itself for resting, movable props. The box half-width is the smaller of the enemy distance and 240 units, and 100 candidates are looked at, each of at most 60 kg. It walks to within 48 to 80 units of the prop and swats it. The next scan is delayed 5 seconds. Damage rules: bullets that are not head hits do half damage, buckshot and sniper do full damage, head hits do double, and buckshot to the head at 96 units or closer does triple. After damage the zombie ignores further flinching for 3 seconds. A broken zombie leaves a torso with half the health, and a zombie below half health releases its headcrab. Burning lasts about 10 seconds, and a burning zombie only takes direct fire damage so crowds of fire entities do not melt it faster.",
+      "constants": [
+        {
+          "name": "swat target distance limit",
+          "value": 1000,
+          "unit": "units from the zombie to the enemy",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:89"
+        },
+        {
+          "name": "heaviest swatted prop",
+          "value": 60,
+          "unit": "kilograms",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:103"
+        },
+        {
+          "name": "swat reach distance",
+          "value": 80,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:107"
+        },
+        {
+          "name": "swat approach distance",
+          "value": 48,
+          "unit": "units",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:113"
+        },
+        {
+          "name": "swat scan delay",
+          "value": 5,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:117"
+        },
+        {
+          "name": "prop candidates examined",
+          "value": 100,
+          "unit": "entities",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:86"
+        },
+        {
+          "name": "flinch lockout",
+          "value": 3,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:124"
+        },
+        {
+          "name": "body bullet damage scale",
+          "value": 0.5,
+          "unit": "multiplier",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:56"
+        },
+        {
+          "name": "close buckshot headshot range",
+          "value": 96,
+          "unit": "units for triple damage",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:653"
+        },
+        {
+          "name": "headcrab release health fraction",
+          "value": 0.5,
+          "unit": "fraction of max health",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:99"
+        },
+        {
+          "name": "torso health fraction",
+          "value": 0.5,
+          "unit": "fraction of max health",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:94"
+        },
+        {
+          "name": "burn time",
+          "value": 10,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/npc_BaseZombie.cpp:127"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "line": 264
+        },
+        {
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "line": 654
+        },
+        {
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "line": 815
+        },
+        {
+          "path": "src/game/server/hl2/npc_BaseZombie.cpp",
+          "line": 762
+        }
+      ],
+      "capabilities": [
+        "enemy that uses level props as weapons",
+        "weak-to-the-head damage model",
+        "headcrab release at low health",
+        "fire damage without stacking"
+      ],
+      "tags": [
+        "ai",
+        "enemy",
+        "physics"
+      ]
+    },
+    {
+      "id": "vehicle-driving-controls",
+      "node": "vehicles",
+      "name": "Vehicle throttle, brake and steering input",
+      "summary": "Driver keys drive a speed-dependent steering controller, throttle ramps toward a limit that shrinks with steering, and braking is a ramp of 1.5 per second applied when pressing against motion.",
+      "behavior": "Left and right keys steer toward full lock at a rate blended between a slow-speed and fast-speed rate, and release returns the wheel at a speed-blended rest rate. Braking while turning, and boost, change those rates by factors. Forward throttle ramps up at a throttle rate, never higher than a limit that falls as the wheel turns, scaled by a turn throttle reduction between slow and fast speeds. Pressing the opposite direction of travel when the car is moving faster than 2 units per second engages the brake instead of throttle: brake ramps at 1.5 per second, doubled when braking from reverse. Analog sticks scale throttle between 0.25 and 1 and an auto-throttle forces full throttle when speed is above 75 percent of maximum and the stick is more sideways than forward. Steering rates, speed breakpoints, engine and boost values live in the vehicle script files, not in this repository, so tune the car there. A mounted jeep gun is limited to 90 degrees yaw each way and 20 degrees pitch; exiting needs speed under 100 miles per hour (a cheat console variable). Vehicle speed readouts are in miles per hour, while the brake and throttle threshold uses inches per second.",
+      "constants": [
+        {
+          "name": "brake ramp rate",
+          "value": 1.5,
+          "unit": "brake level per second, scaled by frame time",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:36"
+        },
+        {
+          "name": "reverse-to-forward brake multiplier",
+          "value": 2,
+          "unit": "multiplier on the brake ramp",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:34"
+        },
+        {
+          "name": "brake maximum",
+          "value": 1,
+          "unit": "brake level",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:33"
+        },
+        {
+          "name": "moving-direction threshold",
+          "value": 2,
+          "unit": "inches per second; slower counts as stopped",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:1056"
+        },
+        {
+          "name": "analog stick full range",
+          "value": 400,
+          "unit": "stick units",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:25"
+        },
+        {
+          "name": "analog throttle floor",
+          "value": 0.25,
+          "unit": "fraction of throttle",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:1185"
+        },
+        {
+          "name": "auto-throttle speed fraction",
+          "value": 0.75,
+          "unit": "fraction of maximum speed, both in miles per hour",
+          "source": "src/game/server/fourwheelvehiclephysics.cpp:1078"
+        },
+        {
+          "name": "jeep gun yaw limit",
+          "value": 90,
+          "unit": "degrees each side",
+          "source": "src/game/server/hl2/vehicle_jeep.cpp:45"
+        },
+        {
+          "name": "jeep gun pitch limit",
+          "value": 20,
+          "unit": "degrees up and down",
+          "source": "src/game/server/hl2/vehicle_jeep.cpp:43"
+        },
+        {
+          "name": "exit speed limit",
+          "value": 100,
+          "unit": "miles per hour; the code converts inches per second before comparing",
+          "source": "src/game/server/hl2/vehicle_jeep.cpp:69"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/fourwheelvehiclephysics.cpp",
+          "line": 1054
+        },
+        {
+          "path": "src/game/server/fourwheelvehiclephysics.cpp",
+          "line": 961
+        },
+        {
+          "path": "src/game/server/fourwheelvehiclephysics.cpp",
+          "line": 1021
+        },
+        {
+          "path": "src/game/server/hl2/vehicle_jeep.cpp",
+          "line": 1323
+        }
+      ],
+      "capabilities": [
+        "speed-sensitive steering",
+        "throttle that eases off in turns",
+        "brake by pressing against motion",
+        "analog stick support with auto-throttle"
+      ],
+      "tags": [
+        "vehicle",
+        "driving",
+        "controls"
+      ]
+    },
+    {
+      "id": "airboat-gun-ammo",
+      "node": "vehicles",
+      "name": "Airboat gun: charge meter, heavy shot and bullet-proof hull",
+      "summary": "The airboat gun draws from a 100-point meter that recharges at 15 per second, fires a spread pair of bullets between heavy single shots every 0.2 seconds, and its hull is nearly immune to bullets.",
+      "behavior": "Holding fire spends one third of an ammo point per fire update. The meter holds 100 and recharges at 15 per second, with a fractional remainder carried so recharge is frame-rate independent; a pending fractional drain is paid off from the recharge first. Bullets travel 4096 units. A shot that comes at least 0.2 seconds after the previous heavy shot is a single bullet with no spread and a large force push of 1000; shots in between fire two bullets in a 5 degree cone. Firing shakes the screen for the pilot. The gun aim is clamped to 60 degrees up, 30 down, and 165 degrees one way and 75 the other in yaw, and when the aim is clamped the gun fires along its barrel instead. Bullets that hit anything but the driver hit box are scaled to one ten-thousandth, and a physics stress over 5000 kg kills the driver. The player may only enter or exit below a speed of 10 (miles per hour in practice).",
+      "constants": [
+        {
+          "name": "maximum ammo",
+          "value": 100,
+          "unit": "ammo points",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:67"
+        },
+        {
+          "name": "recharge rate",
+          "value": 15,
+          "unit": "ammo points per second, scaled by frame time",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:68"
+        },
+        {
+          "name": "ammo cost divisor per fire update",
+          "value": 3,
+          "unit": "each fire update spends 1 divided by this many ammo points, update rate unverified",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:1713"
+        },
+        {
+          "name": "heavy shot interval",
+          "value": 0.2,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:64"
+        },
+        {
+          "name": "light shot spread cone, per-axis",
+          "value": 0.04362,
+          "unit": "offset per unit of aim distance; about 5 degrees",
+          "source": "src/game/shared/basecombatweapon_shared.h:107"
+        },
+        {
+          "name": "heavy shot force scale",
+          "value": 1000,
+          "unit": "multiplier on the damage force",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:1619"
+        },
+        {
+          "name": "bullet range",
+          "value": 4096,
+          "unit": "units",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:1611"
+        },
+        {
+          "name": "gun aim limit, up",
+          "value": 60,
+          "unit": "degrees",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:59"
+        },
+        {
+          "name": "gun aim limit, down",
+          "value": 30,
+          "unit": "degrees",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:60"
+        },
+        {
+          "name": "hull bullet damage scale",
+          "value": 0.0001,
+          "unit": "multiplier on bullet damage outside the driver hit box",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:829"
+        },
+        {
+          "name": "fatal stress to the driver",
+          "value": 5000,
+          "unit": "kilograms of physics stress",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:71"
+        },
+        {
+          "name": "enter and exit speed limit",
+          "value": 10,
+          "unit": "miles per hour as compared in code; the source comment says inches per second",
+          "source": "src/game/server/hl2/vehicle_airboat.cpp:42"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "line": 1569
+        },
+        {
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "line": 1715
+        },
+        {
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "line": 1008
+        },
+        {
+          "path": "src/game/server/hl2/vehicle_airboat.cpp",
+          "line": 822
+        }
+      ],
+      "capabilities": [
+        "rechargeable vehicle weapon meter",
+        "alternating heavy and spread shots",
+        "bullet-proof vehicle body",
+        "crush death for the driver"
+      ],
+      "tags": [
+        "vehicle",
+        "weapons",
+        "water"
+      ]
+    },
+    {
+      "id": "adaptive-resupply",
+      "node": "dynamic-resupply",
+      "name": "Adaptive health, armor and ammo pickups",
+      "summary": "A placeholder pickup becomes whichever health, armor or ammo item the player is furthest below its desired level, counting similar items within 1024 units as already owned.",
+      "behavior": "The placeholder waits until a player is in its potentially visible set (checked every second) and then decides. For each health, armor and ammo type it computes a current ratio from the player stock plus the worth of the same items lying within 1024 units, a desired ratio set by the level designer scaled by a global modifier, and a clamped shortfall. It then spawns the item with the largest shortfall, one health or armor type and one ammo type, so the player is never given what they already have nearby. When nothing is needed and the always-spawn flag is set, an ammo type is picked by weighted odds: pistol 0.5, submachine gun 0.4, grenades 0.1, only for weapons they own. Spawned items stack above each other with a 6 unit gap and a random sideways jitter of 6. Killed enemies use a related rule: after a 30 second cool-down they drop health with a chance of one minus 1.5 times the health fraction, and grenades with a one in three chance.",
+      "constants": [
+        {
+          "name": "nearby item count radius",
+          "value": 1024,
+          "unit": "units",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:70"
+        },
+        {
+          "name": "visibility check interval",
+          "value": 1,
+          "unit": "seconds",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:68"
+        },
+        {
+          "name": "full-player pistol ammo weight",
+          "value": 0.5,
+          "unit": "relative probability",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:49"
+        },
+        {
+          "name": "full-player submachine gun ammo weight",
+          "value": 0.4,
+          "unit": "relative probability",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:50"
+        },
+        {
+          "name": "full-player grenade weight",
+          "value": 0.1,
+          "unit": "relative probability",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:55"
+        },
+        {
+          "name": "stack gap above the previous item",
+          "value": 6,
+          "unit": "units",
+          "source": "src/game/server/hl2/item_dynamic_resupply.cpp:561"
+        },
+        {
+          "name": "enemy health drop cool-down",
+          "value": 30,
+          "unit": "seconds",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:102"
+        },
+        {
+          "name": "enemy grenade drop cool-down",
+          "value": 30,
+          "unit": "seconds",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:103"
+        },
+        {
+          "name": "enemy health drop chance scale",
+          "value": 1.5,
+          "unit": "multiplier on the player health fraction",
+          "source": "src/game/shared/hl2/hl2_gamerules.cpp:1442"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "line": 573
+        },
+        {
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "line": 431
+        },
+        {
+          "path": "src/game/server/hl2/item_dynamic_resupply.cpp",
+          "line": 523
+        },
+        {
+          "path": "src/game/shared/hl2/hl2_gamerules.cpp",
+          "line": 1433
+        }
+      ],
+      "capabilities": [
+        "pickups that adapt to player need",
+        "no duplicate supplies near the player",
+        "enemy drops tied to player health"
+      ],
+      "tags": [
+        "loot",
+        "balance",
+        "fps"
+      ]
+    }
+  ]
+}

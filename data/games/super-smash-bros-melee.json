@@ -1,0 +1,1721 @@
+{
+  "version": 1,
+  "id": "super-smash-bros-melee",
+  "title": "Super Smash Bros. Melee",
+  "repo": "https://github.com/doldecomp/melee",
+  "sha": "2f8eab8ebd7a2d25541e125abfa246defe1bacec",
+  "nodes": [
+    {
+      "id": "fighter-update",
+      "name": "Fighter per-frame processes",
+      "purpose": "Per-frame fighter processes: input timers, hitlag countdown, shield health, collision resolve and the ground-to-air bounds lock",
+      "paths": [
+        "src/melee/ft/fighter.c"
+      ],
+      "functions": [
+        {
+          "name": "Fighter_procInput",
+          "path": "src/melee/ft/fighter.c",
+          "lines": [
+            1778,
+            2144
+          ]
+        },
+        {
+          "name": "Fighter_procHitlag",
+          "path": "src/melee/ft/fighter.c",
+          "lines": [
+            1395,
+            1444
+          ]
+        },
+        {
+          "name": "Fighter_procMap",
+          "path": "src/melee/ft/fighter.c",
+          "lines": [
+            2476,
+            2516
+          ]
+        },
+        {
+          "name": "Fighter_procCollResolve",
+          "path": "src/melee/ft/fighter.c",
+          "lines": [
+            2806,
+            3048
+          ]
+        }
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "fighter-physics-helpers",
+      "name": "Shared fighter physics helpers",
+      "purpose": "Ground and air acceleration solvers, gravity, fast fall, air drift, landing conversion and the ground-to-air switch",
+      "paths": [
+        "src/melee/ft/ftcommon.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCommon_CalcGroundAccel_Deaccel",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            51,
+            59
+          ]
+        },
+        {
+          "name": "ftCommon_CalcGroundAccel_DashRun",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            61,
+            97
+          ]
+        },
+        {
+          "name": "ftCommon_CalcSelfAccel_DriftFrom",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            393,
+            409
+          ]
+        },
+        {
+          "name": "ftCommon_Fall",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            480,
+            486
+          ]
+        },
+        {
+          "name": "ftCommon_CheckFallFast",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            513,
+            525
+          ]
+        },
+        {
+          "name": "ftCommon_8007D5D4",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            533,
+            543
+          ]
+        },
+        {
+          "name": "ftCommon_8007D60C",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            545,
+            557
+          ]
+        },
+        {
+          "name": "ftCommon_8007D6A4",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            564,
+            581
+          ]
+        },
+        {
+          "name": "ftCommon_CalcHitlag",
+          "path": "src/melee/ft/ftcommon.c",
+          "lines": [
+            658,
+            666
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-update"
+      ]
+    },
+    {
+      "id": "fighter-ground-moves",
+      "name": "Ground dash, landing and platform drop",
+      "purpose": "Dash entry and carry-over speed, landing lag and its animation rate, aerial landing lag shortening, and drop-through-platform input",
+      "paths": [
+        "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_Landing.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_Pass.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCo_Dash_Enter",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "lines": [
+            48,
+            71
+          ]
+        },
+        {
+          "name": "ftCo_Dash_Phys",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "lines": [
+            144,
+            161
+          ]
+        },
+        {
+          "name": "ftCo_LandingFallSpecial_Enter",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Landing.c",
+          "lines": [
+            103,
+            113
+          ]
+        },
+        {
+          "name": "ftCo_LandingAir_EnterWithLag",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+          "lines": [
+            14,
+            57
+          ]
+        },
+        {
+          "name": "ftCo_LandingAir_EnterWithMsidLag",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+          "lines": [
+            59,
+            66
+          ]
+        },
+        {
+          "name": "ftCo_80099F1C",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Pass.c",
+          "lines": [
+            26,
+            36
+          ]
+        },
+        {
+          "name": "ftCo_8009A228",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Pass.c",
+          "lines": [
+            89,
+            99
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics-helpers"
+      ]
+    },
+    {
+      "id": "fighter-air-moves",
+      "name": "Jump, air jump, air dodge and wall jump",
+      "purpose": "Jump launch and short hop, air jump input and launch, air dodge direction and decay, and wall jump input rules",
+      "paths": [
+        "src/melee/ft/kinds/ftCommon/ftCo_Jump.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_KneeBend.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_JumpAerial.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+        "src/melee/ft/ftwalljump.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCo_800CB110",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Jump.c",
+          "lines": [
+            101,
+            151
+          ]
+        },
+        {
+          "name": "ftCo_KneeBend_Check_ShortHop",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_KneeBend.c",
+          "lines": [
+            44,
+            57
+          ]
+        },
+        {
+          "name": "ft_did_jump",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_JumpAerial.c",
+          "lines": [
+            46,
+            58
+          ]
+        },
+        {
+          "name": "ftCo_80099A9C",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "lines": [
+            54,
+            66
+          ]
+        },
+        {
+          "name": "ftCo_EscapeAir_Phys",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "lines": [
+            98,
+            107
+          ]
+        },
+        {
+          "name": "ftWallJump_8008169C",
+          "path": "src/melee/ft/ftwalljump.c",
+          "lines": [
+            16,
+            124
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics-helpers"
+      ]
+    },
+    {
+      "id": "fighter-ledge",
+      "name": "Ledge grab and hang",
+      "purpose": "Ledge catch rules, hang timer, invincibility window and the cooldown after release",
+      "paths": [
+        "src/melee/ft/ftcliffcommon.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_CliffWait.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCliffCommon_80081298",
+          "path": "src/melee/ft/ftcliffcommon.c",
+          "lines": [
+            22,
+            50
+          ]
+        },
+        {
+          "name": "ftCliffCommon_80081370",
+          "path": "src/melee/ft/ftcliffcommon.c",
+          "lines": [
+            52,
+            100
+          ]
+        },
+        {
+          "name": "ftCo_8009A804",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_CliffWait.c",
+          "lines": [
+            20,
+            33
+          ]
+        },
+        {
+          "name": "ftCo_8009A9AC",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_CliffWait.c",
+          "lines": [
+            62,
+            72
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-physics-helpers"
+      ]
+    },
+    {
+      "id": "damage-and-knockback",
+      "name": "Damage, knockback and hit reactions",
+      "purpose": "Knockback formula, knockback modifiers, hit reaction levels, launch angle, hitlag and directional influence",
+      "paths": [
+        "src/melee/ft/ftcoll.c",
+        "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+        "src/melee/ft/ftaction.c"
+      ],
+      "functions": [
+        {
+          "name": "ftColl_80079AB0",
+          "path": "src/melee/ft/ftcoll.c",
+          "lines": [
+            2085,
+            2118
+          ]
+        },
+        {
+          "name": "ftColl_8007AC68",
+          "path": "src/melee/ft/ftcoll.c",
+          "lines": [
+            2481,
+            2489
+          ]
+        },
+        {
+          "name": "ftAction_8007121C",
+          "path": "src/melee/ft/ftaction.c",
+          "lines": [
+            287,
+            363
+          ]
+        },
+        {
+          "name": "ftCo_Damage_CalcAngle",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            79,
+            103
+          ]
+        },
+        {
+          "name": "ftCo_Damage_CalcKnockback",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            118,
+            147
+          ]
+        },
+        {
+          "name": "ftCo_Damage_CalcVel",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            209,
+            228
+          ]
+        },
+        {
+          "name": "ftCo_8008DCE0",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            263,
+            470
+          ]
+        },
+        {
+          "name": "ftCo_Damage_OnEveryHitlag",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            500,
+            520
+          ]
+        },
+        {
+          "name": "ftCo_8008E5A4",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            522,
+            553
+          ]
+        },
+        {
+          "name": "ftCo_Damage_OnExitHitlag",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "lines": [
+            555,
+            597
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-update"
+      ]
+    },
+    {
+      "id": "shield",
+      "name": "Shield",
+      "purpose": "Shield size, shield health, analog light shield, shield stun and push back",
+      "paths": [
+        "src/melee/ft/kinds/ftCommon/ftCo_Guard.c"
+      ],
+      "functions": [
+        {
+          "name": "ftCo_80091D58",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "lines": [
+            193,
+            198
+          ]
+        },
+        {
+          "name": "ftCo_800925A4",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "lines": [
+            400,
+            438
+          ]
+        },
+        {
+          "name": "ftCo_80092ED8",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "lines": [
+            653,
+            660
+          ]
+        },
+        {
+          "name": "ftCo_80092F2C",
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "lines": [
+            662,
+            715
+          ]
+        }
+      ],
+      "dependsOn": [
+        "fighter-update",
+        "damage-and-knockback"
+      ]
+    },
+    {
+      "id": "battle-camera",
+      "name": "Battle camera",
+      "purpose": "Multi-fighter camera: subject bounds, zoom distance, field of view, follow smoothing and the tuning table",
+      "paths": [
+        "src/melee/cm/camera.c"
+      ],
+      "functions": [
+        {
+          "name": "Camera_800293E0",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            388,
+            463
+          ]
+        },
+        {
+          "name": "Camera_8002958C",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            465,
+            677
+          ]
+        },
+        {
+          "name": "Camera_80029AAC",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            702,
+            744
+          ]
+        },
+        {
+          "name": "Camera_80029BC4",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            746,
+            763
+          ]
+        },
+        {
+          "name": "Camera_80029C88",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            765,
+            784
+          ]
+        },
+        {
+          "name": "Camera_80029CF8",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            800,
+            902
+          ]
+        },
+        {
+          "name": "Camera_8002B3D4",
+          "path": "src/melee/cm/camera.c",
+          "lines": [
+            1551,
+            1564
+          ]
+        }
+      ],
+      "dependsOn": []
+    }
+  ],
+  "cards": [
+    {
+      "id": "knockback-formula",
+      "node": "damage-and-knockback",
+      "name": "Knockback formula",
+      "summary": "Knockback grows with the victim percent, the hit damage, a per-hit growth value and a per-hit base value. A heavier victim takes less.",
+      "behavior": "One shared routine builds the knockback for every hit. A hit record carries three authored values: a growth value, a base value and an optional set-knockback value. When the set-knockback value is nonzero, the damage term comes from that fixed value and the victim percent is ignored. Otherwise the damage term mixes the victim percent plus pending percent with a second term that multiplies the same percent by the hit damage. The routine scales that damage term by a weight factor that falls as the victim weight rises, multiplies by the growth value divided by 100, adds the base value, then multiplies by a staling or attack ratio and a defense ratio. The routine clamps the final result to one table maximum. All coefficients come from the common fighter data table, which the repository does not store as literals, so a clone must supply its own tuning. The hit damage field name is unresolved in the decompilation.",
+      "constants": [
+        {
+          "name": "growth percent scale",
+          "value": 0.01,
+          "unit": "unitless multiplier, applied once per hit",
+          "source": "src/melee/ft/ftcoll.c:2078"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcoll.c",
+          "line": 2085
+        },
+        {
+          "path": "src/melee/ft/ftcoll.c",
+          "line": 2075
+        },
+        {
+          "path": "src/melee/ft/ftcoll.c",
+          "line": 2113
+        },
+        {
+          "path": "src/melee/ft/ftaction.c",
+          "line": 328
+        },
+        {
+          "path": "src/melee/ft/ftaction.c",
+          "line": 335
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "knockback_scaling",
+        "percent_damage_system"
+      ],
+      "tags": [
+        "combat",
+        "knockback",
+        "fighting"
+      ]
+    },
+    {
+      "id": "hitbox-authoring-scale",
+      "node": "damage-and-knockback",
+      "name": "Hitbox authoring fixed-point scale",
+      "summary": "Animation scripts store hitbox size and offsets as integers. The game multiplies them by one-over-256 to get world units.",
+      "behavior": "A hitbox script command spawns a hitbox slot. The command stores damage, a bone, a size, three offsets, an angle, growth, set-knockback, base knockback and flags for item interaction, clank and rebound. The spawn code multiplies the stored size and each offset by the same small constant, which equals one divided by 256. The result is a sphere radius and a bone-local offset in world units. A hit group number stops one attack from hitting the same victim twice. The spawn code re-enables a slot only when the slot was off or the group changed. Size is a radius, not a diameter.",
+      "constants": [
+        {
+          "name": "hitbox size and offset scale",
+          "value": 0.003906,
+          "unit": "world units per raw integer unit, applied once at hitbox spawn",
+          "source": "src/melee/ft/ftaction.c:321"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftaction.c",
+          "line": 321
+        },
+        {
+          "path": "src/melee/ft/ftaction.c",
+          "line": 322
+        },
+        {
+          "path": "src/melee/ft/ftaction.c",
+          "line": 329
+        }
+      ],
+      "capabilities": [
+        "hitbox_authoring",
+        "sphere_hitboxes",
+        "hit_groups"
+      ],
+      "tags": [
+        "combat",
+        "hitbox",
+        "data"
+      ]
+    },
+    {
+      "id": "launch-angle-and-auto-angle",
+      "node": "damage-and-knockback",
+      "name": "Launch angle and the automatic angle value",
+      "summary": "A hit angle of 361 degrees means \"pick an angle\". Airborne victims get one fixed angle. Grounded victims get a ramp from flat to a maximum angle as knockback rises.",
+      "behavior": "Each hit carries an angle in degrees. The value 361 is a sentinel. For any other value the game converts the angle to radians and uses it directly. For 361 the result depends on the victim. An airborne victim gets one fixed table angle. A grounded victim below a low knockback threshold gets a flat angle of zero. Above the threshold the angle ramps up linearly with knockback until it reaches a table maximum, then holds. A separate check flags angles inside a table range for a special reaction. The attacker facing flips the horizontal sign later, in the velocity step.",
+      "constants": [
+        {
+          "name": "automatic angle sentinel",
+          "value": 361,
+          "unit": "degrees, compared once per hit",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c:81"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 79
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 81
+        },
+        {
+          "path": "src/melee/ft/ftcoll.c",
+          "line": 2483
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "launch_angle",
+        "angle_ramp"
+      ],
+      "tags": [
+        "combat",
+        "knockback",
+        "angle"
+      ]
+    },
+    {
+      "id": "knockback-modifiers",
+      "node": "damage-and-knockback",
+      "name": "Knockback modifiers",
+      "summary": "After the formula, crouching, ice, a charging smash, fighter scale and armor change the knockback. A table floor stops it from dropping to zero.",
+      "behavior": "A post step edits the stored knockback before the hit reaction starts. A crouching victim multiplies knockback by one table factor. A frozen victim and a victim that charges a smash attack each use another table factor. A fighter that is not at scale one passes the value through a scale helper. The step then picks the larger of two armor values, adds a metal bonus for metal fighters and subtracts the total. The result cannot fall below a table minimum. When the knockback is zero, the step does nothing.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 118
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 124
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 140
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 144
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "armor",
+        "crouch_cancel"
+      ],
+      "tags": [
+        "combat",
+        "knockback",
+        "defense"
+      ]
+    },
+    {
+      "id": "hit-reaction-levels-and-hitstun",
+      "node": "damage-and-knockback",
+      "name": "Hit reaction levels and hitstun length",
+      "summary": "Knockback maps to four reaction levels and a stun length in frames. The launch speed is knockback times one table scale.",
+      "behavior": "The reaction step multiplies knockback by one table scale. It truncates the product to an integer and stores that as the stun frame count, with a minimum of one. It compares the same product with three table thresholds to pick a reaction level from zero to three. The level and the body part that was hit pick the motion from a small table, with separate rows for ground and air. A second scale gives the launch speed, which splits into x and y with the launch angle. A grounded victim hit toward the floor can bounce, and a high level hit can force a tumble motion. The velocity step replaces the old launch when the previous hit was recent, under a table count. Otherwise each axis combines: opposite signs add, and same signs keep the larger size.",
+      "constants": [
+        {
+          "name": "highest reaction level index",
+          "value": 3,
+          "unit": "level index, evaluated once per hit",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c:303"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 263
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 288
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 311
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 209
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 61
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "hitstun",
+        "reaction_levels",
+        "launch_velocity"
+      ],
+      "tags": [
+        "combat",
+        "knockback",
+        "hitstun"
+      ]
+    },
+    {
+      "id": "hitlag",
+      "node": "damage-and-knockback",
+      "name": "Hitlag freeze",
+      "summary": "A connecting hit freezes both fighters for a number of frames set by damage. Crouching victims freeze longer. A table cap limits the freeze.",
+      "behavior": "The hit helper returns the freeze length as a linear function of the hit damage. It adds a table offset, multiplies by a per-hit hitlag multiplier, and truncates to an integer. A crouching victim multiplies the result by another table factor. The collision step stores a frame counter and applies a lower bound from a separate field and an upper cap from the table. While the counter is above zero, a per-frame process subtracts one from it and the fighter does not advance. When the counter reaches zero, the process runs the post-hitlag callback. The callback applies the final directional influence. The game also sets a flag that allows smash directional influence for the freeze.",
+      "constants": [
+        {
+          "name": "hitlag countdown step",
+          "value": 1,
+          "unit": "frames per 60 Hz update",
+          "source": "src/melee/ft/fighter.c:1416"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 658
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 1416
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2973
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2978
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "hit_freeze",
+        "impact_feel"
+      ],
+      "tags": [
+        "combat",
+        "feel",
+        "hitlag"
+      ]
+    },
+    {
+      "id": "smash-directional-influence",
+      "node": "damage-and-knockback",
+      "name": "Smash directional influence during hitlag",
+      "summary": "During hitlag a stick flick nudges the victim position. The nudge is stick times one table scale. A new flick is needed for each nudge.",
+      "behavior": "Each frame of hitlag, a callback checks that SDI is allowed, that the stick length exceeds a table minimum and that the stick moved recently. The recency check uses the frames-since-flick counter of either axis against a table window. When all checks pass, the victim moves by the stick x and y times a table scale. The callback then sets both flick counters to a high sentinel, so the same flick cannot move the victim again. When hitlag ends, a second callback applies a smaller final nudge, called ASDI, from the stick or from the C stick scaled by another table value.",
+      "constants": [
+        {
+          "name": "flick counter spent value",
+          "value": 254,
+          "unit": "frames-since-flick counter value, per 60 Hz update",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c:515"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 500
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 510
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 515
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 555
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "sdi",
+        "asdi",
+        "stick_flick_detection"
+      ],
+      "tags": [
+        "combat",
+        "input",
+        "hitlag"
+      ]
+    },
+    {
+      "id": "directional-influence",
+      "node": "damage-and-knockback",
+      "name": "Directional influence after hitlag",
+      "summary": "The stick bends the launch direction by an angle that grows with the square of the stick part that is perpendicular to the launch.",
+      "behavior": "When hitlag ends, the game reads the stick x and y as values from minus one to one. It takes the launch velocity and the cross product of launch and stick. The perpendicular stick part has length equal to the stick length times the sine of the angle between stick and launch. The game squares that part and divides by the squared launch speed, so only the stick length and the angle matter. It multiplies the result by a maximum angle from the table, in degrees, and adds it to the launch angle. The sign of the cross product picks the turn direction. The launch speed stays the same. A stick that is parallel to the launch changes nothing. A final step multiplies the launch speed by a table scale when a shoulder button is held. The step skips tiny launch speeds, using the squared speed as the test.",
+      "constants": [
+        {
+          "name": "tiny launch speed squared cutoff",
+          "value": 0.00001,
+          "unit": "squared world units per frame, evaluated once at hitlag end",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c:529"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 522
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 529
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 537
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 547
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Damage.c",
+          "line": 592
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "directional_influence",
+        "trajectory_control"
+      ],
+      "tags": [
+        "combat",
+        "input",
+        "knockback"
+      ]
+    },
+    {
+      "id": "shield-stun-and-pushback",
+      "node": "shield",
+      "name": "Shield stun and push back",
+      "summary": "A shielded hit sets the stun length from hit damage and the analog light shield amount. The shield slides back by a speed tied to that length.",
+      "behavior": "The stun length is a linear function of the hit damage. The damage first shrinks by a factor that blends between two table values with the analog trigger amount. A table scale and offset then turn it into frames. The shield hit animation plays at a rate that fits its own length into that stun length, so the animation end and the stun end match. The code adds a small constant to the animation length before it divides. Push back speed is the stun length times a table factor, scaled again by a second table factor when one state flag is clear, and clamped to a table maximum. The sign sends the fighter away from the attacker. Pushback applies only when the caller does not suppress it.",
+      "constants": [
+        {
+          "name": "animation length bias",
+          "value": 0.1,
+          "unit": "frames added to animation length, evaluated once per shield hit",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c:687"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 653
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 662
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 687
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 696
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "shield",
+        "shield_stun",
+        "pushback"
+      ],
+      "tags": [
+        "combat",
+        "defense",
+        "feel"
+      ]
+    },
+    {
+      "id": "shield-health-and-size",
+      "node": "shield",
+      "name": "Shield health, size and light shield",
+      "summary": "Shield health drains while held, refills when idle and breaks at zero. Shield size scales with remaining health. The analog trigger sets a light shield amount.",
+      "behavior": "While the shield is up, health drops each frame by a table rate that blends between a hard and a light value with the analog trigger amount. The trigger first passes a dead zone and then rescales to the range zero to one. When the shield is down, health rises by a table rate up to a table maximum. A hit also subtracts health from the damage, using the light shield blend and a table scale and offset. When health falls below zero the shield breaks and health resets to a separate table value. The visual shield size multiplies the base size by a factor between a table minimum and one, tied to the health fraction and the light shield blend. One character kind skips this and keeps a fixed size.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 177
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 322
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Guard.c",
+          "line": 417
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2819
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2835
+        }
+      ],
+      "capabilities": [
+        "combat",
+        "shield",
+        "shield_break",
+        "analog_trigger"
+      ],
+      "tags": [
+        "combat",
+        "defense",
+        "resource"
+      ]
+    },
+    {
+      "id": "ground-acceleration-solver",
+      "node": "fighter-physics-helpers",
+      "name": "Ground acceleration and friction solver",
+      "summary": "Ground speed moves toward a target speed by an acceleration. Friction removes speed without flipping its sign. Dash and run cap speed at a per-fighter maximum.",
+      "behavior": "The solver gets an acceleration, a target speed and a friction value. With no target, it applies friction only. Friction never takes the speed past zero: when friction is larger than the speed, the step sets the acceleration so the speed ends at exactly zero. With a target, the solver applies the acceleration while the speed is below the target. Past the target, the solver switches to friction toward the target and stops there. A final clamp keeps the result inside the per-fighter maximum ground speed. A motion that moves against the current speed gets the full acceleration with no clamp, so turning is fast. Each ground speed is a signed value along the facing axis.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 51
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 61
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 77
+        }
+      ],
+      "capabilities": [
+        "ground_movement",
+        "friction",
+        "speed_cap"
+      ],
+      "tags": [
+        "movement",
+        "ground",
+        "physics"
+      ]
+    },
+    {
+      "id": "dash-start-and-carry-speed",
+      "node": "fighter-ground-moves",
+      "name": "Dash start and carry-over speed",
+      "summary": "A stick smash past a threshold inside a short window starts a dash with a fixed initial speed. Reversing the stick during the window starts a turn instead.",
+      "behavior": "The dash check needs the stick x past a table threshold and a frames-since-flick counter under a table window. A flick against the facing direction enters a smash turn. Otherwise the fighter enters the dash. The entry sets the ground speed boost to the fighter dash start speed along the facing direction. When the fighter already moves the same way, the boost is only the difference from the current speed, so speed never drops. A dash against the current movement uses the full start speed. The first frame skips the acceleration step. Then the dash uses the ground acceleration solver with friction scaled by a table factor. The flick counter resets to a sentinel so one flick starts one dash.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "line": 27
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "line": 60
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "line": 64
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Dash.c",
+          "line": 158
+        }
+      ],
+      "capabilities": [
+        "ground_movement",
+        "dash",
+        "dash_dance",
+        "stick_flick_detection"
+      ],
+      "tags": [
+        "movement",
+        "ground",
+        "input"
+      ]
+    },
+    {
+      "id": "jump-launch-and-short-hop",
+      "node": "fighter-air-moves",
+      "name": "Jump launch and short hop",
+      "summary": "A jump starts after a crouch phase. Releasing the jump input early picks the lower hop launch speed. Ground speed carries into the air with a multiplier.",
+      "behavior": "A jump input starts a crouch motion. The jump fires when the crouch animation reaches a per-fighter startup frame or ends. During the crouch, the game checks every frame whether the jump button was released, or whether the stick or C stick fell below a release threshold. If so, it sets a short hop flag. At launch, the vertical speed equals the hop speed for a short hop or the full jump speed otherwise, times a jump multiplier. The horizontal speed adds the stick x times a per-fighter horizontal jump speed to the current ground speed multiplied by a ground-to-air factor. A per-fighter maximum clamps the sum. Tap jump uses the stick y above a threshold inside a window.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Jump.c",
+          "line": 101
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Jump.c",
+          "line": 123
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Jump.c",
+          "line": 131
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_KneeBend.c",
+          "line": 55
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_KneeBend.c",
+          "line": 33
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "short_hop",
+        "variable_jump",
+        "tap_jump"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "input"
+      ]
+    },
+    {
+      "id": "air-jump-rules",
+      "node": "fighter-air-moves",
+      "name": "Air jump rules",
+      "summary": "An air jump needs a spare jump count and a jump input. Its launch uses the ground jump vertical speed times an air multiplier.",
+      "behavior": "The air jump check compares the used jump count with a per-fighter maximum. It accepts the X or Y button press, or a stick up flick above a threshold inside a window. An optional extra check can reject the jump while a table timer stays under its limit. The launch sets the horizontal speed to the stick x times a per-fighter air horizontal multiplier. It sets the vertical speed to the ground jump speed times a per-fighter air vertical multiplier. A few fighter kinds use their own entry for their special multi-jump. Leaving the ground by a fall or a knock sets the used count to one, so a fighter that is launched off the stage still has the remaining jumps.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_JumpAerial.c",
+          "line": 46
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_JumpAerial.c",
+          "line": 48
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_JumpAerial.c",
+          "line": 98
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 540
+        }
+      ],
+      "capabilities": [
+        "jump",
+        "double_jump",
+        "air_control"
+      ],
+      "tags": [
+        "movement",
+        "jump",
+        "air"
+      ]
+    },
+    {
+      "id": "air-drift-and-gravity",
+      "node": "fighter-physics-helpers",
+      "name": "Air drift, gravity and fast fall",
+      "summary": "Air speed follows the stick with a flat plus stick-scaled acceleration, a per-fighter top speed and air friction. Gravity subtracts each frame up to a terminal speed. A downward flick fast falls.",
+      "behavior": "The drift step computes an acceleration equal to the stick x times a stick multiplier plus a flat base with the sign of the stick. The target speed is the stick x times the drift maximum. The solver then limits the speed to the air maximum and applies air friction toward the target. Gravity subtracts a per-fighter amount from the vertical speed each frame and clamps at a per-fighter terminal speed. Fast fall happens when the fighter falls, the stick y is below a table threshold and the flick counter is under a table window. It sets the vertical speed to a fixed per-fighter fast fall speed and plays a sound. Fast fall is per fall, tracked by a flag.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 393
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 399
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 480
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 495
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 513
+        }
+      ],
+      "capabilities": [
+        "air_control",
+        "gravity",
+        "terminal_velocity",
+        "fast_fall"
+      ],
+      "tags": [
+        "movement",
+        "air",
+        "physics"
+      ]
+    },
+    {
+      "id": "ground-to-air-transition",
+      "node": "fighter-physics-helpers",
+      "name": "Ground to air and air to ground transitions",
+      "summary": "Leaving the ground clears ground speed and locks the collision bounds for a few frames. Landing turns the air x speed into ground speed.",
+      "behavior": "When knockback, a ledge release or a platform drop puts the fighter in the air, the helper sets the state to air and zeroes the ground speed and the vertical acceleration. It marks one jump as used and locks the collision bounds for ten frames. Walking off an edge uses a second helper. That helper marks all jumps as used and locks the bounds for five frames. A per-frame map process counts the lock down and unlocks at zero. On landing, the air x speed becomes the ground speed after a clamp to the per-fighter maximum ground speed. The helper then resets the jump and wall jump counters and unlocks the bounds. This carry-over of horizontal speed into ground speed is the base of the wavedash slide.",
+      "constants": [
+        {
+          "name": "bounds lock after launch or drop",
+          "value": 10,
+          "unit": "frames at 60 Hz, counted down once per frame",
+          "source": "src/melee/ft/ftcommon.c:541"
+        },
+        {
+          "name": "bounds lock after walk off",
+          "value": 5,
+          "unit": "frames at 60 Hz, counted down once per frame",
+          "source": "src/melee/ft/ftcommon.c:555"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 533
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 545
+        },
+        {
+          "path": "src/melee/ft/ftcommon.c",
+          "line": 571
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2482
+        }
+      ],
+      "capabilities": [
+        "air_ground_transition",
+        "wavedash_base",
+        "collision_bounds_lock"
+      ],
+      "tags": [
+        "movement",
+        "physics",
+        "collision"
+      ]
+    },
+    {
+      "id": "air-dodge",
+      "node": "fighter-air-moves",
+      "name": "Air dodge",
+      "summary": "A shoulder button press in the air starts a dodge. The stick sets an instant velocity that decays each frame. A dead-zone stick means a stationary dodge.",
+      "behavior": "The entry check needs a shoulder press. The dodge stores the old velocity. If both stick axes stay under a table dead zone, the velocity becomes zero. Otherwise the velocity becomes a table force at the stick angle. Each frame the velocity multiplies by a table decay until an animation script flag stops the decay and normal air physics resume. When the animation ends, the fighter enters the special fall state. That state limits air drift to a table fraction of the normal drift maximum and carries its own landing lag from the table. Touching the ground during the dodge enters the special landing motion with that lag. The landing converts air x speed to ground speed, which lets a slanted dodge into the floor slide along the ground. A separate frame counter starts at a table value and counts down.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "line": 26
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "line": 49
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "line": 102
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_EscapeAir.c",
+          "line": 116
+        }
+      ],
+      "capabilities": [
+        "air_dodge",
+        "directional_dodge",
+        "wavedash"
+      ],
+      "tags": [
+        "movement",
+        "defense",
+        "air"
+      ]
+    },
+    {
+      "id": "special-landing-lag-rate",
+      "node": "fighter-ground-moves",
+      "name": "Special landing lag as an animation rate",
+      "summary": "Landing lag is set by playing the landing animation faster or slower so it lasts the requested number of frames.",
+      "behavior": "The special landing entry takes a lag value in frames. It does not count lag with a timer. It changes the animation speed so that the landing animation length fits into that lag. The speed equals the animation length plus a small bias, divided by the lag. The same trick sets aerial landing lag. A hammer-holding fighter uses a separate landing motion. The normal landing motion allows a cancel into actions once the animation passes the per-fighter landing lag frame.",
+      "constants": [
+        {
+          "name": "landing animation length bias",
+          "value": 0.1,
+          "unit": "frames added to animation length, evaluated once per landing",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_Landing.c:111"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Landing.c",
+          "line": 103
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Landing.c",
+          "line": 111
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Landing.c",
+          "line": 127
+        }
+      ],
+      "capabilities": [
+        "landing_lag",
+        "animation_rate_timing"
+      ],
+      "tags": [
+        "movement",
+        "feel",
+        "landing"
+      ]
+    },
+    {
+      "id": "aerial-landing-lag-and-l-cancel",
+      "node": "fighter-ground-moves",
+      "name": "Aerial landing lag and L-cancel",
+      "summary": "Each aerial attack has its own landing lag. A recent shoulder press cuts it by a table divisor, with a floor of one frame.",
+      "behavior": "A per-frame input process counts frames since the last shoulder press and caps the counter at 255. On landing from an aerial, the game picks a lag from five per-fighter values: neutral, forward, back, up and down. If the counter is under a table window, the lag divides by a table value and truncates, and a result of zero becomes one. The landing animation then plays at the rate that makes it last that many frames. The check also needs an attack-animation flag to be set, which blocks the cancel outside the intended window of the move.",
+      "constants": [
+        {
+          "name": "shoulder press counter cap",
+          "value": 255,
+          "unit": "frames at 60 Hz, saturating",
+          "source": "src/melee/ft/fighter.c:2107"
+        },
+        {
+          "name": "animation length bias",
+          "value": 0.1,
+          "unit": "frames added to animation length, evaluated once per landing",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c:65"
+        },
+        {
+          "name": "lag floor after cancel",
+          "value": 1,
+          "unit": "frames",
+          "source": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c:47"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+          "line": 14
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+          "line": 43
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_LandingAir.c",
+          "line": 65
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2107
+        }
+      ],
+      "capabilities": [
+        "landing_lag",
+        "l_cancel",
+        "input_buffer"
+      ],
+      "tags": [
+        "movement",
+        "combat",
+        "input"
+      ]
+    },
+    {
+      "id": "input-timers",
+      "node": "fighter-update",
+      "name": "Per-frame input timers and flick detection",
+      "summary": "Each frame the game counts how long ago each button was pressed and how long ago the stick crossed a threshold. Counters stop at 255. A used flick is set to 254.",
+      "behavior": "A per-frame input process keeps one counter for each button group and for the stick axes. A press sets the counter to zero. Otherwise the counter goes up by one until 255. Actions compare a counter with a table window instead of keeping their own timers, so a press that arrived a few frames early still counts. After an action consumes a flick, it writes the sentinel 254 so the same flick cannot trigger a second action. The stick flick counters use the same pattern. This one mechanism drives tap jump, fast fall, dash start, drop through platform and shield drop.",
+      "constants": [
+        {
+          "name": "counter cap",
+          "value": 255,
+          "unit": "frames at 60 Hz, saturating",
+          "source": "src/melee/ft/fighter.c:2077"
+        },
+        {
+          "name": "consumed flick sentinel",
+          "value": 254,
+          "unit": "frames-since-flick counter value",
+          "source": "src/melee/ft/fighter.c:630"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 1778
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2077
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 2107
+        },
+        {
+          "path": "src/melee/ft/fighter.c",
+          "line": 630
+        }
+      ],
+      "capabilities": [
+        "input_buffer",
+        "stick_flick_detection",
+        "input_windows"
+      ],
+      "tags": [
+        "input",
+        "feel",
+        "timing"
+      ]
+    },
+    {
+      "id": "ledge-grab-and-hang",
+      "node": "fighter-ledge",
+      "name": "Ledge grab, hang and cooldown",
+      "summary": "A fighter near a ledge edge grabs it unless the stick is held down. The hang lasts a limited time and gives temporary invincibility. A cooldown blocks regrab.",
+      "behavior": "The grab check fails when the stick y is at or below a table threshold held downward. It needs a ledge flag on the left or right from collision. The fighter turns to face the stage, zeroes its speed, locks the bounds and snaps to the ledge point plus a fixed bone offset. If another fighter already holds that ledge, the grab fails and the game records the contest. The hang timer starts from one of two table values that depend on the fighter damage percent. A timed protection counter, set to a table frame count, starts at the hang. The counter looks like invincibility, but the decompilation does not name it. When the timer ends or the fighter releases, a cooldown timer starts and blocks the next grab.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftcliffcommon.c",
+          "line": 22
+        },
+        {
+          "path": "src/melee/ft/ftcliffcommon.c",
+          "line": 30
+        },
+        {
+          "path": "src/melee/ft/ftcliffcommon.c",
+          "line": 52
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_CliffWait.c",
+          "line": 28
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_CliffWait.c",
+          "line": 66
+        }
+      ],
+      "capabilities": [
+        "ledge_grab",
+        "ledge_invincibility",
+        "ledge_cooldown"
+      ],
+      "tags": [
+        "movement",
+        "stage",
+        "ledge"
+      ]
+    },
+    {
+      "id": "platform-drop-through",
+      "node": "fighter-ground-moves",
+      "name": "Drop through a platform",
+      "summary": "A downward stick flick on a platform drops the fighter through it. The drop gives a small downward speed and skips the floor for a moment.",
+      "behavior": "The check needs the stick y at or below a negative table threshold, a flick counter inside a window and a platform floor under the fighter. The drop sets the state to air, clamps the air drift, and sets the vertical speed to a table value. It marks the floor as skipped, so collision ignores the platform until the fighter clears it. It writes the spent sentinel into the stick counter. A shoulder press on a platform also drops, using the same helper.",
+      "constants": [],
+      "sources": [
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Pass.c",
+          "line": 26
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Pass.c",
+          "line": 89
+        },
+        {
+          "path": "src/melee/ft/kinds/ftCommon/ftCo_Pass.c",
+          "line": 85
+        }
+      ],
+      "capabilities": [
+        "pass_through_platforms",
+        "drop_through"
+      ],
+      "tags": [
+        "movement",
+        "stage",
+        "input"
+      ]
+    },
+    {
+      "id": "wall-jump-input",
+      "node": "fighter-air-moves",
+      "name": "Wall jump input rules",
+      "summary": "A fast approach to a wall starts a short input timer. A stick push away from the wall inside that timer triggers a wall jump. A counter limits repeats.",
+      "behavior": "The fighter must touch a wall and approach it faster than a per-fighter minimum speed. That starts a timer. While the timer is under a table limit, the stick must point away from the wall past a table threshold, and the flick counter must be under a table window. When all hold, the fighter enters the wall jump motion and the used wall jump counter goes up by one, up to 255. The jump uses the counter as a parameter, so the effect of repeats can change.",
+      "constants": [
+        {
+          "name": "wall jump counter cap",
+          "value": 255,
+          "unit": "uses per airtime, saturating",
+          "source": "src/melee/ft/ftwalljump.c:113"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/ft/ftwalljump.c",
+          "line": 82
+        },
+        {
+          "path": "src/melee/ft/ftwalljump.c",
+          "line": 95
+        },
+        {
+          "path": "src/melee/ft/ftwalljump.c",
+          "line": 113
+        }
+      ],
+      "capabilities": [
+        "wall_jump",
+        "wall_contact"
+      ],
+      "tags": [
+        "movement",
+        "air",
+        "input"
+      ]
+    },
+    {
+      "id": "camera-subject-bounds",
+      "node": "battle-camera",
+      "name": "Battle camera subject bounds",
+      "summary": "The camera builds one box around all fighters. Each fighter adds padded extents. The pad grows when fewer fighters remain. The box clamps to the stage camera limits.",
+      "behavior": "Every tracked fighter owns a set of extents that the camera eases toward target extents. The ease moves each extent by at most half a unit per update, then snaps when it is closer than that. The bounds step multiplies those extents by a weight picked by the fighter count and by a stage ratio, so a lone fighter gets the largest pad. Each padded point clamps to the stage camera box, with the bottom edge held above the ground height. The box is the min and max of all points. The bottom edge drops by a margin that grows with the camera distance, from ten units near the stage up to four hundred units far away. With no fighter, the box is a small square around the stage default point. Extents are half extents measured from the fighter point.",
+      "constants": [
+        {
+          "name": "extent ease step",
+          "value": 0.5,
+          "unit": "world units per update, rate unverified",
+          "source": "src/melee/cm/camera.c:402"
+        },
+        {
+          "name": "tracking weight for 1 fighter",
+          "value": 1.5,
+          "unit": "unitless multiplier",
+          "source": "src/melee/cm/camera.c:91"
+        },
+        {
+          "name": "tracking weight for 2 fighters",
+          "value": 1.32,
+          "unit": "unitless multiplier",
+          "source": "src/melee/cm/camera.c:91"
+        },
+        {
+          "name": "tracking weight for 3 fighters",
+          "value": 1.16,
+          "unit": "unitless multiplier",
+          "source": "src/melee/cm/camera.c:91"
+        },
+        {
+          "name": "tracking weight for 4 or more fighters",
+          "value": 1,
+          "unit": "unitless multiplier",
+          "source": "src/melee/cm/camera.c:91"
+        },
+        {
+          "name": "empty box half size",
+          "value": 40,
+          "unit": "world units, evaluated once per update",
+          "source": "src/melee/cm/camera.c:657"
+        },
+        {
+          "name": "bottom margin near stage",
+          "value": 10,
+          "unit": "world units, evaluated once per update",
+          "source": "src/melee/cm/camera.c:672"
+        },
+        {
+          "name": "bottom margin growth at far camera",
+          "value": 390,
+          "unit": "world units, evaluated once per update",
+          "source": "src/melee/cm/camera.c:672"
+        },
+        {
+          "name": "margin ramp start distance",
+          "value": 80,
+          "unit": "world units of camera depth",
+          "source": "src/melee/cm/camera.c:664"
+        },
+        {
+          "name": "margin ramp end distance",
+          "value": 5000,
+          "unit": "world units of camera depth",
+          "source": "src/melee/cm/camera.c:666"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 388
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 465
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 91
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 508
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 672
+        }
+      ],
+      "capabilities": [
+        "multi_target_camera",
+        "camera_bounds",
+        "dynamic_framing"
+      ],
+      "tags": [
+        "camera",
+        "framing",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "camera-zoom-and-fov",
+      "node": "battle-camera",
+      "name": "Battle camera zoom distance and field of view",
+      "summary": "The camera distance is the larger of the vertical and horizontal fit for the box. Stage limits clamp it. The effective vertical FOV is 38 degrees.",
+      "behavior": "The distance step divides the box height by the tangent of the field of view and the box width by the aspect times that tangent. It takes the larger value. It then clamps the value between a stage minimum zoom distance and a stage maximum depth. The static camera description lists a 30 degree FOV and an aspect of about 1.217. The battle camera ignores the 30 and sets the target FOV from the tuning table each update. The table value is 38 degrees. The real FOV eases toward it by a table fraction each update. The tuning table lists the 38 and the 0.1 ease. The 30 appears only as the start-up value. The aspect from the description is still in use for the horizontal fit.",
+      "constants": [
+        {
+          "name": "effective vertical field of view",
+          "value": 38,
+          "unit": "degrees, set each update from the tuning table",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "field of view ease fraction",
+          "value": 0.1,
+          "unit": "fraction of remaining gap per update, rate unverified",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "start-up field of view",
+          "value": 30,
+          "unit": "degrees, used only before the first update",
+          "source": "src/melee/cm/camera.c:88"
+        },
+        {
+          "name": "aspect ratio",
+          "value": 1.2173333,
+          "unit": "width over height, unitless",
+          "source": "src/melee/cm/camera.c:89"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 746
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 1510
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 4580
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 89
+        }
+      ],
+      "capabilities": [
+        "camera_zoom",
+        "camera_fov",
+        "fit_to_bounds"
+      ],
+      "tags": [
+        "camera",
+        "framing",
+        "perspective"
+      ]
+    },
+    {
+      "id": "camera-follow-smoothing",
+      "node": "battle-camera",
+      "name": "Battle camera follow smoothing",
+      "summary": "The look-at point eases toward its target by a rate that depends on how spread out the fighters are. The eye position eases by a fixed fraction.",
+      "behavior": "The follow rate is a table value of 0.05 when the spread of the box is under a low table distance. It is 0.1 when the spread is over a high table distance. In between it blends linearly. The spread is the larger of box width and height. The look-at point moves by that rate times a stage smoothing factor each update, with the step clamped between a tiny floor and one. The eye position moves by a separate table fraction times the same stage factor, capped at one. A camera that sees no fighter uses a huge spread, which gives the fastest rate. The vertical look-at also gets a bias that blends with the spread, and the camera tilts by a clamped angle from the box center.",
+      "constants": [
+        {
+          "name": "slow follow rate",
+          "value": 0.05,
+          "unit": "fraction of remaining gap per update, rate unverified",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "fast follow rate",
+          "value": 0.1,
+          "unit": "fraction of remaining gap per update, rate unverified",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "slow rate spread limit",
+          "value": 120,
+          "unit": "world units of box size",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "fast rate spread limit",
+          "value": 900,
+          "unit": "world units of box size",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "eye follow fraction",
+          "value": 0.15,
+          "unit": "fraction of remaining gap per update, rate unverified",
+          "source": "src/melee/cm/camera.c:4582"
+        },
+        {
+          "name": "step floor",
+          "value": 0.0001,
+          "unit": "fraction per update",
+          "source": "src/melee/cm/camera.c:739"
+        },
+        {
+          "name": "empty-box spread",
+          "value": 99999,
+          "unit": "world units",
+          "source": "src/melee/cm/camera.c:725"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 702
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 679
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 765
+        },
+        {
+          "path": "src/melee/cm/camera.c",
+          "line": 4580
+        }
+      ],
+      "capabilities": [
+        "camera_smoothing",
+        "adaptive_follow"
+      ],
+      "tags": [
+        "camera",
+        "feel",
+        "smoothing"
+      ]
+    }
+  ]
+}
